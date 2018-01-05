@@ -14,15 +14,11 @@ pfcmd service <service> [start|stop|restart|status|generateconfig|updatesystemd]
 
 Services managed by PacketFence:
 
-  carbon-cache     | carbon-cache daemon
-  carbon-relay     | carbon-relay daemon
-  collectd         | collectd daemon
   haproxy          | haproxy daemon
   httpd.aaa        | Apache AAA webservice
   httpd.admin      | Apache Web admin
   httpd.collector  | Apache Collector daemon
   httpd.dispatcher | Captive portal dispatcher
-  httpd.graphite   | Apache Graphite daemon
   httpd.parking    | Apache Parking Portal
   httpd.portal     | Apache Captive Portal
   httpd.proxy      | Apache Proxy Interception
@@ -47,7 +43,6 @@ Services managed by PacketFence:
   redis_queue      | Redis for pfqueue
   routes           | manage static routes
   snmptrapd        | SNMP trap receiver daemon
-  statsd           | statsd service
   winbindd         | Winbind daemon
 
 =head1 DESCRIPTION
