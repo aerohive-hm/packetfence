@@ -310,7 +310,7 @@ sub call_ipsetd {
         $ipset_client->call($url, $data);
     };
     if ($@) {
-        get_logger()->error("Error updating ipset $url");;
+        get_logger()->error("Error updating ipset $url : $@");;
     }
 }
 
