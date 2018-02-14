@@ -1,6 +1,5 @@
 #!/bin/bash
 # lmunro@inverse.ca 20130508
-# License: GNU General Public License 2 (GPL2)
 #
 # This script is called from heartbeat (or corosync) to manage 
 # the Barnyard2 resource.

@@ -82,7 +82,7 @@ If you would like to translate the software in an other language, please consult
 
 ## License
 
-Licensed under the GNU General Public License v2.
+Licensed to Aerohive Networks, Inc.
 
 ---
 
