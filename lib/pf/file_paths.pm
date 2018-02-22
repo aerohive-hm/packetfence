@@ -97,6 +97,8 @@ our (
     $switch_control_dir,
     $pfmon_config_file, $pfmon_default_config_file,
     $switch_filters_config_file,
+    $stats_config_file,
+    $traffic_shaping_config_file,
 );
 
 BEGIN {
@@ -169,6 +171,8 @@ BEGIN {
         $switch_control_dir
         $pfmon_config_file $pfmon_default_config_file
         $switch_filters_config_file
+        $stats_config_file
+        $traffic_shaping_config_file
     );
 }
 
@@ -208,6 +212,7 @@ $log_config_file    = catfile($conf_dir, "log.conf");
 $provisioning_config_file = catfile($conf_dir, 'provisioning.conf');
 $device_registration_config_file = catfile($conf_dir,"device_registration.conf");
 $pki_provider_config_file  = catfile($conf_dir,"pki_provider.conf");
+$traffic_shaping_config_file  = catfile($conf_dir,"traffic_shaping.conf");
 
 $network_config_file    = catfile($conf_dir, "networks.conf");
 $switches_config_file   = catfile($conf_dir, "switches.conf");
@@ -263,6 +268,7 @@ $portal_modules_default_config_file = catfile($conf_dir,"portal_modules.conf.def
 $pfmon_config_file = catfile($conf_dir,"pfmon.conf");
 $pfmon_default_config_file = catfile($conf_dir,"pfmon.conf.defaults");
 $switch_filters_config_file = catfile($conf_dir,"switch_filters.conf"); 
+$stats_config_file = catfile($conf_dir,"stats.conf");
 
 $oui_url               = 'http://standards.ieee.org/regauth/oui/oui.txt';
 $dhcp_fingerprints_url = 'http://www.packetfence.org/dhcp_fingerprints.conf';
@@ -304,6 +310,8 @@ $captiveportal_default_profile_templates_path = catdir ($captiveportal_profile_t
     $dns_filters_config_file,
     $pfmon_config_file,
     $switch_filters_config_file,
+    $stats_config_file,
+    $traffic_shaping_config_file,
 );
 
 $pffilter_socket_path = catfile($var_dir, "run/pffilter.sock");

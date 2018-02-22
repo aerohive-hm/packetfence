@@ -21,6 +21,9 @@ New Features
 * Replaced pfdns with a new Golang based DNS server (PR #2911)
 * Allow an inline network to be split by the roles in PacketFence allowing to put specific devices in a distinct broadcast network (PR #2911)
 * DNS routing (PR #2911)
+* Dashboard metrics are now based on Netdata (PR #2935)
+* Traffic shaping support for inline setup (PR #2803)
+* Added a configuration parameter to allow to unregister a device on an accounting stop (PR #2685)
 
 Enhancements
 ++++++++++++
@@ -28,7 +31,7 @@ Enhancements
 
 Bug Fixes
 +++++++++
-
+* fixes #2883
 
 Version 7.4.0 released on 2018-01-25
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

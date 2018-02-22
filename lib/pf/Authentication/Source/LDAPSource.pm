@@ -63,6 +63,7 @@ has 'usernameattribute' => (isa => 'Str', is => 'rw', required => 1);
 has '_cached_connection' => (is => 'rw');
 has 'cache_match' => ( isa => 'Bool', is => 'rw', default => 0 );
 has 'email_attribute' => (isa => 'Maybe[Str]', is => 'rw', default => 'mail');
+has 'monitor' => ( isa => 'Bool', is => 'rw', default => 1 );
 
 our $logger = get_logger();
 
@@ -484,14 +485,6 @@ sub ldap_filter_for_conditions {
   my $timer = pf::StatsD::Timer->new({ 'stat' => "${timer_stat_prefix}",  level => 7});
 
   my (@ldap_conditions, $expression);
-
-  # Handling stripped_username condition
-  if ( isenabled($self->{'stripped_user_name'}) && defined($params->{'stripped_user_name'}) && $params->{'stripped_user_name'} ne '' ) {
-      $params->{'username'} = $params->{'stripped_user_name'};
-  } elsif ( isenabled($self->{'stripped_user_name'}) ) {
-      my ($username, $realm) = strip_username($params->{'username'});
-      $params->{'username'} = $username;
-  }
 
   if ($params->{'username'}) {
       $expression = '(' . $usernameattribute . '=' . $params->{'username'} . ')';

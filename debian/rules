@@ -114,6 +114,7 @@ install: build
 	install -m0644 $(CURDIR)/debian/packetfence-base.slice $(CURDIR)/debian/packetfence/etc/systemd/system
 	install -m0644 $(CURDIR)/debian/ifup@.service $(CURDIR)/debian/packetfence/etc/systemd/system
 #endif
+	install -m0644 $(CURDIR)/debian/packetfence-pfunified_api.service $(CURDIR)/debian/packetfence/etc/systemd/system
 	install -d -m0700 $(CURDIR)/debian/packetfence/etc/default
 	# copy the rsyslog configuration file 
 	install -d -m0755 $(CURDIR)/debian/packetfence/etc/rsyslog.d
@@ -191,16 +192,11 @@ ifeq ($(jessie),yes)
 	dh_systemd_enable
 endif
 	dh_installinit --no-restart-on-upgrade
-	dh_installinit --name=packetfence-carbon-cache
-	dh_installinit --name=packetfence-carbon-relay
-	dh_installinit --name=packetfence-collectd
-	dh_installinit --name=packetfence-pfdns
 	dh_installinit --name=packetfence-haproxy
 	dh_installinit --name=packetfence-httpd.aaa
 	dh_installinit --name=packetfence-httpd.admin
 	dh_installinit --name=packetfence-httpd.collector
 	dh_installinit --name=packetfence-httpd.dispatcher
-	dh_installinit --name=packetfence-httpd.graphite
 	dh_installinit --name=packetfence-httpd.parking
 	dh_installinit --name=packetfence-httpd.portal
 	dh_installinit --name=packetfence-httpd.proxy
@@ -208,7 +204,7 @@ endif
 	dh_installinit --name=packetfence-iptables
 	dh_installinit --name=packetfence-keepalived
 	dh_installinit --name=packetfence-mariadb
-	dh_installinit --name=packetfence-p0f
+	dh_installinit --name=packetfence-netdata
 	dh_installinit --name=packetfence-pfbandwidthd
 	dh_installinit --name=packetfence-pfdetect
 	dh_installinit --name=packetfence-pfdhcplistener
@@ -228,17 +224,20 @@ endif
 	dh_installinit --name=packetfence-redis_queue
 	dh_installinit --name=packetfence-routes
 	dh_installinit --name=packetfence-snmptrapd
-	dh_installinit --name=packetfence-statsd
+	dh_installinit --name=packetfence-tc
 	dh_installinit --name=packetfence-winbindd
 	dh_installinit --name=packetfence-etcd
 	dh_installinit --name=packetfence-pfdhcp
 	dh_installinit --name=packetfence-pfipset
+	dh_installinit --name=packetfence-pfunified-api
+	dh_installinit --name=packetfence-pfstats
 
 	dh_installcron
 #	dh_installinfo
 	dh_installman
 	dh_link \
 			/usr/local/pf/raddb/sites-available/dynamic-clients /usr/local/pf/raddb/sites-enabled/dynamic-clients \
+			/usr/local/pf/raddb/sites-available/status /usr/local/pf/raddb/sites-enabled/status \
 			/usr/local/fingerbank/lib/fingerbank /usr/local/pf/lib/fingerbank
 	dh_strip
 	dh_compress
