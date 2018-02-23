@@ -21,6 +21,10 @@ import (
 
 	"github.com/inverse-inc/packetfence/go/caddy/caddy/caddytls"
 	// This is where other plugins get plugged in (imported)
+	// PACKETFENCE
+	_ "github.com/inverse-inc/packetfence/go/caddy/api-aaa"
+	_ "github.com/inverse-inc/packetfence/go/caddy/cors"
+	_ "github.com/inverse-inc/packetfence/go/caddy/forwardproxy"
 	_ "github.com/inverse-inc/packetfence/go/caddy/httpdispatcher"
 	_ "github.com/inverse-inc/packetfence/go/caddy/logger"
 	_ "github.com/inverse-inc/packetfence/go/caddy/pfconfig"
