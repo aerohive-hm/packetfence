@@ -99,6 +99,10 @@ our (
     $switch_filters_config_file,
     $stats_config_file,
     $traffic_shaping_config_file,
+    $pf_admin_i18n_dir,
+    $syslog_config_file,
+    $syslog_default_config_file,
+    $rsyslog_packetfence_config_file,
 );
 
 BEGIN {
@@ -173,6 +177,10 @@ BEGIN {
         $switch_filters_config_file
         $stats_config_file
         $traffic_shaping_config_file
+        $pf_admin_i18n_dir
+        $syslog_config_file
+        $syslog_default_config_file
+        $rsyslog_packetfence_config_file
     );
 }
 
@@ -213,6 +221,9 @@ $provisioning_config_file = catfile($conf_dir, 'provisioning.conf');
 $device_registration_config_file = catfile($conf_dir,"device_registration.conf");
 $pki_provider_config_file  = catfile($conf_dir,"pki_provider.conf");
 $traffic_shaping_config_file  = catfile($conf_dir,"traffic_shaping.conf");
+$syslog_config_file  = catfile($conf_dir, "syslog.conf");
+$syslog_default_config_file  = catfile($conf_dir, "syslog.conf.defaults");
+$rsyslog_packetfence_config_file  = "/etc/rsyslog.d/packetfence.conf";
 
 $network_config_file    = catfile($conf_dir, "networks.conf");
 $switches_config_file   = catfile($conf_dir, "switches.conf");
@@ -312,6 +323,7 @@ $captiveportal_default_profile_templates_path = catdir ($captiveportal_profile_t
     $switch_filters_config_file,
     $stats_config_file,
     $traffic_shaping_config_file,
+    $syslog_config_file,
 );
 
 $pffilter_socket_path = catfile($var_dir, "run/pffilter.sock");
@@ -321,6 +333,8 @@ $cache_control_file = catfile($var_dir, "cache_control");
 $config_version_file = catfile($var_dir, "config_version");
 
 $maintenance_file = catfile($var_dir,"maintenance-mode");
+
+$pf_admin_i18n_dir = catfile($html_dir , 'pfappserver/lib/pfappserver/I18N');
 
 =head1 AUTHOR
 
