@@ -24,6 +24,8 @@ New Features
 * Dashboard metrics are now based on Netdata (PR #2935)
 * Traffic shaping support for inline setup (PR #2803)
 * Added a configuration parameter to allow to unregister a device on an accounting stop (PR #2685)
+* Adding CLI support on Aruba 5400 switches (PR #2965)
+* Username stripping (removing the realm) is now configurable via the realms instead of the sources
 
 Enhancements
 ++++++++++++
@@ -31,6 +33,7 @@ Enhancements
 
 Bug Fixes
 +++++++++
+* Fixes "Guest Portal validate_phone_number check not work" (#2783)
 * fixes #2883
 
 Version 7.4.0 released on 2018-01-25

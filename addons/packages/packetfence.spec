@@ -535,7 +535,7 @@ cp -r addons/monit/ $RPM_BUILD_ROOT/usr/local/pf/addons/
 cp addons/*.pl $RPM_BUILD_ROOT/usr/local/pf/addons/
 cp addons/*.sh $RPM_BUILD_ROOT/usr/local/pf/addons/
 %{__install} -D packetfence.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/packetfence
-%{__install} -D packetfence.rsyslog $RPM_BUILD_ROOT/etc/rsyslog.d/packetfence.conf
+%{__install} -D packetfence.rsyslog-drop-in.service $RPM_BUILD_ROOT/etc/systemd/system/rsyslog.service.d/packetfence.conf
 %{__install} -D packetfence.journald $RPM_BUILD_ROOT/usr/lib/systemd/journald.conf.d/01-packetfence.conf
 cp -r sbin $RPM_BUILD_ROOT/usr/local/pf/
 cp -r conf $RPM_BUILD_ROOT/usr/local/pf/
@@ -618,7 +618,7 @@ if ! /usr/bin/id pf &>/dev/null; then
 fi
 /usr/sbin/usermod -aG wbpriv,fingerbank,apache pf
 /usr/sbin/usermod -aG pf mysql 
-/usr/bin/usermod -aG pf netdata
+/usr/sbin/usermod -aG pf netdata
 
 if [ ! `id -u` = "0" ];
 then
@@ -818,10 +818,11 @@ fi
 %attr(0644, root, root) /usr/lib/systemd/journald.conf.d/01-packetfence.conf
 
 %dir %attr(0750, root,root) /etc/systemd/system/packetfence*target.wants
+%attr(0644, root, root) /etc/systemd/system/rsyslog.service.d/packetfence.conf
+
 %dir %attr(0750,root,root) %{_sysconfdir}/sudoers.d
 %config %attr(0440,root,root) %{_sysconfdir}/sudoers.d/packetfence
 %config %attr(0644,root,root) %{_sysconfdir}/logrotate.d/packetfence
-%config %attr(0644,root,root) %{_sysconfdir}/rsyslog.d/packetfence.conf
 %config %attr(0600,root,root) %{_sysconfdir}/cron.d/packetfence
 
 %dir                    /usr/local/pf
@@ -1013,6 +1014,7 @@ fi
 %config                 /usr/local/pf/conf/realm.conf.defaults
 %config(noreplace)      /usr/local/pf/conf/radius_filters.conf
                         /usr/local/pf/conf/radius_filters.conf.example
+%config(noreplace)      /usr/local/pf/conf/rsyslog.conf.tt
 %config(noreplace)      /usr/local/pf/conf/billing_tiers.conf
                         /usr/local/pf/conf/billing_tiers.conf.example
 %config(noreplace)      /usr/local/pf/conf/domain.conf
@@ -1090,6 +1092,8 @@ fi
 %config(noreplace)      /usr/local/pf/conf/roles.conf
 %config                 /usr/local/pf/conf/roles.conf.defaults
 %config(noreplace)      /usr/local/pf/conf/snmptrapd.conf
+%config(noreplace)      /usr/local/pf/conf/syslog.conf
+%config                 /usr/local/pf/conf/syslog.conf.defaults
 %config                 /usr/local/pf/conf/ui.conf
 %config                 /usr/local/pf/conf/ui.conf.es_ES
 %config(noreplace)      /usr/local/pf/conf/ui-global.conf
