@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+AWK=/bin/awk
+CAT=/bin/cat
+ETHTOOL=/sbin/ethtool
+FOLD=/usr/bin/fold
+GREP=/bin/grep
+HEAD=/usr/bin/head
+OPENSSL=/usr/bin/openssl
+PASTE=/usr/bin/paste
+TR=/usr/bin/tr
+
+( $ETHTOOL -P eth0 | $AWK '{ print $3; }' | $TR '[a-f]' '[A-F]' | $TR -d '\n';
+  $CAT /sys/class/dmi/id/product_serial | $TR -d '\n'; ) \
+    | $OPENSSL dgst -sha256                              \
+    | $AWK '{ print $2; }'                               \
+    | $TR '[a-f]' '[A-F]'                                \
+    | $HEAD -c 32                                        \
+    | $FOLD -w4                                          \
+    | $PASTE -sd'-'                                      \
+    | $TR -d '\n'
