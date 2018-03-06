@@ -5,7 +5,7 @@
         'admin/status',
         ] -%]
     <div class="sidenav-fluid">
-      <div class="row-fluid">
+      <div class="row-fluid" style="width: 100%">
         <div class="sidenav sidenav-section span3">
             <ul class="nav nav-header">
               <li>[% l('Overview') %]</li>
@@ -24,7 +24,12 @@
               <li><a href="#service/cluster_status">[% l('Cluster state') %]</a></li>
               [%- END %]
               [%- IF can_access("SERVICES") %]
-              <li class="nav-header">[% l('Queue') %]</li>
+            </ul>
+            <ul class="nav nav-header">
+              <li>[% l('Queue') %]</li>
+	      <li class="divider-horizontal"></li>
+            </ul>
+            <ul class="nav nav-list">
               <li><a href="#pfqueue">[% l('Local Queue') %]</a></li>
               [% IF cluster_enabled %]
               <li><a href="#pfqueue/cluster">[% l('Cluster Queue') %]</a></li>
