@@ -7,39 +7,39 @@
     <div class="sidenav-fluid">
       <div class="row-fluid" style="width: 100%">
         <div class="sidenav sidenav-section span3">
-            <ul class="nav nav-header">
-              <li>[% l('Overview') %]</li>
-              <li class="divider-horizontal"></li>
-            </ul>
-            <ul class="nav nav-list">
-              [%- IF can_access("REPORTS") %]
-              <li><a href="#graph/dashboard">[% l('Dashboard') %]</a></li>
-              <li><a href="#graph/systemstate">[% l('System state') %]</a></li>
-              <li><a href="#graph/logstate">[% l('Logs state') %]</a></li>
-              [%- END %]
-              [%- IF can_access("SERVICES") %]
-              <li><a href="#service">[% l('Services') %]</a></li>
-              [%- END %]
-              [%- IF can_access("SERVICES") && cluster_enabled %]
-              <li><a href="#service/cluster_status">[% l('Cluster state') %]</a></li>
-              [%- END %]
-              [%- IF can_access("SERVICES") %]
-            </ul>
-            <ul class="nav nav-header">
-              <li>[% l('Queue') %]</li>
-	      <li class="divider-horizontal"></li>
-            </ul>
-            <ul class="nav nav-list">
-              <li><a href="#pfqueue">[% l('Local Queue') %]</a></li>
-              [% IF cluster_enabled %]
-              <li><a href="#pfqueue/cluster">[% l('Cluster Queue') %]</a></li>
-              [%- END %]
-              [%- END %]
-              <!-- <li class="nav-header">[% l('System') %]</li>
-              <li><a href="#">[% l('Server') %]</a></li>
-              <li><a href="#">[% l('Logs') %]</a></li> -->
-            </ul>
-          </div><!--/.sidenav-section -->
+          <ul class="nav nav-header">
+            <li>[% l('Overview') %]</li>
+            <li class="divider-horizontal"></li>
+          </ul>
+          <ul class="nav nav-list">
+            [%- IF can_access("REPORTS") %]
+            <li><a href="#graph/dashboard">[% l('Dashboard') %]</a></li>
+            <li><a href="#graph/systemstate">[% l('System state') %]</a></li>
+            <li><a href="#graph/logstate">[% l('Logs state') %]</a></li>
+            [%- END %]
+            [%- IF can_access("SERVICES") %]
+            <li><a href="#service">[% l('Services') %]</a></li>
+            [%- END %]
+            [%- IF can_access("SERVICES") && cluster_enabled %]
+            <li><a href="#service/cluster_status">[% l('Cluster state') %]</a></li>
+            [%- END %]
+            [%- IF can_access("SERVICES") %]
+          </ul>
+          <ul class="nav nav-header">
+            <li>[% l('Queue') %]</li>
+	    <li class="divider-horizontal"></li>
+          </ul>
+          <ul class="nav nav-list">
+            <li><a href="#pfqueue">[% l('Local Queue') %]</a></li>
+            [% IF cluster_enabled %]
+            <li><a href="#pfqueue/cluster">[% l('Cluster Queue') %]</a></li>
+            [%- END %]
+            [%- END %]
+            <!-- <li class="nav-header">[% l('System') %]</li>
+            <li><a href="#">[% l('Server') %]</a></li>
+            <li><a href="#">[% l('Logs') %]</a></li> -->
+          </ul>
+       	</div><!--/.sidenav-section -->
       </div><!--/span-->
     </div>
     <div class="row-fluid">
