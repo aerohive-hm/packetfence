@@ -38,6 +38,7 @@ URL: https://www.aerohive.com/
 BuildRoot: %{_tmppath}/%{real_name}-%{version}-%{rev}-root
 # disables the creation of the debug package for our setuid C wrapper
 %define debug_package %{nil}
+%define _unpackaged_files_terminate_build 0
 
 Packager: Kenshin Sakura <ksakura@aerohive.com>
 Vendor: Aerohive Networks, Inc.  https://www.aerohive.com/
@@ -552,8 +553,6 @@ rm addons/pfarp_remote/initrd/pfarp
 rmdir addons/pfarp_remote/initrd
 rmdir addons/pfarp_remote/conf
 rmdir addons/pfarp_remote
-cp -r ChangeLog $RPM_BUILD_ROOT/usr/local/pf/
-cp -r COPYING $RPM_BUILD_ROOT/usr/local/pf/
 cp -r db $RPM_BUILD_ROOT/usr/local/pf/
 cp -r docs $RPM_BUILD_ROOT/usr/local/pf/
 rm -rf $RPM_BUILD_ROOT/usr/local/pf/docs/archives
