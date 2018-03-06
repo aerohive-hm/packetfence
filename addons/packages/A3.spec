@@ -870,8 +870,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdhcp
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdns
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfstats
-%doc                    /usr/local/pf/ChangeLog
-                        /usr/local/pf/conf/*.example
+%doc                    /usr/local/pf/conf/*.example
 %config(noreplace)      /usr/local/pf/conf/adminroles.conf
 %config(noreplace)      /usr/local/pf/conf/allowed_device_oui.txt
                         /usr/local/pf/conf/allowed_device_oui.txt.example
@@ -1108,7 +1107,6 @@ fi
                         /usr/local/pf/conf/report.conf.example
 %config(noreplace)      /usr/local/pf/conf/traffic_shaping.conf
                         /usr/local/pf/conf/traffic_shaping.conf.example
-%doc                    /usr/local/pf/COPYING
 %dir                    /usr/local/pf/db
                         /usr/local/pf/db/*
 %dir                    /usr/local/pf/docs
