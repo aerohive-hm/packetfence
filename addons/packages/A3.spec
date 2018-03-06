@@ -541,7 +541,7 @@ cp addons/*.sh $RPM_BUILD_ROOT/usr/local/pf/addons/
 %{__install} -D packetfence.journald $RPM_BUILD_ROOT/usr/lib/systemd/journald.conf.d/01-packetfence.conf
 cp -r sbin $RPM_BUILD_ROOT/usr/local/pf/
 cp -r conf $RPM_BUILD_ROOT/usr/local/pf/
-mv -f $RPM_BUILD_ROOT/usr/local/pf/a3-release $RPM_BUILD_ROOT/usr/local/pf/pf-release
+mv -f $RPM_BUILD_ROOT/usr/local/pf/conf/a3-release $RPM_BUILD_ROOT/usr/local/pf/conf/pf-release
 cp -r raddb $RPM_BUILD_ROOT/usr/local/pf/
 mv packetfence.sudoers $RPM_BUILD_ROOT/etc/sudoers.d/packetfence
 mv packetfence.cron.d $RPM_BUILD_ROOT/etc/cron.d/packetfence
