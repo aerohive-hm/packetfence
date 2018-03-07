@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="21px" viewBox="0 0 14 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Fill 1450</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="PacketFence---Configuration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-1054.000000, -14.000000)">
+        <g id="Fill-1450" transform="translate(1054.000000, 14.000000)" fill="#FFFFFF">
+            <path d="M7,13 C4.243,13 2,10.757 2,8 C2,6.405 2.766,4.935 4,4.007 L4,7 C4,8.654 5.346,10 7,10 C8.654,10 10,8.654 10,7 L10,4.007 C11.234,4.935 12,6.405 12,8 C12,10.757 9.757,13 7,13 M14,8 C14,5.044 12.125,2.394 9.333,1.407 L8,0.935 L8,7 C8,7.552 7.551,8 7,8 C6.449,8 6,7.552 6,7 L6,0.935 L4.667,1.407 C1.875,2.394 0,5.044 0,8 C0,10.785 1.639,13.188 4,14.315 L4,21 L6,21 L6,15 L8,15 L8,21 L10,21 L10,14.315 C12.361,13.188 14,10.785 14,8"></path>
+        </g>
+    </g>
+</svg>

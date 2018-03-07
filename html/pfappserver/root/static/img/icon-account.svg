@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 3</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="PacketFence---Configuration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-1101.000000, -17.000000)">
+        <g id="Group-3" transform="translate(1101.000000, 17.000000)" fill="#FFFFFF">
+            <g id="Fill-2538-+-Fill-2539">
+                <path d="M9,9 C11.48175,9 13.5,6.98175 13.5,4.5 C13.5,2.01825 11.48175,0 9,0 C6.51825,0 4.5,2.01825 4.5,4.5 C4.5,6.98175 6.51825,9 9,9" id="Fill-2538"></path>
+                <path d="M9,10.125 C3.70125,10.125 0,12.900375 0,16.875 L0,18 L18,18 L18,16.875 C18,12.900375 14.29875,10.125 9,10.125" id="Fill-2539"></path>
+            </g>
+        </g>
+    </g>
+</svg>
