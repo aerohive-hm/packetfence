@@ -14,13 +14,10 @@
         </table>
       </div>
       <div class="form-actions">
-        <a class="btn btn-block" href="https://packetfence.org/support/index.html#/commercial"
+        <a class="btn btn-block" href="https://www.aerohive.com/support/"
            target="_blank">[% l('Support Inquiry') %]</a>
       </div>
     </div>
-        <p class="text-right">
-          <a href="https://inverse.ca/"><img alt="Inverse" src="[% c.uri_for('/static/img/inverse.small.png') %]"></a>
-        </p>
   </span>
   <span class="span9">
     
