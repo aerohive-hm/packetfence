@@ -103,7 +103,20 @@ type PfConfWebservices struct {
 	User           string `json:"user"`
 	Port           string `json:"port"`
 	AAAPort        string `json:"aaa_port"`
+	UnifiedAPIPort string `json:"unifiedapi_port"`
 	Host           string `json:"host"`
+}
+
+type PfConfDatabase struct {
+	StructConfig
+	PfconfigMethod string `val:"hash_element"`
+	PfconfigNS     string `val:"config::Pf"`
+	PfconfigHashNS string `val:"database"`
+	User           string `json:"user"`
+	Pass           string `json:"pass"`
+	Host           string `json:"host"`
+	Port           string `json:"port"`
+	Db             string `json:"db"`
 }
 
 type ManagementNetwork struct {
@@ -119,6 +132,19 @@ type ManagementNetwork struct {
 func (mn *ManagementNetwork) GetNetIP(ctx context.Context) (net.IP, *net.IPNet, error) {
 	ip, ipnet, err := net.ParseCIDR(mn.Ip + "/" + mn.Mask)
 	return ip, ipnet, err
+}
+
+type AdminRole struct {
+	Description string          `json:"description"`
+	Actions     map[string]bool `json:"ACTIONS"`
+}
+
+type AdminRoles struct {
+	StructConfig
+	PfconfigMethod          string `val:"element"`
+	PfconfigNS              string `val:"config::AdminRoles"`
+	PfconfigDecodeInElement string `val:"yes"`
+	Element                 map[string]AdminRole
 }
 
 // Used when fetching the sections from a pfconfig HASH namespace
@@ -157,8 +183,9 @@ type configStruct struct {
 		Fencing       PfConfFencing
 		CaptivePortal PfConfCaptivePortal
 		Webservices   PfConfWebservices
-		Database      PfconfigDatabase
+		Database      PfConfDatabase
 	}
+	AdminRoles AdminRoles
 }
 
 var Config configStruct
@@ -242,18 +269,6 @@ type RolesConf struct {
 	MaxNodesPerPid string `json:"max_nodes_per_pid"`
 }
 
-type PfconfigDatabase struct {
-	StructConfig
-	PfconfigMethod string `val:"hash_element"`
-	PfconfigNS     string `val:"config::Pf"`
-	PfconfigHashNS string `val:"database"`
-	DBUser         string `json:"user"`
-	DBPassword     string `json:"pass"`
-	DBHost         string `json:"host"`
-	DBName         string `json:"db"`
-	DBPort         string `json:"port"`
-}
-
 type NetInterface struct {
 	StructConfig
 	PfconfigMethod string `val:"hash_element"`
@@ -281,4 +296,64 @@ type PassthroughsIsolationConf struct {
 	PfconfigArray  string `val:"_"`
 	Wildcard       map[string][]string
 	Normal         map[string][]string
+}
+
+type AuthenticationSourceEduroam struct {
+	StructConfig
+	PfconfigMethod string `val:"hash_element"`
+	PfconfigNS     string `val:"resource::authentication_sources_eduroam"`
+	PfconfigArray  string `val:"_"`
+	PfconfigHashNS string `val:"-"`
+	Description    string `json:"description"`
+	RadiusSecret   string `json:"radius_secret"`
+	Server1Address string `json:"server1_address"`
+	Server2Address string `json:"server2_address"`
+	Monitor        string `json:"monitor"`
+	Type           string `json:"type"`
+}
+
+type AuthenticationSourceRadius struct {
+	StructConfig
+	PfconfigMethod string `val:"hash_element"`
+	PfconfigNS     string `val:"resource::authentication_sources_radius"`
+	PfconfigArray  string `val:"_"`
+	PfconfigHashNS string `val:"-"`
+	Description    string `json:"description"`
+	Secret         string `json:"secret"`
+	Port           string `json:"port"`
+	Host           string `json:"host"`
+	Timeout        string `json:"timeout"`
+	Monitor        string `json:"monitor"`
+	Type           string `json:"type"`
+}
+
+type AuthenticationSourceLdap struct {
+	StructConfig
+	PfconfigMethod    string `val:"hash_element"`
+	PfconfigNS        string `val:"resource::authentication_sources_ldap"`
+	PfconfigArray     string `val:"_"`
+	PfconfigHashNS    string `val:"-"`
+	Description       string `json:"description"`
+	Password          string `json:"password"`
+	Port              string `json:"port"`
+	Host              string `json:"host"`
+	ReadTimeout       string `json:"read_timeout"`
+	WriteTimeout      string `json:"write_timeout"`
+	BaseDN            string `json:"basedn"`
+	Scope             string `json:"scope"`
+	EmailAttribute    string `json:"email_attribute"`
+	UserNameAttribute string `json:"usernameattribute"`
+	BindDN            string `json:"binddn"`
+	Encryption        string `json:"encryption"`
+	Monitor           string `json:"monitor"`
+	Type              string `json:"type"`
+}
+
+type PfStats struct {
+	StructConfig
+	PfconfigMethod string `val:"hash_element"`
+	PfconfigHashNS string `val:"-"`
+	PfconfigNS     string `val:"config::Stats"`
+	File           string `json:"file"`
+	Match          string `json:"match"`
 }

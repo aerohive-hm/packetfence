@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"database/sql"
 	"encoding/binary"
 
@@ -137,36 +136,23 @@ func main() {
 
 	// Api
 	router := mux.NewRouter()
-	router.HandleFunc("/api/v1/pfdhcp/mac2ip/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", handleMac2Ip).Methods("GET")
-	router.HandleFunc("/api/v1/pfdhcp/ip2mac/{ip:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", handleIP2Mac).Methods("GET")
-	router.HandleFunc("/api/v1/pfdhcp/stats/{int:.*}", handleStats).Methods("GET")
-	router.HandleFunc("/api/v1/pfdhcp/debug/{int:.*}/{role:(?:[^/]*)}", handleDebug).Methods("GET")
-	router.HandleFunc("/api/v1/pfdhcp/initialease/{int:.*}", handleInitiaLease).Methods("GET")
-	router.HandleFunc("/api/v1/pfdhcp/options/add/network/{network:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}/{options:.*}", handleOverrideNetworkOptions).Methods("POST")
-	router.HandleFunc("/api/v1/pfdhcp/options/add/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}/{options:.*}", handleOverrideOptions).Methods("POST")
-	router.HandleFunc("/api/v1/pfdhcp/options/del/network/{network:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", handleRemoveNetworkOptions).Methods("GET")
-	router.HandleFunc("/api/v1/pfdhcp/options/del/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", handleRemoveOptions).Methods("GET")
-	router.HandleFunc("/api/v1/pfdhcp/releaseip/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", handleReleaseIP).Methods("POST")
+	router.HandleFunc("/api/v1/dhcp/mac2ip/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", handleMac2Ip).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/ip2mac/{ip:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", handleIP2Mac).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/stats/{int:.*}", handleStats).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/debug/{int:.*}/{role:(?:[^/]*)}", handleDebug).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/initialease/{int:.*}", handleInitiaLease).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/options/add/network/{network:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}/{options:.*}", handleOverrideNetworkOptions).Methods("POST")
+	router.HandleFunc("/api/v1/dhcp/options/add/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}/{options:.*}", handleOverrideOptions).Methods("POST")
+	router.HandleFunc("/api/v1/dhcp/options/del/network/{network:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", handleRemoveNetworkOptions).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/options/del/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", handleRemoveOptions).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/releaseip/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", handleReleaseIP).Methods("POST")
 
 	http.Handle("/", httpauth.SimpleBasicAuth(webservices.User, webservices.Pass)(router))
 
-	cfg := &tls.Config{
-		MinVersion:               tls.VersionTLS12,
-		CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
-		PreferServerCipherSuites: true,
-		CipherSuites: []uint16{
-			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-			tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_RSA_WITH_AES_256_CBC_SHA,
-		},
-	}
 	srv := &http.Server{
-		Addr:         ":22222",
-		IdleTimeout:  5 * time.Second,
-		Handler:      router,
-		TLSConfig:    cfg,
-		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
+		Addr:        ":22222",
+		IdleTimeout: 5 * time.Second,
+		Handler:     router,
 	}
 
 	// Systemd
@@ -178,12 +164,9 @@ func main() {
 			return
 		}
 		for {
-			req, err := http.NewRequest("GET", "https://127.0.0.1:22222", nil)
+			req, err := http.NewRequest("GET", "http://127.0.0.1:22222", nil)
 			req.SetBasicAuth(webservices.User, webservices.Pass)
-			tr := &http.Transport{
-				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-			}
-			cli := &http.Client{Transport: tr}
+			cli := &http.Client{}
 			_, err = cli.Do(req)
 			if err == nil {
 				daemon.SdNotify(false, "WATCHDOG=1")
@@ -191,7 +174,7 @@ func main() {
 			time.Sleep(interval / 3)
 		}
 	}()
-	srv.ListenAndServeTLS("/usr/local/pf/conf/ssl/server.crt", "/usr/local/pf/conf/ssl/server.key")
+	srv.ListenAndServe()
 }
 
 // Broadcast Listener

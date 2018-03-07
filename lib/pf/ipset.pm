@@ -34,15 +34,18 @@ use pf::config qw(
     $SELFREG_MODE_GOOGLE
     $SELFREG_MODE_FACEBOOK
     $INLINE
+    $management_network
+    @internal_nets
+    is_type_inline
 );
 use pf::node qw(nodes_registered_not_violators node_view node_deregister $STATUS_REGISTERED);
 use pf::nodecategory;
 use pf::util;
-use pf::violation qw(violation_view_open_uniq violation_count);
 use pf::ip4log;
 use pf::authentication;
 use pf::constants::parking qw($PARKING_IPSET_NAME);
 use pf::constants::node qw($STATUS_UNREGISTERED);
+use pf::api::unifiedapiclient;
 
 Readonly my $FW_TABLE_FILTER => 'filter';
 Readonly my $FW_TABLE_MANGLE => 'mangle';
@@ -55,11 +58,7 @@ Readonly my $FW_FILTER_FORWARD_INT_INLINE => 'forward-internal-inline-if';
 Readonly my $FW_PREROUTING_INT_INLINE => 'prerouting-int-inline-if';
 Readonly my $FW_POSTROUTING_INT_INLINE => 'postrouting-int-inline-if';
 
-my $ipset_client = pf::api::jsonrestclient->new(
-                proto   => "https",
-                host    => "localhost",
-                port    => $pf::constants::api::GO_IPSET_PORT,
-            );
+tie our %NetworkConfig, 'pfconfig::cached_hash', "resource::network_config";
 
 =head1 SUBROUTINES
 
@@ -184,6 +183,7 @@ sub generate_mangle_rules {
 
     # mark all open violations
     # TODO performance: only those whose's last connection_type is inline?
+    require pf::violation;
     my @macarray = pf::violation::violation_view_open_uniq();
     if ( $macarray[0] ) {
         foreach my $row (@macarray) {
@@ -240,21 +240,47 @@ sub generate_mangle_postrouting_rules {
 
     my $rules = '';
 
-    my @roles = pf::nodecategory::nodecategory_view_all;
+    my $indice = 100;
+    my $index = {};
+    my $indice2 = 1;
 
-    foreach my $network ( keys %ConfigNetworks ) {
-        next if ( !pf::config::is_network_type_inline($network) );
-        foreach my $role ( @roles ) {
-            if ($ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE_L3$/i) {
-                $rules .=  "-A $FW_POSTROUTING_INT_INLINE -m set --match-set PF-iL3_ID$role->{'category_id'}_$network src -j CLASSIFY --set-class 1:$role->{'category_id'}\n";
-                $rules .=  "-A $FW_POSTROUTING_INT_INLINE -m set --match-set PF-iL3_ID$role->{'category_id'}_$network dst -j CLASSIFY --set-class 1:$role->{'category_id'}\n";
-            } else {
-                $rules .=  "-A $FW_POSTROUTING_INT_INLINE -m set --match-set PF-iL2_ID$role->{'category_id'}_$network src -j CLASSIFY --set-class 1:$role->{'category_id'}\n";
-                $rules .=  "-A $FW_POSTROUTING_INT_INLINE -m set --match-set PF-iL2_ID$role->{'category_id'}_$network dst -j CLASSIFY --set-class 1:$role->{'category_id'}\n";
-            }
+    my @ints = split(',', $self->get_network_snat_interface());
+    push @ints,  $management_network->tag("int");
+    foreach my $int (@ints) {
+        $index->{$int} = $indice;
+        $indice --;
+    }
+
+    foreach my $interface (@internal_nets) {
+        my $dev = $interface->tag("int");
+        my $enforcement_type = $Config{"interface $dev"}{'enforcement'};
+        if (is_type_inline($enforcement_type)) {
+            $index->{$dev} = $indice2;
+            $indice2 ++;
         }
     }
 
+    my @roles = pf::nodecategory::nodecategory_view_all;
+
+    foreach my $network ( keys %NetworkConfig ) {
+
+        next if ( !pf::config::is_network_type_inline($network) );
+        my $dev = $NetworkConfig{$network}{'interface'}{'int'};
+
+        my $gateway = (defined $NetworkConfig{$network}{'next_hop'} ? $NetworkConfig{$network}{'next_hop'} : $NetworkConfig{$network}{'gateway'});
+
+        my $interface = find_outgoing_interface($gateway);
+
+        foreach my $role ( @roles ) {
+            if ($ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE_L3$/i) {
+                $rules .=  "-A $FW_POSTROUTING_INT_INLINE -m set --match-set PF-iL3_ID$role->{'category_id'}_$network src -j CLASSIFY --set-class $index->{$interface}:$role->{'category_id'}\n";
+                $rules .=  "-A $FW_POSTROUTING_INT_INLINE -m set --match-set PF-iL3_ID$role->{'category_id'}_$network dst -j CLASSIFY --set-class $index->{$dev}:$role->{'category_id'}\n";
+            } else {
+                $rules .=  "-A $FW_POSTROUTING_INT_INLINE -m set --match-set PF-iL2_ID$role->{'category_id'}_$network src -j CLASSIFY --set-class $index->{$interface}:$role->{'category_id'}\n";
+                $rules .=  "-A $FW_POSTROUTING_INT_INLINE -m set --match-set PF-iL2_ID$role->{'category_id'}_$network dst -j CLASSIFY --set-class $index->{$dev}:$role->{'category_id'}\n";
+            }
+        }
+    }
     return $rules;
 }
 
@@ -276,9 +302,9 @@ sub iptables_mark_node {
             if ($net_addr->contains($ip)) {
 
                 if ($ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE_L3$/i) {
-                    $ipset_client->call("/api/v1/ipset/mark_layer3/".$network."/".$mark_type_to_str{$mark}."/".$role_id."/".$iplog."/0",{});
+                    call_ipsetd("/ipset/mark_layer3/".$network."/".$mark_type_to_str{$mark}."/".$role_id."/".$iplog."/0",{});
                 } else {
-                    $ipset_client->call("/api/v1/ipset/mark_layer2/".$network."/".$mark_type_to_str{$mark}."/".$role_id."/".$iplog."/".$mac."/0",{});
+                    call_ipsetd("/ipset/mark_layer2/".$network."/".$mark_type_to_str{$mark}."/".$role_id."/".$iplog."/".$mac."/0",{});
                 }
             }
         } else {
@@ -292,12 +318,27 @@ sub iptables_mark_node {
 sub iptables_unmark_node {
     my ( $self, $mac, $mark ) = @_;
     my $logger = get_logger();
-
-    $ipset_client->call("/api/v1/ipset/unmark_mac/".$mac."/0",{});
-
+    call_ipsetd("/ipset/unmark_mac/".$mac."/0",{});
     return (1);
 }
 
+=item call_ipsetd
+
+call_ipsetd
+
+=cut
+
+sub call_ipsetd {
+    my ($path, $data) = @_;
+    my $response;
+    eval {
+        $response = pf::api::unifiedapiclient->default_client->call("POST", "/api/v1/$path", $data);
+    };
+    if ($@) {
+        get_logger()->error("Error updating ipset $path : $@");;
+    }
+    return $response;
+}
 
 =item get_mangle_mark_for_mac
 
@@ -309,6 +350,7 @@ sub get_mangle_mark_for_mac {
     my ( $self, $mac ) = @_;
     return 4;
 }
+
 =item update_ipset
 
 Update session when the ip address change
@@ -335,14 +377,14 @@ sub update_node {
 
             #Delete from ipset session if the ip change
             if ($net_addr->contains($old_ip)) {
-                 $ipset_client->call("/api/v1/ipset/unmark_ip/".$oldip."/0",{});
+                 call_ipsetd("/ipset/unmark_ip/".$oldip."/0",{});
             }
             #Add in ipset session if the ip change
             if ($net_addr->contains($src_ip)) {
                  if ($ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE_L3$/i) {
-                    $ipset_client->call("/api/v1/ipset/mark_ip_layer3/".$network."/".$id."/".$src_ip."/0",{});
+                    call_ipsetd("/ipset/mark_ip_layer3/".$network."/".$id."/".$src_ip."/0",{});
                 } else {
-                    $ipset_client->call("/api/v1/ipset/mark_ip_layer2/".$network."/".$id."/".$src_ip."/0",{});
+                    call_ipsetd("/ipset/mark_ip_layer2/".$network."/".$id."/".$src_ip."/0",{});
                 }
             }
 

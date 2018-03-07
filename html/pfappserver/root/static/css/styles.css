@@ -1,3 +1,4 @@
+
 @charset "UTF-8";
 @import url('https://fonts.googleapis.com/css?family=Quicksand:300,400');
 article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{
@@ -439,9 +440,9 @@ ol ol,ol ul,ul ol,ul ul{
 	li{
 		line-height:20px}
 	li.user_info{
-		padding-top: 12px; 
-		text-transform: lowercase !important; 
-		color: #F4F6F9; 
+		padding-top: 12px;
+		text-transform: lowercase !important;
+		color: #F4F6F9;
 		padding-left: 10px;
 		}
 		ol.unstyled,ul.unstyled{

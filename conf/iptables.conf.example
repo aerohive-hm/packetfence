@@ -23,19 +23,14 @@
 -A input-management-if --protocol tcp --match tcp --dport %%webservices_port%% --jump ACCEPT
 # AAA 
 -A input-management-if --protocol tcp --match tcp --dport %%aaa_port%% --jump ACCEPT
-# PacketFence Status
--A input-management-if --protocol tcp --match tcp --dport %%status_port%% --jump ACCEPT
 # httpd.portal modstatus
 -A input-management-if --protocol tcp --match tcp --dport %%httpd_portal_modstatus%% --jump ACCEPT
 # httpd.collector
 -A input-management-if --protocol tcp --match tcp --dport %%httpd_collector_port%% --jump ACCEPT
 # haproxy stats (uncomment if activating the haproxy dashboard)
 #-A input-management-if --protocol tcp --match tcp --dport 1025 --jump ACCEPT
-# GRAPHITE-WEB
--A input-management-if --protocol tcp --match tcp --dport 9000 --jump ACCEPT
-# CARBON_CACHE
--A input-management-if --protocol tcp --match tcp --dport 2004 --jump ACCEPT
--A input-management-if --protocol tcp --match tcp --dport 7002 --jump ACCEPT
+# Netdata
+-A input-management-if --protocol tcp --match tcp --dport 19999 --jump ACCEPT
 
 # RADIUS
 -A input-management-if --protocol tcp --match tcp --dport 1812 --jump ACCEPT
@@ -59,6 +54,10 @@
 # PacketFence-PKI
 # -A input-management-if --protocol tcp --match tcp --dport 9393 --jump ACCEPT
 # -A input-management-if --protocol tcp --match tcp --dport 9292 --jump ACCEPT
+
+# Fingerbank collector (replication + API)
+-A input-management-if --protocol udp --match udp --dport 1192 --jump ACCEPT
+-A input-management-if --protocol tcp --match tcp --dport 4723 --jump ACCEPT
 
 # GO IPSET API
 -A input-management-if --protocol tcp --match tcp --dport 22223 --jump ACCEPT

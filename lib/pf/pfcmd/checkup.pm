@@ -70,7 +70,6 @@ use pf::factory::condition::profile;
 use pf::condition_parser qw(parse_condition_string);
 
 use lib $conf_dir;
-use lib $install_dir."/html/captive-portal/lib";
 
 BEGIN {
     use Exporter ();
@@ -174,7 +173,7 @@ sub service_exists {
 
     foreach my $service (@services) {
         my $exe = ( $Config{'services'}{"${service}_binary"} || "$install_dir/sbin/$service" );
-        if ($service =~ /^(pfipset|pfsso|httpd\.dispatcher)$/) {
+        if ($service =~ /^(pfipset|pfsso|httpd\.dispatcher|api-frontend)$/) {
             $exe = "$bin_dir/pfhttpd";
         } elsif ($service =~ /httpd\.(.*)/) {
             $exe = ( $Config{'services'}{"httpd_binary"} || "$install_dir/sbin/$service" );
