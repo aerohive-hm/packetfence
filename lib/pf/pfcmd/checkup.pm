@@ -127,7 +127,7 @@ sub sanity_check {
     # SELinux test only for RedHat based distros
     if ( -e "/etc/redhat-release" && `getenforce` =~ /^Enforcing/ ) {
         add_problem( $WARN,
-            'SELinux is in enforcing mode. This is currently not supported in PacketFence'
+            'SELinux is in enforcing mode. This is currently not supported in A3'
         );
     }
 
@@ -261,7 +261,7 @@ sub interfaces {
 
             if ($type eq 'managed') {
                 add_problem( $WARN,
-                    "Interface type 'managed' is deprecated and will be removed in future versions of PacketFence. " .
+                    "Interface type 'managed' is deprecated and will be removed in future versions of A3. " .
                     "You should use the 'management' keyword instead. " .
                     "Seen on interface $interface."
                 );
@@ -305,7 +305,7 @@ Validation to make sure Fingerbank outside lib symlink is present
 
 sub fingerbank {
     if ( !-l '/usr/local/pf/lib/fingerbank' ) {
-        add_problem( $WARN, "Fingerbank symlink does not exists" );
+        add_problem( $WARN, "Fingerbank symlink does not exist" );
     }
 }
 
@@ -720,7 +720,7 @@ sub apache {
         add_problem(
             $WARN,
             "Unable to find out how much system memory is available. "
-            . "We'll assume you have 2 Gigabyte. "
+            . "We'll assume you have 2 Gigabytes. "
             . "Please report an issue."
         );
     }
@@ -1079,7 +1079,7 @@ sub db_check_version {
         unless(pf::version::version_check_db()) {
             my $version = pf::version::version_get_current;
             my $db_version = pf::version::version_get_last_db_version || 'unknown';
-            add_problem ( $FATAL, "The PacketFence database schema version '$db_version' does not match the current installed version '$version'\nPlease refer to the UPGRADE guide on how to complete an upgrade of PacketFence\n" );
+            add_problem ( $FATAL, "The A3 database schema version '$db_version' does not match the current installed version '$version'\nPlease refer to the UPGRADE guide on how to complete an upgrade of A3\n" );
         }
     };
     if($@) {
