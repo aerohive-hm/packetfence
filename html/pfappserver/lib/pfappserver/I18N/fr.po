@@ -1,7 +1,7 @@
-# English translations for PacketFence package.
+# French translations for A3 package.
 # Copyright (C) 2005-2018 Inverse inc.
-# This file is distributed under the same license as the PacketFence package.
-# 
+# This file is distributed under the same license as the A3 package.
+#
 # Translators:
 # Antoine Amacher <aamacher@inverse.ca>, 2015-2017
 # oeufdure <fdurand@inverse.ca>, 2014-2017
@@ -132,9 +132,9 @@ msgstr "Un identifiant de profile peux seulement contenir des caractères alphan
 
 # html/pfappserver/root/configuration/define_policy.tt
 msgid ""
-"A role will allow PacketFence to grant different network access to endpoints"
+"A role will allow A3 to grant different network access to endpoints"
 " connecting to your network. For example, employee vs. guest."
-msgstr "Un rôle permettra à PacketFence d’accorder un accès réseau aux différent appareils connectés à votre réseau. Par exemple, employé ou bien invité."
+msgstr "Un rôle permettra à A3 d’accorder un accès réseau aux différent appareils connectés à votre réseau. Par exemple, employé ou bien invité."
 
 # html/pfappserver/root/admin/reports.tt
 msgid "ACCOUNTING"
@@ -296,9 +296,9 @@ msgstr "Paramètre du jeton d’accès"
 
 # html/pfappserver/root/configuration/portal_config.tt
 msgid ""
-"Access control decisions in PacketFence can be modified through advanced "
+"Access control decisions in A3 can be modified through advanced "
 "parameters. Among them, there are:"
-msgstr "Les décisions de contrôle d’accès dans PacketFence peuvent être modifiées par des paramètres avancés. Parmi ceux-ci, il y a:"
+msgstr "Les décisions de contrôle d’accès dans A3 peuvent être modifiées par des paramètres avancés. Parmi ceux-ci, il y a:"
 
 # html/pfappserver/root/configurator/admin.tt
 msgid "Access to the administration interface"
@@ -326,11 +326,11 @@ msgstr "Action"
 
 # conf/documentation.conf (snmp_traps.trap_limit_action)
 msgid ""
-"Action that PacketFence will take if the snmp_traps.trap_limit_threshold is "
+"Action that A3 will take if the snmp_traps.trap_limit_threshold is "
 "reached. Defaults to none. email will send an email every hour if the "
 "limit's still reached. shut will shut the port on the switch and will also "
 "send an email even if email is not specified."
-msgstr "Action que PacketFence prendra si le seuil snmp_traps.trap_limit_est atteint. Par défaut, aucun. Email enverra un courrier électronique toutes les heures si la limite est toujours atteinte. Shut va fermer le port sur le commutateur et enverra un courrier électronique même si Email n’est pas spécifié."
+msgstr "Action que A3 prendra si le seuil snmp_traps.trap_limit_est atteint. Par défaut, aucun. Email enverra un courrier électronique toutes les heures si la limite est toujours atteinte. Shut va fermer le port sur le commutateur et enverra un courrier électronique même si Email n’est pas spécifié."
 
 # html/pfappserver/lib/pfappserver/Form/Config/AdminRoles.pm
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
@@ -361,9 +361,9 @@ msgstr "Activer la préinscription"
 # html/pfappserver/root/configurator/enforcement.tt
 msgid ""
 "Activate this mechanism if you have unmanageable equipment such as entry-"
-"level consumer switches or access points. PacketFence becomes the gateway of"
+"level consumer switches or access points. A3 becomes the gateway of"
 " that inline network, and will NAT the traffic to the Internet."
-msgstr "Activer ce fonctionnement si vous avez des équipements qui ne sont pas gérables tels que commutateurs ou points d’accès sans fil. PacketFence devient le routeur de ce réseau inline et va translater tout le trafic vers Internet."
+msgstr "Activer ce fonctionnement si vous avez des équipements qui ne sont pas gérables tels que commutateurs ou points d’accès sans fil. A3 devient le routeur de ce réseau inline et va translater tout le trafic vers Internet."
 
 # html/pfappserver/root/configurator/networks.tt
 msgid "Activate your network interfaces and create VLANs"
@@ -584,7 +584,7 @@ msgstr "Adresse"
 
 # conf/documentation.conf (fencing.range)
 msgid ""
-"Address ranges/CIDR blocks that PacketFence will monitor/detect/trap on.  "
+"Address ranges/CIDR blocks that A3 will monitor/detect/trap on.  "
 "Gateway, network, and broadcast addresses are ignored. Comma-delimited "
 "entries should be of the form "
 "<ul><li>a.b.c.0/24</li><li>a.b.c.0-255</li><li>a.b.c.0-a.b.c.255</li><li>a.b.c.d</li></ul>"
@@ -647,9 +647,9 @@ msgstr "Configuration d’accès avancée"
 # html/pfappserver/root/configurator/admin.tt
 msgid ""
 "After completing all the steps of the configuration wizard, you will be "
-"redirected to the administrative interface of PacketFence. To access it, you"
+"redirected to the administrative interface of A3. To access it, you"
 " will need to enter the credentials you defined on this page."
-msgstr "Après avoir complété toutes les étapes de l’assistant de configuration, vous allez être redirigé vers l’interface d’administration de PacketFence. Pour y avoir accès vous devez utiliser les codes d’accès que vous avez définis précédemment."
+msgstr "Après avoir complété toutes les étapes de l’assistant de configuration, vous allez être redirigé vers l’interface d’administration de A3. Pour y avoir accès vous devez utiliser les codes d’accès que vous avez définis précédemment."
 
 # html/pfappserver/root/config/domain/index.tt
 msgid ""
@@ -693,8 +693,8 @@ msgid "Allow on registration"
 msgstr "Autoriser sur le réseau d’enregistrement"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
-msgid "Allow this switch to use PacketFence as a radius server for CLI access"
-msgstr "Permettre à ce commutateur d’utiliser PacketFence comme serveur RADIUS pour l’accès en console."
+msgid "Allow this switch to use A3 as a RADIUS server for CLI access"
+msgstr "Permettre à ce commutateur d’utiliser A3 comme serveur RADIUS pour l’accès en console."
 
 # html/pfappserver/lib/pfappserver/Form/Config/AdminRoles.pm
 msgid "Allowed actions"
@@ -1793,10 +1793,10 @@ msgstr "Adresse IP du contrôleur"
 msgid ""
 "Controls whether or not the trap limit feature is enabled. Trap limiting is "
 "a way to limit the damage done by malicious users or misbehaving switch that"
-" sends too many traps to PacketFence causing it to be overloaded. Trap "
+" sends too many traps to A3 causing it to be overloaded. Trap "
 "limiting is controlled by the trap limit threshold and trap limit action "
 "parameters. Default is enabled."
-msgstr "Contrôle si oui ou non la fonction de limite de trap snmp est activée. La limite de trap snmp est un moyen de limiter les dommages causés par des utilisateurs malveillants ou commutateur qui envoi trop de trap snmp à PacketFence l’amenant à être surchargé. La limite de trap snmp est contrôlée par les paramètres de la limite de seuil. Par défaut est activé."
+msgstr "Contrôle si oui ou non la fonction de limite de trap snmp est activée. La limite de trap snmp est un moyen de limiter les dommages causés par des utilisateurs malveillants ou commutateur qui envoi trop de trap snmp à A3 l’amenant à être surchargé. La limite de trap snmp est contrôlée par les paramètres de la limite de seuil. Par défaut est activé."
 
 # html/pfappserver/root/admin/wrapper.tt
 msgid "Copied"
@@ -1848,8 +1848,8 @@ msgid "Create Users"
 msgstr "Créer des Utilisateurs"
 
 # html/pfappserver/root/configurator/database.tt
-msgid "Create a PacketFence account"
-msgstr "Créer un compte PacketFence"
+msgid "Create an A3 account"
+msgstr "Créer un compte A3"
 
 # html/pfappserver/root/configurator/database.tt
 msgid "Create a user in your MySQL server"
@@ -2169,9 +2169,9 @@ msgid ""
 "Defines how to format the username that is sent to your firewall. $username "
 "represents the username and $realm represents the realm of your user if "
 "applicable. $pf_username represents the unstripped username as it is stored "
-"in the PacketFence database. If left empty, it will use the username as "
-"stored in PacketFence (value of $pf_username)."
-msgstr "Définit comment formater le nom d'utilisateur qui est envoyé à votre pare-feu. $username représente le nom d'utilisateur et $realm représente le domaine de votre utilisateur. $pf_username représente le nom d'utilisateur non protégé puisqu'il est stocké dans la base de données de PacketFence. Si la valeur est laissée vide, elle utilisera le nom d'utilisateur enregistré dans PacketFence (valeur de $ pf_username)."
+"in the A3 database. If left empty, it will use the username as "
+"stored in A3 (value of $pf_username)."
+msgstr "Définit comment formater le nom d'utilisateur qui est envoyé à votre pare-feu. $username représente le nom d'utilisateur et $realm représente le domaine de votre utilisateur. $pf_username représente le nom d'utilisateur non protégé puisqu'il est stocké dans la base de données de A3. Si la valeur est laissée vide, elle utilisera le nom d'utilisateur enregistré dans A3 (valeur de $ pf_username)."
 
 # conf/documentation.conf (active_active.conflict_resolution_threshold)
 msgid ""
@@ -2420,27 +2420,27 @@ msgstr "Désenregistrer"
 
 # conf/documentation.conf (interface.enforcement)
 msgid ""
-"Describes the technique PacketFence will use to enforce network access.VLAN "
+"Describes the technique A3 will use to enforce network access.VLAN "
 "is the out-of-band VLAN-based device isolation requiring integration in your"
-" network environment and inline is a DHCP-based mode where PacketFence acts "
+" network environment and inline is a DHCP-based mode where A3 acts "
 "as a filtering gateway."
-msgstr "Définit la manière dont PacketFence va contrôler l’accès au réseau. VLAN est l’isolement du réseau en fonction des équipements qui supportent 802.1q et le mode Inline est basé sur le DHCP ou PacketFence agit comme la passerelle de filtrage."
+msgstr "Définit la manière dont A3 va contrôler l’accès au réseau. VLAN est l’isolement du réseau en fonction des équipements qui supportent 802.1q et le mode Inline est basé sur le DHCP ou A3 agit comme la passerelle de filtrage."
 
 # conf/documentation.conf (interface.type)
 msgid ""
 "Describes type of the named interface.<ul><li><i>internal</i> describes "
-"interfaces where PacketFence will enforce network "
+"interfaces where A3 will enforce network "
 "access.</li><li><i>management</i> (or managed) interfaces have the "
 "administrative GUI running on them, host SNMP trap receiver and RADIUS "
 "server.</li><li><i>monitor</i> is the interface that snort listens "
 "on.</li><li><i>dhcp-listener</i> is an interface where the DHCP traffic is "
 "coming in either via a network SPAN or IP-Helpers configuration.</li><li><i"
-">high-availability</i> is for an interface between two PacketFence servers "
+">high-availability</i> is for an interface between two A3 servers "
 "dedicated to high-availability (drbd, corosync).</li><li><i>portal</i> "
 "interface have the captive-portal running on them without the need of having"
 " any enforcement mechanism.</li><li><i>radius</i> interface have the radius "
 "running (auth, acct, cli)</li></ul>"
-msgstr "Décrit le type de l’interface nommée. <ul> <li>Interne<i> </i> décrit les interfaces où PacketFence donnera l’accès au réseau. </lii> <li> <i> Management </i> les interfaces internes ont l’écoute de l’administration web, hôte pour les traps SNMP et le serveur RADIUS. </li> <li> <i> Moniteur </i> est l’interface de snort qui écoute. </li> <li> <i> dhcp-listener </i> est une interface où le trafic DHCP vient soit via un réseau configuration SPAN ou IP-Helpers. </li> <li> <i>haute disponibilité</i> est une interface entre deux serveurs PacketFence dédiés à la haute disponibilité (drbd, corosync). </li><li><i>portail</i> cette interface a le portail captif en écoute sans la nécessité d’avoir un mécanisme d’enregistrement</li><li><i>radius</i> cette interface écoute pour radius(auth,acct,cli)</li></ ul>"
+msgstr "Décrit le type de l’interface nommée. <ul> <li>Interne<i> </i> décrit les interfaces où A3 donnera l’accès au réseau. </lii> <li> <i> Management </i> les interfaces internes ont l’écoute de l’administration web, hôte pour les traps SNMP et le serveur RADIUS. </li> <li> <i> Moniteur </i> est l’interface de snort qui écoute. </li> <li> <i> dhcp-listener </i> est une interface où le trafic DHCP vient soit via un réseau configuration SPAN ou IP-Helpers. </li> <li> <i>haute disponibilité</i> est une interface entre deux serveurs A3 dédiés à la haute disponibilité (drbd, corosync). </li><li><i>portail</i> cette interface a le portail captif en écoute sans la nécessité d’avoir un mécanisme d’enregistrement</li><li><i>radius</i> cette interface écoute pour radius(auth,acct,cli)</li></ ul>"
 
 # html/pfappserver/lib/pfappserver/Form/Config/BillingTiers.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule.pm
@@ -2467,13 +2467,13 @@ msgstr "Description"
 
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
 msgid ""
-"Destination Role where PacketFence should put the client when a violation of"
+"Destination Role where A3 should put the client when a violation of"
 " this type is open."
-msgstr "Le rôle de destination dans lequel PacketFence mettra l’appareil lorsque une violation de ce type est ouverte."
+msgstr "Le rôle de destination dans lequel A3 mettra l’appareil lorsque une violation de ce type est ouverte."
 
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
 msgid ""
-"Destination URL where PacketFence will forward the device. By default it "
+"Destination URL where A3 will forward the device. By default it "
 "will use the Redirection URL from the connection profile configuration."
 msgstr "URL de destination sur laquelle l’appareil va être redirigé. Par défaut l’URL  de redirection du profil de portail sera utilisée."
 
@@ -2558,17 +2558,17 @@ msgstr "Appareils"
 
 # html/pfappserver/root/configuration/system_config.tt
 msgid ""
-"Different access level can be defined for the PacketFence administrative "
+"Different access level can be defined for the A3 administrative "
 "interface from this module."
-msgstr "Différents niveau d’accès peuvent être définis pour l’interface d’administration de PacketFence depuis ce module."
+msgstr "Différents niveau d’accès peuvent être définis pour l’interface d’administration de A3 depuis ce module."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Mirapay.pm
 msgid "Direct Base url"
 msgstr "URL de base directe"
 
 # conf/documentation.conf (advanced.disable_pf_domain_auth)
-msgid "Disable Active-Directory domain configuration from within PacketFence"
-msgstr "Désactive la configuration de domaine Active Directory dans PacketFence"
+msgid "Disable Active-Directory domain configuration from within A3"
+msgstr "Désactive la configuration de domaine Active Directory dans A3"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
 msgid "Disconnect Port"
@@ -2617,13 +2617,13 @@ msgstr "Domaine"
 
 # conf/documentation.conf (general.domain)
 msgid ""
-"Domain name of PacketFence system. Changing this requires to restart "
+"Domain name of A3 system. Changing this requires to restart "
 "haproxy."
-msgstr "Nom de domaine de PacketFence. Une modification requiert un redémarrage du service haproxy."
+msgstr "Nom de domaine de A3. Une modification requiert un redémarrage du service haproxy."
 
 # html/pfappserver/root/configurator/configuration.tt
-msgid "Domain name of the PacketFence server."
-msgstr "Nom de domain de PacketFence."
+msgid "Domain name of the A3 server."
+msgstr "Nom de domain de A3."
 
 # html/pfappserver/root/admin/auditing_radius_log.tt
 # html/pfappserver/root/config/domain/index.tt
@@ -2678,8 +2678,8 @@ msgid "EAP TTLS"
 msgstr "EAP TTLS"
 
 # html/pfappserver/root/configuration/system_config.tt
-msgid "EAP methods provided by PacketFence can be changed from this module."
-msgstr "Les méthodes EAP gérés par PacketFence peuvent être changés depuis ce module."
+msgid "EAP methods provided by A3 can be changed from this module."
+msgstr "Les méthodes EAP gérés par A3 peuvent être changés depuis ce module."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Provisioning/mobileconfig.pm
 msgid "EAP type"
@@ -2741,22 +2741,22 @@ msgstr "Adresse courriel"
 # conf/documentation.conf (alerting.fromaddr)
 msgid ""
 "Email address from which notifications of rogue DHCP servers, violations "
-"with an action of <i>email</i>, or any other PacketFence-related message are"
+"with an action of <i>email</i>, or any other A3-related message are"
 " sent.Empty means <code>root@&lt;server-domain-name&gt;</code>."
-msgstr "Adresse courriel à partir de laquelle les notifications sont envoyées à savoir la détection des serveurs DHCP non autorisés, les violations avec une action <i>e-mail</i>, ou tout autre message lié à PacketFence sont envoyés. Vide signifie <code>root @ <nom-de-domaine></code>."
+msgstr "Adresse courriel à partir de laquelle les notifications sont envoyées à savoir la détection des serveurs DHCP non autorisés, les violations avec une action <i>e-mail</i>, ou tout autre message lié à A3 sont envoyés. Vide signifie <code>root @ <nom-de-domaine></code>."
 
 # html/pfappserver/root/configurator/configuration.tt
 msgid ""
 "Email address to which notifications for rogue DHCP servers, violations with"
-" an action of <i>email</i>, or any other PacketFence-related messages goes "
+" an action of <i>email</i>, or any other A3-related messages goes "
 "to."
-msgstr "Adresse courriel sur laquelle les notifications sont envoyées à savoir la détection des serveurs DHCP non autorisés, les violations avec une action <i>e-mail</i>, ou tout autre message lié à PacketFence."
+msgstr "Adresse courriel sur laquelle les notifications sont envoyées à savoir la détection des serveurs DHCP non autorisés, les violations avec une action <i>e-mail</i>, ou tout autre message lié à A3."
 
 # conf/documentation.conf (alerting.emailaddr)
 msgid ""
 "Email address to which notifications of rogue DHCP servers, violations with "
-"an action of <i>email</i>, or any other PacketFence-related message goes to."
-msgstr "Adresse courriel sur laquelle les notifications sont envoyées à savoir la détection des serveurs DHCP non autorisés, les violations avec une action <i>e-mail</i>, ou tout autre message lié à PacketFence."
+"an action of <i>email</i>, or any other A3-related message goes to."
+msgstr "Adresse courriel sur laquelle les notifications sont envoyées à savoir la détection des serveurs DHCP non autorisés, les violations avec une action <i>e-mail</i>, ou tout autre message lié à A3."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/LDAP.pm
 msgid "Email attribute"
@@ -2781,10 +2781,10 @@ msgstr "Mot de passe Enable"
 
 # html/pfappserver/root/configurator/networks.tt
 msgid ""
-"Enable all the physical interfaces you want to use for PacketFence. If you "
+"Enable all the physical interfaces you want to use for A3. If you "
 "use VLAN enforcement, specify which VLAN is dedicated to your registration, "
 "isolation, and management subnets."
-msgstr "Activez toutes les interfaces réseaux physique que vous voulez utiliser pour PacketFence. Si vous utilisez le type d’authentification par VLAN alors spécifiez quel VLAN est dédié à l’enregistrement, l’isolation et à l’interface de management."
+msgstr "Activez toutes les interfaces réseaux physique que vous voulez utiliser pour A3. Si vous utilisez le type d’authentification par VLAN alors spécifiez quel VLAN est dédié à l’enregistrement, l’isolation et à l’interface de management."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
 msgid "Enable external portal enforcement when supported by network equipment"
@@ -2826,11 +2826,11 @@ msgstr "Activer la vérification de l’accès internet une fois enregistré."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Firewall_SSO.pm
 msgid ""
-"Enable this to debounce updates to the Firewall.<br/>By default, PacketFence"
+"Enable this to debounce updates to the Firewall.<br/>By default, A3"
 " will send a SSO on every DHCP request for every device. Enabling this "
 "enables \"sleep\" periods during which the update is not sent if the "
 "informations stay the same."
-msgstr "Activez cette option pour éviter les requêtes de mises à jour au coupe-feu. <br/> Par défaut, PacketFence va envoyer une requête de SSO pour chaque requête DHCP. En activant ce paramètre cela va créer une période pour laquelle les mises à jour ne sont pas envoyées si les informations restent inchangées."
+msgstr "Activez cette option pour éviter les requêtes de mises à jour au coupe-feu. <br/> Par défaut, A3 va envoyer une requête de SSO pour chaque requête DHCP. En activant ce paramètre cela va créer une période pour laquelle les mises à jour ne sont pas envoyées si les informations restent inchangées."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Pfdetect.pm
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
@@ -2841,9 +2841,9 @@ msgstr "Activer"
 msgid ""
 "Enables a Redis driven cache for NTLM authentication. In order for this to "
 "work, you need to setup proper NT hash syncronization between your "
-"PacketFence server and your AD.Refer to the Administration guide for more "
+"A3 server and your AD.Refer to the Administration guide for more "
 "details.Applying this requires a restart of radiusd."
-msgstr "Activer le cache REDIS pour les authentifications NTLM. Pour que cela fonctionne vous devez configurer le synchronisation des hash NTLM entre PacketFence et votre Active Directory. Référer vous au guide d’administration pour plus de détails. Activer cette fonction requiert un redémarrage de radius."
+msgstr "Activer le cache REDIS pour les authentifications NTLM. Pour que cela fonctionne vous devez configurer le synchronisation des hash NTLM entre A3 et votre Active Directory. Référer vous au guide d’administration pour plus de détails. Activer cette fonction requiert un redémarrage de radius."
 
 # html/pfappserver/root/config/pfmon/index.tt
 msgid ""
@@ -3170,8 +3170,8 @@ msgstr "Pour les requetes de déconnexion si vous devez l’envoyer a un autre p
 
 # html/pfappserver/root/configuration/define_policy.tt
 msgid ""
-"For PacketFence to work properly, you must define in the following order:"
-msgstr "Pour que PacketFence fonctionne correctement, vous devez définir dans l’ordre suivant:"
+"For A3 to work properly, you must define in the following order:"
+msgstr "Pour que A3 fonctionne correctement, vous devez définir dans l’ordre suivant:"
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid "Force redirection URL"
@@ -3275,22 +3275,22 @@ msgid "Host to which graphite metrics are sent."
 msgstr "Hôte sur lequel les métriques de graphite sont envoyées"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "Host which hosts the PacketFence PKI"
-msgstr "Hôte qui héberge le service de certificats de PacketFence"
+msgid "Host which hosts the A3 PKI"
+msgstr "Hôte qui héberge le service de certificats de A3"
 
 # conf/documentation.conf (general.hostname)
 msgid ""
-"Hostname of PacketFence system. This is concatenated with the domain in "
+"Hostname of A3 system. This is concatenated with the domain in "
 "Apache rewriting rules and therefore must be resolvable by clients. Changing"
 " this requires to restart haproxy."
-msgstr "Nom d’hôte de PacketFence. Il sera concaténé avec le nom de domaine dans les règles de réécriture Apache et doit donc être résolu par les clients. Un changement de ce paramètre nécessite un redemrrage de haproxy."
+msgstr "Nom d’hôte de A3. Il sera concaténé avec le nom de domaine dans les règles de réécriture Apache et doit donc être résolu par les clients. Un changement de ce paramètre nécessite un redemrrage de haproxy."
 
 # html/pfappserver/root/configurator/configuration.tt
 msgid ""
-"Hostname of this PacketFence server. This value is concatenated with the "
+"Hostname of this A3 server. This value is concatenated with the "
 "above domain name and therefore must be resolvable by devices on your "
 "network."
-msgstr "Nom d’hôte de PacketFence. Il sera concaténé avec le nom de domaine dans les règles de réécriture Apache et doit donc être résolu par les clients."
+msgstr "Nom d’hôte de A3. Il sera concaténé avec le nom de domaine dans les règles de réécriture Apache et doit donc être résolu par les clients."
 
 # html/pfappserver/root/config/firewall_sso/list.tt
 msgid "Hostname or IP"
@@ -3497,20 +3497,20 @@ msgstr "Si %1 de ces conditions sont rencontrées:"
 
 # conf/documentation.conf (network.dhcpoption82logger)
 msgid ""
-"If enabled PacketFence will monitor DHCP option82 location-based "
+"If enabled A3 will monitor DHCP option82 location-based "
 "information. This feature is only available if the dhcpdetector is "
 "activated."
-msgstr "Si activé, PacketFence utilisera l’option DHCP 82 des informations de localisation. Cette fonction n’est disponible que si le détecteur de dhcp est activé."
+msgstr "Si activé, A3 utilisera l’option DHCP 82 des informations de localisation. Cette fonction n’est disponible que si le détecteur de dhcp est activé."
 
 # conf/documentation.conf (network.dhcpdetector)
 msgid ""
-"If enabled, PacketFence will monitor DHCP-specific items such as rogue DHCP "
+"If enabled, A3 will monitor DHCP-specific items such as rogue DHCP "
 "services, DHCP-based OS fingerprinting, computername/hostname resolution, "
 "and (optionnally) option-82 location-based information. The monitored DHCP "
 "packets are DHCPDISCOVERs and DHCPREQUESTs - both are broadcasts, meaning a "
 "span port is not necessary.  This feature is highly recommended if the "
 "internal network is DHCP-based."
-msgstr "Si activé, PacketFence utilisera les éléments spécifiques DHCP tels que les rogues DHCP, Empreintes DHCP, la résolution des hôtes et (optionnellement) l’Option-82. Les paquets DHCP analysés sont les DHCPDISCOVERs et DHCPREQUESTs. Cette fonctionnalité est hautement recommandée si le réseau interne est basé sur DHCP."
+msgstr "Si activé, A3 utilisera les éléments spécifiques DHCP tels que les rogues DHCP, Empreintes DHCP, la résolution des hôtes et (optionnellement) l’Option-82. Les paquets DHCP analysés sont les DHCPDISCOVERs et DHCPREQUESTs. Cette fonctionnalité est hautement recommandée si le réseau interne est basé sur DHCP."
 
 # conf/documentation.conf (fencing.interception_proxy)
 msgid ""
@@ -3524,7 +3524,7 @@ msgid ""
 "(HTTP level) effectively doing reverse proxying then the captive portal no "
 "longer sees the IP of the node trying to access the portal. In that case, "
 "the load-balancers must do SSL offloading and add a X-Forwarded-By header in"
-" the HTTP traffic they forward to PacketFence. Most do by default. Then in "
+" the HTTP traffic they forward to A3. Most do by default. Then in "
 "this parameter you must specify the IP of the various load balancers. This "
 "will instruct the captive portal to look for client IPs in the X-Forwarded-"
 "For instead of the actual TCP session when it matches an IP in the list. "
@@ -3532,25 +3532,25 @@ msgid ""
 "not changed to automatically log the X-Forwarded-By header. Modify "
 "conf/httpd.conf.d/captive-portal-common.conf to use load balanced combined "
 "instead of combined in CustomLog statement."
-msgstr "Si le portail captif est derrière un équilibreur de charge qui agit au niveau 7 (niveau HTTP) comme proxy inverse alors le portail captif ne pourra pas identifier les appareils qui s’y connecte. Dans ce cas là, les équilibreurs de charge doivent terminer la connexion SSL, ajouter une entête X-Forwarded-By  et renvoyer le trafic HTTP vers PacketFence. La plupart le font par défaut. Dans ce paramètre, vous devez spécifier l’adresse IP des différents répartiteurs de charge. Ce changement indique au portail captif de prendre les IP des clients dans l’entête X-Forwarded-For au lieu de les prendre l’adresse IP source de la connexion courante. Les adresses IP doivent être séparées par des virgules. Remarque: le log de Apache n’est pas adapté pour tracer l’entête X-Forwarded-For. Modifier le fichier conf/httpd.conf.d/captive-portal-common.conf pour utiliser la variable loadbalanced_combined à la place de combined dans la partie CustomLog."
+msgstr "Si le portail captif est derrière un équilibreur de charge qui agit au niveau 7 (niveau HTTP) comme proxy inverse alors le portail captif ne pourra pas identifier les appareils qui s’y connecte. Dans ce cas là, les équilibreurs de charge doivent terminer la connexion SSL, ajouter une entête X-Forwarded-By  et renvoyer le trafic HTTP vers A3. La plupart le font par défaut. Dans ce paramètre, vous devez spécifier l’adresse IP des différents répartiteurs de charge. Ce changement indique au portail captif de prendre les IP des clients dans l’entête X-Forwarded-For au lieu de les prendre l’adresse IP source de la connexion courante. Les adresses IP doivent être séparées par des virgules. Remarque: le log de Apache n’est pas adapté pour tracer l’entête X-Forwarded-For. Modifier le fichier conf/httpd.conf.d/captive-portal-common.conf pour utiliser la variable loadbalanced_combined à la place de combined dans la partie CustomLog."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan.pm
 msgid ""
 "If this option is enabled, the PF system will scan each host after "
 "registration is complete."
-msgstr "Si activée, PacketFence analysera chaque appareil lorsque l’enregistrement sera terminé."
+msgstr "Si activée, A3 analysera chaque appareil lorsque l’enregistrement sera terminé."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan.pm
 msgid ""
 "If this option is enabled, the PF system will scan host after on the "
 "production vlan."
-msgstr "Si activée, PacketFence analysera chaque appareil lorsque l’enregistrement sera terminé."
+msgstr "Si activée, A3 analysera chaque appareil lorsque l’enregistrement sera terminé."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan.pm
 msgid ""
 "If this option is enabled, the PF system will scan host before the "
 "registration."
-msgstr "Si activée, PacketFence analysera chaque appareil avant l’enregistrement."
+msgstr "Si activée, A3 analysera chaque appareil avant l’enregistrement."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
 msgid ""
@@ -3594,8 +3594,8 @@ msgstr "Si vous utiliser un port alternatif alors définissez le. Ce paramètre 
 # html/pfappserver/root/configuration/define_policy.tt
 msgid ""
 "If you want to authenticate users or machines using a Active Directory "
-"Domain Controller (DC), you have to join the PacketFence server to the DC."
-msgstr "Si vous souhaitez authentifier des utilisateurs ou des machines par l’intermédiaire d’un Contrôleur de Domaine Active Directory(DC) , vous devez joindre le serveur PacketFence au DC."
+"Domain Controller (DC), you have to join the A3 server to the DC."
+msgstr "Si vous souhaitez authentifier des utilisateurs ou des machines par l’intermédiaire d’un Contrôleur de Domaine Active Directory(DC) , vous devez joindre le serveur A3 au DC."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/SAML.pm
 msgid ""
@@ -5165,110 +5165,110 @@ msgid "PROVISIONING_UPDATE"
 msgstr "Approvisionnement - Mise à jour"
 
 # html/pfappserver/root/configurator/configuration.tt
-msgid "PacketFence Configuration"
-msgstr "Configuration PacketFence"
+msgid "A3 Configuration"
+msgstr "Configuration A3"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Eduroam.pm
 msgid ""
-"PacketFence Eduroam RADIUS virtual server authentication listening port"
+"A3 Eduroam RADIUS virtual server authentication listening port"
 msgstr "Port d’écoute d’authentification du serveur RADIUS Eduroam "
 
 # html/pfappserver/root/configuration/portal_config.tt
 msgid ""
-"PacketFence allows you to create advanced filtering rules based on RADIUS, "
+"A3 allows you to create advanced filtering rules based on RADIUS, "
 "DHCP, DNS or HTTP information. It also allows you to define advanced role-"
 "mapping or VLAN-mapping rules."
-msgstr "PacketFence vous permet de créer des règles de filtrage avancés basés sur les informations RADIUS, DHCP, DNS ou HTTP. Cela vous permet de définir de manière avancée les règles de role-mapping ou VLAN-mapping."
+msgstr "A3 vous permet de créer des règles de filtrage avancés basés sur les informations RADIUS, DHCP, DNS ou HTTP. Cela vous permet de définir de manière avancée les règles de role-mapping ou VLAN-mapping."
 
 # html/pfappserver/root/configuration/system_config.tt
 msgid ""
-"PacketFence allows you to perform advanced system configuration. Among the "
+"A3 allows you to perform advanced system configuration. Among the "
 "configuration options, there are:"
-msgstr "PacketFence vous permet des options de configuration avancée system. Parmi ces options, il y a:"
+msgstr "A3 vous permet des options de configuration avancée system. Parmi ces options, il y a:"
 
 # html/pfappserver/root/configuration/network_conf.tt
 msgid ""
-"PacketFence allows you to perform solution related network configuration. "
+"A3 allows you to perform solution related network configuration. "
 "Among the configuration options, there are:"
-msgstr "PacketFence vous permet d’effectuer des configurations réseau. Parmi les options de configurations il y a:"
+msgstr "A3 vous permet d’effectuer des configurations réseau. Parmi les options de configurations il y a:"
 
 # html/pfappserver/root/configuration/portal_config.tt
 msgid ""
-"PacketFence can \"push\" provisioning agents on endpoints to auto-configure "
+"A3 can \"push\" provisioning agents on endpoints to auto-configure "
 "the WiFi connection during the registration process. You can configure the "
 "provisioning agents in this module."
-msgstr "PacketFence peut \"pousser\" des agent de configuration sur les périphériques pour configurer automatiquement une connexion WiFi pendant l’enregistrement. Vous pouvez configurer les agents de configurations depuis ce module."
+msgstr "A3 peut \"pousser\" des agent de configuration sur les périphériques pour configurer automatiquement une connexion WiFi pendant l’enregistrement. Vous pouvez configurer les agents de configurations depuis ce module."
 
 # html/pfappserver/root/configuration/compliance.tt
 msgid ""
-"PacketFence can ensure a high-level of security on your network by enforcing"
+"A3 can ensure a high-level of security on your network by enforcing"
 " compliance of your acceptable use policy. The compliance modules are:"
-msgstr "PacketFence peut assurer un niveau de sécurité élevé sur votre réseau en mettant en oeuvre la conformité de votre politique d’utilisation. Les modules de conformité sont:"
+msgstr "A3 peut assurer un niveau de sécurité élevé sur votre réseau en mettant en oeuvre la conformité de votre politique d’utilisation. Les modules de conformité sont:"
 
 # html/pfappserver/root/configuration/integration.tt
 msgid ""
-"PacketFence can receive security event information from multiple solutions "
+"A3 can receive security event information from multiple solutions "
 "over syslog. You can configure which data input you want to accept from this"
 " module."
-msgstr "PacketFence peut recevoir les informations de événements de sécurité de plusieurs solutions par syslog. Vous pouvez configurer quel flux de données vous voulez accepter dans ce module."
+msgstr "A3 peut recevoir les informations de événements de sécurité de plusieurs solutions par syslog. Vous pouvez configurer quel flux de données vous voulez accepter dans ce module."
 
 # html/pfappserver/root/configuration/compliance.tt
 msgid ""
-"PacketFence can use active vulnerability like Nessus, OpenVAS or Windows "
+"A3 can use active vulnerability like Nessus, OpenVAS or Windows "
 "Management Instrumentation (WMI) to proactively scan endpoints for security "
 "problems. You can define the scanners being used here."
-msgstr "PacketFence peut utiliser des scanners de vulnérabilités comme Nessus, OpenVAS, Windows Management Interface (WMI) pour scanner de manière proactive les périphériques contre des problèmes de sécurité. Vous pouvez définir les scanners utilisés ici."
+msgstr "A3 peut utiliser des scanners de vulnérabilités comme Nessus, OpenVAS, Windows Management Interface (WMI) pour scanner de manière proactive les périphériques contre des problèmes de sécurité. Vous pouvez définir les scanners utilisés ici."
 
 # html/pfappserver/root/configuration/integration.tt
 msgid ""
-"PacketFence integrates with many 3 rd party solutions. Among the solutions, "
+"A3 integrates with many 3 rd party solutions. Among the solutions, "
 "there are:"
-msgstr "PacketFence peut s’intégrer avec beaucoup de solutions tierces. Parmi ces solutions sont: "
+msgstr "A3 peut s’intégrer avec beaucoup de solutions tierces. Parmi ces solutions sont: "
 
 # html/pfappserver/root/configurator/enforcement.tt
 msgid ""
-"PacketFence is the server that assigns the Role (or ACL) to the devices. "
+"A3 is the server that assigns the Role (or ACL) to the devices. "
 "This mode is for web authentication."
-msgstr "PacketFence est le serveur qui assigne le Role (ou l’ACL) à l’équipement. Ce mode est pour l’authentification web."
+msgstr "A3 est le serveur qui assigne le Role (ou l’ACL) à l’équipement. Ce mode est pour l’authentification web."
 
 # html/pfappserver/root/configurator/enforcement.tt
 msgid ""
-"PacketFence is the server that assigns the VLAN (or roles) to the devices. "
+"A3 is the server that assigns the VLAN (or roles) to the devices. "
 "This is the prefered enforcement mechanism for manageable equipment."
-msgstr "PacketFence est le serveur qui assigne le VLAN (ou rôles) à l’équipement. C’est le mode de fonctionnement conseillé pour les équipements manageables."
+msgstr "A3 est le serveur qui assigne le VLAN (ou rôles) à l’équipement. C’est le mode de fonctionnement conseillé pour les équipements manageables."
 
 # html/pfappserver/root/configurator/enforcement.tt
 msgid ""
-"PacketFence is the server that validate the RADIUS authentication and return"
+"A3 is the server that validate the RADIUS authentication and return"
 " the VLAN (or roles) to the devices. This mode does not have a registration "
 "option, it is either accept or deny with the final VLAN."
-msgstr "PacketFence est le serveur qui valide l'authentification RADIUS et retourne le VLAN (ou rôles) aux appareils. Ce mode n'a pas l'option d'enregistrement, c'est uniquement accepter ou refuser avec le VLAN final."
+msgstr "A3 est le serveur qui valide l'authentification RADIUS et retourne le VLAN (ou rôles) aux appareils. Ce mode n'a pas l'option d'enregistrement, c'est uniquement accepter ou refuser avec le VLAN final."
 
 # html/pfappserver/root/configuration/system_config.tt
 msgid ""
-"PacketFence makes use of a MySQL/MariaDB database. You can configure the "
+"A3 makes use of a MySQL/MariaDB database. You can configure the "
 "connection information from this module."
-msgstr "PacketFence utilise MySQL/MariaDB comme base de données. Vous pouvez configurer les informations de connexion depuis ce module."
+msgstr "A3 utilise MySQL/MariaDB comme base de données. Vous pouvez configurer les informations de connexion depuis ce module."
 
 # html/pfappserver/root/configuration/define_policy.tt
 msgid ""
-"PacketFence manages switches, access points and WiFi controllers. You have "
-"to add the equipment you want PacketFence to manage and do the role by "
+"A3 manages switches, access points and WiFi controllers. You have "
+"to add the equipment you want A3 to manage and do the role by "
 "VLAN/ACL/policy identifier mapping."
-msgstr "PacketFence gère les commutateurs, points d’accès et contrôleurs WiFi. Vous devez ajouter les équipements que PacketFence doit gérer et configurer la correspondance de rôle par VLAN/ACL/politiques."
+msgstr "A3 gère les commutateurs, points d’accès et contrôleurs WiFi. Vous devez ajouter les équipements que A3 doit gérer et configurer la correspondance de rôle par VLAN/ACL/politiques."
 
 # html/pfappserver/root/configuration/system_config.tt
 msgid ""
-"PacketFence supports clustering of 3+ members. You can configure the "
+"A3 supports clustering of 3+ members. You can configure the "
 "clustering solution from this module."
-msgstr "PacketFence supporte le clustering de 3 noeuds. Vous pouvez configurer le clustering depuis ce module."
+msgstr "A3 supporte le clustering de 3 noeuds. Vous pouvez configurer le clustering depuis ce module."
 
 # html/pfappserver/root/configurator/database.tt
 msgid ""
-"PacketFence uses a MySQL database. On this page, you need to specify the "
+"A3 uses a MySQL database. On this page, you need to specify the "
 "root password to access the MySQL server to create an account specific to "
-"PacketFence and create the required database tables and indexes."
-msgstr "PacketFence utilise un serveur MySQL. Sur cette page vous devez spécifier le mot de passe root pour accéder au serveur de base de données, créer un compte spécifique à PacketFence et créer la base donnée et les indexes. "
+"A3 and create the required database tables and indexes."
+msgstr "A3 utilise un serveur MySQL. Sur cette page vous devez spécifier le mot de passe root pour accéder au serveur de base de données, créer un compte spécifique à A3 et créer la base donnée et les indexes. "
 
 # html/pfappserver/lib/pfappserver/Form/Config/Fingerbank/Device.pm
 msgid "Parent device"
@@ -5303,8 +5303,8 @@ msgid "Password for MSE service"
 msgstr "Mot de passe pour le service MSE"
 
 # conf/documentation.conf (database.pass)
-msgid "Password for the mysql database used by PacketFence."
-msgstr "Mot de passe de la base de données mysql utilisé par PacketFence."
+msgid "Password for the mysql database used by A3."
+msgstr "Mot de passe de la base de données mysql utilisé par A3."
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
@@ -5746,8 +5746,8 @@ msgid "Port on the graphite host to which metrics are sent."
 msgstr "Port sur lequel les métriques graphite sont envoyées"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "Port on which to contact the PacketFence PKI API"
-msgstr "Port pour contacter l’API du service de certificat de PacketFence"
+msgid "Port on which to contact the A3 PKI API"
+msgstr "Port pour contacter l’API du service de certificat de A3"
 
 # conf/documentation.conf (ports.admin)
 msgid "Port the administrative interface listens on."
@@ -5940,8 +5940,8 @@ msgid "Protocol"
 msgstr "Protocole"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "Protocol to use to contact the PacketFence PKI API"
-msgstr "Le protocole utilisé pour contacter l’API du service de certificats de PacketFence"
+msgid "Protocol to use to contact the A3 PKI API"
+msgstr "Le protocole utilisé pour contacter l’API du service de certificats de A3"
 
 # html/pfappserver/root/admin/configuration.tt
 # html/pfappserver/root/config/profile/tab-content.tt
@@ -7036,8 +7036,8 @@ msgid "Shared Secret Direct"
 msgstr "Direct secret partagé"
 
 # conf/documentation.conf (services.dhcpd)
-msgid "Should DHCPd be managed by PacketFence?"
-msgstr "Est-ce que DHCPd doit être géré par PacketFence?"
+msgid "Should DHCPd be managed by A3?"
+msgstr "Est-ce que DHCPd doit être géré par A3?"
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc (proxy.use_proxy)
 msgid "Should Fingerbank interact with WWW using a proxy ?"
@@ -7054,16 +7054,16 @@ msgid ""
 msgstr "Est-ce que Redis devrait être utilisé pour la correspondance des combinaisons? Nécessite d’avoir la corespondance des attributs importée dans l’instance Redis "
 
 # conf/documentation.conf (services.carbon-cache)
-msgid "Should carbon-cache be managed by PacketFence?"
-msgstr "Est-ce que carbon-cache doit être géré par PacketFence ?"
+msgid "Should carbon-cache be managed by A3?"
+msgstr "Est-ce que carbon-cache doit être géré par A3 ?"
 
 # conf/documentation.conf (services.carbon-relay)
-msgid "Should carbon-relay be managed by PacketFence?"
-msgstr "Est-ce que carbon-relay doit être géré par PacketFence ?"
+msgid "Should carbon-relay be managed by A3?"
+msgstr "Est-ce que carbon-relay doit être géré par A3 ?"
 
 # conf/documentation.conf (services.collectd)
-msgid "Should collectd be managed by PacketFence?"
-msgstr "Est-ce que collectd doit être géré par PacketFence ?"
+msgid "Should collectd be managed by A3?"
+msgstr "Est-ce que collectd doit être géré par A3 ?"
 
 # conf/documentation.conf (services.haproxy)
 msgid ""
@@ -7129,9 +7129,9 @@ msgstr "Est-ce que httpd.webservices doit être démarré ? Gardez le activé sa
 
 # conf/documentation.conf (services.iptables)
 msgid ""
-"Should iptables be managed by PacketFence? Keep enabled unless you know what"
+"Should iptables be managed by A3? Keep enabled unless you know what"
 " you're doing."
-msgstr "Est-ce que iptables doit être géré par PacketFence ? Gardez le activé sauf si vous savez ce que vous faites."
+msgstr "Est-ce que iptables doit être géré par A3 ? Gardez le activé sauf si vous savez ce que vous faites."
 
 # conf/documentation.conf (services.keepalived)
 msgid ""
@@ -7154,12 +7154,12 @@ msgid "Should open locationlog entries be closed when pfsetvlan is stopped"
 msgstr "Est-ce que l’on ouvre une entrée dans locationlog lorsque pfsetvlan est arrêté ?"
 
 # conf/documentation.conf (services.p0f)
-msgid "Should p0f be managed by PacketFence?"
-msgstr "Est-ce que p0f doit être géré par PacketFence ?"
+msgid "Should p0f be managed by A3?"
+msgstr "Est-ce que p0f doit être géré par A3 ?"
 
 # conf/documentation.conf (services.pfbandwidthd)
-msgid "Should pfbandwidthd be managed by PacketFence?"
-msgstr "Est-ce que pfbandwidthd doit être géré par PacketFence ?"
+msgid "Should pfbandwidthd be managed by A3?"
+msgstr "Est-ce que pfbandwidthd doit être géré par A3 ?"
 
 # conf/documentation.conf (services.pfdhcplistener)
 msgid ""
@@ -7168,12 +7168,12 @@ msgid ""
 msgstr "Est-ce que pfdhcplistener doit être démarré ? Gardez le activé sauf si vous savez ce que vous faites."
 
 # conf/documentation.conf (services.pfdns)
-msgid "Should pfdns be managed by PacketFence?"
-msgstr "Est-ce que pfdns doit être géré par PacketFence ?"
+msgid "Should pfdns be managed by A3?"
+msgstr "Est-ce que pfdns doit être géré par A3 ?"
 
 # conf/documentation.conf (services.pffilter)
-msgid "Should pffilter be managed by PacketFence?"
-msgstr "Est-ce que pffilter doit être géré par PacketFence ?"
+msgid "Should pffilter be managed by A3?"
+msgstr "Est-ce que pffilter doit être géré par A3 ?"
 
 # conf/documentation.conf (services.pfmon)
 msgid ""
@@ -7191,16 +7191,16 @@ msgid ""
 msgstr "Est-ce que pfsetvlan doit être démarré ? Gardez le activé sauf si vous savez ce que vous faites."
 
 # conf/documentation.conf (services.pfsso)
-msgid "Should pfsso be managed by PacketFence?"
-msgstr "Est-ce que pfsso doit être géré par PacketFence ?"
+msgid "Should pfsso be managed by A3?"
+msgstr "Est-ce que pfsso doit être géré par A3 ?"
 
 # conf/documentation.conf (services.radiusd)
-msgid "Should radiusd be managed by PacketFence?"
-msgstr "Est-ce radiusd doit être géré par PacketFence ?"
+msgid "Should radiusd be managed by A3?"
+msgstr "Est-ce radiusd doit être géré par A3 ?"
 
 # conf/documentation.conf (services.radsniff)
-msgid "Should radsniff be managed by PacketFence?"
-msgstr "Est-ce radsniff doit être géré par PacketFence ?"
+msgid "Should radsniff be managed by A3?"
+msgstr "Est-ce radsniff doit être géré par A3 ?"
 
 # conf/documentation.conf (services.redis_queue)
 msgid ""
@@ -7214,8 +7214,8 @@ msgid ""
 msgstr "Est-ce que le cache redis doit être démarré ? Gardez le activé sauf si vous savez ce que vous faites."
 
 # conf/documentation.conf (services.routes)
-msgid "Should routes be managed by PacketFence?"
-msgstr "Est-ce que routes doit être géré par PacketFence ?"
+msgid "Should routes be managed by A3?"
+msgstr "Est-ce que routes doit être géré par A3 ?"
 
 # conf/documentation.conf (services.snmptrapd)
 msgid ""
@@ -7223,8 +7223,8 @@ msgid ""
 msgstr "Est-ce que snmptrapd doit être démarré ? Gardez le activé sauf si vous savez ce que vous faites."
 
 # conf/documentation.conf (services.statsd)
-msgid "Should statsd be managed by PacketFence?"
-msgstr "Est-ce statsd doit être géré par PacketFence ?"
+msgid "Should statsd be managed by A3?"
+msgstr "Est-ce statsd doit être géré par A3 ?"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
 msgid "Should the NTLM cache be enabled for this domain?"
@@ -7295,10 +7295,10 @@ msgstr "Simple"
 # html/pfappserver/root/interface/create.tt
 # html/pfappserver/root/interface/view.tt
 msgid ""
-"Since NATting mode is disabled, PacketFence will adjust iptables to rules to"
+"Since NATting mode is disabled, A3 will adjust iptables to rules to"
 " route traffic rather than natting it. Make sure to add the routes on the "
 "system."
-msgstr "Si la translation d’adresse est désactivé, PacketFence utilisera les règles iptables plutôt que celles de la translation. Assurez-vous d’ajouter les routes sur le système."
+msgstr "Si la translation d’adresse est désactivé, A3 utilisera les règles iptables plutôt que celles de la translation. Assurez-vous d’ajouter les routes sur le système."
 
 # html/pfappserver/root/node/create.tt
 # html/pfappserver/root/user/create.tt
@@ -7415,8 +7415,8 @@ msgid "Start MySQL"
 msgstr "Démarrer MySQL"
 
 # html/pfappserver/root/configurator/services.tt
-msgid "Start PacketFence"
-msgstr "Démarrez PacketFence"
+msgid "Start A3"
+msgstr "Démarrez A3"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/LDAP.pm
 msgid "Start TLS"
@@ -7520,8 +7520,8 @@ msgstr "Sous Type d’endroit"
 # conf/documentation.conf (alerting.subjectprefix)
 msgid ""
 "Subject prefix for email notifications of rogue DHCP servers, violations "
-"with an action of <i>email</i>, or any other PacketFence-related message."
-msgstr "Sujet pour les notifications email des serveurs DHCP non autorisés, les violations avec une action <i>e-mail</i>, ou tout autre message lié PacketFence."
+"with an action of <i>email</i>, or any other A3-related message."
+msgstr "Sujet pour les notifications email des serveurs DHCP non autorisés, les violations avec une action <i>e-mail</i>, ou tout autre message lié A3."
 
 # html/pfappserver/root/config/fingerbank/header.tt
 msgid "Submit Unknown/Unmatched Fingerprints"
@@ -7867,7 +7867,7 @@ msgid "The Root Portal Module to use"
 msgstr "Le module racine du portail à utiliser"
 
 # html/pfappserver/root/configuration/network_conf.tt
-msgid "The SNMP engine in PacketFence can be configured here."
+msgid "The SNMP engine in A3 can be configured here."
 msgstr "Le moteur SNMP de PacetFence peut être configure ici."
 
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/URL.pm
@@ -8044,9 +8044,9 @@ msgstr "L’attribut de configuration key_buffer_size (en MB) de MySQL. Le chang
 
 # html/pfappserver/root/configurator/services.tt
 msgid ""
-"The last step of this configuration wizard is to start the PacketFence "
+"The last step of this configuration wizard is to start the A3 "
 "daemons."
-msgstr "La dernière étape de l’assistant de configuration vous permet de démarrer PacketFence."
+msgstr "La dernière étape de l’assistant de configuration vous permet de démarrer A3."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Twilio.pm
 msgid "The length of the PIN code to be sent over sms"
@@ -8145,7 +8145,7 @@ msgstr "Emplacement du socket p0f"
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Pinterest.pm
 # html/pfappserver/lib/pfappserver/Form/Config/Source/WindowsLive.pm
 msgid "The permissions the application requests."
-msgstr "Les permissions réclamées par l’application (l’application étant PacketFence)"
+msgstr "Les permissions réclamées par l’application (l’application étant A3)"
 
 # html/pfappserver/lib/pfappserver/Form/Config/FloatingDevice.pm
 msgid "The port must be configured as a muti-vlan port"
@@ -8372,9 +8372,9 @@ msgstr "Il n’y a pas de type specifié"
 # html/pfappserver/root/graph/line.tt
 # html/pfappserver/root/graph/pie.tt
 msgid ""
-"There's not enough data to generate this graph. Is PacketFence in "
+"There's not enough data to generate this graph. Is A3 in "
 "production?"
-msgstr "Il n’y a pas assez de donnés pour générer ce graphique. Est ce que PacketFence est en production ?"
+msgstr "Il n’y a pas assez de donnés pour générer ce graphique. Est ce que A3 est en production ?"
 
 # html/pfappserver/root/node/view.tt
 msgid "Therefore, you can apply change to ALL of those devices."
@@ -8386,9 +8386,9 @@ msgid ""
 "detection.gif which is used to detect if network access was enabled. It "
 "cannot be a domain name since it is used in registration or quarantine where"
 " DNS is blackholed. It is recommended that you allow your users to reach "
-"your PacketFence server and put your LAN's PacketFence IP. By default we "
-"will make this reach PacketFence's website as an easy solution."
-msgstr "Cette adresse IP héberge la détection d’accès réseau sur l’URI common/network-access-detection.gif. Il n’est pas possible d’utiliser un nom de domaine car celui-ci est capturé par PacketFence. Il est donc recommandé que vous autorisiez vos clients à accéder au site web de PacketFence."
+"your A3 server and put your LAN's A3 IP. By default we "
+"will make this reach A3's website as an easy solution."
+msgstr "Cette adresse IP héberge la détection d’accès réseau sur l’URI common/network-access-detection.gif. Il n’est pas possible d’utiliser un nom de domaine car celui-ci est capturé par A3. Il est donc recommandé que vous autorisiez vos clients à accéder au site web de A3."
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid ""
@@ -8410,34 +8410,34 @@ msgstr "Cette option active le pré-enregistrement sur le profil de connextion. 
 
 # html/pfappserver/root/configuration/integration.tt
 msgid ""
-"This allows PacketFence to define Wireless Roaming Intermediary eXchange "
+"This allows A3 to define Wireless Roaming Intermediary eXchange "
 "(WRIX) information on access points it manages."
-msgstr "Ceci permet à PacketFence de définir les informations Wireless Roaming Intermediary eXchange (WRIX) sur les points d’accès qu’il gère."
+msgstr "Ceci permet à A3 de définir les informations Wireless Roaming Intermediary eXchange (WRIX) sur les points d’accès qu’il gère."
 
 # html/pfappserver/root/configuration/portal_config.tt
 msgid ""
-"This allows PacketFence to define tiers for billing engines integration."
-msgstr "Ceci permet à PacketFence de définir les niveaux pour l’intégration avec le moteur de paiement."
+"This allows A3 to define tiers for billing engines integration."
+msgstr "Ceci permet à A3 de définir les niveaux pour l’intégration avec le moteur de paiement."
 
 # html/pfappserver/root/configuration/integration.tt
 msgid ""
-"This allows PacketFence to expose some of its APIs through Web Services. See"
-" the PacketFence Developers Guide for API documentation."
-msgstr "Ceci permet à PacketFence d’exposer une partie de son API au travers des Services Web. Voir le PacketFence Developers Guide pour une documentation sur l’API."
+"This allows A3 to expose some of its APIs through Web Services. See"
+" the A3 Developers Guide for API documentation."
+msgstr "Ceci permet à A3 d’exposer une partie de son API au travers des Services Web. Voir le A3 Developers Guide pour une documentation sur l’API."
 
 # html/pfappserver/root/configuration/integration.tt
 msgid ""
-"This allows PacketFence to let the firewall know who is using a particular "
+"This allows A3 to let the firewall know who is using a particular "
 "IP address on the network. The firewall can then apply per-user or per-role "
 "policies."
-msgstr "Ceci permet à PacketFence de laisser savoir au pare-feu qui utilise une certaine adresse IP sur le réseau. Le pare-feu peut alors appliquer les politiques par-utilisateur ou par-rôles."
+msgstr "Ceci permet à A3 de laisser savoir au pare-feu qui utilise une certaine adresse IP sur le réseau. Le pare-feu peut alors appliquer les politiques par-utilisateur ou par-rôles."
 
 # html/pfappserver/root/configuration/integration.tt
 msgid ""
-"This allows PacketFence to query OPSWAT Metadefender Cloud for file hashes "
+"This allows A3 to query OPSWAT Metadefender Cloud for file hashes "
 "in order to detect malware or virus infected files. This is done through the"
 " Suricata HTTP file extraction plugin."
-msgstr "Ceci permet à PacketFence d’effectuer des requêtes vers OPSWAT Metadefender Cloud sur des hashs de fichier pour détecter des fichiers infecté par malware ou virus. Ceci est fait au travers de l’extension Suricata HTTP file extraction."
+msgstr "Ceci permet à A3 d’effectuer des requêtes vers OPSWAT Metadefender Cloud sur des hashs de fichier pour détecter des fichiers infecté par malware ou virus. Ceci est fait au travers de l’extension Suricata HTTP file extraction."
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid ""
@@ -8455,23 +8455,23 @@ msgstr "Ceci vous permet de configurer le nom DNS, les informations SMTP pour le
 
 # html/pfappserver/root/configuration/network_conf.tt
 msgid ""
-"This allows you to configure networks managed by PacketFence, in-bound and "
+"This allows you to configure networks managed by A3, in-bound and "
 "fencing configuration parameters as well as parking of endpoints."
-msgstr "Ceci vous permet de configurer les réseaux gérer par PacketFence, les paramètres de configurations in-bound et fencing ainsi que ceux du parking d’équipements."
+msgstr "Ceci vous permet de configurer les réseaux gérer par A3, les paramètres de configurations in-bound et fencing ainsi que ceux du parking d’équipements."
 
 # html/pfappserver/root/configuration/network_conf.tt
 msgid ""
-"This allows you to create floating devices in PacketFence - like a switch "
-"for example that moves around in the network. PacketFence will automatically"
+"This allows you to create floating devices in A3 - like a switch "
+"for example that moves around in the network. A3 will automatically"
 " reconfigure a switch port and a floating device is connected."
-msgstr "Ceci vous permet de créer des appareils itinérants dans PacketFence - par exemple, comme un commutateur qui se déplace sur le réseau. PacketFence re-configurera automatiquement un port de commutateur lorsqu’un appareil itinérant se connecte."
+msgstr "Ceci vous permet de créer des appareils itinérants dans A3 - par exemple, comme un commutateur qui se déplace sur le réseau. A3 re-configurera automatiquement un port de commutateur lorsqu’un appareil itinérant se connecte."
 
 # html/pfappserver/root/configuration/portal_config.tt
 msgid ""
-"This allows you to enable the device registration feature in PacketFence - "
+"This allows you to enable the device registration feature in A3 - "
 "which allows users to manually register endpoints from a portal page. A "
 "device registration need to be associated to a connection profile."
-msgstr "Ceci permet d’activer la fonctionnalité d’enregistrement d’appareil dans PacketFence - celle-ci permet aux utilisateurs d’enregistrer manuellement des périphériques depuis une page du portail. Un enregistrement d'appareil doit être associé à un profil de connexion."
+msgstr "Ceci permet d’activer la fonctionnalité d’enregistrement d’appareil dans A3 - celle-ci permet aux utilisateurs d’enregistrer manuellement des périphériques depuis une page du portail. Un enregistrement d'appareil doit être associé à un profil de connexion."
 
 # html/pfappserver/root/configuration/portal_config.tt
 msgid ""
@@ -8549,11 +8549,11 @@ msgstr "Ce module vous permet d’analyser des événements de sécurité (déte
 
 # html/pfappserver/root/configuration/integration.tt
 msgid ""
-"This provides PacketFence geographical location information of endpoints on "
+"This provides A3 geographical location information of endpoints on "
 "the network. You can then provide a different captive portal based on where "
 "the device is physically located, or position an endpoint on a specific map "
 "of a building."
-msgstr "Ceci fournis a PacketFence les informations de localisation géographique des équipements sur votre réseau. Vous pouvez alors fournir un portail captif différent basé sur où l’équipement se trouve physiquement, ou placer un équipement sur une carte spécifique du batiment."
+msgstr "Ceci fournis a A3 les informations de localisation géographique des équipements sur votre réseau. Vous pouvez alors fournir un portail captif différent basé sur où l’équipement se trouve physiquement, ou placer un équipement sur une carte spécifique du batiment."
 
 # conf/documentation.conf (proxies)
 msgid ""
@@ -8569,8 +8569,8 @@ msgstr "Cette section vous permet de configurer le contenu local du proxy. Nous 
 # html/pfappserver/root/configuration/domains.tt
 msgid ""
 "This section is for Domains and REALMS. Manage to which domains your "
-"PacketFence server is joined."
-msgstr "Cette section est pour les Domaines et REALMS. Configurer à quels domaines le serveur PacketFence est joint."
+"A3 server is joined."
+msgstr "Cette section est pour les Domaines et REALMS. Configurer à quels domaines le serveur A3 est joint."
 
 # html/pfappserver/root/configuration/profiling.tt
 msgid ""
@@ -8603,8 +8603,8 @@ msgstr "Cette section est pour la base de données. Soyez certain de savoir ce q
 # html/pfappserver/root/configuration/main.tt
 msgid ""
 "This section is for the general system configuration. Anything related to "
-"the services or PacketFence general configuration will be find here."
-msgstr "Cette section est pour la configuration global du système. Tout ce qui est relié aux services ou à la configuration général de PacketFence est dans cette section."
+"the services or A3 general configuration will be find here."
+msgstr "Cette section est pour la configuration global du système. Tout ce qui est relié aux services ou à la configuration général de A3 est dans cette section."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
 msgid "This server's name"
@@ -8619,8 +8619,8 @@ msgstr "Le nom de serveur (nom de compte) dans votre Active Directory. Utiliser 
 # html/pfappserver/root/configurator/configuration.tt
 msgid ""
 "This step covers some basic configuration parameters required to have a "
-"functional PacketFence installation."
-msgstr "Cette section couvre des éléments basiques de configuration permettant d’avoir un serveur PacketFence fonctionnel."
+"functional A3 installation."
+msgstr "Cette section couvre des éléments basiques de configuration permettant d’avoir un serveur A3 fonctionnel."
 
 # conf/documentation.conf (network.force_listener_update_on_ack)
 msgid ""
@@ -9093,8 +9093,8 @@ msgstr "Format du nom d'utilisateur"
 # conf/documentation.conf (database.user)
 msgid ""
 "Username of the account with access to the mysql database used by "
-"PacketFence."
-msgstr "Nom d’utilisateur du compte de la base de données MySQL utilisé par PacketFence."
+"A3."
+msgstr "Nom d’utilisateur du compte de la base de données MySQL utilisé par A3."
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 msgid "Username to connect to the PKI"
@@ -9142,8 +9142,8 @@ msgid "VLAN filters"
 msgstr "Filtres VLAN"
 
 # html/pfappserver/lib/pfappserver/Form/Config/FloatingDevice.pm
-msgid "VLAN in which PacketFence should put the port"
-msgstr "VLAN ID dans lequel PacketFence doit mettre le port."
+msgid "VLAN in which A3 should put the port"
+msgstr "VLAN ID dans lequel A3 doit mettre le port."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Fingerbank/DHCP6_Enterprise.pm
 # html/pfappserver/lib/pfappserver/Form/Config/Fingerbank/DHCP6_Fingerprint.pm
@@ -9382,11 +9382,11 @@ msgstr "Que ce passe-t-il ?"
 
 # html/pfappserver/root/configuration/define_policy.tt
 msgid ""
-"When an endpoint connects to the network, PacketFence must be able to assign"
+"When an endpoint connects to the network, A3 must be able to assign"
 " a role to it, or its user. The role can then be translated to a VLAN, a set"
 " of ACL, a switch manufacturer policy identifier or a combinations of all of"
 " this."
-msgstr "Lorsqu’un appareil se connecte au réseau, PacketFence doit pouvoir lui attribuer un rôle ou son utilisateur. Le rôle peut ensuite être traduit en un VLAN, un ensemble d’ACL, un identifiant de politique de fabricant de commutateur ou une combinaison de tout cela."
+msgstr "Lorsqu’un appareil se connecte au réseau, A3 doit pouvoir lui attribuer un rôle ou son utilisateur. Le rôle peut ensuite être traduit en un VLAN, un ensemble d’ACL, un identifiant de politique de fabricant de commutateur ou une combinaison de tout cela."
 
 # html/pfappserver/root/configuration/define_policy.tt
 msgid ""
@@ -9403,29 +9403,29 @@ msgstr "Lorsqu’elle est activée la page /status ne sera disponible que sur le
 
 # conf/documentation.conf (fencing.isolation_passthrough)
 msgid ""
-"When enabled, PacketFence uses pfdns if you defined <i>Isolation "
+"When enabled, A3 uses pfdns if you defined <i>Isolation "
 "Passthroughs</i> to allow trapped devices in isolation state to reach web "
 "sites."
-msgstr "Si activé, PacketFence utilise pfdns si vous avez sélectionné <i>Isolation Passthroughs</i> pour autoriser les appareils placés dans en isolation a atteindre les sites web."
+msgstr "Si activé, A3 utilise pfdns si vous avez sélectionné <i>Isolation Passthroughs</i> pour autoriser les appareils placés dans en isolation a atteindre les sites web."
 
 # conf/documentation.conf (fencing.passthrough)
 msgid ""
-"When enabled, PacketFence uses pfdns if you defined <i>Passthroughs</i> or "
+"When enabled, A3 uses pfdns if you defined <i>Passthroughs</i> or "
 "Apache mod-proxy if you defined <i>Proxy passthroughs</i> to allow trapped "
 "devices to reach web sites."
-msgstr "Si activé, PacketFence autorisera les appareils pris au piège d’atteindre les sites Web soit en utilisant pfdns si vous avez sélectionné <i>Passthroughs</i> ou Apache mod-proxy si vous avez sélectionné <i>Proxy passthroughs</i>. "
+msgstr "Si activé, A3 autorisera les appareils pris au piège d’atteindre les sites Web soit en utilisant pfdns si vous avez sélectionné <i>Passthroughs</i> ou Apache mod-proxy si vous avez sélectionné <i>Proxy passthroughs</i>. "
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid ""
-"When enabled, PacketFence will not use the role initialy computed on the "
+"When enabled, A3 will not use the role initialy computed on the "
 "portal but will use the dot1x username to recompute the role."
-msgstr "Si activé PacketFence n’utilisera pas le rôle initialement défini par le portail mais utilisera dynamiquement le nom d’utilisateur dot1x pour ré-attribuer le rôle."
+msgstr "Si activé A3 n’utilisera pas le rôle initialement défini par le portail mais utilisera dynamiquement le nom d’utilisateur dot1x pour ré-attribuer le rôle."
 
 # html/pfappserver/root/configuration/portal_config.tt
 msgid ""
-"When provisioning in EAP-TLS, PacketFence needs to be configured to "
+"When provisioning in EAP-TLS, A3 needs to be configured to "
 "integrate with PKI infrastructure. This is done in this module."
-msgstr "Lors du provisioning EAP-TLS, PacketFence doit être configuré pour s’intégrer à une infrastructure PKI. Ceci est fait dans ce module."
+msgstr "Lors du provisioning EAP-TLS, A3 doit être configuré pour s’intégrer à une infrastructure PKI. Ceci est fait dans ce module."
 
 # conf/documentation.conf (network.rogueinterval)
 msgid ""
@@ -9633,8 +9633,8 @@ msgid "You have been logged out."
 msgstr "Vous avez été déconnecté."
 
 # html/pfappserver/root/configurator/services.tt
-msgid "You have successfully configured and launched PacketFence."
-msgstr "Vous avez correctement configuré et lancé PacketFence,"
+msgid "You have successfully configured and launched A3."
+msgstr "Vous avez correctement configuré et lancé A3,"
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Configurator.pm
 msgid "You must assign an interface to the following types: %1"
@@ -9672,7 +9672,7 @@ msgstr "Vous devez spécifier le secret de radius"
 msgid ""
 "You will now be redirected to the administration interface where you can "
 "configure violations and monitor your new NAC."
-msgstr "Vous allez maintenant être redirigé vers l’interface d’administration de PacketFence sur laquelle vous pourrez configurer vos violations et configurer votre nouveau NAC."
+msgstr "Vous allez maintenant être redirigé vers l’interface d’administration de A3 sur laquelle vous pourrez configurer vos violations et configurer votre nouveau NAC."
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Config/Profile.pm
 msgid "Your Tier Description"
@@ -10706,8 +10706,8 @@ msgid "httpd listening port for AAA webservice"
 msgstr "Port d’écoute d’httpd pour le webservice AAA"
 
 # conf/documentation.conf (ports.pf_status)
-msgid "httpd listening port for PacketFence Status webservice"
-msgstr "Port d’écoute httpd pour le status  du  webservice de PacketFence"
+msgid "httpd listening port for A3 Status webservice"
+msgstr "Port d’écoute httpd pour le status  du  webservice de A3"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 # html/pfappserver/lib/pfappserver/Form/Config/Source/HTTP.pm
@@ -11284,7 +11284,7 @@ msgstr "httpd.portal modstatus"
 
 # conf/documentation.conf
 msgid "ports.pf_status"
-msgstr "Statut PacketFence"
+msgstr "Statut A3"
 
 # conf/documentation.conf
 msgid "ports.soap"

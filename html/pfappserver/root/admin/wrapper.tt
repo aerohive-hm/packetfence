@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>[% l('Administrator') %] - PacketFence</title>
+    <title>[% l('Administrator') %] - A3</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PacketFence Administrator">
+    <meta name="description" content="A3 Administrator">
     <meta name="author" content="Inverse">
 
     <!-- styles -->
@@ -46,7 +46,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-	
+
 		<!--logo here-->
           <a class="brand visible-phone" href="#">
             <img src="[% c.uri_for('/static/img/aerohive-logo.svg') %]"/>
