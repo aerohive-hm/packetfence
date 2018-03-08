@@ -1727,7 +1727,7 @@ msgid "Create Users"
 msgstr ""
 
 # html/pfappserver/root/configurator/database.tt
-msgid "Create a A3 account"
+msgid "Create an A3 account"
 msgstr ""
 
 # html/pfappserver/root/configurator/database.tt
@@ -3243,7 +3243,7 @@ msgid "If %1 of the following conditions are met:"
 msgstr ""
 
 # conf/documentation.conf (network.dhcpoption82logger)
-msgid "If enabled A3 will monitor DHCP option82 location-based information. This feature is only available if the dhcpdetector is activated."
+msgid "If enabled, A3 will monitor DHCP option82 location-based information. This feature is only available if the dhcpdetector is activated."
 msgstr ""
 
 # conf/documentation.conf (network.dhcpdetector)
