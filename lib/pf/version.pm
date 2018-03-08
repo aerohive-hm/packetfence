@@ -79,9 +79,9 @@ sub version_get_last_db_version {
 
 =head2 version_get_release
 
-Get the current release of PacketFence
+Get the current release of A3
 
-i.e: PacketFence X.Y.Z
+i.e: A3 X.Y.Z
 
 =cut
 
@@ -98,7 +98,7 @@ sub version_get_release {
 
 =head2 version_get_current
 
-Get the current version of PacketFence
+Get the current version of A3
 
 i.e: X.Y.Z
 
@@ -109,7 +109,7 @@ sub version_get_current {
     return undef unless $release;
 
     my $version = $release;
-    $version =~ s/^PacketFence //;
+    $version =~ s/^A3 //;
     return $version ;
 }
 
