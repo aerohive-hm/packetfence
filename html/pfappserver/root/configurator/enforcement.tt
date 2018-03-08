@@ -32,30 +32,16 @@
                 <table>
                   <tbody>
                     <tr>
-                      <td width="50%">
-                        <label class="checkbox">
-                          <input type="checkbox" name="enforcement" value="inline"[% IF c.session.enforcements.inline %] checked=""[% END %] /> [% l('Inline enforcement') %]
-                          <div class="help-block">
-                            [% l('Activate this mechanism if you have unmanageable equipment such as entry-level consumer switches or access points. PacketFence becomes the gateway of that inline network, and will NAT the traffic to the Internet.') %]
-                          </div>
-                        </label>
-                      </td>
-                      <td class="cell-centered cell-border-left">
-                        <img src="[% c.uri_for('/static/configurator/enforcement-inline.png') %]">
-                      </td>
-                    </tr>
-                    <tr><td>&nbsp;</td></tr>
-                    <tr>
                       <td>
                         <label class="checkbox">
                           <input type="checkbox" name="enforcement" value="vlan"[% IF c.session.enforcements.vlan %] checked=""[% END %] /> [% l('VLAN enforcement') %]
                           <div class="help-block">
-                            [% l('PacketFence is the server that assigns the VLAN (or roles) to the devices. This is the prefered enforcement mechanism for manageable equipment.') %]
+                            [% l('A3 is the server that assigns the VLAN (or roles) to the devices. This is the preferred enforcement mechanism for manageable equipment.') %]
                           </div>
                         </label>
                       </td>
                       <td class="cell-centered cell-border-left" rowspan="6">
-                        <img src="[% c.uri_for('/static/configurator/enforcement-vlan.png') %]">
+                        <img style="width: 450px; margin: 0px 200px 15px 5px;" src="[% c.uri_for('/static/configurator/diagram.svg') %]">
                       </td>
                     </tr>
                     <tr>
@@ -63,7 +49,7 @@
                         <label class="checkbox">
                           <input type="checkbox" name="enforcement" value="webauth"[% IF c.session.enforcements.hotspot %] checked=""[% END %] /> [% l('WebAuth enforcement') %]
                           <div class="help-block">
-                            [% l('PacketFence is the server that assigns the Role (or ACL) to the devices. This mode is for web authentication.') %]
+                            [% l('A3 is the server that assigns the Role (or ACL) to the devices. This mode is for web authentication.') %]
                           </div>
                         </label>
                       </td>
@@ -73,7 +59,7 @@
                         <label class="checkbox">
                           <input type="checkbox" name="enforcement" value="radius"[% IF c.session.enforcements.radius %] checked=""[% END %] /> [% l('RADIUS enforcement') %]
                           <div class="help-block">
-                            [% l('PacketFence is the server that validate the RADIUS authentication and return the VLAN (or roles) to the devices. This mode does not have a registration option, it is either accept or deny with the final VLAN.') %]
+                            [% l('A3 is the server that validate the RADIUS authentication and return the VLAN (or roles) to the devices. This mode does not have a registration option, it is either accept or deny with the final VLAN.') %]
                           </div>
                         </label>
                       </td>

@@ -31,7 +31,7 @@
           <div id="section" class="card">
             <div class="card-block">
               <h3>[% l('Network Interfaces') %]</h3>
-              <p class="help-block">[% l('Enable all the physical interfaces you want to use for PacketFence. If you use VLAN enforcement, specify which VLAN is dedicated to your registration, isolation, and management subnets.') %]</p><p></p>
+              <p class="help-block">[% l('Enable all the physical interfaces you want to use for A3. If you use VLAN enforcement, specify which VLAN is dedicated to your registration, isolation, and management subnets.') %]</p><p></p>
               [% INCLUDE interface/list.tt %]
               <h3>[% l('Default Gateway') %]</h3>
               <form name="networks" class="form-horizontal">

@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Configurator - PacketFence</title>
+    <title>Configurator - A3</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Configurator for PacketFence">
+    <meta name="description" content="Configurator for A3">
     <meta name="author" content="Inverse">
 
     <!-- styles -->
@@ -41,10 +41,10 @@
       <div class="navbar-inner">
         <div class="row-fluid">
           <a class="brand visible-phone" href="#">
-            <img src="[% c.uri_for('/static/img/packetfence.white.small.svg') %]"/>
+            <img src="[% c.uri_for('/static/img/aerohive-logo.svg') %]"/>
           </a>
           <a class="brand span3 hidden-phone" href="#">
-            <img src="[% c.uri_for('/static/img/packetfence.white.svg') %]"/>
+            <img src="[% c.uri_for('/static/img/aerohive-logo.svg') %]"/>
           </a>
           <ul class="nav nav-header pull-right">
             <li><a>[% l('Configuration Wizard') %]</a></li>

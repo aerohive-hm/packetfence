@@ -1,4 +1,4 @@
-<p class="p3 p-info">[% l('This section is for Domains and REALMS. Manage to which domains your PacketFence server is joined.') %]</p>
+<p class="p3 p-info">[% l('This section is for Domains and REALMS. Manage to which domains your A3 server is joined.') %]</p>
 <div class="card">
   <div class="card-block">
     <ul class="nav nav-tabs">

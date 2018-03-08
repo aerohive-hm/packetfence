@@ -49,7 +49,7 @@
         <div class="span4">
           <div class="well">
             <h3>[% l('Instructions') %]</h3>
-            <p>[% l('PacketFence uses a MySQL database. On this page, you need to specify the root password to access the MySQL server to create an account specific to PacketFence and create the required database tables and indexes.') %]</p>
+            <p>[% l('A3 uses a MySQL database. On this page, you need to specify the root password to access the MySQL server to create an account specific to A3 and create the required database tables and indexes.') %]</p>
           </div>
         </div>
         <div class="span14">
@@ -87,7 +87,7 @@
                 [% IF c.session.completed.database %]<span class="help-inline">[% l('Success!') %]</span>[% END %]
               </div>
             </div>
-            <h3>[% l('Create a PacketFence account') %]</h3>
+            <h3>[% l('Create a A3 account') %]</h3>
             <div class="control-group">
               <label class="control-label" for="pf_user">[% l('Username') %]</label>
               <div class="controls">

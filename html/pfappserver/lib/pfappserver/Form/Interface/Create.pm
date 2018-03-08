@@ -23,7 +23,7 @@ has_field 'vlan' =>
    required => 1,
    messages => { required => 'Please specify a VLAN ID.' },
    tags => { after_element => \&help,
-             help => 'VLAN ID (must be a number bellow 4096)' },
+             help => 'VLAN ID (must be a number below 4096)' },
   );
 
 =head1 COPYRIGHT

@@ -25,9 +25,8 @@
             [%- END %]
             [%- IF can_access("SERVICES") %]
           </ul>
-          <ul class="nav nav-header">
+          <ul class="nav nav-header" style="margin:0px 0px 0px 0px;">
             <li>[% l('Queue') %]</li>
-	    <li class="divider-horizontal"></li>
           </ul>
           <ul class="nav nav-list">
             <li><a href="#pfqueue">[% l('Local Queue') %]</a></li>

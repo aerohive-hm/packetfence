@@ -5,7 +5,7 @@
       <h3>[% l('Congratulations!') %]</h3>
     </div>
     <div class="modal-body">
-      <p>[% l('You have successfully configured and launched PacketFence.') %]</p>
+      <p>[% l('You have successfully configured and launched A3.') %]</p>
       <p>[% l('You will now be redirected to the administration interface where you can configure violations and monitor your new NAC.') %]</p>
       <div class="modal-footer">
         <a class="btn btn-primary" href="https://[% admin_ip | html %]:[% admin_port | html %]/">[% l('Visit Administration Interface Now!') %]</a>
@@ -32,7 +32,7 @@
         <div class="span4">
           <div class="well">
             <h3>[% l('Instructions') %]</h3>
-            <p>[% l('The last step of this configuration wizard is to start the PacketFence daemons.') %]</p>
+            <p>[% l('The last step of this configuration wizard is to start the A3 daemons.') %]</p>
           </div>
         </div>
         <div id="services" class="span14">
@@ -64,7 +64,7 @@
           </div>
           <form class="form-horizontal">
             <div class="form-actions">
-              <button type="submit" class="btn btn-primary pull-right[% UNLESS completed %] disabled[% END %]" href="[% next_step %]">[% l('Start PacketFence') %]</button>
+              <button type="submit" class="btn btn-primary pull-right[% UNLESS completed %] disabled[% END %]" href="[% next_step %]">[% l('Start A3') %]</button>
             </div>
           </form>
           <div id="serviceErrors" class="alert alert-danger[% UNLESS error %] hide[% END %]">
