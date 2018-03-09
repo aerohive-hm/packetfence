@@ -4252,12 +4252,12 @@ include::networkdevice/aerohive.asciidoc[]
 Roles (User Profiles)
 +++++++++++++++++++++
 
-Since PacketFence 3.3.0, we now support user profiles on the AeroHIVE hardware.  To build a User Profile, go to *Configuration -> User Profiles*, and create what you need.  When you define the switch
+Since PacketFence 3.3.0, we now support user profiles on the Aerohive hardware.  To build a User Profile, go to *Configuration -> User Profiles*, and create what you need.  When you define the switch
 definition in PacketFence, the role will match the User Profile attribute number.  Example
 
    roles=CategoryStudent=1;CategoryStaff=2
 
-And in the AeroHIVE configuration, you have :
+And in the Aerohive configuration, you have :
 
    StudentProfile attribute number 1
    StaffProfile attribute number 2
