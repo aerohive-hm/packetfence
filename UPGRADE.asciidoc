@@ -1130,7 +1130,7 @@ Changes to web authentication configuration
 Rework of the external captive portal capabilities involves some significant changes in the switch modules configuration.
 Some switch modules have been moved to other ones and some others have been removed. Please adjust the configuration (type) accordingly within switches.conf.
 
- * AeroHIVE::AP_http -> AeroHIVE::AP
+ * Aerohive::AP_http -> Aerohive::AP
  * Meraki::AP_http -> Meraki::MR
  * Meraki::AP_http_V2 -> Meraki::MR_v2
  * Xirrus:AP_http -> Xirrus
@@ -1143,7 +1143,7 @@ ExternalPortalEnforcement = Y
 
 External captive portal URLs have also changed. Change them accordingly depending on the type of equipment you use:
 
- * AeroHIVE: http://portal_IP/AeroHIVE::AP
+ * Aerohive: http://portal_IP/Aerohive::AP
  * Aruba: http://portal_IP/Aruba
  * Cisco Catalyst 2960: http://portal_IP/Cisco::Catalyst_2960
  * Cisco WLC: http://portal_IP/Cisco::WLC

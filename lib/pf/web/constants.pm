@@ -98,7 +98,7 @@ Readonly::Scalar our $URL_DEVICE_REGISTRATION   => '/device-registration';
 Readonly::Scalar our $URL_DEVICE_REG_LOGOUT     => '/device-registration/logout';
 
 # External Captive Portal URL detection constant
-Readonly::Scalar our $EXT_URL_AEROHIVE              => '^/AeroHIVE::AP';
+Readonly::Scalar our $EXT_URL_AEROHIVE              => '^/Aerohive::AP';
 Readonly::Scalar our $EXT_URL_ARUBA                 => '^/Aruba';
 Readonly::Scalar our $EXT_URL_CISCO_CATALYST_2960   => '^/Cisco::Catalyst_2960';
 Readonly::Scalar our $EXT_URL_CISCO_WLC             => '^/Cisco::WLC';
