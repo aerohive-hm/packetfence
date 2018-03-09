@@ -1,12 +1,12 @@
-package pf::Switch::AeroHIVE::AP;
+package pf::Switch::Aerohive::AP;
 
 =head1 NAME
 
-pf::Switch::AeroHIVE::AP
+pf::Switch::Aerohive::AP
 
 =head1 SYNOPSIS
 
-Implement object oriented module to interact with AeroHive AP network equipment
+Implement object oriented module to interact with Aerohive AP network equipment
 
 =head1 STATUS
 
@@ -18,8 +18,8 @@ Tested on an AP330 running HiveOS 6.1r6.1779
 
 =head2 External Portal Enfocement - Redirect URL is not working
 
-When selecting the option to redirect the user to the initially requested page, the AeroHIVE access point is not able to do the redirection properly.
-Using the default success page of AeroHIVE works.
+When selecting the option to redirect the user to the initially requested page, the Aerohive access point is not able to do the redirection properly.
+Using the default success page of Aerohive works.
 
 =over
 
@@ -39,10 +39,10 @@ use pf::node;
 use pf::util;
 use pf::violation;
 
-use base ('pf::Switch::AeroHIVE');
+use base ('pf::Switch::Aerohive');
 
 
-sub description { 'AeroHIVE AP' }
+sub description { 'Aerohive AP' }
 
 
 sub supportsExternalPortal { return $TRUE; }
@@ -58,7 +58,7 @@ sub supportsWebFormRegistration { return $TRUE; }
 
 =item returnRadiusAccessAccept
 
-Prepares the RADIUS Access-Accept reponse for the network device.
+Prepares the RADIUS Access-Accept response for the network device.
 
 Overriding the default implementation for the external captive portal
 

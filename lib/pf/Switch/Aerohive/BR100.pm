@@ -1,16 +1,16 @@
-package pf::Switch::AeroHIVE::BR100;
+package pf::Switch::Aerohive::BR100;
 
 =head1 NAME
 
-pf::Switch::AeroHIVE::BR100
+pf::Switch::Aerohive::BR100
 
 =head1 SYNOPSIS
 
-Object oriented module to access and configure a AeroHIVE Branch Router 100.
+Object oriented module to access and configure a Aerohive Branch Router 100.
 
 =head1 STATUS
 
-This module is currently only a placeholder, see pf::Switch::AeroHIVE
+This module is currently only a placeholder, see pf::Switch::Aerohive
 
 =cut
 
@@ -18,8 +18,8 @@ use strict;
 use warnings;
 use pf::constants;
 
-use base ('pf::Switch::AeroHIVE');
-sub description { 'AeroHive BR100' }
+use base ('pf::Switch::Aerohive');
+sub description { 'Aerohive BR100' }
 
 # CAPABILITIES
 # access technology supported

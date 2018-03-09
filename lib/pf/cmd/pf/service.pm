@@ -137,7 +137,7 @@ sub startService {
     my @managers = pf::services::getManagers(\@services,JUST_MANAGED);
 
     if ( !@managers ) {
-        print "Service '$service' is not managed by PacketFence. Therefore, no action will be performed\n";
+        print "Service '$service' is not managed by A3. Therefore, no action will be performed\n";
         return $EXIT_SUCCESS;
     }
 

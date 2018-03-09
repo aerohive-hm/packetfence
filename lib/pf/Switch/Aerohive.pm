@@ -1,16 +1,16 @@
-package pf::Switch::AeroHIVE;
+package pf::Switch::Aerohive;
 
 =head1 NAME
 
-pf::Switch::AeroHIVE
+pf::Switch::Aerohive
 
 =head1 SYNOPSIS
 
-Module to manage AeroHIVE APs
+Module to manage Aerohive APs
 
 =head1 STATUS
 
-Developed and tested on AeroHIVE AP 320 running firmware 3 something.
+Developed and tested on Aerohive AP 320 running firmware 3 something.
 
 =over
 
@@ -193,7 +193,7 @@ sub _deauthenticateMacTelnet {
             Timeout   => 5,
             Transport => $self->{_cliTransport},
             Platform => 'HiveOS',
-            Source   => $lib_dir.'/pf/Switch/AeroHIVE/nas-pb.yml'
+            Source   => $lib_dir.'/pf/Switch/Aerohive/nas-pb.yml'
         );
         $session->connect(
             Name     => $self->{_cliUser},
@@ -228,7 +228,7 @@ sub _deauthenticateMacTelnet {
 
 =item returnRadiusAccessAccept
 
-Overloading L<pf::Switch>'s implementation because AeroHIVE doesn't support
+Overloading L<pf::Switch>'s implementation because Aerohive doesn't support
 assigning VLANs and Roles at the same time.
 
 =cut
@@ -281,7 +281,7 @@ sub returnRadiusAccessAccept {
 
 =item returnRoleAttribute
 
-AeroHive assigns roles differently, see it's implementation of returnRadiusAccessAccept.
+Aerohive assigns roles differently, see it's implementation of returnRadiusAccessAccept.
 
 This stub is here otherwise roles support tests fails since we expect an returnRoleAttribute implementation.
 

@@ -75,7 +75,7 @@ my $networkdevice_object = pf::Switch::Cisco::WiSM2->new({
 # bogusly calling methods trying to generate warnings
 $networkdevice_object->deauthenticateMacDefault("aa:bb:cc:dd:ee:ff");
 
-# regression test for #1437: RADIUS-based Disconnects not working for Aruba, AeroHIVE
+# regression test for #1437: RADIUS-based Disconnects not working for Aruba, Aerohive
 # http://www.packetfence.org/bugs/view.php?id=1437
 # installing a custom die handler to issue a warning on a different die than "No answer from 127.0.0.1 on port 3799"
 # the warning will be trapped by the Test::NoWarnings;

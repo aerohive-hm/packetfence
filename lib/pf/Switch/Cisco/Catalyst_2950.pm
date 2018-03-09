@@ -53,7 +53,7 @@ This has nasty side-effects when used with VoIP (client don't re-DHCP automatica
 =item No MAC-Authentication Bypass support
 
 These switches don't support MAB (what we call MAC-Authentication in
-PacketFence) and so their 802.1X support is a lot less attractive because of
+A3) and so their 802.1X support is a lot less attractive because of
 that. Briefly it means that devices that don't support 802.1X can't coexist
 with 802.1X capable devices with the same port config.
 
@@ -992,7 +992,7 @@ sub dot1xPortReauthenticate {
     my $logger = $self->logger;
 
     $logger->info(
-        "802.1X renegociation on this switch is not compatible with PacketFence. "
+        "802.1X renegociation on this switch is not compatible with A3. "
         . "If there's VoIP we will bounce the port otherwise we will re-assign VLAN directly. "
         . "If it doesn't work open a bug report with your hardware type. "
         . "switch: $self->{_ip} ifIndex: $ifIndex"
