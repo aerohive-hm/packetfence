@@ -6,8 +6,6 @@
 #
 # Author: Inverse inc. <info@inverse.ca>
 #
-# Licensed under the GPL
-#
 
 if [[ -z "$1" || -z "$2" ]]; then
 	echo "$0: Remote diff"

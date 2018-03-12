@@ -16,8 +16,6 @@
 #
 # Author: Inverse inc. <info@inverse.ca>
 #
-# Licensed under the GPL
-#
 DB_USER='pf';
 # make sure access to this file is properly secured (chmod a=,u=rw) or that 
 # you remove the password when you are done

@@ -9,8 +9,6 @@
 #
 # Author: Inverse inc. <info@inverse.ca>
 #
-# Licensed under the GPL
-#
 
 LE_DIR='/tmp/config-comparator'
 

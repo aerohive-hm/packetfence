@@ -11,8 +11,6 @@
 #
 # Author: Inverse inc. <info@inverse.ca>
 #
-# Licensed under the GPL
-#
 # Installation: make sure you have locationlog_archive (based on locationlog) and edit DB_PWD to fit your password.
 
 NB_DAYS_TO_KEEP_DB=7

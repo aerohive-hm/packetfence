@@ -3,8 +3,6 @@
 # Copyright (C) 2005-2018 Inverse inc.
 #
 # Author: Inverse inc. <info@inverse.ca>
-#
-# Licensed under the GPL
 
 # Variables
 EMAILTO="user@domain.tld"
