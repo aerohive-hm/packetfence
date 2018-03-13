@@ -1,5 +1,7 @@
 #!/bin/bash
 
+yum install open-vm-tools -y
+
 # Set up local yum repository
 cat <<EOF >/etc/yum.repos.d/aerohive.repo
 [packetfence]
@@ -15,7 +17,7 @@ gpgcheck=0
 enabled=0
 EOF
 
-# PacketFence installation
+# A3 installation
 yum install perl -y
 yum install --enablerepo=packetfence,aerohive A3 -y
 
