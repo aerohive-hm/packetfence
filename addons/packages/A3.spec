@@ -1251,7 +1251,8 @@ fi
 %doc                    /usr/local/pf/README.md
 %doc                    /usr/local/pf/README.network-devices
 %dir                    /usr/local/pf/sbin
-%attr(0500, root, root) /usr/local/pf/sbin/initdb-A3
+%attr(0700, root, root) /usr/local/pf/sbin/checkdb-A3
+%attr(0700, root, root) /usr/local/pf/sbin/initdb-A3
 %attr(0755, pf, pf)     /usr/local/pf/sbin/pfbandwidthd
 %attr(0755, pf, pf)     /usr/local/pf/sbin/pfdetect
 %attr(0755, pf, pf)     /usr/local/pf/sbin/pfdhcplistener
