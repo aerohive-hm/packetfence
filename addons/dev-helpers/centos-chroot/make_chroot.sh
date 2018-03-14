@@ -5,8 +5,6 @@
 #
 # Author: Inverse inc. <info@inverse.ca>
 #
-# Licensed under the GPL
-#
 #
 
 if [ -z "$1" ];then

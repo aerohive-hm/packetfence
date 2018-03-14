@@ -1,21 +1,23 @@
 #!/bin/bash
 
+yum install open-vm-tools -y
+
 # Set up local yum repository
 cat <<EOF >/etc/yum.repos.d/aerohive.repo
 [packetfence]
 name=Clone of Inverse\'s PacketFence Repository
-baseurl=http://10.16.134.140/yum/packetfence/\$basearch
+baseurl=http://a3-build-01.dev.aerohive.com/yum/packetfence/\$basearch
 gpgcheck=0
 enabled=0
 
 [aerohive]
 name=Aerohive Build Repository
-baseurl=http://10.16.134.140/yum/aerohive/\$basearch
+baseurl=http://a3-build-01.dev.aerohive.com/yum/aerohive/\$basearch
 gpgcheck=0
 enabled=0
 EOF
 
-# PacketFence installation
+# A3 installation
 yum install perl -y
 yum install --enablerepo=packetfence,aerohive A3 -y
 
