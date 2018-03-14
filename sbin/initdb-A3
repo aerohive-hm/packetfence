@@ -1,0 +1,47 @@
+#!/bin/bash
+
+DB_NAME='A3'
+
+DB_ROOT='root'
+DB_ROOT_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
+
+DB_USER=$DB_NAME
+DB_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
+
+/usr/bin/curl -k -d@- 'https://127.0.0.1:1443/db/reset_password' <<EOF >/dev/null 2>&1
+root_user=$DB_ROOT&root_password_new=$DB_ROOT_PW
+EOF
+
+if [ $? -ne 0 ]; then
+    echo "Failed to set database root user password"
+    exit 1
+fi
+
+TMPFILE=`/usr/bin/mktemp /tmp/dbinfo.XXXXXX`
+cat <<EOF > $TMPFILE
+dbroot_user=$DB_ROOT
+dbroot_pass=$DB_ROOT_PW
+EOF
+
+/usr/bin/chmod 400 $TMPFILE
+/usr/bin/mv $TMPFILE /usr/local/pf/conf/dbinfo.A3
+
+/usr/bin/curl -k -d@- "https://127.0.0.1:1443/db/create/$DB_NAME" <<EOF >/dev/null 2>&1
+root_user=$DB_ROOT&root_password=$DB_ROOT_PW
+EOF
+
+if [ $? -ne 0 ]; then
+    echo "Failed to create new database $DB_NAME"
+    exit 1
+fi
+
+/usr/bin/curl -k -d@- "https://127.0.0.1:1443/db/assign/$DB_NAME" <<EOF >/dev/null 2>&1
+root_user=$DB_ROOT&root_password=$DB_ROOT_PW&database.user=$DB_USER&database.pass=$DB_USER_PW
+EOF
+
+if [ $? -ne 0 ]; then
+    echo "Failed to create new database user $DB_USER"
+    exit 1
+fi
+
+echo "Finished initializing A3 database"

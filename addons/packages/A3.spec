@@ -76,7 +76,7 @@ features such as:
 * remediation through a captive portal
 * registration-based and scheduled vulnerability scans.
 
-# arch-specific pfcmd-suid subpackage required us to move all of PacketFence
+# arch-specific pfcmd-suid subpackage required us to move all of A3
 # into a noarch subpackage and have the top level package virtual.
 
 %package -n %{real_name}
@@ -1251,6 +1251,7 @@ fi
 %doc                    /usr/local/pf/README.md
 %doc                    /usr/local/pf/README.network-devices
 %dir                    /usr/local/pf/sbin
+%attr(0500, root, root) /usr/local/pf/sbin/initdb-A3
 %attr(0755, pf, pf)     /usr/local/pf/sbin/pfbandwidthd
 %attr(0755, pf, pf)     /usr/local/pf/sbin/pfdetect
 %attr(0755, pf, pf)     /usr/local/pf/sbin/pfdhcplistener
