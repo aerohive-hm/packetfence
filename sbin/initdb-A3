@@ -18,7 +18,7 @@ if [ $? -ne 0 ]; then
 fi
 
 TMPFILE=`/usr/bin/mktemp /tmp/dbinfo.XXXXXX`
-cat <<EOF > $TMPFILE
+/usr/bin/cat <<EOF > $TMPFILE
 dbroot_user=$DB_ROOT
 dbroot_pass=$DB_ROOT_PW
 EOF
