@@ -2,12 +2,12 @@
 #
 # general.domain
 #
-# Domain name of PacketFence system.
+# Domain name of A3 system.
 domain=packetfence.org
 #
 # general.hostname
 #
-# Hostname of PacketFence system.  This is concatenated with the domain in Apache rewriting rules and therefore must be resolvable by clients.
+# Hostname of A3 system.  This is concatenated with the domain in Apache rewriting rules and therefore must be resolvable by clients.
 hostname=packetfence
 #
 # general.dhcpservers
@@ -24,8 +24,8 @@ timezone=America/Montreal
 #
 # network.dhcpdetector
 #
-# If enabled, PacketFence will monitor DHCP-specific items such as rogue DHCP services, DHCP-based OS fingerprinting, computername/hostname 
-# resolution, and (optionnally) option-82 location-based information.  The monitored DHCP packets are DHCPDISCOVERs and DHCPREQUESTs - both are broadcasts, 
+# If enabled, A3 will monitor DHCP-specific items such as rogue DHCP services, DHCP-based OS fingerprinting, computername/hostname
+# resolution, and (optionnally) option-82 location-based information.  The monitored DHCP packets are DHCPDISCOVERs and DHCPREQUESTs - both are broadcasts,
 # meaning a span port is not necessary.  This feature is highly recommended if the internal network is DHCP-based.
 dhcpdetector=enabled
 #
@@ -45,7 +45,7 @@ rogue_dhcp_detection=enabled
 #
 # network.rogueinterval
 #
-# When rogue DHCP server detection is enabled, this parameter defines how often to email administrators.  With its default 
+# When rogue DHCP server detection is enabled, this parameter defines how often to email administrators.  With its default
 # setting of 10, it will email administrators the details of the previous 10 DHCP offers.
 rogueinterval=10
 #
@@ -57,7 +57,7 @@ hostname_change_detection=disabled
 #
 # network.dhcpoption82logger
 #
-# If enabled PacketFence will monitor DHCP option82 location-based information.
+# If enabled A3 will monitor DHCP option82 location-based information.
 # This feature is only available if the dhcpdetector is activated.
 dhcpoption82logger=disabled
 #
@@ -80,34 +80,34 @@ force_listener_update_on_ack=disabled
 interfaceSNAT=
 #
 #
-# This section allows you to configure locally proxied content.  We typically use this to proxy tools like Stinger rather 
+# This section allows you to configure locally proxied content.  We typically use this to proxy tools like Stinger rather
 # than having to continually download the latest version. Ex:
-# 
+#
 # <i>tools/stinger.exe=http://download.nai.com/products/mcafee-avert/stng260.exe</i>
-# 
+#
 # The Stinger utility could then be accessed at https://pfhostname/proxies/tools/stinger.exe.
 [proxies]
 tools/stinger.exe=http://download.nai.com/products/mcafee-avert/stng260.exe
 
 [fencing]
-# 
+#
 # fencing.wait_for_redirect
 #
 # How many seconds should the WebAPI sleep before actually triggering the VLAN change.
-# This is meant to give the device enough time to fetch the redirection page before 
+# This is meant to give the device enough time to fetch the redirection page before
 # switching VLAN.
 wait_for_redirect = 1
 #
 # fencing.whitelist
 #
-# Comma-delimited list of MAC addresses that are immune to isolation. In 
-# inline level 2 enforcement, the firewall is opened for them as if they were 
+# Comma-delimited list of MAC addresses that are immune to isolation. In
+# inline level 2 enforcement, the firewall is opened for them as if they were
 # registered. This "feature" will probably be reworked in the future.
 whitelist=
 #
 # fencing.range
 #
-# Comma-delimited list of address ranges/CIDR blocks that Snort/Suricata will monitor/detect/trap on.  Gateway, network, and 
+# Comma-delimited list of address ranges/CIDR blocks that Snort/Suricata will monitor/detect/trap on.  Gateway, network, and
 # broadcast addresses are ignored.
 range=
 #
@@ -154,13 +154,13 @@ interception_proxy_port=8080,3128
 #
 # guests_admin_registration.access_duration_choices
 #
-# These are all the choices offered in the guest management interface as 
+# These are all the choices offered in the guest management interface as
 # possible access duration values for a given registration.
 access_duration_choices=1h,3h,12h,1D,2D,3D,5D
 #
 # guests_admin_registration.default_access_duration
 #
-# This is the default access duration value selected in the dropdown on the 
+# This is the default access duration value selected in the dropdown on the
 # guest management interface.
 default_access_duration=12h
 
@@ -168,8 +168,8 @@ default_access_duration=12h
 #
 # alerting.emailaddr
 #
-# Email address to which notifications of rogue DHCP servers, violations with an action of "email", or any other 
-# PacketFence-related message goes to.
+# Email address to which notifications of rogue DHCP servers, violations with an action of "email", or any other
+# A3-related message goes to.
 emailaddr=pf@localhost
 #
 # alerting.fromaddr
@@ -179,14 +179,14 @@ fromaddr=
 #
 # alerting.smtpserver
 #
-# Server through which to send messages to the above emailaddr.  The default is localhost - be sure you're running an SMTP 
+# Server through which to send messages to the above emailaddr.  The default is localhost - be sure you're running an SMTP
 # host locally if you don't change it!
 smtpserver=localhost
 #
 # alerting.subjectprefix
 #
 #Subject prefix for email notifications of rogue DHCP servers, violations with an action of "email", or any other
-#PacketFence-related message.
+#A3-related message.
 subjectprefix=PF Alert:
 #
 # alerting.smtp_encryption
@@ -262,17 +262,17 @@ port=3306
 #
 # database.db
 #
-# Name of the MySQL database used by PacketFence.
+# Name of the MySQL database used by A3.
 db=pf
 #
 # database.user
 #
-# Username of the account with access to the MySQL database used by PacketFence. Changing this parameter after the initial configuration will *not* change it in the database it self, only in the configuration.
+# Username of the account with access to the MySQL database used by A3. Changing this parameter after the initial configuration will *not* change it in the database it self, only in the configuration.
 user=pf
 #
 # database.pass
 #
-# Password for the mysql database used by PacketFence. Changing this parameter after the initial configuration will *not* change it in the database it self, only in the configuration.
+# Password for the mysql database used by A3. Changing this parameter after the initial configuration will *not* change it in the database it self, only in the configuration.
 pass=packet
 
 [database_advanced]
@@ -325,12 +325,12 @@ max_allowed_packet=16
 [services]
 # services.pfipset
 #
-# Should pfipset be managed by PacketFence?
+# Should pfipset be managed by A3?
 pfipset=enabled
 #
 # services.pfdhcp
 #
-# Should pfdhcp be managed by PacketFence?
+# Should pfdhcp be managed by A3?
 pfdhcp=enabled
 #
 # services.pfdhcp_binary
@@ -340,7 +340,7 @@ pfdhcp_binary=/usr/local/pf/bin/pfdhcp
 #
 # services.etcd
 #
-# Should etcd be managed by PacketFence?
+# Should etcd be managed by A3?
 etcd=enabled
 #
 # services.etcd_binary
@@ -360,37 +360,37 @@ haproxy_binary=/usr/sbin/haproxy-systemd-wrapper
 #
 # services.pffilter
 #
-# Should pffilter be managed by PacketFence?
+# Should pffilter be managed by A3?
 pffilter=enabled
 #
 # services.pfsso
 #
-# Should pfsso be managed by PacketFence?
+# Should pfsso be managed by A3?
 pfsso=enabled
 #
 # services.radiusd
 #
-# Should radiusd be managed by PacketFence?
+# Should radiusd be managed by A3?
 radiusd=enabled
-# 
+#
 # services.radiusd_binary
-# 
+#
 # Location of the named binary. Only necessary to change if you are not running the RPMed version.
 radiusd_binary=/usr/sbin/radiusd
 #
 # services.iptables
 #
-# Should iptables be managed by PacketFence?
+# Should iptables be managed by A3?
 iptables=enabled
-# 
+#
 # services.iptables_binary
-# 
+#
 # location of the iptables binary. only necessary to change if you are not running the rpmed version.
 iptables_binary=/sbin/iptables
 #
 # services.pfbandwidthd
 #
-# Should pfbandwidthd be managed by PacketFence?
+# Should pfbandwidthd be managed by A3?
 pfbandwidthd=disabled
 #
 # services.httpd_admin
@@ -445,12 +445,12 @@ httpd_binary=/usr/sbin/httpd
 #
 # services.pfsetvlan
 #
-# Should pfsetvlan be managed by PacketFence?
+# Should pfsetvlan be managed by A3?
 pfsetvlan=disabled
 #
 # services.snmptrapd
 #
-# Should snmptrapd be managed by PacketFence?
+# Should snmptrapd be managed by A3?
 snmptrapd=disabled
 #
 # services.snmptrapd_binary
@@ -460,29 +460,29 @@ snmptrapd_binary=/usr/sbin/snmptrapd
 #
 # services.pfqueue
 #
-# Should pfqueue be managed by PacketFence?
+# Should pfqueue be managed by A3?
 pfqueue=enabled
 #
 # services.pfmon
 #
-# Should pfmon be managed by PacketFence?
+# Should pfmon be managed by A3?
 pfmon=enabled
 #
 # services.redis_cache
 #
-# Should redis be managed by PacketFence?
+# Should redis be managed by A3?
 redis_cache=enabled
 # services.redis_queue
 #
-# Should redis be managed by PacketFence?
+# Should redis be managed by A3?
 redis_queue=enabled
 # services.redis_ntlm_cache
 #
-# Should redis be managed by PacketFence?
+# Should redis be managed by A3?
 redis_ntlm_cache=disabled
-# 
+#
 # services.redis_binary
-# 
+#
 # Location of the redis binary. Only necessary to change if you are not running the pre-packaged version.
 redis_binary=/usr/bin/redis-server
 #
@@ -510,9 +510,9 @@ keepalived_binary=/usr/sbin/keepalived
 #
 # Should winbindd be started?
 winbindd=enabled
-# 
+#
 # services.winbindd_binary
-# 
+#
 # location of the winbindd binary. only necessary to change if you are not running the rpmed version.
 winbindd_binary=/usr/sbin/winbindd
 #
@@ -520,9 +520,9 @@ winbindd_binary=/usr/sbin/winbindd
 #
 # Should radsniff be started?
 radsniff=enabled
-# 
+#
 # services.radsniff_binary
-# 
+#
 # Location of the radsniff binary. Only necessary to change if you are not running the pre-packaged version.
 radsniff_binary=/usr/bin/radsniff
 #
@@ -530,9 +530,9 @@ radsniff_binary=/usr/bin/radsniff
 #
 # Should the fingerbank-collector be started?
 fingerbank-collector=enabled
-# 
+#
 # services.fingerbank-collector_binary
-# 
+#
 # Location of the fingerbank-collector binary. Only necessary to change if you are not running the pre-packaged version.
 fingerbank-collector_binary=/usr/local/fingerbank/collector/fingerbank-collector
 #
@@ -540,16 +540,16 @@ fingerbank-collector_binary=/usr/local/fingerbank/collector/fingerbank-collector
 #
 # Location of the openssl binary. Only necessary to change if you are not running the RPMed version.
 openssl_binary=/usr/bin/openssl
-# 
+#
 # services.arp_binary
-# 
+#
 # location of the arp binary. only necessary to change if you are not running the rpmed version.
 arp_binary=/sbin/arp
 
 #
 # services.routes
 #
-# Should routes be managed by PacketFence?
+# Should routes be managed by A3?
 routes=enabled
 #
 # services.routes_binary
@@ -559,7 +559,7 @@ routes_binary=/sbin/ip
 #
 # services.netdata
 #
-# Should netdata be managed by PacketFence?
+# Should netdata be managed by A3?
 netdata=enabled
 #
 # services.netdata_binary
@@ -568,7 +568,7 @@ netdata=enabled
 netdata_binary=/usr/sbin/netdata
 # services.tc
 #
-# Should tc be managed by PacketFence?
+# Should tc be managed by A3?
 tc=enabled
 #
 # services.tc_binary
@@ -577,7 +577,7 @@ tc=enabled
 tc_binary=/usr/sbin/tc
 # services.pfdns
 #
-# Should pfdns be managed by PacketFence?
+# Should pfdns be managed by A3?
 pfdns=enabled
 #
 # services.pfdns_binary
@@ -587,12 +587,12 @@ pfdns_binary=/usr/local/pf/bin/pfdns
 #
 # services.api-frontend
 #
-# Should routes be managed by PacketFence?
+# Should routes be managed by A3?
 api-frontend=enabled
 
 # services.pfstats
 #
-# Should pfstats be managed by PacketFence?
+# Should pfstats be managed by A3?
 pfstats=enabled
 #
 # services.pfstats_binary
@@ -614,7 +614,7 @@ nbtrapparserthreads = 3
 #
 # snmp_traps.closelocationlogonstop
 #
-# Should open locationlog entries be closed when pfsetvlan is 
+# Should open locationlog entries be closed when pfsetvlan is
 # stopped
 closelocationlogonstop=disabled
 #
@@ -627,25 +627,25 @@ bounce_duration = 4s
 # snmp_traps.trap_limit
 #
 # Controls whether or not the trap_limit feature is enabled. Trap limiting is
-# a way to limit the damage done by malicious users or misbehaving switch 
-# that sends too many traps to PacketFence causing it to be overloaded. Trap
-# limiting is controlled by the trap_limit_threshold and trap_limit_action 
+# a way to limit the damage done by malicious users or misbehaving switch
+# that sends too many traps to A3 causing it to be overloaded. Trap
+# limiting is controlled by the trap_limit_threshold and trap_limit_action
 # parameters. Default is enabled.
 trap_limit = enabled
 #
 # snmp_traps.trap_limit_threshold
 #
-# Maximum number of SNMP traps that a switchport can send to PacketFence within
+# Maximum number of SNMP traps that a switchport can send to A3 within
 # a minute without being flagged as DoS. Defaults to 100
 trap_limit_threshold = 100
 #
 # snmp_traps.trap_limit_action
 #
-# Action that PacketFence will take if the snmp_traps.trap_limit_threshold is reached.
+# Action that A3 will take if the snmp_traps.trap_limit_threshold is reached.
 # Defaults to none. email will send an email every hour if the limit's still reached.
 # shut will shut the port on the switch and will also send an email even if email is not
 # specified.
-trap_limit_action = 
+trap_limit_action =
 
 [inline]
 # inline.accounting
@@ -671,7 +671,7 @@ layer3_accounting_sync_interval = 41
 # inline.ports_redirect
 #
 # Ports to intercept and redirect for trapped and unregistered systems.  Defaults to 80/tcp (HTTP), 443/tcp (HTTPS).
-# Redirecting 443/tcp (SSL) will work, although users might get certificate errors if you didn't install a valid 
+# Redirecting 443/tcp (SSL) will work, although users might get certificate errors if you didn't install a valid
 # certificate or if you don't use DNS (although IP-based certificates supposedly exist)
 # Redirecting 53/udp (DNS) seems to have issues and is also not recommended.
 # We also have experimental IMAP and POP3 listeners which give fake emails telling users to open their browsers.
@@ -696,16 +696,16 @@ network_detection=enabled
 # captive_portal.network_detection_ip
 #
 # This IP is used as the webserver who hosts the common/network-access-detection.gif which is used to detect if network
-# access was enabled. 
+# access was enabled.
 # It cannot be a domain name since it is used in registration or quarantine where DNS is blackholed.
-# It is recommended that you allow your users to reach your packetfence server and put your LAN's PacketFence IP.
-# By default we will make this reach PacketFence's website as an easy solution.
+# It is recommended that you allow your users to reach your packetfence server and put your LAN's A3 IP.
+# By default we will make this reach A3's website as an easy solution.
 #
 network_detection_ip = 192.95.20.194
 #
 # captive_portal.network_detection_initial_delay
 #
-# This is the amount of time before network connectivity detection is started. 
+# This is the amount of time before network connectivity detection is started.
 network_detection_initial_delay = 5s
 #
 # captive_portal.network_detection_retry_delay
@@ -715,7 +715,7 @@ network_detection_retry_delay = 2s
 #
 # captive_portal.network_redirect_delay
 #
-# How long to display the progress bar during trap release. Default value is 
+# How long to display the progress bar during trap release. Default value is
 # based on VLAN enforcement techniques. Inline enforcement only users could
 # lower the value.
 network_redirect_delay = 20s
@@ -733,17 +733,17 @@ request_timeout = 15
 #
 # captive_portal.loadbalancers_ip
 #
-# If the captive portal is put behind load-balancer(s) that act at Layer 7 
-# (HTTP level) effectively doing reverse proxying then the captive portal no 
+# If the captive portal is put behind load-balancer(s) that act at Layer 7
+# (HTTP level) effectively doing reverse proxying then the captive portal no
 # longer sees the IP of the node trying to access the portal. In that case,
 # the load-balancers must do SSL offloading and add a X-Forwarded-By header
-# in the HTTP traffic they forward to PacketFence. Most do by default. Then
+# in the HTTP traffic they forward to A3. Most do by default. Then
 # in this parameter you must specify the IP of the various load balancers.
-# This will instruct the captive portal to look for client IPs in the 
+# This will instruct the captive portal to look for client IPs in the
 # X-Forwarded-For instead of the actual TCP session when it matches an IP
 # in the list. Format is a comma separated list of IPs. Note: Apache access
 # log format is not changed to automatically log the X-Forwarded-By header.
-# Modify conf/httpd.conf.d/captive-portal-common.conf to use 
+# Modify conf/httpd.conf.d/captive-portal-common.conf to use
 # loadbalanced_combined instead of combined in CustomLog statement.
 loadbalancers_ip=
 #
@@ -766,7 +766,7 @@ detection_mecanism_bypass = disabled
 #
 # captive_portal.detection_mecanism_urls
 #
-# Comma-delimited list of URLs known to be used by devices to detect the presence 
+# Comma-delimited list of URLs known to be used by devices to detect the presence
 # of a captive portal and trigger their captive portal mechanism.
 detection_mecanism_urls = http://www.gstatic.com/generate_204,http://clients3.google.com/generate_204,http://www.apple.com/library/test/success,http://connectivitycheck.android.com/generate_204,http://connectivitycheck.gstatic.com/generate_204,http://www.msftncsi.com/ncsi.txt,http://www.appleiphonecell.com,http://captive.apple.com,http://captive.roku.com/ok,http://detectportal.firefox.com/success.txt
 #
@@ -848,13 +848,13 @@ hashing_cost=8
 #
 # advanced.disable_pf_domain_auth
 #
-# Disable Active-Directory domain configuration from within PacketFence
+# Disable Active-Directory domain configuration from within A3
 disable_pf_domain_auth=disabled
 #
 # advanced.ntlm_redis_cache
 #
-# Enables a Redis driven cache for NTLM authentication. 
-# In order for this to work, you need to setup proper NT hash syncronization between your PacketFence server and your AD.
+# Enables a Redis driven cache for NTLM authentication.
+# In order for this to work, you need to setup proper NT hash syncronization between your A3 server and your AD.
 # Refer to the Administration guide for more details.
 # Applying this requires a restart of radiusd.
 ntlm_redis_cache=disabled
@@ -938,7 +938,7 @@ category = any
 # provisioning.certificate
 #
 # Certificate to send to the node
-certificate = 
+certificate =
 
 [node_import]
 #

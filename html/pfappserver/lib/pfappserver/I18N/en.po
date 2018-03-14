@@ -24,7 +24,7 @@ msgid "%1 nodes imported, %2 skipped"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Config/Switch.pm
-msgid "%1 switches have been imported, %2 switches have been skipped"
+msgid "%1 Devices have been imported, %2 devices have been skipped"
 msgstr ""
 
 # conf/documentation.conf (advanced.admin_csp_security_headers)
@@ -236,7 +236,7 @@ msgid "AUP template"
 msgstr ""
 
 # conf/documentation.conf (advanced.multihost)
-msgid "Ability to manage all active devices from a same switch port"
+msgid "Ability to manage all active devices from a same device port"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Email.pm
@@ -297,7 +297,7 @@ msgid "Action"
 msgstr ""
 
 # conf/documentation.conf (snmp_traps.trap_limit_action)
-msgid "Action that A3 will take if the snmp_traps.trap_limit_threshold is reached. Defaults to none. email will send an email every hour if the limit's still reached. shut will shut the port on the switch and will also send an email even if email is not specified."
+msgid "Action that A3 will take if the snmp_traps.trap_limit_threshold is reached. Defaults to none. email will send an email every hour if the limit's still reached. shut will shut the port on the device and will also send an email even if email is not specified."
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/AdminRoles.pm
@@ -327,7 +327,7 @@ msgid "Activate preregistration"
 msgstr ""
 
 # html/pfappserver/root/configurator/enforcement.tt
-msgid "Activate this mechanism if you have unmanageable equipment such as entry-level consumer switches or access points. A3 becomes the gateway of that inline network, and will NAT the traffic to the Internet."
+msgid "Activate this mechanism if you have unmanageable equipment such as entry-level consumer devices or access points. A3 becomes the gateway of that inline network, and will NAT the traffic to the Internet."
 msgstr ""
 
 # html/pfappserver/root/configurator/networks.tt
@@ -516,7 +516,7 @@ msgid "Add source"
 msgstr ""
 
 # html/pfappserver/root/config/switch/index.tt
-msgid "Add switch"
+msgid "Add Device"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Pf.pm
@@ -643,7 +643,7 @@ msgid "Allow on registration"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
-msgid "Allow this switch to use A3 as a radius server for CLI access"
+msgid "Allow this device to use A3 as a radius server for CLI access"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/AdminRoles.pm
@@ -1526,7 +1526,7 @@ msgid "Comma-separated list of domains that will be resolved with the correct IP
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
-msgid "Comma-separated list of the switch uplinks"
+msgid "Comma-separated list of the device uplinks"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
@@ -1674,7 +1674,7 @@ msgid "Controller IP Address"
 msgstr ""
 
 # conf/documentation.conf (snmp_traps.trap_limit)
-msgid "Controls whether or not the trap limit feature is enabled. Trap limiting is a way to limit the damage done by malicious users or misbehaving switch that sends too many traps to A3 causing it to be overloaded. Trap limiting is controlled by the trap limit threshold and trap limit action parameters. Default is enabled."
+msgid "Controls whether or not the trap limit feature is enabled. Trap limiting is a way to limit the damage done by malicious users or misbehaving device that sends too many traps to A3 causing it to be overloaded. Trap limiting is controlled by the trap limit threshold and trap limit action parameters. Default is enabled."
 msgstr ""
 
 # html/pfappserver/root/admin/wrapper.tt
@@ -2522,7 +2522,7 @@ msgid "Edit floating device"
 msgstr ""
 
 # html/pfappserver/root/config/floatingdevice/list.tt
-msgid "Edit switch"
+msgid "Edit device"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Eduroam.pm
@@ -3322,7 +3322,7 @@ msgid "Import from CSV"
 msgstr ""
 
 # html/pfappserver/root/config/switch/index.tt
-msgid "Import switches from CSV"
+msgid "Import devices from CSV"
 msgstr ""
 
 # html/pfappserver/root/config/switch/index.tt
@@ -3909,7 +3909,7 @@ msgid "Members"
 msgstr ""
 
 # html/pfappserver/root/config/switch/view.tt
-msgid "Members can be added after the switch group is saved"
+msgid "Members can be added after the device group is saved"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Mirapay.pm
@@ -4838,7 +4838,7 @@ msgid "A3 makes use of a MySQL/MariaDB database. You can configure the connectio
 msgstr ""
 
 # html/pfappserver/root/configuration/define_policy.tt
-msgid "A3 manages switches, access points and WiFi controllers. You have to add the equipment you want A3 to manage and do the role by VLAN/ACL/policy identifier mapping."
+msgid "A3 manages devices, access points and WiFi controllers. You have to add the equipment you want A3 to manage and do the role by VLAN/ACL/policy identifier mapping."
 msgstr ""
 
 # html/pfappserver/root/configuration/system_config.tt
@@ -5033,7 +5033,7 @@ msgid "Please select Provisioning type"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
-msgid "Please select the type of the switch."
+msgid "Please select the type of the device."
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
@@ -5123,7 +5123,7 @@ msgid "Please specify the ID of the Provisioning entry."
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
-msgid "Please specify the IP address/MAC address/Range (CIDR) of the switch."
+msgid "Please specify the IP address/MAC address/Range (CIDR) of the device."
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/FloatingDevice.pm
@@ -5378,7 +5378,7 @@ msgid "Prefix for the IPv6 address of the named interface."
 msgstr ""
 
 # html/pfappserver/root/config/profile/index.tt
-msgid "Present a different captive portal according to the SSID, the VLAN, or the switch IP the client connects to."
+msgid "Present a different captive portal according to the SSID, the VLAN, or the device IP the client connects to."
 msgstr ""
 
 # html/pfappserver/root/config/profile/edit.tt
@@ -6038,7 +6038,7 @@ msgid "Role mapping by access list"
 msgstr ""
 
 # html/pfappserver/root/config/switch/view.tt
-msgid "Role mapping by switch role"
+msgid "Role mapping by device role"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Firewall_SSO.pm
@@ -7784,7 +7784,7 @@ msgid "This allows you to configure networks managed by A3, in-bound and fencing
 msgstr ""
 
 # html/pfappserver/root/configuration/network_conf.tt
-msgid "This allows you to create floating devices in A3 - like a switch for example that moves around in the network. A3 will automatically reconfigure a switch port and a floating device is connected."
+msgid "This allows you to create floating devices in A3 - like a device for example that moves around in the network. A3 will automatically reconfigure a device port and a floating device is connected."
 msgstr ""
 
 # html/pfappserver/root/configuration/portal_config.tt
@@ -8616,7 +8616,7 @@ msgid "What's going on?"
 msgstr ""
 
 # html/pfappserver/root/configuration/define_policy.tt
-msgid "When an endpoint connects to the network, A3 must be able to assign a role to it, or its user. The role can then be translated to a VLAN, a set of ACL, a switch manufacturer policy identifier or a combinations of all of this."
+msgid "When an endpoint connects to the network, A3 must be able to assign a role to it, or its user. The role can then be translated to a VLAN, a set of ACL, a device manufacturer policy identifier or a combinations of all of this."
 msgstr ""
 
 # html/pfappserver/root/configuration/define_policy.tt
@@ -8664,7 +8664,7 @@ msgid "When this is enabled, an async job will cache the NTLM credentials of the
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Pfmon/switch_cache_lldpLocalPort_description.pm
-msgid "Whether or not a switch range should be expanded to process each of its IPs"
+msgid "Whether or not a device range should be expanded to process each of its IPs"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Pfmon.pm
@@ -10337,8 +10337,8 @@ msgid "opswat"
 msgstr "OPSWAT"
 
 # pf::dhcp_option82 (DHCP Option 82)
-msgid "option82_switch"
-msgstr "Option82 Switch"
+msgid "option82_device"
+msgstr "Option82 Device"
 
 # html/pfappserver/lib/pfappserver/Form/User.pm
 # html/pfappserver/root/admin/users.tt

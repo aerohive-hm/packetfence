@@ -30,18 +30,15 @@ my @steps = (
     { id          => 'networks',
       title       => 'Networks',
       description => 'Configure network interfaces' },
-    { id          => 'database',
-      title       => 'Database',
-      description => 'Configure MySQL' },
     { id          => 'configuration',
-      title       => 'PacketFence',
+      title       => 'A3',
       description => 'Configure various options' },
     { id          => 'admin',
       title       => 'Administration',
       description => 'Configure access to the admin interface' },
-    { id          => 'fingerbank',
-      title       => 'Fingerbank',
-      description => 'Configure Fingerbank' },
+    { id          => 'entitlement',
+      title       => 'Entitlement',
+      description => 'Configure entitlement' },
     { id          => 'services',
       title       => 'Confirmation',
       description => 'Start the services' }
@@ -261,36 +258,36 @@ Database setup (step 3)
 
 =cut
 
-# FIXME this is not like we built the rest of pfappserver.. re-architect?
+#  fixme this is not like we built the rest of pfappserver.. re-architect?
 # the GET is expected to fail on first run, then the javascript calls it again and it should pass...
-sub database :Chained('object') :PathPart('database') :Args(0) {
-    my ( $self, $c ) = @_;
-
-    # Default username if nothing else have already been entered (provide a pre-filled field)
-    $c->session->{root_user} = 'root' if (!defined($c->session->{root_user}));
-
-    # Check MySQLd status by fetching pid
-    $c->stash->{mysqld_running} = 1 if ($c->model('Config::System')->check_mysqld_status() ne 0);
-
-    if ($c->request->method eq 'GET') {
-        delete $c->session->{completed}->{$c->action->name};
-        # Check if the database and user exist
-        my $database_ref = \%{$Config{'database'}};
-        $c->stash->{'database'} = $database_ref;
-        # hash-slice assigning values to the list
-        my ($pf_user, $pf_pass, $pf_db) = @{$database_ref}{qw/user pass db/};
-        if ($pf_user && $pf_pass && $pf_db) {
-            # throwing away result since we don't use it
-            my ($status) = $c->model('DB')->connect($pf_db, $pf_user, $pf_pass);
-            if (is_success($status)) {
-                # everything has been done successfully
-                $c->session->{completed}->{$c->action->name} = 1;
-                # we need to restart mariadb so that it applies the network configuration
-                system("sudo /usr/bin/systemctl restart packetfence-mariadb");
-            }
-        }
-    }
-}
+# sub database :Chained('object') :PathPart('database') :Args(0) {
+#     my ( $self, $c ) = @_;
+#
+#     # Default username if nothing else have already been entered (provide a pre-filled field)
+#     $c->session->{root_user} = 'root' if (!defined($c->session->{root_user}));
+#
+#     # Check MySQLd status by fetching pid
+#     $c->stash->{mysqld_running} = 1 if ($c->model('Config::System')->check_mysqld_status() ne 0);
+#
+#     if ($c->request->method eq 'GET') {
+#         delete $c->session->{completed}->{$c->action->name};
+#         # Check if the database and user exist
+#         my $database_ref = \%{$Config{'database'}};
+#         $c->stash->{'database'} = $database_ref;
+#         # hash-slice assigning values to the list
+#         my ($pf_user, $pf_pass, $pf_db) = @{$database_ref}{qw/user pass db/};
+#         if ($pf_user && $pf_pass && $pf_db) {
+#             # throwing away result since we don't use it
+#             my ($status) = $c->model('DB')->connect($pf_db, $pf_user, $pf_pass);
+#             if (is_success($status)) {
+#                 # everything has been done successfully
+#                 $c->session->{completed}->{$c->action->name} = 1;
+#                 # we need to restart mariadb so that it applies the network configuration
+#                 system("sudo /usr/bin/systemctl restart packetfence-mariadb");
+#             }
+#         }
+#     }
+# }
 
 =head2 configuration
 
