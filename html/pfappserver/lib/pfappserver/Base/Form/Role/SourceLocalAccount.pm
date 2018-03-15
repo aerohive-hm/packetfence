@@ -26,7 +26,7 @@ has_field 'create_local_account' => (
     default_method => \&default_from_attribute,
     tags => {
         after_element => \&help,
-        help => 'Create a local account on the PacketFence system based on the username provided.',
+        help => 'Create a local account on the A3 system based on the username provided.',
     },
 );
 
@@ -55,7 +55,7 @@ sub default_from_attribute {
     my $source_class = $field->form->source_class;
     return $source_class->meta->get_attribute($field->name)->default;
 }
- 
+
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>
@@ -67,4 +67,3 @@ Copyright (C) 2005-2018 Inverse inc.
 =cut
 
 1;
-

@@ -73,7 +73,7 @@ has_field 'cache_updates' =>
    label => 'Cache updates',
    checkbox_value => 'enabled',
    tags => { after_element => \&help,
-             help => 'Enable this to debounce updates to the Firewall.<br/>By default, PacketFence will send a SSO on every DHCP request for every device. Enabling this enables "sleep" periods during which the update is not sent if the informations stay the same.' },
+             help => 'Enable this to debounce updates to the Firewall.<br/>By default, A3 will send a SSO on every DHCP request for every device. Enabling this enables "sleep" periods during which the update is not sent if the informations stay the same.' },
   );
 
 has_field 'cache_timeout' =>
@@ -98,7 +98,7 @@ has_field 'username_format' =>
    label => 'Username format',
    default => '$pf_username',
    tags => { after_element => \&help,
-             help => 'Defines how to format the username that is sent to your firewall. $username represents the username and $realm represents the realm of your user if applicable. $pf_username represents the unstripped username as it is stored in the PacketFence database. If left empty, it will use the username as stored in PacketFence (value of $pf_username).' },
+             help => 'Defines how to format the username that is sent to your firewall. $username represents the username and $realm represents the realm of your user if applicable. $pf_username represents the unstripped username as it is stored in the A3 database. If left empty, it will use the username as stored in A3 (value of $pf_username).' },
   );
 
 has_field 'default_realm' =>

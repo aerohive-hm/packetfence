@@ -280,7 +280,7 @@ sub getSystem {
         return ($STATUS::OK, $systemObj);
     }
 
-    $status_msg = "This OS is not supported by PacketFence";
+    $status_msg = "This OS is not supported by A3";
     $logger->error("$status_msg | Cannot instantiate an object of this type");
 
     return ($STATUS::NOT_IMPLEMENTED, $status_msg);

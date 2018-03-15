@@ -63,7 +63,7 @@ has_field 'auth_listening_port' => (
     label           => 'Authentication listening port',
     tags            => {
         after_element   => \&help,
-        help            => 'PacketFence Eduroam RADIUS virtual server authentication listening port',
+        help            => 'A3 Eduroam RADIUS virtual server authentication listening port',
     },
     element_attr    => {
         placeholder     => pf::Authentication::Source::EduroamSource->meta->get_attribute('auth_listening_port')->default,
@@ -145,4 +145,3 @@ Copyright (C) 2005-2018 Inverse inc.
 =cut
 
 1;
-

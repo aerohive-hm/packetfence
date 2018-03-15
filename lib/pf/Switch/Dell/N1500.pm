@@ -110,7 +110,7 @@ sub returnAuthorizeWrite {
     my $radius_reply_ref;
     my $status;
     $radius_reply_ref->{'Cisco-AVPair'} = 'shell:priv-lvl=15';
-    $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by PacketFence";
+    $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by A3";
     $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with write access");
     my $filter = pf::access_filter::radius->new;
     my $rule = $filter->test('returnAuthorizeWrite', $args);
@@ -131,7 +131,7 @@ sub returnAuthorizeRead {
     my $radius_reply_ref;
     my $status;
     $radius_reply_ref->{'Cisco-AVPair'} = 'shell:priv-lvl=3';
-    $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by PacketFence";
+    $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by A3";
     $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with read access");
     my $filter = pf::access_filter::radius->new;
     my $rule = $filter->test('returnAuthorizeRead', $args);
@@ -154,7 +154,7 @@ sub getPhonesLLDPAtIfIndex {
     my $logger = $self->logger;
     my @phones;
     if ( !$self->isVoIPEnabled() ) {
-        $logger->debug( "VoIP not enabled on switch "
+        $logger->debug( "VoIP not enabled on device "
                 . $self->{_ip}
                 . ". getPhonesLLDPAtIfIndex will return empty list." );
         return @phones;

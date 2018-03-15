@@ -45,7 +45,7 @@ sub build_child {
     $tmp_cfg{'127.0.0.1'} = {
 
         #      id                => '127.0.0.1',
-        type              => 'PacketFence',
+        type              => 'A3',
         mode              => 'production',
         SNMPVersionTrap   => '1',
         SNMPCommunityTrap => 'public'
@@ -118,7 +118,7 @@ sub build_child {
         push @management_ips, $self->{management_network}->tag('ip') if(defined($self->{management_network}->tag('ip')));
         foreach my $management_ip (@management_ips){
             $tmp_cfg{$management_ip} = {
-                type => 'PacketFence',
+                type => 'A3',
                 mode => 'production',
                 radiusSecret => $self->{local_secret},
                 SNMPVersionTrap   => '1',

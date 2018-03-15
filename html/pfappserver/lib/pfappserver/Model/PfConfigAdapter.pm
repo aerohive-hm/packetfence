@@ -68,12 +68,12 @@ sub reloadConfiguration {
     my ($self) = @_;
     my $logger = get_logger();
 
-    $logger->info("reloading PacketFence configuration");
+    $logger->info("reloading A3 configuration");
 
     my $status = pfconfig::manager->new->expire_all;
     pf::config::configreload(1);
 
-    $logger->info("done reloading PacketFence configuration");
+    $logger->info("done reloading A3 configuration");
     return $TRUE;
 
 }
