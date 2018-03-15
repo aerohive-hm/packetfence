@@ -117,7 +117,7 @@ has_field 'cliAccess' =>
    type => 'Toggle',
    label => 'CLI Access Enabled',
    tags => { after_element => \&help,
-             help => 'Allow this switch to use PacketFence as a radius server for CLI access'},
+             help => 'Allow this device to use A3 as a RADIUS server for CLI access'},
   );
 has_field 'ExternalPortalEnforcement' => (
     type    => 'Toggle',
