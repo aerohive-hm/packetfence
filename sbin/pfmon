@@ -58,7 +58,7 @@ use pf::fingerbank;
 use fingerbank::Config;
 use fingerbank::DB;
 use pf::cluster;
-use Time::HiRes qw(time sleep);
+use Time::HiRes qw(time sleep alarm);
 use pf::option82 qw(search_switch);
 use pf::CHI::Request;
 
@@ -310,7 +310,7 @@ sub _runtask {
         my $task = pf::factory::pfmon::task->new($task_id);
         my $interval = $task->interval;
         unless ($interval) {
-            $logger->trace("task $task_id is disabled");
+            $logger->warn("task $task_id is disabled");
             $time_taken = 0;
             alarm 60;
             pause;
@@ -319,7 +319,7 @@ sub _runtask {
         my $final_interval = $interval - $time_taken;
         $logger->trace("$task_id is sleeping for $final_interval ($interval from configuration - $time_taken)");
         # Only wait if the interval is positive
-        if($final_interval > 0) {
+        if ($final_interval > 0) {
             alarm $final_interval;
             pause;
             last unless $running;
@@ -328,7 +328,7 @@ sub _runtask {
         $logger->trace("$task_id is running");
         my $start = time();
         if (db_check_readonly()) {
-            $logger->trace(sub { "The database is in readonly mode skipping task $task_id" });
+            $logger->warn(sub { "The database is in readonly mode skipping task $task_id" });
             $time_taken = 0;
             next;
         }
@@ -345,14 +345,14 @@ sub _runtask {
             $logger->error("Parent is no longer running shutting down");
             $running = 0;
         }
-        reload_config();
     } continue {
+        reload_config();
         if ($TASKS > 0) {
             $TASKS--;
         }
     }
-    $logger->trace("$$ shutting down");
-    exit;
+    $logger->info("$$ shutting down");
+    POSIX::_exit(0);
 }
 
 sub is_worker_runnable {
