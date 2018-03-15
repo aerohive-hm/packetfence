@@ -33,8 +33,8 @@ msgid "%1 nodes imported, %2 skipped"
 msgstr "%1 appareils importés, %2 rejetés"
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Config/Switch.pm
-msgid "%1 switches have been imported, %2 switches have been skipped"
-msgstr "%1 commutateurs ont été importés, %2 commutateurs ont été sautés"
+msgid "%1 devices have been imported, %2 devices have been skipped"
+msgstr "%1 équipements ont été importés, %2 équipements ont été sautés"
 
 # conf/documentation.conf (advanced.admin_csp_security_headers)
 msgid ""
@@ -259,8 +259,8 @@ msgid "AUP template"
 msgstr "Gabarit de la politique d’utilisation"
 
 # conf/documentation.conf (advanced.multihost)
-msgid "Ability to manage all active devices from a same switch port"
-msgstr "Possibilité de gérer tous les périphériques actifs à partir d’un même port de commutateur"
+msgid "Ability to manage all active devices from a same device port"
+msgstr "Possibilité de gérer tous les périphériques actifs à partir d’un même port de équipements"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Email.pm
 # html/pfappserver/lib/pfappserver/Form/Config/Source/SponsorEmail.pm
@@ -328,9 +328,9 @@ msgstr "Action"
 msgid ""
 "Action that A3 will take if the snmp_traps.trap_limit_threshold is "
 "reached. Defaults to none. email will send an email every hour if the "
-"limit's still reached. shut will shut the port on the switch and will also "
+"limit's still reached. shut will shut the port on the device and will also "
 "send an email even if email is not specified."
-msgstr "Action que A3 prendra si le seuil snmp_traps.trap_limit_est atteint. Par défaut, aucun. Email enverra un courrier électronique toutes les heures si la limite est toujours atteinte. Shut va fermer le port sur le commutateur et enverra un courrier électronique même si Email n’est pas spécifié."
+msgstr "Action que A3 prendra si le seuil snmp_traps.trap_limit_est atteint. Par défaut, aucun. Email enverra un courrier électronique toutes les heures si la limite est toujours atteinte. Shut va fermer le port sur le équipement et enverra un courrier électronique même si Email n’est pas spécifié."
 
 # html/pfappserver/lib/pfappserver/Form/Config/AdminRoles.pm
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
@@ -361,9 +361,9 @@ msgstr "Activer la préinscription"
 # html/pfappserver/root/configurator/enforcement.tt
 msgid ""
 "Activate this mechanism if you have unmanageable equipment such as entry-"
-"level consumer switches or access points. A3 becomes the gateway of"
+"level consumer devices or access points. A3 becomes the gateway of"
 " that inline network, and will NAT the traffic to the Internet."
-msgstr "Activer ce fonctionnement si vous avez des équipements qui ne sont pas gérables tels que commutateurs ou points d’accès sans fil. A3 devient le routeur de ce réseau inline et va translater tout le trafic vers Internet."
+msgstr "Activer ce fonctionnement si vous avez des équipements qui ne sont pas gérables tels que équipements ou points d’accès sans fil. A3 devient le routeur de ce réseau inline et va translater tout le trafic vers Internet."
 
 # html/pfappserver/root/configurator/networks.tt
 msgid "Activate your network interfaces and create VLANs"
@@ -693,8 +693,8 @@ msgid "Allow on registration"
 msgstr "Autoriser sur le réseau d’enregistrement"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
-msgid "Allow this switch to use A3 as a RADIUS server for CLI access"
-msgstr "Permettre à ce commutateur d’utiliser A3 comme serveur RADIUS pour l’accès en console."
+msgid "Allow this device to use A3 as a RADIUS server for CLI access"
+msgstr "Permettre à ce équipement d’utiliser A3 comme serveur RADIUS pour l’accès en console."
 
 # html/pfappserver/lib/pfappserver/Form/Config/AdminRoles.pm
 msgid "Allowed actions"
@@ -963,7 +963,7 @@ msgstr "Activation Automatique"
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid "Automatically register devices"
-msgstr "Enregistrer automatiquement les appareils"
+msgstr "Enregistrer automatiquement les équipements"
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Graph.pm
 msgid "Available Memory"
@@ -1252,7 +1252,7 @@ msgstr "Cochez cette case pour que la durée d’accès corresponde au temps d�
 msgid ""
 "Check this box to have the certificate revoke when the node using it is "
 "unregistered.<br/>Do not use if multiple devices share the same certificate"
-msgstr "Cocher cette case pour que le certificat soit révoqué lorsqu’un appareil est désenregistré.</br>À ne pas utiliser si plusieurs appareils partagent le même certificat."
+msgstr "Cocher cette case pour que le certificat soit révoqué lorsqu’un équipement est désenregistré.</br>À ne pas utiliser si plusieurs équipements partagent le même certificat."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/LDAP.pm
 msgid "Children"
@@ -1587,7 +1587,7 @@ msgstr "Liste séparée par des virgules des adresses MAC pour lequel l’isolem
 msgid ""
 "Comma-delimited list of URLs known to be used by devices to detect the "
 "presence of a captive portal and trigger their captive portal mechanism."
-msgstr "Liste, délimitée par des virgules, des URLs connues à utiliser par les appareils pour détecter la présence d’un portail captif et lancer leur mécanisme de portail captif."
+msgstr "Liste, délimitée par des virgules, des URLs connues à utiliser par les équipements pour détecter la présence d’un portail captif et lancer leur mécanisme de portail captif."
 
 # conf/documentation.conf (fencing.isolation_passthroughs)
 msgid ""
@@ -1637,8 +1637,8 @@ msgid ""
 msgstr "Liste des domaines séparés par une virgule qui seront résolu avec la bonne adresse IP."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
-msgid "Comma-separated list of the switch uplinks"
-msgstr "Liste des ports uplinks du commutateur séparée par une virgule."
+msgid "Comma-separated list of the device uplinks"
+msgstr "Liste des ports uplinks du équipement séparée par une virgule."
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 msgid "Common Name Attribute"
@@ -1792,11 +1792,11 @@ msgstr "Adresse IP du contrôleur"
 # conf/documentation.conf (snmp_traps.trap_limit)
 msgid ""
 "Controls whether or not the trap limit feature is enabled. Trap limiting is "
-"a way to limit the damage done by malicious users or misbehaving switch that"
+"a way to limit the damage done by malicious users or misbehaving device that"
 " sends too many traps to A3 causing it to be overloaded. Trap "
 "limiting is controlled by the trap limit threshold and trap limit action "
 "parameters. Default is enabled."
-msgstr "Contrôle si oui ou non la fonction de limite de trap snmp est activée. La limite de trap snmp est un moyen de limiter les dommages causés par des utilisateurs malveillants ou commutateur qui envoi trop de trap snmp à A3 l’amenant à être surchargé. La limite de trap snmp est contrôlée par les paramètres de la limite de seuil. Par défaut est activé."
+msgstr "Contrôle si oui ou non la fonction de limite de trap snmp est activée. La limite de trap snmp est un moyen de limiter les dommages causés par des utilisateurs malveillants ou équipement qui envoi trop de trap snmp à A3 l’amenant à être surchargé. La limite de trap snmp est contrôlée par les paramètres de la limite de seuil. Par défaut est activé."
 
 # html/pfappserver/root/admin/wrapper.tt
 msgid "Copied"
@@ -3618,8 +3618,8 @@ msgid "Import from CSV"
 msgstr "Importer depuis un CSV"
 
 # html/pfappserver/root/config/switch/index.tt
-msgid "Import switches from CSV"
-msgstr "Importer des commutateurs depuis un CSV"
+msgid "Import devices from CSV"
+msgstr "Importer des équipements depuis un CSV"
 
 # html/pfappserver/root/config/switch/index.tt
 msgid "Importing"
@@ -4265,8 +4265,8 @@ msgid "Members"
 msgstr "Membres"
 
 # html/pfappserver/root/config/switch/view.tt
-msgid "Members can be added after the switch group is saved"
-msgstr "Les membres peuvent être ajoutés après que le groupe de commutateur soit enregistré"
+msgid "Members can be added after the device group is saved"
+msgstr "Les membres peuvent être ajoutés après que le groupe de équipement soit enregistré"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Mirapay.pm
 msgid "Merchant ID"
@@ -5252,10 +5252,10 @@ msgstr "A3 utilise MySQL/MariaDB comme base de données. Vous pouvez configurer 
 
 # html/pfappserver/root/configuration/define_policy.tt
 msgid ""
-"A3 manages switches, access points and WiFi controllers. You have "
+"A3 manages devices, access points and WiFi controllers. You have "
 "to add the equipment you want A3 to manage and do the role by "
 "VLAN/ACL/policy identifier mapping."
-msgstr "A3 gère les commutateurs, points d’accès et contrôleurs WiFi. Vous devez ajouter les équipements que A3 doit gérer et configurer la correspondance de rôle par VLAN/ACL/politiques."
+msgstr "A3 gère les équipements, points d’accès et contrôleurs WiFi. Vous devez ajouter les équipements que A3 doit gérer et configurer la correspondance de rôle par VLAN/ACL/politiques."
 
 # html/pfappserver/root/configuration/system_config.tt
 msgid ""
@@ -5461,8 +5461,8 @@ msgid "Please select Provisioning type"
 msgstr "Sélectionner un type d’approvisionnement"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
-msgid "Please select the type of the switch."
-msgstr "Sélectionner le type de commutateur"
+msgid "Please select the type of the device."
+msgstr "Sélectionner le type de équipement"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
 msgid ""
@@ -5552,8 +5552,8 @@ msgid "Please specify the ID of the Provisioning entry."
 msgstr "Veuillez spécifier l’ID du Provisionner"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
-msgid "Please specify the IP address/MAC address/Range (CIDR) of the switch."
-msgstr "Veuillez spécifier l’adresse IP/adresse MAC/masque (CIDR) du commutateur"
+msgid "Please specify the IP address/MAC address/Range (CIDR) of the device."
+msgstr "Veuillez spécifier l’adresse IP/adresse MAC/masque (CIDR) du équipement"
 
 # html/pfappserver/lib/pfappserver/Form/Config/FloatingDevice.pm
 msgid "Please specify the MAC address of the floating device."
@@ -5818,8 +5818,8 @@ msgstr "Préfixe pour l’adresse IPv6 de cette interface."
 # html/pfappserver/root/config/profile/index.tt
 msgid ""
 "Present a different captive portal according to the SSID, the VLAN, or the "
-"switch IP the client connects to."
-msgstr "Présenter un portail captif différent selon le SSID, le VLAN ou bien l’IP du commutateur où le client est connecté."
+"device IP the client connects to."
+msgstr "Présenter un portail captif différent selon le SSID, le VLAN ou bien l’IP du équipement où le client est connecté."
 
 # html/pfappserver/root/config/profile/edit.tt
 # html/pfappserver/root/config/profile/files.tt
@@ -6490,8 +6490,8 @@ msgid "Role mapping by access list"
 msgstr "Traduction de rôle par access list"
 
 # html/pfappserver/root/config/switch/view.tt
-msgid "Role mapping by switch role"
-msgstr "Traduction de rôle par rôle de commutateur"
+msgid "Role mapping by device role"
+msgstr "Traduction de rôle par rôle de équipement"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Firewall_SSO.pm
 # html/pfappserver/lib/pfappserver/Form/Config/Firewall_SSO/BarracudaNG.pm
@@ -8461,10 +8461,10 @@ msgstr "Ceci vous permet de configurer les réseaux gérer par A3, les paramètr
 
 # html/pfappserver/root/configuration/network_conf.tt
 msgid ""
-"This allows you to create floating devices in A3 - like a switch "
+"This allows you to create floating devices in A3 - like a device "
 "for example that moves around in the network. A3 will automatically"
-" reconfigure a switch port and a floating device is connected."
-msgstr "Ceci vous permet de créer des appareils itinérants dans A3 - par exemple, comme un commutateur qui se déplace sur le réseau. A3 re-configurera automatiquement un port de commutateur lorsqu’un appareil itinérant se connecte."
+" reconfigure a device port and a floating device is connected."
+msgstr "Ceci vous permet de créer des appareils itinérants dans A3 - par exemple, comme un équipement qui se déplace sur le réseau. A3 re-configurera automatiquement un port de équipement lorsqu’un appareil itinérant se connecte."
 
 # html/pfappserver/root/configuration/portal_config.tt
 msgid ""
@@ -8523,7 +8523,7 @@ msgstr "Ceci est utilisé pour specifier un contrôleur de domain adhésif auque
 msgid ""
 "This node is wired to a switchport on which other active devices were "
 "detected."
-msgstr "Ce nœud est branché sur un port de commutateur sur lequel d’autres périphériques actifs ont été détectés."
+msgstr "Ce nœud est branché sur un port de équipement sur lequel d’autres périphériques actifs ont été détectés."
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid ""
@@ -9384,9 +9384,9 @@ msgstr "Que ce passe-t-il ?"
 msgid ""
 "When an endpoint connects to the network, A3 must be able to assign"
 " a role to it, or its user. The role can then be translated to a VLAN, a set"
-" of ACL, a switch manufacturer policy identifier or a combinations of all of"
+" of ACL, a device manufacturer policy identifier or a combinations of all of"
 " this."
-msgstr "Lorsqu’un appareil se connecte au réseau, A3 doit pouvoir lui attribuer un rôle ou son utilisateur. Le rôle peut ensuite être traduit en un VLAN, un ensemble d’ACL, un identifiant de politique de fabricant de commutateur ou une combinaison de tout cela."
+msgstr "Lorsqu’un appareil se connecte au réseau, A3 doit pouvoir lui attribuer un rôle ou son utilisateur. Le rôle peut ensuite être traduit en un VLAN, un ensemble d’ACL, un identifiant de politique de fabricant de équipement ou une combinaison de tout cela."
 
 # html/pfappserver/root/configuration/define_policy.tt
 msgid ""
@@ -9462,8 +9462,8 @@ msgstr "Si activé, un travail asynchrone cachera dans le cache le hash NTLM de 
 
 # html/pfappserver/lib/pfappserver/Form/Config/Pfmon/switch_cache_lldpLocalPort_description.pm
 msgid ""
-"Whether or not a switch range should be expanded to process each of its IPs"
-msgstr "Est ce qu'une gamme de commutateurs doit être étendu pour procéder tous ses IPs."
+"Whether or not a device range should be expanded to process each of its IPs"
+msgstr "Est ce qu'une gamme de équipements doit être étendu pour procéder tous ses IPs."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Pfmon.pm
 msgid ""
@@ -11337,19 +11337,19 @@ msgstr "SSID"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch"
-msgstr "Commutateur"
+msgstr "équipement"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch_group"
-msgstr "Groupe de commutateur"
+msgstr "Groupe de équipement"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch_mac"
-msgstr "MAC du commutateur"
+msgstr "MAC du équipement"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch_port"
-msgstr "Port du commutateur"
+msgstr "Port du équipement"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.time"
@@ -11918,15 +11918,15 @@ msgstr "retirer"
 # pf::dhcp_option82 (DHCP Option 82)
 # pf::radius_audit_log (RADIUS Audit Log)
 msgid "switch_id"
-msgstr "ID du commutateur"
+msgstr "ID du équipement"
 
 # pf::radius_audit_log (RADIUS Audit Log)
 msgid "switch_ip_address"
-msgstr "Adresse IP du commutateur"
+msgstr "Adresse IP du équipement"
 
 # pf::radius_audit_log (RADIUS Audit Log)
 msgid "switch_mac"
-msgstr "MAC du commutateur"
+msgstr "MAC du équipement"
 
 # pf::provisioner (Provisioners)
 msgid "symantec"

@@ -14,10 +14,9 @@
     <link rel="stylesheet" href="[% c.uri_for('/static/css/styles.css') %]">
     <link rel="stylesheet" href="[% c.uri_for('/static/app/application.css') %]">
     <link rel="stylesheet" href="[% c.uri_for('/static/admin/common.css') %]">
-
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-      <script src="[% c.uri_for('/static/app/html5.js') %]"></script>
+         <script src="[% c.uri_for('/static/app/html5.js') %]"></script>
     <![endif]-->
   </head>
   [% SET SHOW_READONLY_ERROR = c.user_allowed_in_admin() && readonly_mode %]
@@ -144,6 +143,34 @@
 [% FOREACH js = jsFiles -%]
     <script type="text/javascript" src="[% c.uri_for("/static/${js}.js") %]" charset="UTF-8"></script>
 [% END -%]
+<script type="text/javascript">
+    $(window).on('load',function(){
+        $('#myModal').modal('show');
+    });
 
+
+    var emailForm = $('.emailForm');
+    var emailFormButton = $('.toggle-emailForm');
+    var licenseAlertButton = $('.toggle-licenseAlert');
+    var licenseAlert = $('.licenseAlert');
+    var sentEmailButton = $('.emailSentSuccess');
+    var successEmailMessage = $('.successEmailMessage');
+    $(document).ready(function() {
+      emailForm.hide();
+      successEmailMessage.hide();
+      emailFormButton.click(function() {
+        licenseAlert.slideUp(1000);
+        emailForm.slideDown(1000);
+      });
+      licenseAlertButton.click(function() {
+        emailForm.slideUp(1000);
+        licenseAlert.slideDown(1000);
+      });
+      sentEmailButton.click(function(){
+	emailForm.slideUp(1000);
+	successEmailMessage.slideDown(1000);
+      });
+    });
+</script>
   </body>
 </html>

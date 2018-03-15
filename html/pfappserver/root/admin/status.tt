@@ -4,6 +4,79 @@
      cssFiles = [
         'admin/status',
         ] -%]
+
+
+<!--LICENSE KEY MODAL-->
+
+    <div class="modal fade" id="myModal">
+      <div class="modal-dialog" role="document">
+
+	<!--BEGINNING ALERT TEXT-->
+        <div class="modal-content licenseAlert">
+          <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
+            <h3 class="modal-title"><b>SUBSCRIPTION ENDING IN [#] DAYS</b></h3>
+          </div>
+          <div class="modal-body">
+            <p>Hello [% c.user | html %]. It looks like your subscription is almost ending. Please renew your license by # of days to continue using it. You can do this by calling this number: </p> 
+	    <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">408-123-4567</p> 
+            <p>You can also send an email, by pressing the button below <b>"Send Email"</b> where you can prefill a form to send out an email. Thanks again for using our service. </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary toggle-emailForm">Send Email</button>
+	    <button type="button" class="btn btn-success licenseKey">Enter License Key</button>	
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+	<!--END OF ALERT TEXT-->
+
+	<!--EMAIL FORM FILL OUT-->
+        <div class="modal-content emailForm" style="display: none;">
+          <div class="modal-header" style="background-color: #333; color:#F4F6F9; font-weight:400; text-align:center;">
+            <h3 class="modal-title"><b>Email Form</b></h3>
+          </div>
+          <div class="modal-body">
+	    <form style="text-align:center;">
+	      <div class="form-group">
+ 	        <label class="col-md-4"> First name:</label> <div class="col-md-4"><input type="text" name="fname"></div>
+  	        <label>Last name:</label> <input type="text" name="lname">
+	      </div>
+	      <div class="form-group">
+	        <label>Company:</label> <div class="col-md-4"><input type="text" name="company"></div>
+	        <label>Company Email:</label> <input type="text" name="email"><br>
+  	      </div>
+	      <div class="form-group">
+	        <label>Phone Number:</label> <input type="number" style="width:50px;"> - <input type="number" style="width:52px;"> - <input type="number" style="width:52px;">
+	      </div>
+	    </form>
+          </div>
+          <div class="modal-footer">
+	    <button type="button" class="btn btn-danger toggle-licenseAlert">Go Back</button>
+            <button type="button" class="btn btn-primary emailSentSuccess">Send Email</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+	<!--end of email form fill out-->
+
+	<!--SUCCESS MESSAGE SENT EMAIL-->
+        <div class="modal-content successEmailMessage" style="display:none;"> 
+          <div class="modal-header" style="background-color: #4cae4c; color:#F4F6F9; font-weight:400; text-align:center;">
+            <h3 class="modal-title"><b>Successfully sent</b></h3>
+          </div>
+          <div class="modal-body">
+            The email has been successfully sent. Please wait for an email back to receive a license key.<br>
+	    Thank you. 
+	  </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+	<!--end of success message-->
+      </div>
+    </div>
+
+<!--END OF MODAL-->
+
     <div class="sidenav-fluid">
       <div class="row-fluid" style="width: 100%">
         <div class="sidenav sidenav-section span3">
