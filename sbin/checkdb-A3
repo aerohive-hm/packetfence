@@ -1,0 +1,9 @@
+#!/bin/bash
+
+/usr/bin/mysql -u root <<EOF >/dev/null 2>&1
+SELECT 1;
+EOF
+
+if [ $? -eq 0 ]; then
+    /usr/local/pf/sbin/initdb-A3
+fi

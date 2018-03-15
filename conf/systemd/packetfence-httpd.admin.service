@@ -14,6 +14,7 @@ Environment=X_PORTAL=default
 Environment=PF_SKIP_MAKE_IMMUTABLE=1
 ExecStartPre=/usr/local/pf/bin/pfcmd service httpd.admin generateconfig
 ExecStart=/usr/sbin/httpd -f /usr/local/pf/var/conf/httpd.conf.d/httpd.admin -DFOREGROUND  -Drhel
+ExecStartPost=/usr/local/pf/sbin/checkdb-A3
 ExecReload=/bin/kill -USR1 ${MAINPID}
 ExecStop=/bin/kill -WINCH ${MAINPID}
 # We want systemd to give httpd some time to finish gracefully, but still want
