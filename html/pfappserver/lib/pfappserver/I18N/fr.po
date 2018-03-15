@@ -3532,21 +3532,21 @@ msgstr "Si le portail captif est derrière un équilibreur de charge qui agit au
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan.pm
 msgid ""
-"If this option is enabled, the PF system will scan each host after "
+"If this option is enabled, the A3 system will scan each host after "
 "registration is complete."
-msgstr "Si activée, PF analysera chaque appareil lorsque l’enregistrement sera terminé."
+msgstr "Si activée, A3 analysera chaque appareil lorsque l’enregistrement sera terminé."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan.pm
 msgid ""
-"If this option is enabled, the PF system will scan host after on the "
+"If this option is enabled, the A3 system will scan host after on the "
 "production VLAN."
-msgstr "Si activée, PF analysera chaque appareil lorsque l’enregistrement sera terminé."
+msgstr "Si activée, A3 analysera chaque appareil lorsque l’enregistrement sera terminé."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan.pm
 msgid ""
-"If this option is enabled, the PF system will scan host before the "
+"If this option is enabled, the A3 system will scan host before the "
 "registration."
-msgstr "Si activée, PF analysera chaque appareil avant l’enregistrement."
+msgstr "Si activée, A3 analysera chaque appareil avant l’enregistrement."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
 msgid ""
@@ -5028,7 +5028,7 @@ msgid "PEAP"
 msgstr "PEAP"
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Graph.pm
-msgid "PF Database Threads"
+msgid "A3 Database Threads"
 msgstr "Unités d’exécution (Base de donnée PacketFence)"
 
 # pf::admin_roles (Actions groups)

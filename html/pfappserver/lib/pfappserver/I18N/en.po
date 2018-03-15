@@ -3259,15 +3259,15 @@ msgid "If the captive portal is put behind load-balancer(s) that act at Layer 7 
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan.pm
-msgid "If this option is enabled, the PF system will scan each host after registration is complete."
+msgid "If this option is enabled, the A3 system will scan each host after registration is complete."
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan.pm
-msgid "If this option is enabled, the PF system will scan host after on the production VLAN."
+msgid "If this option is enabled, the A3 system will scan host after on the production VLAN."
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan.pm
-msgid "If this option is enabled, the PF system will scan host before the registration."
+msgid "If this option is enabled, the A3 system will scan host before the registration."
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
@@ -4649,7 +4649,7 @@ msgid "PEAP"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Graph.pm
-msgid "PF Database Threads"
+msgid "A3 Database Threads"
 msgstr ""
 
 # pf::admin_roles (Actions groups)
