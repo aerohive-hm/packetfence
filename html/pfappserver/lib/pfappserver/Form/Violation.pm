@@ -74,7 +74,7 @@ has_field 'actions' =>
 has_field 'user_mail_message' =>
   (
    type => 'TextArea',
-   label => 'Additionnal message for the user',
+   label => 'Additional message for the user',
    element_class => ['input-large'],
    tags => { after_element => \&help, 
              help => 'A message that will be added to the e-mail sent to the user regarding this violation.' }, 
@@ -105,7 +105,7 @@ has_field 'priority' =>
    range_start => 1,
    range_end => 10,
    tags => { after_element => \&help,
-             help => 'Range 1-10, with 1 the higest priority and 10 the lowest. Higher priority violations will be addressed first if a host has more than one.' },
+             help => 'Range 1-10, with 1 the highest priority and 10 the lowest. Higher priority violations will be addressed first if a host has more than one.' },
   );
 has_field 'whitelisted_roles' =>
   (

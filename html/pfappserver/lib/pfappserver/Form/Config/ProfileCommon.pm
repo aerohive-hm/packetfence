@@ -196,7 +196,7 @@ has_field 'autoregister' =>
    checkbox_value => 'enabled',
    unchecked_value => 'disabled',
    tags => { after_element => \&help,
-             help => 'This activates automatic registation of devices for the profile. Devices will not be shown a captive portal and RADIUS authentication credentials will be used to register the device. This option only makes sense in the context of an 802.1x authentication.' },
+             help => 'This activates automatic registration of devices for the profile. Devices will not be shown a captive portal and RADIUS authentication credentials will be used to register the device. This option only makes sense in the context of an 802.1x authentication.' },
   );
 
 =head2 sources
@@ -289,7 +289,7 @@ has_field 'reuse_dot1x_credentials' =>
     unchecked_value => 'disabled',
     tags => {
         after_element   =>    \&help,
-        help            => 'This option emulates SSO when someone needs to face the captive portal after a successful 802.1x connection. 802.1x credentials are reused on the portal to match an authentication and get the appropriate actions. As a security precaution, this option will only reuse 802.1x credentials if there is an authentication source matching the provided realm. This means, if users use 802.1x credentials with a domain part (username@domain, domain\username), the domain part needs to be configured as a realm under the RADIUS section and an authentication source needs to be configured for that realm. If users do not use 802.1x credentials with a domain part, only the NULL realm will be match IF an authentication source is configured for it.'
+        help            => 'This option emulates SSO when someone needs to face the captive portal after a successful 802.1X connection. 802.1X credentials are reused on the portal to match an authentication and get the appropriate actions. As a security precaution, this option will only reuse 802.1X credentials if there is an authentication source matching the provided realm. This means, if users use 802.1X credentials with a domain part (username@domain, domain\username), the domain part needs to be configured as a realm under the RADIUS section and an authentication source needs to be configured for that realm. If users do not use 802.1X credentials with a domain part, only the NULL realm will be match IF an authentication source is configured for it.'
     },
   );
 
@@ -304,7 +304,7 @@ has_field 'dot1x_recompute_role_from_portal' =>
     unchecked_value => 'disabled',
     default => 'enabled',
     tags => { after_element => \&help,
-             help => 'When enabled, PacketFence will not use the role initialy computed on the portal but will use the dot1x username to recompute the role.' },
+             help => 'When enabled, PacketFence will not use the role initially computed on the portal but will use the dot1x username to recompute the role.' },
   );
 
 =head2 block_interval

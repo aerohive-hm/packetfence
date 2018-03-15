@@ -37,7 +37,7 @@ has_field cert_file =>
    element_class => ['input-xlarge'],
    required => 1,
    tags => { after_element => \&help,
-             help => 'The path to the certificate you submitted to Paypal.' },
+             help => 'The path to the certificate you submitted to PayPal.' },
   );
 
 has_field key_file =>
@@ -46,7 +46,7 @@ has_field key_file =>
    element_class => ['input-xlarge'],
    required => 1,
    tags => { after_element => \&help,
-             help => 'The path to the associated key of the certificate you submitted to Paypal.' },
+             help => 'The path to the associated key of the certificate you submitted to PayPal.' },
   );
 
 has_field paypal_cert_file =>
@@ -55,7 +55,7 @@ has_field paypal_cert_file =>
    element_class => ['input-xlarge'],
    required => 1,
    tags => { after_element => \&help,
-             help => 'The path to the Paypal certificate you downloaded.' },
+             help => 'The path to the PayPal certificate you downloaded.' },
   );
 
 has_field email_address =>
@@ -63,7 +63,7 @@ has_field email_address =>
    type => 'Text',
    required => 1,
    tags => { after_element => \&help,
-             help => 'The email address associated to your paypal account.' },
+             help => 'The email address associated to your PayPal account.' },
   );
 
 has_field payment_type =>

@@ -30,7 +30,7 @@ has_field 'proxy_addresses' => (
     default => '',
     tags => {
         after_element => \&help,
-        help => 'A comma seperated list of IP Address',
+        help => 'A comma-separated list of IP addresses',
     }
 );
 

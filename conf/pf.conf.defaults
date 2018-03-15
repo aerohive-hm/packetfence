@@ -854,7 +854,7 @@ disable_pf_domain_auth=disabled
 # advanced.ntlm_redis_cache
 #
 # Enables a Redis driven cache for NTLM authentication.
-# In order for this to work, you need to setup proper NT hash syncronization between your A3 server and your AD.
+# In order for this to work, you need to setup proper NT hash synchronization between your A3 server and your AD.
 # Refer to the Administration guide for more details.
 # Applying this requires a restart of radiusd.
 ntlm_redis_cache=disabled

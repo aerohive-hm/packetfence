@@ -27,7 +27,7 @@ has_field 'id' =>
    required => 1,
    messages => { required => 'Please specify the name of the PKI provider' },
    tags => { after_element => \&help,
-             help => 'The unique id of the PKI provider'},
+             help => 'The unique ID of the PKI provider'},
    apply => [ pfappserver::Base::Form::id_validator('PKI provider name') ]
   );
 
@@ -41,7 +41,7 @@ has_field 'url' =>
   (
    type => 'Text',
    tags => { after_element => \&help,
-             help => 'The url used to connect to the SCEP PKI service'},
+             help => 'The URL used to connect to the SCEP PKI service'},
   );
 
 has_field 'username' =>
@@ -126,7 +126,7 @@ has_field 'cn_format' => (
     default => '%s',
     tags    => {
         after_element   => \&help,
-        help            => 'Defines how the common name will be formated. %s will expand to the defined Common Name Attribute value',
+        help            => 'Defines how the common name will be formatted. %s will expand to the defined Common Name Attribute value',
     },
 );
 

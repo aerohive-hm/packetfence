@@ -59,7 +59,7 @@
               <label class="control-label" for="alerting_smtpserver"></label>
               <div class="controls">
                 <input type="text" class="input" id="alerting_smtpserver" value="[% config.${"alerting.smtpserver"} | html %]" placeholder="localhost">
-                <p class="help-block">[% l('IP address of your SMTP server for e-mail relaying. Leaving empty to use the localy running SMTP server.') | none %]</p>
+                <p class="help-block">[% l('IP address of your SMTP server for email relaying. Leave it empty to use the locally running SMTP server.') | none %]</p>
               </div>
             </div>
             <h3>[% l('Local Database Passwords') %]</h3>

@@ -69,7 +69,7 @@ has_field 'oses' =>
 has_field 'non_compliance_violation' =>
   (
    type => 'Select',
-   label => 'Non compliance violation',
+   label => 'Non-compliance violation',
    options_method => \&options_violations,
    element_class => ['chzn-deselect'],
    element_attr => {'data-placeholder' => 'None'},

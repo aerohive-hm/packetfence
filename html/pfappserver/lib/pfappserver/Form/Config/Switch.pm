@@ -285,7 +285,7 @@ has_field macSearchesMaxNb =>
    label => 'Maximum MAC addresses',
    tags => {
        after_element => \&help,
-       help => 'Maximum number of MAC addresses retrived from a port'
+       help => 'Maximum number of MAC addresses retrieved from a port'
    },
   );
 

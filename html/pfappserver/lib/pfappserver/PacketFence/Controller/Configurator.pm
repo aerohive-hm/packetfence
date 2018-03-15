@@ -193,7 +193,7 @@ sub networks :Chained('object') :PathPart('networks') :Args(0) {
         my $gateway = $c->request->params->{gateway};
         unless ($gateway) {
             $c->response->status(HTTP_PRECONDITION_FAILED);
-            $c->stash->{status_msg} = $c->loc("You must specifiy a gateway address.");
+            $c->stash->{status_msg} = $c->loc("You must specify a gateway address.");
             delete $c->session->{completed}->{$c->action->name};
             $c->detach();
             return 0;

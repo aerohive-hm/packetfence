@@ -59,9 +59,9 @@ has_field 'eap_type' =>
 has_field 'passcode' =>
   (
    type => 'Text',
-   label => 'Wifi Key',
+   label => 'Wi-Fi Key',
    tags => { after_element => \&help,
-             help => 'The WiFi key to join the SSID' },
+             help => 'The Wi-Fi key to join the SSID' },
   );
 
 has_field 'server_certificate_path' =>

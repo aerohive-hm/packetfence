@@ -99,13 +99,11 @@ msgid "90 days"
 msgstr "90 jours"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/AdminProxy.pm
-msgid "A comma seperated list of IP Address"
+msgid "A comma-separated list of IP addresses"
 msgstr "Liste d’adresses IP séparées par des virgules"
 
 # html/pfappserver/lib/pfappserver/Form/Config/AdminRoles.pm
-msgid ""
-"A comma seperated list of access durations available to the admin user. If "
-"none are provided then the default access durations are used"
+msgid "A comma-separated list of access durations available to the admin user. If none are provided, then the default access durations are used"
 msgstr "Une liste des durées d’accès disponibles pour l’utilisateur admin séparées par des virgules. Si aucune n’est fournie, les valeurs par défaut sont utilisées."
 
 # html/pfappserver/lib/pfappserver/Form/Config/BillingTiers.pm
@@ -569,11 +567,11 @@ msgid ""
 msgstr "L’ajout ou suppression d’un Realm nécessite le redémarrage du service de radiusd pour être appliqué."
 
 # html/pfappserver/lib/pfappserver/Form/Interface.pm
-msgid "Additionnal listening daemon(s)"
+msgid "Additional listening daemon(s)"
 msgstr "Ajouter des démons d’écoute"
 
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
-msgid "Additionnal message for the user"
+msgid "Additional message for the user"
 msgstr "Message supplémentaire pour l’utilisateur"
 
 # html/pfappserver/lib/pfappserver/Form/User.pm
@@ -735,7 +733,7 @@ msgstr "Nombre de processus pour pffilter à démarrer"
 # conf/documentation.conf (captive_portal.rate_limiting_threshold)
 msgid ""
 "Amount of requests on invalid URLs after which the rate limiting will kick "
-"in for this device.Requires to restart haproxy in order to apply the change."
+"in for this device. Requires to restart haproxy in order to apply the change."
 msgstr "Le montant de requêtes sur des URLs invalides à partir duquel la limite vas se déclencher pour cet appareil. Ce changement nécessite de redémarrer haproxy pour être appliqué."
 
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
@@ -769,7 +767,7 @@ msgid "An email was sent to %1 out of %2 users."
 msgstr "Un email a été envoyé à %1 pour %2 utilisateurs."
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/User.pm
-msgid "An sms was sent to %1 out of %2 users."
+msgid "An SMS was sent to %1 out of %2 users."
 msgstr "Un email a été envoyé à %1 pour %2 utilisateurs."
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Admin.pm
@@ -1260,7 +1258,7 @@ msgstr "Enfant"
 
 # conf/documentation.conf (network.interfaceSNAT)
 msgid ""
-"Choose interface(s) where you want to enable snat for passthrough (by "
+"Choose interface(s) where you want to enable SNAT for passthrough (by "
 "default it's the management interface)"
 msgstr "Choisissez l’interface(s) sur laquelle vous voulez activer le Source NAT (par défaut c’est l’interface de Management)"
 
@@ -1283,8 +1281,8 @@ msgid "Cisco Mobility Services Engine:"
 msgstr "Cisco Mobility Services Engine:"
 
 # html/pfappserver/root/admin/configuration.tt
-msgid "Cisco Mobility Sevices Engine"
-msgstr "Cisco Mobility Sevices Engine"
+msgid "Cisco Mobility Services Engine"
+msgstr "Cisco Mobility Services Engine"
 
 # html/pfappserver/root/admin/bulk_actions.inc
 msgid "Clear Violation"
@@ -1548,7 +1546,7 @@ msgstr "Liste des réseaux délimité par des virgules sur lesquels le SSO s’a
 
 # html/pfappserver/lib/pfappserver/Form/Config/FloatingDevice.pm
 msgid ""
-"Comma separated list of VLANs. If the port is a multi-vlan, these are the "
+"Comma separated list of VLANs. If the port is a multi-VLAN, these are the "
 "VLANs that have to be tagged on the port."
 msgstr "Liste des VLANs séparés par une virgule. Si le port est multi VLAN alors cette liste correspond aux VLANs qui seront taggés dessus."
 
@@ -1591,13 +1589,13 @@ msgstr "Liste, délimitée par des virgules, des URLs connues à utiliser par le
 
 # conf/documentation.conf (fencing.isolation_passthroughs)
 msgid ""
-"Comma-delimited list of domains to allow access from the isolation VLAN.If "
+"Comma-delimited list of domains to allow access from the isolation VLAN. If "
 "no port is specified for the domain (ex: example.com), it opens TCP 80 and "
-"443.You can specify a specific port to open (ex: example.com:tcp:25) which "
+"443. You can specify a specific port to open (ex: example.com:tcp:25) which "
 "opens port 25 in TCP. When no protocol is specified (ex: example.com:25), "
-"this opens the port for both the UDP and TCP protocol.You can specify the "
+"this opens the port for both the UDP and TCP protocol. You can specify the "
 "same domain with a different port multiple times and they will be "
-"combined.The configuration parameter <i>isolation_passthrough</i> must be "
+"combined. The configuration parameter <i>isolation_passthrough</i> must be "
 "enabled for passthroughs to be effective."
 msgstr "Liste de domaines délimitée par des virgules pour autoriser l'accès à partir du VLAN d'isolation. Si aucun port n'est spécifié pour le domaine (ex: example.com), il ouvre TCP 80 et 443. Vous pouvez spécifier un port spécifique à ouvrir (ex: exemple. com: tcp: 25) qui ouvre le port 25 dans TCP. Lorsque aucun protocole n'est spécifié (ex: example.com:25), cela ouvre le port pour le protocole UDP et TCP. Vous pouvez spécifier le même domaine avec un port différent à plusieurs reprises et ils seront combinés. Le paramètre de configuration isolation_passthrough doit être activé pour que les passthrough soient éffectif."
 
@@ -1929,8 +1927,8 @@ msgid "DHCP Fingerprints"
 msgstr "Empreintes DHCP"
 
 # pf::dhcp_option82 (DHCP Option 82)
-msgid "DHCP Option 82 Vlan"
-msgstr "Vlan dans l’Option DHCP 82"
+msgid "DHCP Option 82 VLAN"
+msgstr "VLAN dans l’Option DHCP 82"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Fingerbank/Combination.pm
 # html/pfappserver/lib/pfappserver/Form/Node.pm
@@ -2160,7 +2158,7 @@ msgstr "Définit les roles qui seront appliqués sur tous les équipements sur v
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
 msgid ""
-"Defines how the common name will be formated. %s will expand to the defined "
+"Defines how the common name will be formatted. %s will expand to the defined "
 "Common Name Attribute value"
 msgstr "Définis comment le nom d’hôte sera formaté. %s s’étendra avec la valeur de l’attribut du nom d’hôte"
 
@@ -2563,7 +2561,7 @@ msgid ""
 msgstr "Différents niveau d’accès peuvent être définis pour l’interface d’administration de A3 depuis ce module."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Mirapay.pm
-msgid "Direct Base url"
+msgid "Direct Base URL"
 msgstr "URL de base directe"
 
 # conf/documentation.conf (advanced.disable_pf_domain_auth)
@@ -3432,9 +3430,7 @@ msgid "IP address of the router to reach this network"
 msgstr "Adresse IP du routeur pour atteindre ce réseau."
 
 # html/pfappserver/root/configurator/configuration.tt
-msgid ""
-"IP address of your SMTP server for e-mail relaying. Leaving empty to use the"
-" localy running SMTP server."
+msgid "IP address of your SMTP server for email relaying. Leave it empty to use the locally running SMTP server."
 msgstr "Adresse IP de votre serveur SMTP pour relayer les emails. Un champ vide permettra d’utiliser le serveur SMTP local."
 
 # html/pfappserver/lib/pfappserver/Form/Interface.pm
@@ -3506,7 +3502,7 @@ msgstr "Si activé, A3 utilisera l’option DHCP 82 des informations de localisa
 msgid ""
 "If enabled, A3 will monitor DHCP-specific items such as rogue DHCP "
 "services, DHCP-based OS fingerprinting, computername/hostname resolution, "
-"and (optionnally) option-82 location-based information. The monitored DHCP "
+"and (optionally) option-82 location-based information. The monitored DHCP "
 "packets are DHCPDISCOVERs and DHCPREQUESTs - both are broadcasts, meaning a "
 "span port is not necessary.  This feature is highly recommended if the "
 "internal network is DHCP-based."
@@ -3538,19 +3534,19 @@ msgstr "Si le portail captif est derrière un équilibreur de charge qui agit au
 msgid ""
 "If this option is enabled, the PF system will scan each host after "
 "registration is complete."
-msgstr "Si activée, A3 analysera chaque appareil lorsque l’enregistrement sera terminé."
+msgstr "Si activée, PF analysera chaque appareil lorsque l’enregistrement sera terminé."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan.pm
 msgid ""
 "If this option is enabled, the PF system will scan host after on the "
-"production vlan."
-msgstr "Si activée, A3 analysera chaque appareil lorsque l’enregistrement sera terminé."
+"production VLAN."
+msgstr "Si activée, PF analysera chaque appareil lorsque l’enregistrement sera terminé."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan.pm
 msgid ""
 "If this option is enabled, the PF system will scan host before the "
 "registration."
-msgstr "Si activée, A3 analysera chaque appareil avant l’enregistrement."
+msgstr "Si activée, PF analysera chaque appareil avant l’enregistrement."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
 msgid ""
@@ -3604,7 +3600,7 @@ msgid ""
 msgstr "Si votre fournisseur d’identité utilise un certificat auto-signé, mettre le chemin à son certificat ici à la place."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Mirapay.pm
-msgid "Iframe Base url"
+msgid "Iframe Base URL"
 msgstr "URL basée sur une Iframe"
 
 # html/pfappserver/root/config/switch/index.tt
@@ -3984,25 +3980,25 @@ msgstr "Emplacement du binaire DHCPd."
 
 # conf/documentation.conf (services.haproxy_binary)
 msgid ""
-"Location of the haproxy binary. Only necessary to change if you arenot "
+"Location of the haproxy binary. Only necessary to change if you are not "
 "running the RPMed version."
 msgstr "Emplacement du binaire haproxy."
 
 # conf/documentation.conf (services.routes_binary)
 msgid ""
-"Location of the ip binary. Only necessary to change if you are notrunning "
+"Location of the ip binary. Only necessary to change if you are not running "
 "the RPMed version."
 msgstr "Emplacement du binaire ip."
 
 # conf/documentation.conf (services.iptables_binary)
 msgid ""
-"Location of the iptables binary. Only necessary to change if you arenot "
+"Location of the iptables binary. Only necessary to change if you are not "
 "running the RPMed version."
 msgstr "Emplacement du binaire iptables."
 
 # conf/documentation.conf (services.keepalived_binary)
 msgid ""
-"Location of the keepalived binary. Only necessary to change if you arenot "
+"Location of the keepalived binary. Only necessary to change if you are not "
 "running the RPMed version."
 msgstr "Emplacement du binaire keepalived."
 
@@ -4239,7 +4235,7 @@ msgid "Maximum allowed unregistration date"
 msgstr "Date maximale de désenregistrement autorisé"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
-msgid "Maximum number of MAC addresses retrived from a port"
+msgid "Maximum number of MAC addresses retrieved from a port"
 msgstr "Nombre maximum d’adresse MAC retournées depuis un port."
 
 # conf/documentation.conf (snmp_traps.trap_limit_threshold)
@@ -4748,7 +4744,7 @@ msgid ""
 msgstr "Rôles des appareils sur lesquels ce type de violation ne va pas s’appliquer."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Provisioning.pm
-msgid "Non compliance violation"
+msgid "Non-compliance violation"
 msgstr "Violation non conforme"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Pf.pm
@@ -5303,8 +5299,8 @@ msgid "Password for MSE service"
 msgstr "Mot de passe pour le service MSE"
 
 # conf/documentation.conf (database.pass)
-msgid "Password for the mysql database used by A3."
-msgstr "Mot de passe de la base de données mysql utilisé par A3."
+msgid "Password for the MySQL database used by A3."
+msgstr "Mot de passe de la base de données MySQL utilisé par A3."
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
@@ -5368,7 +5364,7 @@ msgid "Path of the RADIUS server authentication certificate"
 msgstr "Emplacement du certificat du serveur RADIUS"
 
 # conf/documentation.conf (provisioning.certificate)
-msgid "Path of the ca certificate"
+msgid "Path of the CA certificate"
 msgstr "Emplacement du certificat"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
@@ -5738,7 +5734,7 @@ msgid "Port of the service"
 msgstr "Port du service"
 
 # conf/documentation.conf (ports.soap)
-msgid "Port of the soap webservice."
+msgid "Port of the SOAP webservice."
 msgstr "Port ’écoute du service web SOAP."
 
 # conf/documentation.conf (graphite.graphite_port)
@@ -5758,8 +5754,8 @@ msgid "Port the mod_status for httpd.portal listens on."
 msgstr "Port d’écoute de http.portal.mod_status."
 
 # conf/documentation.conf (database.port)
-msgid "Port the mysql server is running on."
-msgstr "Port d’écoute du serveur mysql."
+msgid "Port the MySQL server is running on."
+msgstr "Port d’écoute du serveur MySQL."
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc (proxy.port)
 msgid "Port the proxy is listening on"
@@ -6079,7 +6075,7 @@ msgstr "Active la violation de non conformité si le nombre de règle critique e
 
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
 msgid ""
-"Range 1-10, with 1 the higest priority and 10 the lowest. Higher priority "
+"Range 1-10, with 1 the highest priority and 10 the lowest. Higher priority "
 "violations will be addressed first if a host has more than one."
 msgstr "Échelle de 1 à 10, avec 1 la plus haute priorité et 10 la plus basse. Une violation de haute priorité sera mise en avant si l’appareil en a plusieurs d’ouverte."
 
@@ -6898,7 +6894,7 @@ msgid "Select a role"
 msgstr "Sélectionner un rôle"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Pf.pm
-msgid "Select a timezone"
+msgid "Select a time zone"
 msgstr "Sélectionner un fuseau horaire"
 
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
@@ -7071,7 +7067,7 @@ msgid ""
 msgstr "Haproxy devrait être démarré ? Laissez activé sauf si vous savez ce que vous faites."
 
 # conf/documentation.conf (inline.should_reauth_on_vlan_change)
-msgid "Should have to reauthenticate the node if vlan change"
+msgid "Should have to reauthenticate the node if VLAN change"
 msgstr "Est-ce que l’on doit réauthentifier un appareil si il y a changement de VLAN ? (Plusieurs VLAN Inline)"
 
 # conf/documentation.conf (services.httpd_aaa)
@@ -7258,8 +7254,8 @@ msgstr "Est-ce que le cache redis NTLM doit être démarré ? Utiliser le si vou
 
 # conf/documentation.conf (inline.accounting)
 msgid ""
-"Should we handle accouting data for inline clients? This controls inline "
-"accouting tasks in pfmon."
+"Should we handle accounting data for inline clients? This controls inline "
+"accounting tasks in pfmon."
 msgstr "Faut-il traiter les données comptables pour les clients inline ? Ce contrôle des tâches de comptabilité en inline se fait dans pfmon."
 
 # conf/documentation.conf (services.winbindd)
@@ -7676,7 +7672,7 @@ msgstr "Etat du système"
 
 # conf/documentation.conf (general.timezone)
 msgid ""
-"System's timezone in string format. List generated from Perl library "
+"System's time zone in string format. List generated from Perl library "
 "DataTime::TimeZone"
 msgstr "Fuseau horaire du système en temps que chaîne.Liste générée à partir de la librairie Perl DateTime::TimeZone"
 
@@ -7888,7 +7884,7 @@ msgid "The URL to download the p0f map from"
 msgstr "L’URL où télécharger les correspondances p0f"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Provisioning/mobileconfig.pm
-msgid "The WiFi key to join the SSID"
+msgid "The Wi-Fi key to join the SSID"
 msgstr "La clé WiFi pour se connecter au SSID"
 
 # html/pfappserver/lib/pfappserver/Form/Config/BillingTiers.pm
@@ -7975,8 +7971,8 @@ msgid "The domain to use for the authentication in that realm"
 msgstr "Le domaine à utiliser pour l’authentification dans ce \"Realm\""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Paypal.pm
-msgid "The email address associated to your paypal account."
-msgstr "L’adresse e-mail associée à votre compte paypal."
+msgid "The email address associated to your PayPal account."
+msgstr "L’adresse e-mail associée à votre compte PayPal."
 
 # html/pfappserver/root/user/list_password.tt
 msgid "The following user have been created"
@@ -8049,7 +8045,7 @@ msgid ""
 msgstr "La dernière étape de l’assistant de configuration vous permet de démarrer A3."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Twilio.pm
-msgid "The length of the PIN code to be sent over sms"
+msgid "The length of the PIN code to be sent over SMS"
 msgstr "La longueur du code PIN qui va être envoyé par SMS"
 
 # conf/documentation.conf (database_advanced.max_allowed_packet)
@@ -8111,8 +8107,8 @@ msgid "The password used to connect to the SMTP server"
 msgstr "Le mot de passe pour se connecter au serveur SMTP"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Paypal.pm
-msgid "The path to the Paypal certificate you downloaded."
-msgstr "Emplacement du certificat Paypal que vous avez téléchargé"
+msgid "The path to the PayPal certificate you downloaded."
+msgstr "Emplacement du certificat PayPal que vous avez téléchargé"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Provisioning/mobileconfig.pm
 msgid "The path to the RADIUS server certificate"
@@ -8120,12 +8116,12 @@ msgstr "Emplacement du certificat du serveur RADIUS"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Paypal.pm
 msgid ""
-"The path to the associated key of the certificate you submitted to Paypal."
-msgstr "Emplacement de la clé de certificat soumis à Paypal"
+"The path to the associated key of the certificate you submitted to PayPal."
+msgstr "Emplacement de la clé de certificat soumis à PayPal"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Paypal.pm
-msgid "The path to the certificate you submitted to Paypal."
-msgstr "Emplacement du certificat soumis à Paypal"
+msgid "The path to the certificate you submitted to PayPal."
+msgstr "Emplacement du certificat soumis à PayPal"
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc
 # (tcp_fingerprinting.p0f_socket_map)
@@ -8148,7 +8144,7 @@ msgid "The permissions the application requests."
 msgstr "Les permissions réclamées par l’application (l’application étant A3)"
 
 # html/pfappserver/lib/pfappserver/Form/Config/FloatingDevice.pm
-msgid "The port must be configured as a muti-vlan port"
+msgid "The port must be configured as a multi-VLAN port"
 msgstr "Doit être configuré comme un port Multi VLANs"
 
 # conf/documentation.conf (alerting.smtp_port)
@@ -8282,15 +8278,12 @@ msgstr "Le type de transaction que cette source fera (dons ou ventes)."
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
 msgid "The unique ID of the PKI provider"
 msgstr "L’identifiant unique du fournisseur de certificats"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
-msgid "The unique id of the PKI provider"
-msgstr "L’identifiant unique du fournisseur de certificats"
-
-# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
-msgid "The url used to connect to the SCEP PKI service"
+msgid "The URL used to connect to the SCEP PKI service"
 msgstr "L’URL utilisée pour se connecter au service de certificats SCEP"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
@@ -8392,11 +8385,11 @@ msgstr "Cette adresse IP héberge la détection d’accès réseau sur l’URI c
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid ""
-"This activates automatic registation of devices for the profile. Devices "
+"This activates automatic registration of devices for the profile. Devices "
 "will not be shown a captive portal and RADIUS authentication credentials "
 "will be used to register the device. This option only makes sense in the "
-"context of an 802.1x authentication."
-msgstr "Ceci activera l’enregistrement automatique des appareils pour ce profile. Les appareils ne verront pas le portail captif et l’identité utilisé dans RADIUS sera utilisé pour enregistrer l’appareil. Cette option prends tout son sens dans le contexte d’une authentification 802.1x. "
+"context of an 802.1X authentication."
+msgstr "Ceci activera l’enregistrement automatique des appareils pour ce profile. Les appareils ne verront pas le portail captif et l’identité utilisé dans RADIUS sera utilisé pour enregistrer l’appareil. Cette option prends tout son sens dans le contexte d’une authentification 802.1X. "
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid ""
@@ -8509,7 +8502,7 @@ msgstr "Ceci est le délais qui permets à un invité enregistré par email de s
 # conf/documentation.conf (captive_portal.image_path)
 msgid ""
 "This is the path where the gif is on the webserver to detect if the network "
-"accesshas been enabled."
+"access has been enabled."
 msgstr "Ceci est le chemin d’accès pour l’emplacement du gif sur le serveur. Cette option permet de détecter si l’accès réseau a été activé."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
@@ -8528,16 +8521,16 @@ msgstr "Ce nœud est branché sur un port de équipement sur lequel d’autres p
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid ""
 "This option emulates SSO when someone needs to face the captive portal after"
-" a successful 802.1x connection. 802.1x credentials are reused on the portal"
+" a successful 802.1X connection. 802.1X credentials are reused on the portal"
 " to match an authentication and get the appropriate actions. As a security "
-"precaution, this option will only reuse 802.1x credentials if there is an "
+"precaution, this option will only reuse 802.1X credentials if there is an "
 "authentication source matching the provided realm. This means, if users use "
-"802.1x credentials with a domain part (username@domain, domain\\username), "
+"802.1X credentials with a domain part (username@domain, domain\\username), "
 "the domain part needs to be configured as a realm under the RADIUS section "
 "and an authentication source needs to be configured for that realm. If users"
-" do not use 802.1x credentials with a domain part, only the NULL realm will "
+" do not use 802.1X credentials with a domain part, only the NULL realm will "
 "be match IF an authentication source is configured for it."
-msgstr "Cette option émule le Single Sign On quand un appareil tape le portail captif après une authentification 802.1x réussie. Les identifiants 802.1x sont réutilisés sur les sources d’authentification du portail afin de tester les règles et appliquer les actions appropriées. Une sécurité supplémentaire a été mise en place, cette option ne fonctionnera que si une source d’authentification est configurée pour ce Realm. Ce qui veut dire que si un identifiant 802.1x a une partie domaine (utilisateur@domaine, domaine\\utilisateur) alors la partie domaine doit être configurée comme un realm dans la section de configuration RADIUS et une source d’authentification doit être configurée pour ce realm. Si l’identifiant ne contient pas de partie domaine alors seulement le realm NULL sera utilisé si une source d’authentification a été configuré pour ça.  "
+msgstr "Cette option émule le Single Sign On quand un appareil tape le portail captif après une authentification 802.1X réussie. Les identifiants 802.1X sont réutilisés sur les sources d’authentification du portail afin de tester les règles et appliquer les actions appropriées. Une sécurité supplémentaire a été mise en place, cette option ne fonctionnera que si une source d’authentification est configurée pour ce Realm. Ce qui veut dire que si un identifiant 802.1X a une partie domaine (utilisateur@domaine, domaine\\utilisateur) alors la partie domaine doit être configurée comme un realm dans la section de configuration RADIUS et une source d’authentification doit être configurée pour ce realm. Si l’identifiant ne contient pas de partie domaine alors seulement le realm NULL sera utilisé si une source d’authentification a été configuré pour ça.  "
 
 # html/pfappserver/root/configuration/compliance.tt
 msgid ""
@@ -8774,7 +8767,7 @@ msgid "URL to fetch the upstream Fingerbank project database"
 msgstr "URL pour aller chercher la base de données du projet Fingerbank"
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc (upstream.interrogate_url)
-msgid "URL to interrogate the upstream Fingerbank project to fullfil a match"
+msgid "URL to interrogate the upstream Fingerbank project to fulfill a match"
 msgstr "URL pour aller chercher la base de données du projet Fingerbank pour trouver une correspondance"
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc (upstream.submit_url)
@@ -8887,7 +8880,7 @@ msgid "USERS_UPDATE"
 msgstr "Utilisateurs - Mise à jour"
 
 # html/pfappserver/root/config/wrix/search_form.tt
-msgid "UTC Timezone"
+msgid "UTC Time Zone"
 msgstr "Fuseau horaire UTC"
 
 # html/pfappserver/root/user/view.tt
@@ -9417,7 +9410,7 @@ msgstr "Si activé, A3 autorisera les appareils pris au piège d’atteindre les
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid ""
-"When enabled, A3 will not use the role initialy computed on the "
+"When enabled, A3 will not use the role initially computed on the "
 "portal but will use the dot1x username to recompute the role."
 msgstr "Si activé A3 n’utilisera pas le rôle initialement défini par le portail mais utilisera dynamiquement le nom d’utilisateur dot1x pour ré-attribuer le rôle."
 
@@ -9501,7 +9494,7 @@ msgstr "S’il est possible ou pas, contourner la redirection."
 
 # conf/documentation.conf (network.dhcp_filter_by_message_types)
 msgid ""
-"Which dhcp message types are being listened by the pfdhcplistener.Do not "
+"Which DHCP message types are being listened by the pfdhcplistener.Do not "
 "change unless you know what you are doing"
 msgstr "Quel genre de messages dhcp sont écoutés par pfdhcplistener. Ne le changer pas sauf si vous savez ce que vous faites."
 
@@ -9510,7 +9503,7 @@ msgid "Which field should be used as the PID."
 msgstr "Quel champ doit être utilisé en tant que PID"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/SelectRole.pm
-msgid "Which roles can be select"
+msgid "Which roles can be selected"
 msgstr "Quels rôles peuvent être sélectionnés"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/SelectRole.pm
@@ -9526,7 +9519,7 @@ msgid "Whitelisted Roles"
 msgstr "Rôles en liste blanche"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Provisioning/mobileconfig.pm
-msgid "Wifi Key"
+msgid "Wi-Fi Key"
 msgstr "Clé sans fil"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/LDAP.pm
@@ -9649,7 +9642,7 @@ msgid "You must complete all steps in order to start the services."
 msgstr "Vous devez effectuer toutes les étapes pour démarrer les services."
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Configurator.pm
-msgid "You must specifiy a gateway address."
+msgid "You must specify a gateway address."
 msgstr "Vous devez spécifier une adresse de routeur."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Firewall_SSO/BarracudaNG.pm
@@ -9665,8 +9658,8 @@ msgid "You must specify the password or the key"
 msgstr "Vous devez spécifier le mot de passe ou bien la clé"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Firewall_SSO/Checkpoint.pm
-msgid "You must specify the radius shared secret"
-msgstr "Vous devez spécifier le secret de radius"
+msgid "You must specify the RADIUS shared secret"
+msgstr "Vous devez spécifier le secret de RADIUS"
 
 # html/pfappserver/root/configurator/services.tt
 msgid ""
