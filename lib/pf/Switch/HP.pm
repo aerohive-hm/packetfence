@@ -15,11 +15,11 @@ to access SNMP enabled HP switches.
 
 =item Port Security notice
 
-Note: HP ProCurve only sends one security trap to PacketFence per security violation so make sure PacketFence runs when you configure port-security. Also, because of the above limitation, it is considered good practice to reset the intrusion flag as a first troubleshooting step.
+Note: HP ProCurve only sends one security trap to A3 per security violation so make sure A3 runs when you configure port-security. Also, because of the above limitation, it is considered good practice to reset the intrusion flag as a first troubleshooting step.
 
 If you want to learn more about intrusion flag and port-security, please refer to the ProCurve documentation.
 
-Warning: If you configure a switch that is already in production be careful that enabling port-security causes active MAC addresses to be automatically added to the intrusion list without a security trap sent to PacketFence. This is undesired because PacketFence will not be notified that it needs to configure the port. As a work-around, unplug clients before activating port-security or remove the intrusion flag after you enabled port-security with: port-security <port> clear-intrusion-flag.
+Warning: If you configure a switch that is already in production be careful that enabling port-security causes active MAC addresses to be automatically added to the intrusion list without a security trap sent to A3. This is undesired because A3 will not be notified that it needs to configure the port. As a work-around, unplug clients before activating port-security or remove the intrusion flag after you enabled port-security with: port-security <port> clear-intrusion-flag.
 
 =back
 
@@ -519,7 +519,7 @@ sub returnAuthorizeWrite {
    my $radius_reply_ref = {};
    my $status;
    $radius_reply_ref->{'APC-Service-Type'} = 'Admin';
-   $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by PacketFence";
+   $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by A3";
    $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with write access");
    my $filter = pf::access_filter::radius->new;
    my $rule = $filter->test('returnAuthorizeWrite', $args);
@@ -539,7 +539,7 @@ sub returnAuthorizeRead {
    my $radius_reply_ref = {};
    my $status;
    $radius_reply_ref->{'APC-Service-Type'} = 'ReadOnly';
-   $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by PacketFence";
+   $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by A3";
    $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with read access");
    my $filter = pf::access_filter::radius->new;
    my $rule = $filter->test('returnAuthorizeRead', $args);

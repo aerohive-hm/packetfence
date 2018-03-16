@@ -25,7 +25,7 @@ SNMPv3 support is untested.
 =head2 External Portal Enforcement - Cannot use the access point behind a NAT gateway
 
 Since the access point is not sending the IP address of the device in the URL parameters,
-the access point and PacketFence cannot be separated by a NAT gateway.
+the access point and A3 cannot be separated by a NAT gateway.
 This module uses the remote IP in the HTTP request to determine the IP of the client.
 
 =cut
@@ -298,7 +298,7 @@ sub returnAuthorizeWrite {
     my $radius_reply_ref;
     my $status;
     $radius_reply_ref->{'Xirrus-Admin-Role'} = 'read-write';
-    $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by PacketFence";
+    $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by A3";
     $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with write access");
     my $filter = pf::access_filter::radius->new;
     my $rule = $filter->test('returnAuthorizeWrite', $args);
@@ -319,7 +319,7 @@ sub returnAuthorizeRead {
     my $radius_reply_ref;
     my $status;
     $radius_reply_ref->{'Xirrus-Admin-Role'} = 'read-only';
-    $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by PacketFence";
+    $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by A3";
     $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with read access");
     my $filter = pf::access_filter::radius->new;
     my $rule = $filter->test('returnAuthorizeRead', $args);
@@ -485,4 +485,3 @@ Copyright (C) 2005-2018 Inverse inc.
 # vim: set shiftwidth=4:
 # vim: set expandtab:
 # vim: set backspace=indent,eol,start:
-

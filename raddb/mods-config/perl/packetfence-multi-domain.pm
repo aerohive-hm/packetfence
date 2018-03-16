@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-packetfence-multi-domain.pm - FreeRADIUS PacketFence multi domain integration module
+packetfence-multi-domain.pm - FreeRADIUS A3 multi domain integration module
 
 =head1 DESCRIPTION
 
@@ -13,7 +13,7 @@ This module finds the Domain to use from the Realm defined in FreeRADIUS
 Note1:
 
 Our pf::config package loads all the earth.
-This code is executed both in the PacketFence and PacketFence tunnel in FreeRADIUS
+This code is executed both in the A3 and A3 tunnel in FreeRADIUS
 We need access to the ConfigDomain hash so either we should go though the the ConfigStore directly or find a better way to load it's configuration
 
 =cut
@@ -55,7 +55,7 @@ sub authorize {
     # For debugging purposes only
     #&log_request_attributes;
 
-    # We try to find the realm that's configured in PacketFence
+    # We try to find the realm that's configured in A3
     my $realm_config;
     my $user_name = $RAD_REQUEST{'TLS-Client-Cert-Common-Name'} || $RAD_REQUEST{'User-Name'};
     if ($user_name =~ /^host\/([0-9a-zA-Z-]+)\.(.*)$/) {
@@ -72,7 +72,7 @@ sub authorize {
     #&radiusd::radlog($RADIUS::L_INFO, Dumper($realm));
 
     if( defined($realm_config) && defined($realm_config->{domain}) ) {
-        # We have found this realm in PacketFence. We use the domain associated with it for the authentication
+        # We have found this realm in A3. We use the domain associated with it for the authentication
         $RAD_REQUEST{"PacketFence-Domain"} = $realm_config->{domain};
     }
 
@@ -96,7 +96,7 @@ sub log_request_attributes {
 
 =item * server_error_handler
 
-Called whenever there is a server error beyond PacketFence's control (401, 404, 500)
+Called whenever there is a server error beyond A3's control (401, 404, 500)
 
 If a customer wants to degrade gracefully, he should put some logic here to assign good VLANs in a degraded way. Two examples are provided commented in the file.
 
@@ -124,8 +124,8 @@ Called whenever an invalid answer is returned from the server
 
 sub invalid_answer_handler {
     &radiusd::radlog($RADIUS::L_ERR, "No or invalid reply in RPC communication with server. Check server side logs for details.");
-    &radiusd::radlog($RADIUS::L_DBG, "PacketFence UNDEFINED RESULT RESPONSE CODE");
-    &radiusd::radlog($RADIUS::L_DBG, "PacketFence RESULT VLAN COULD NOT BE DETERMINED");
+    &radiusd::radlog($RADIUS::L_DBG, "A3 UNDEFINED RESULT RESPONSE CODE");
+    &radiusd::radlog($RADIUS::L_DBG, "A3 RESULT VLAN COULD NOT BE DETERMINED");
     return $RADIUS::RLM_MODULE_FAIL;
 }
 

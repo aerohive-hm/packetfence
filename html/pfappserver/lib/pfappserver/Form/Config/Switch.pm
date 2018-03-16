@@ -77,7 +77,7 @@ has_field 'deauthMethod' =>
    label => 'Deauthentication Method',
    element_class => ['chzn-deselect'],
   );
-  
+
 has_field 'useCoA' =>
   (
    type => 'Toggle',
@@ -117,7 +117,7 @@ has_field 'cliAccess' =>
    type => 'Toggle',
    label => 'CLI Access Enabled',
    tags => { after_element => \&help,
-             help => 'Allow this device to use A3 as a RADIUS server for CLI access'},
+             help => 'Allow this switch to use A3 as a RADIUS server for CLI access'},
   );
 has_field 'ExternalPortalEnforcement' => (
     type    => 'Toggle',

@@ -21,7 +21,7 @@ has_field 'id' =>
    readonly => 1,
   );
 
-has_field 'parent_id' => 
+has_field 'parent_id' =>
   (
    type => 'FingerbankField',
    label => 'Parent device',

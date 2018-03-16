@@ -2436,9 +2436,9 @@ msgid ""
 ">high-availability</i> is for an interface between two A3 servers "
 "dedicated to high-availability (drbd, corosync).</li><li><i>portal</i> "
 "interface have the captive-portal running on them without the need of having"
-" any enforcement mechanism.</li><li><i>radius</i> interface have the radius "
+" any enforcement mechanism.</li><li><i>RADIUS</i> interface have the RADIUS "
 "running (auth, acct, cli)</li></ul>"
-msgstr "Décrit le type de l’interface nommée. <ul> <li>Interne<i> </i> décrit les interfaces où A3 donnera l’accès au réseau. </lii> <li> <i> Management </i> les interfaces internes ont l’écoute de l’administration web, hôte pour les traps SNMP et le serveur RADIUS. </li> <li> <i> Moniteur </i> est l’interface de snort qui écoute. </li> <li> <i> dhcp-listener </i> est une interface où le trafic DHCP vient soit via un réseau configuration SPAN ou IP-Helpers. </li> <li> <i>haute disponibilité</i> est une interface entre deux serveurs A3 dédiés à la haute disponibilité (drbd, corosync). </li><li><i>portail</i> cette interface a le portail captif en écoute sans la nécessité d’avoir un mécanisme d’enregistrement</li><li><i>radius</i> cette interface écoute pour radius(auth,acct,cli)</li></ ul>"
+msgstr "Décrit le type de l’interface nommée. <ul> <li>Interne<i> </i> décrit les interfaces où A3 donnera l’accès au réseau. </lii> <li> <i> Management </i> les interfaces internes ont l’écoute de l’administration web, hôte pour les traps SNMP et le serveur RADIUS. </li> <li> <i> Moniteur </i> est l’interface de snort qui écoute. </li> <li> <i> dhcp-listener </i> est une interface où le trafic DHCP vient soit via un réseau configuration SPAN ou IP-Helpers. </li> <li> <i>haute disponibilité</i> est une interface entre deux serveurs A3 dédiés à la haute disponibilité (drbd, corosync). </li><li><i>portail</i> cette interface a le portail captif en écoute sans la nécessité d’avoir un mécanisme d’enregistrement</li><li><i>RADIUS</i> cette interface écoute pour RADIUS(auth,acct,cli)</li></ ul>"
 
 # html/pfappserver/lib/pfappserver/Form/Config/BillingTiers.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule.pm
@@ -2841,7 +2841,7 @@ msgid ""
 "work, you need to setup proper NT hash syncronization between your "
 "A3 server and your AD.Refer to the Administration guide for more "
 "details.Applying this requires a restart of radiusd."
-msgstr "Activer le cache REDIS pour les authentifications NTLM. Pour que cela fonctionne vous devez configurer le synchronisation des hash NTLM entre A3 et votre Active Directory. Référer vous au guide d’administration pour plus de détails. Activer cette fonction requiert un redémarrage de radius."
+msgstr "Activer le cache REDIS pour les authentifications NTLM. Pour que cela fonctionne vous devez configurer le synchronisation des hash NTLM entre A3 et votre Active Directory. Référer vous au guide d’administration pour plus de détails. Activer cette fonction requiert un redémarrage de RADIUS."
 
 # html/pfappserver/root/config/pfmon/index.tt
 msgid ""
@@ -4240,9 +4240,9 @@ msgstr "Nombre maximum d’adresse MAC retournées depuis un port."
 
 # conf/documentation.conf (snmp_traps.trap_limit_threshold)
 msgid ""
-"Maximum number of SNMP traps that a switchport can send to PacketFence "
+"Maximum number of SNMP traps that a switchport can send to A3 "
 "within a minute without being flagged as DoS. Defaults to 100."
-msgstr "Le nombre maximum de trappes SNMP qu’un port de commutateur peut envoyer à PacketFence en moins d’une minute sans être marqué comme DoS. La valeur par défaut 100"
+msgstr "Le nombre maximum de trappes SNMP qu’un port de commutateur peut envoyer à A3 en moins d’une minute sans être marqué comme DoS. La valeur par défaut 100"
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid ""
@@ -4390,8 +4390,8 @@ msgid "Name"
 msgstr "Nom"
 
 # conf/documentation.conf (database.db)
-msgid "Name of the mysql database used by PacketFence."
-msgstr "Nom de la base de données mysql utilisée par PacketFence."
+msgid "Name of the mysql database used by A3."
+msgstr "Nom de la base de données mysql utilisée par A3."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Scan/WMI.pm
 msgid "Name of the policy to use"
@@ -4863,8 +4863,8 @@ msgstr "Sur cette page vous configurez les interfaces réseaux détectées sur v
 # html/pfappserver/root/configurator/admin.tt
 msgid ""
 "On this page, you need to modify the default admin user password that will "
-"be used to access the web administrative interface of PacketFence."
-msgstr "Sur cette page vous devez modifier le mot de passe admin par défaut qui sera utilisé pour accéder a l’interface d’administration web de PacketFence."
+"be used to access the web administrative interface of A3."
+msgstr "Sur cette page vous devez modifier le mot de passe admin par défaut qui sera utilisé pour accéder a l’interface d’administration web de A3."
 
 # html/pfappserver/root/configurator/fingerbank.tt
 msgid ""
@@ -5021,7 +5021,7 @@ msgstr "PEAP"
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Graph.pm
 msgid "A3 Database Threads"
-msgstr "Unités d’exécution (Base de donnée PacketFence)"
+msgstr "Unités d’exécution (Base de donnée A3)"
 
 # pf::admin_roles (Actions groups)
 msgid "PFDETECT"
@@ -8697,7 +8697,7 @@ msgstr "Forcer le Single-Sign-On (Firewall SSO) lors de la réevaluation d’acc
 
 # conf/documentation.conf (advanced.sso_on_accounting)
 msgid "Trigger Single-Sign-On (Firewall SSO) on accounting"
-msgstr "Déclencher de le Single-Sign-On (pare-feu SSO) sur le radius accounting"
+msgstr "Déclencher de le Single-Sign-On (pare-feu SSO) sur le RADIUS accounting"
 
 # conf/documentation.conf (advanced.sso_on_dhcp)
 msgid "Trigger Single-Sign-On (Firewall SSO) on dhcp"
@@ -9515,15 +9515,15 @@ msgstr "Mettre en cache les résultats d’une règle qui match"
 
 # conf/documentation.conf (network.hostname_change_detection)
 msgid ""
-"Will identify hostname changes and send an e-mail with these changes.This "
+"Will identify hostname changes and send an e-mail with these changes. This "
 "can help detect MAC spoofing."
 msgstr "Identifiera les changements de nom d’hôte et enverra un e-mail avec ces changements. Cela peut aider à détecter l’usurpation d’adresse MAC."
 
 # conf/documentation.conf (network.dhcp_rate_limiting)
 msgid ""
-"Will rate-limit DHCP packets that contain the same information.For example, "
+"Will rate-limit DHCP packets that contain the same information. For example, "
 "a DHCPREQUEST for the same MAC/IP will only be processed once in the "
-"timeframe configured below.This is independant of the DHCP server/relay "
+"timeframe configured below. This is independant of the DHCP server/relay "
 "handling the packet and is only based on the IP, MAC Address and DHCP type "
 "inside the packet.A value of 0 will disable the rate limitation."
 msgstr "Limitera le traitement de paquets DHCP contenant la même information. Par exemple une requête DHCPREQUEST contenant la même MAC/IP ne sera traité qu’une seule fois dans la tranche de temps configuré plus bas.Une valeur de 0 désactive cette limite."
@@ -9818,7 +9818,7 @@ msgstr "Utiliser le SSO lors de la réévaluation d’accès"
 
 # conf/documentation.conf
 msgid "advanced.sso_on_accounting"
-msgstr "SSO sur le radius accounting"
+msgstr "SSO sur le RADIUS accounting"
 
 # conf/documentation.conf
 msgid "advanced.sso_on_dhcp"
@@ -11406,7 +11406,7 @@ msgid "query.use_tcp_fingerprinting"
 msgstr "Utiliser l’empreinte TCP"
 
 # conf/documentation.conf (interface.type options)
-msgid "radius"
+msgid "RADIUS"
 msgstr "RADIUS"
 
 # conf/documentation.conf

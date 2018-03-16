@@ -20,7 +20,7 @@ has 'isSNMP'        => (is => 'rw', isa => 'Bool', default => 0);   # 0: NoSNMP 
 has 'isMacAuth'     => (is => 'rw', isa => 'Bool', default => 0);   # 0: NoMacAuth | 1: MacAuth
 has 'is8021X'       => (is => 'rw', isa => 'Bool', default => 0);   # 0: No8021X | 1: 8021X
 has '8021XAuth'     => (is => 'rw', isa => 'Str');                  # Authentication used for 8021X connection
-has 'enforcement'   => (is => 'rw', isa => 'Str');                  # PacketFence enforcement technique
+has 'enforcement'   => (is => 'rw', isa => 'Str');                  # A3 enforcement technique
 
 
 our $logger = get_logger();
@@ -96,7 +96,7 @@ sub backwardCompatibleToAttributes {
     ( lc($type) =~ /^wireless-802\.11/ ) ? $self->transport("Wireless") : $self->transport("Wired");
 
     # We check if SNMP. If so, we return immediately while setting the flag
-    if ( (lc($type) =~ /^snmp/) ) { 
+    if ( (lc($type) =~ /^snmp/) ) {
         $self->isSNMP($TRUE);
         return
     }
@@ -110,7 +110,7 @@ sub backwardCompatibleToAttributes {
     # We check if EAP
     if ( lc($type) =~ /eap$/ && lc($type) !~ /noeap$/ ) {
         $self->isEAP($TRUE);
-        $self->is8021X($TRUE); 
+        $self->is8021X($TRUE);
         $self->isMacAuth($FALSE);
     }
     else {

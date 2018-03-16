@@ -70,7 +70,7 @@ has_field 'server_certificate_path' =>
   required_when => { 'eap_type' => 25 },
   label => 'RADIUS server certificate path',
   tags => { after_element => \&help,
-            help => 'The path to the RADIUS server certificate' },       
+            help => 'The path to the RADIUS server certificate' },
  );
 
 has_field 'cert_chain' =>

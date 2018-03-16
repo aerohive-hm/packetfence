@@ -2269,7 +2269,7 @@ msgid "Describes the technique A3 will use to enforce network access.VLAN is the
 msgstr ""
 
 # conf/documentation.conf (interface.type)
-msgid "Describes type of the named interface.<ul><li><i>internal</i> describes interfaces where A3 will enforce network access.</li><li><i>management</i> (or managed) interfaces have the administrative GUI running on them, host SNMP trap receiver and RADIUS server.</li><li><i>monitor</i> is the interface that snort listens on.</li><li><i>dhcp-listener</i> is an interface where the DHCP traffic is coming in either via a network SPAN or IP-Helpers configuration.</li><li><i>high-availability</i> is for an interface between two A3 servers dedicated to high-availability (drbd, corosync).</li><li><i>portal</i> interface have the captive-portal running on them without the need of having any enforcement mechanism.</li><li><i>radius</i> interface have the radius running (auth, acct, cli)</li></ul>"
+msgid "Describes type of the named interface.<ul><li><i>internal</i> describes interfaces where A3 will enforce network access.</li><li><i>management</i> (or managed) interfaces have the administrative GUI running on them, host SNMP trap receiver and RADIUS server.</li><li><i>monitor</i> is the interface that snort listens on.</li><li><i>dhcp-listener</i> is an interface where the DHCP traffic is coming in either via a network SPAN or IP-Helpers configuration.</li><li><i>high-availability</i> is for an interface between two A3 servers dedicated to high-availability (drbd, corosync).</li><li><i>portal</i> interface have the captive-portal running on them without the need of having any enforcement mechanism.</li><li><i>RADIUS</i> interface have the RADIUS running (auth, acct, cli)</li></ul>"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/BillingTiers.pm
@@ -8709,15 +8709,15 @@ msgid "Wi-Fi Key"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/LDAP.pm
-msgid "Will cache results of matching a rule"
+msgid "Will cache the results of matching a rule"
 msgstr ""
 
 # conf/documentation.conf (network.hostname_change_detection)
-msgid "Will identify hostname changes and send an e-mail with these changes.This can help detect MAC spoofing."
+msgid "Will identify hostname changes and send an e-mail with these changes. This can help detect MAC spoofing."
 msgstr ""
 
 # conf/documentation.conf (network.dhcp_rate_limiting)
-msgid "Will rate-limit DHCP packets that contain the same information.For example, a DHCPREQUEST for the same MAC/IP will only be processed once in the timeframe configured below.This is independant of the DHCP server/relay handling the packet and is only based on the IP, MAC Address and DHCP type inside the packet.A value of 0 will disable the rate limitation."
+msgid "Will rate-limit DHCP packets that contain the same information. For example, a DHCPREQUEST for the same MAC/IP will only be processed once in the timeframe configured below. This is independant of the DHCP server/relay handling the packet and is only based on the IP, MAC Address and DHCP type inside the packet. A value of 0 will disable the rate limitation."
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
@@ -10583,7 +10583,7 @@ msgid "query.use_tcp_fingerprinting"
 msgstr "Use TCP fingerprinting"
 
 # conf/documentation.conf (interface.type options)
-msgid "radius"
+msgid "RADIUS"
 msgstr ""
 
 # conf/documentation.conf

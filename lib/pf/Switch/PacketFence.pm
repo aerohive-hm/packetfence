@@ -2,11 +2,11 @@ package pf::Switch::PacketFence;
 
 =head1 NAME
 
-pf::Switch::PacketFence - Object oriented module to send local traps to snmptrapd
+pf::Switch::A3 - Object oriented module to send local traps to snmptrapd
 
 =head1 SYNOPSIS
 
-The pf::Switch::PacketFence module implements an object oriented interface
+The pf::Switch::A3 module implements an object oriented interface
 to send local SNMP traps to snmptrapd
 
 =head1 SUBROUTINES
@@ -155,4 +155,3 @@ Copyright (C) 2005-2018 Inverse inc.
 # vim: set shiftwidth=4:
 # vim: set expandtab:
 # vim: set backspace=indent,eol,start:
-

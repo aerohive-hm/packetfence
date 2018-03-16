@@ -149,7 +149,7 @@ sub performTrapLimiting {
         $email{'message'} .= "Threshold: maximum $trapsLimitThreshold SNMP traps per 1 minute.\n";
 
         if ( is_in_list('shut', $trapsLimitAction) ) {
-            $email{'message'} .= "Action: PacketFence SHUTTED THE PORT";
+            $email{'message'} .= "Action: A3 SHUTTED THE PORT";
             $switch->setAdminStatus($switchIfIndex, $SNMP::DOWN);
         }
         #Send an alert only once every hour

@@ -31,12 +31,12 @@ Base module for Brocade network equipment
 There is no automatic fallback from 802.1X to MAC-Authentication supported by
 the vendor at this time. However there is a means for RADIUS to explicitly
 say to the switch not to require 802.1X. This has the implication that
-PacketFence must be aware of all non-802.1X capable devices connecting to the
+A3 must be aware of all non-802.1X capable devices connecting to the
 switch (if 802.1X enforcement is required) and that it tells the switch to
 not require 802.1X for these devices.
 
 The workaround implemented in the Brocade code is such that VoIP devices will
-fallback to MAC-Auth if they have been pre-registered in PacketFence (see
+fallback to MAC-Auth if they have been pre-registered in A3 (see
 voip attribute under node). All other device categories (Game consoles,
 appliances, etc.) that don't support 802.1X will have problem in a Brocade
 setup. Customer specific workarounds in L<pf::radius::custom> could be made
@@ -310,7 +310,7 @@ sub returnAuthorizeWrite {
    my $radius_reply_ref = {};
    my $status;
    $radius_reply_ref->{'Foundry-Privilege-Level'} = '0';
-   $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by PacketFence";
+   $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by A3";
    $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with write access");
    my $filter = pf::access_filter::radius->new;
    my $rule = $filter->test('returnAuthorizeWrite', $args);
@@ -331,7 +331,7 @@ sub returnAuthorizeRead {
    my $radius_reply_ref = {};
    my $status;
    $radius_reply_ref->{'Foundry-Privilege-Level'} = '5';
-   $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by PacketFence";
+   $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by A3";
    $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with read access");
    my $filter = pf::access_filter::radius->new;
    my $rule = $filter->test('returnAuthorizeRead', $args);

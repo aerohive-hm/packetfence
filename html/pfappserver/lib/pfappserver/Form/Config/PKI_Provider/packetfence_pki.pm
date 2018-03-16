@@ -38,7 +38,7 @@ has_field 'host' => (
     default => "127.0.0.1",
     tags    => {
         after_element   => \&help,
-        help            => 'Host which hosts the PacketFence PKI',
+        help            => 'Host which hosts the A3 PKI',
     },
 );
 
@@ -48,7 +48,7 @@ has_field 'port' => (
     default => '9393',
     tags    => {
         after_element   => \&help,
-        help            => 'Port on which to contact the PacketFence PKI API',
+        help            => 'Port on which to contact the A3 PKI API',
     },
 );
 
@@ -59,7 +59,7 @@ has_field 'proto' => (
     options => [ { label => 'https', value => 'https' }, { label => 'http', value => 'http' } ],
     tags    => {
         after_element   => \&help,
-        help            => 'Protocol to use to contact the PacketFence PKI API',
+        help            => 'Protocol to use to contact the A3 PKI API',
     },
 );
 
