@@ -21,7 +21,7 @@ use warnings;
 use base ('pf::Switch');
 use Net::SNMP;
 
-sub description { 'A3' }
+sub description { 'PacketFence' }
 
 sub connectWrite {
     my $self   = shift;

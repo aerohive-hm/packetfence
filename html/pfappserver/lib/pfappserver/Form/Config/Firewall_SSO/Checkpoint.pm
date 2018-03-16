@@ -24,7 +24,7 @@ has 'roles' => (is => 'ro', default => sub {[]});
 has_field '+password' =>
   (
    label => 'Secret',
-   messages => { required => 'You must specify the radius shared secret' },
+   messages => { required => 'You must specify the RADIUS shared secret' },
   );
 has_field '+port' =>
   (

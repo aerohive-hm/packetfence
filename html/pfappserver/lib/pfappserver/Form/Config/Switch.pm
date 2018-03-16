@@ -117,7 +117,7 @@ has_field 'cliAccess' =>
    type => 'Toggle',
    label => 'CLI Access Enabled',
    tags => { after_element => \&help,
-             help => 'Allow this switch to use A3 as a radius server for CLI access'},
+             help => 'Allow this switch to use A3 as a RADIUS server for CLI access'},
   );
 has_field 'ExternalPortalEnforcement' => (
     type    => 'Toggle',
@@ -285,7 +285,7 @@ has_field macSearchesMaxNb =>
    label => 'Maximum MAC addresses',
    tags => {
        after_element => \&help,
-       help => 'Maximum number of MAC addresses retrived from a port'
+       help => 'Maximum number of MAC addresses retrieved from a port'
    },
   );
 

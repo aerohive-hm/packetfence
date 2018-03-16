@@ -14,7 +14,7 @@ BEGIN { extends 'captiveportal::Base::Controller'; }
 
 =head1 NAME
 
-captiveportal::A3::Controller::Remediation - Catalyst Controller
+captiveportal::PacketFence::Controller::Remediation - Catalyst Controller
 
 =head1 DESCRIPTION
 

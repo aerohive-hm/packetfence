@@ -513,7 +513,7 @@ sub sms :Local :AdminRole('USERS_UPDATE') {
     $self->audit_current_action($c, status => $status, pids => \@pids);
 
     if (is_success($status)) {
-        $c->stash->{status_msg} = $c->loc('An sms was sent to [_1] out of [_2] users.',
+        $c->stash->{status_msg} = $c->loc('An SMS was sent to [_1] out of [_2] users.',
                                           scalar @pids, scalar @$result);
     }
     else {

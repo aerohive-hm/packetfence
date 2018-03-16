@@ -442,7 +442,7 @@ sub dashboard :Local :AdminRole('REPORTS') {
                 'columns' => 1
                },
                {
-                'description' => $c->loc('PF Database Threads'),
+                'description' => $c->loc('A3 Database Threads'),
                 'vtitle' => 'threads',
                 'target' => 'aliasByNode(*.mysql-pf.threads-*,2)',
                 'columns' => 1

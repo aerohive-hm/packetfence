@@ -52,7 +52,7 @@ has_field 'taggedVlan' =>
    type => 'Text',
    label => 'Tagged VLANs',
    tags => { after_element => \&help,
-             help => 'Comma separated list of VLANs. If the port is a multi-vlan, these are the VLANs that have to be tagged on the port.' },
+             help => 'Comma separated list of VLANs. If the port is a multi-VLAN, these are the VLANs that have to be tagged on the port.' },
   );
 
 =head2 Methods

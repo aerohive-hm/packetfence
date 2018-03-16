@@ -49,7 +49,7 @@ has_field 'list_role' =>
    element_class => ['chzn-deselect'],
    element_attr => {'data-placeholder' => 'Click to add a role'},
    tags => { after_element => \&help,
-             help => 'Which roles can be select' },
+             help => 'Which roles can be selected' },
   );
 
 sub child_definition {
@@ -79,5 +79,3 @@ Copyright (C) 2005-2018 Inverse inc.
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 1;
-
-

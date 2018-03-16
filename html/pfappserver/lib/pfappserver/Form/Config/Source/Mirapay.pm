@@ -22,7 +22,7 @@ with 'pfappserver::Base::Form::Role::SourceLocalAccount';
 
 has_field base_url => (
     type => 'Select',
-    label => 'Iframe Base url',
+    label => 'Iframe Base URL',
     options => [
         { label => 'Staging', value => "https://staging.eigendev.com/MiraSecure/GetToken.php" },
         { label => 'Prod 1',  value => "https://ms1.eigendev.com/MiraSecure/GetToken.php" },
@@ -34,7 +34,7 @@ has_field base_url => (
 
 has_field direct_base_url => (
     type => 'Text',
-    label => 'Direct Base url',
+    label => 'Direct Base URL',
     default => "https://staging.eigendev.com/OFT/EigenOFT_d.php",
     required => 1,
     element_class => ['input-xxlarge'],
