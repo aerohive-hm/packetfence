@@ -1071,7 +1071,7 @@ sub isPortSecurityEnabled {
 
 DEPRECATED for reference only. See isPortSecurityEnabled instead.
 
-Here we rely on a special entry we add during the PacketFence setup to work-around a limitation in the
+Here we rely on a special entry we add during the A3 setup to work-around a limitation in the
 capabilities of the Extreme OS (can't know if maclock is activated or not)
 
 =cut
@@ -1527,7 +1527,7 @@ sub returnAuthorizeRead {
     my $radius_reply_ref;
     my $status;
     $radius_reply_ref->{'Service-Type'} = '0';
-    $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by PacketFence";
+    $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by A3";
     $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with read access");
     my $filter = pf::access_filter::radius->new;
     my $rule = $filter->test('returnAuthorizeRead', $args);
@@ -1547,7 +1547,7 @@ sub returnAuthorizeWrite {
     my $radius_reply_ref;
     my $status;
     $radius_reply_ref->{'Service-Type'} = '6';
-    $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by PacketFence";
+    $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by A3";
     $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with write access");
     my $filter = pf::access_filter::radius->new;
     my $rule = $filter->test('returnAuthorizeWrite', $args);

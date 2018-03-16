@@ -2,11 +2,11 @@
 
 =head1 NAME
 
-packetfence.pm - FreeRADIUS PacketFence integration module
+packetfence.pm - FreeRADIUS A3 integration module
 
 =head1 DESCRIPTION
 
-This module forwards normal RADIUS requests to PacketFence.
+This module forwards normal RADIUS requests to A3.
 
 =head1 NOTES
 
@@ -109,7 +109,7 @@ sub _get_rpc_config {
 
 =item * post_auth
 
-Once we authenticated the user's identity, we perform PacketFence's Network Access Control duties
+Once we authenticated the user's identity, we perform A3's Network Access Control duties
 
 =cut
 
@@ -195,14 +195,14 @@ sub post_auth {
                 . "Check server side logs for details");
         }
 
-        &radiusd::radlog($RADIUS::L_DBG, "PacketFence RESULT RESPONSE CODE: $radius_return_code (2 means OK)");
+        &radiusd::radlog($RADIUS::L_DBG, "A3 RESULT RESPONSE CODE: $radius_return_code (2 means OK)");
 
         # Uncomment for verbose debugging with radius -X
         # Warning: This is a native module so you shouldn't run it with radiusd in threaded mode (default)
         # use Data::Dumper;
         # $Data::Dumper::Terse = 1; $Data::Dumper::Indent = 0; # pretty output for rad logs
-        # &radiusd::radlog($RADIUS::L_DBG, "PacketFence COMPLETE REPLY: ". Dumper(\%RAD_REPLY));
-        # &radiusd::radlog($RADIUS::L_DBG, "PacketFence COMPLETE CHECK: ". Dumper(\%RAD_CHECK));
+        # &radiusd::radlog($RADIUS::L_DBG, "A3 COMPLETE REPLY: ". Dumper(\%RAD_REPLY));
+        # &radiusd::radlog($RADIUS::L_DBG, "A3 COMPLETE CHECK: ". Dumper(\%RAD_CHECK));
     };
     if ($@) {
         &radiusd::radlog($RADIUS::L_ERR, "An error occurred while processing the authorize RPC request: $@");
@@ -231,7 +231,7 @@ sub _extract_mac_from_calling_station_id {
 
 =item * server_error_handler
 
-Called whenever there is a server error beyond PacketFence's control (401, 404, 500)
+Called whenever there is a server error beyond A3's control (401, 404, 500)
 
 If a customer wants to degrade gracefully, he should put some logic here to assign good VLANs in a degraded way. Two examples are provided commented in the file.
 
@@ -260,8 +260,8 @@ Called whenever an invalid answer is returned from the server
 
 sub invalid_answer_handler {
     &radiusd::radlog($RADIUS::L_ERR, "No or invalid reply in RPC communication with server. Check server side logs for details.");
-    &radiusd::radlog($RADIUS::L_DBG, "PacketFence UNDEFINED RESULT RESPONSE CODE");
-    &radiusd::radlog($RADIUS::L_DBG, "PacketFence RESULT VLAN COULD NOT BE DETERMINED");
+    &radiusd::radlog($RADIUS::L_DBG, "A3 UNDEFINED RESULT RESPONSE CODE");
+    &radiusd::radlog($RADIUS::L_DBG, "A3 RESULT VLAN COULD NOT BE DETERMINED");
     $pf::StatsD::statsd->increment("freeradius::" . called() . ".count" );
     return $RADIUS::RLM_MODULE_FAIL;
 }
@@ -343,7 +343,7 @@ sub accounting {
         send_msgpack_notification($config, "handle_accounting_metadata", \%RAD_REQUEST);
         if ($RAD_REQUEST{'Acct-Status-Type'} eq 'Stop' || $RAD_REQUEST{'Acct-Status-Type'} eq 'Interim-Update') {
             $data = send_rpc_request($config, "radius_accounting", \%RAD_REQUEST);
-        } 
+        }
 
         if ($data) {
             my $elements = $data->[0];
@@ -372,13 +372,13 @@ sub accounting {
     # For debugging purposes
     #&radiusd::radlog($RADIUS::L_INFO, "radius_return_code: $radius_return_code");
 
-    &radiusd::radlog($RADIUS::L_DBG, "PacketFence RESULT RESPONSE CODE: $radius_return_code (2 means OK)");
+    &radiusd::radlog($RADIUS::L_DBG, "A3 RESULT RESPONSE CODE: $radius_return_code (2 means OK)");
 
     # Uncomment for verbose debugging with radius -X
     # Warning: This is a native module so you shouldn't run it with radiusd in threaded mode (default)
     # use Data::Dumper;
     # $Data::Dumper::Terse = 1; $Data::Dumper::Indent = 0; # pretty output for rad logs
-    # &radiusd::radlog($RADIUS::L_DBG, "PacketFence COMPLETE REPLY: ". Dumper(\%RAD_REPLY));
+    # &radiusd::radlog($RADIUS::L_DBG, "A3 COMPLETE REPLY: ". Dumper(\%RAD_REPLY));
 
     return $radius_return_code;
 }

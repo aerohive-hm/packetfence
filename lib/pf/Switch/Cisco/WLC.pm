@@ -32,12 +32,12 @@ Developed and tested on firmware version 4.2.130 altought the new RADIUS RFC3576
 
 =item < 5.x
 
-Issue with Windows 7: 802.1x+WPA2. It's not a PacketFence issue.
+Issue with Windows 7: 802.1x+WPA2. It's not a A3 issue.
 
 =item 6.0.182.0
 
 We had intermittent issues with DHCP. Disabling DHCP Proxy resolved it. Not
-a PacketFence issue.
+a A3 issue.
 
 =item 7.0.116 and 7.0.220
 
@@ -52,7 +52,7 @@ default now.
 SNMP de-authentication no longer works. It it believed to be caused by the
 new firmware not accepting SNMP requests with 2 bytes request-id. Doing the
 same SNMP set with `snmpset` command issues a 4 bytes request-id and the
-controllers are happy with these. Not a PacketFence issue. I would think it
+controllers are happy with these. Not a A3 issue. I would think it
 relates to the following open caveats CSCtw87226:
 http://www.cisco.com/en/US/docs/wireless/controller/release/notes/crn7_2.html#wp934687
 
@@ -75,13 +75,13 @@ Update: L<FlexConnect AAA Override support was introduced in firmware 7.2 series
 =item FlexConnect issues with firmware 7.2.103.0
 
 There's an issue with this firmware regarding the AAA Override functionality
-required by PacketFence. The issue is fixed in 7.2.104.16 which is not
+required by A3. The issue is fixed in 7.2.104.16 which is not
 released as the time of this writing.
 
 The workaround mentioned by Cisco is to downgrade to 7.0.230.0 but it
 doesn't support the FlexConnect AAA Override feature...
 
-So you can use 7.2.103.0 with PacketFence but not in FlexConnect mode.
+So you can use 7.2.103.0 with A3 but not in FlexConnect mode.
 
 Caveat CSCty44701
 
@@ -360,7 +360,7 @@ sub returnAuthorizeWrite {
     my $radius_reply_ref;
     my $status;
     $radius_reply_ref->{'Service-Type'} = 'Administrative-User';
-    $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by PacketFence";
+    $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by A3";
     $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with write access");
     my $filter = pf::access_filter::radius->new;
     my $rule = $filter->test('returnAuthorizeWrite', $args);
@@ -381,7 +381,7 @@ sub returnAuthorizeRead {
     my $radius_reply_ref;
     my $status;
     $radius_reply_ref->{'Service-Type'} = 'NAS-Prompt-User';
-    $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by PacketFence";
+    $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by A3";
     $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with read access");
     my $filter = pf::access_filter::radius->new;
     my $rule = $filter->test('returnAuthorizeRead', $args);

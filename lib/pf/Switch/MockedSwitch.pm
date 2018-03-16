@@ -559,7 +559,7 @@ sub getIfType {
     my $result = $self->{_sessionRead}
         ->get_request( -varbindlist => ["$OID_ifType.$ifIndex"] );
     #return $result->{"$OID_ifType.$ifIndex"};
-    $logger->debug("returning ethernetCsmacd(6) which is what PacketFence expects");
+    $logger->debug("returning ethernetCsmacd(6) which is what A3 expects");
     return $SNMP::ETHERNET_CSMACD;
 }
 
@@ -3028,7 +3028,7 @@ Return RADIUS attributes to allow write access
 
 sub returnAuthorizeWrite {
     my ($self, $args) = @_;
-    return [ $RADIUS::RLM_MODULE_FAIL, ( 'Reply-Message' => "PacketFence does not support this switch for enable access login" ) ];
+    return [ $RADIUS::RLM_MODULE_FAIL, ( 'Reply-Message' => "A3 does not support this switch for enable access login" ) ];
 
 }
 
@@ -3040,7 +3040,7 @@ Return RADIUS attributes to allow read access
 
 sub returnAuthorizeRead {
     my ($self, $args) = @_;
-    return [ $RADIUS::RLM_MODULE_FAIL, ( 'Reply-Message' => "PacketFence does not support this switch for enable access login" ) ];
+    return [ $RADIUS::RLM_MODULE_FAIL, ( 'Reply-Message' => "A3 does not support this switch for enable access login" ) ];
 }
 
 =item setSession

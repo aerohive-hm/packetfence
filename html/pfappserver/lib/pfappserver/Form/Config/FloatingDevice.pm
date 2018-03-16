@@ -37,7 +37,7 @@ has_field 'pvid' =>
    label => 'Native VLAN',
    required => 1,
    tags => { after_element => \&help,
-             help => 'VLAN in which PacketFence should put the port' },
+             help => 'VLAN in which A3 should put the port' },
   );
 has_field 'trunkPort' =>
   (

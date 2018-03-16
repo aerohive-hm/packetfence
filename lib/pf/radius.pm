@@ -9,7 +9,7 @@ pf::radius - Module that deals with everything RADIUS related
 The pf::radius module contains the functions necessary for answering RADIUS queries.
 RADIUS is the network access component known as AAA used in 802.1x, MAC authentication, etc.
 This module acts as a proxy between our FreeRADIUS perl module's SOAP requests
-(packetfence.pm) and PacketFence core modules.
+(packetfence.pm) and A3 core modules.
 
 All the behavior contained here can be overridden in lib/pf/radius/custom.pm.
 
@@ -119,7 +119,7 @@ sub authorize {
             "Can't instantiate switch ($switch_ip). This request will be failed. "
             ."Are you sure your switches.conf is correct?"
         );
-        $RAD_REPLY_REF = [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "Switch is not managed by PacketFence") ];
+        $RAD_REPLY_REF = [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "Switch is not managed by A3") ];
         goto AUDIT;
     }
 
@@ -239,8 +239,8 @@ sub authorize {
     $options->{'realm'}                = $args->{'realm'} if (defined($args->{'realm'}));
 
     my $profile = pf::Connection::ProfileFactory->instantiate($args->{'mac'},$options);
-    $args->{'profile'} = $profile; 
-    
+    $args->{'profile'} = $profile;
+
     $args->{'autoreg'} = 0;
     # should we auto-register? let's ask the VLAN object
     my ( $status, $status_msg );
@@ -383,7 +383,7 @@ sub accounting {
         $logger->warn( "Can't instantiate switch ($switch_ip). This request will be failed. "
                 . "Are you sure your switches.conf is correct?" );
         $pf::StatsD::statsd->increment(called() . ".error" );
-        return [ $RADIUS::RLM_MODULE_FAIL, ( 'Reply-Message' => "Switch is not managed by PacketFence" ) ];
+        return [ $RADIUS::RLM_MODULE_FAIL, ( 'Reply-Message' => "Switch is not managed by A3" ) ];
     }
 
     $switch->setCurrentTenant();
@@ -492,7 +492,7 @@ sub update_locationlog_accounting {
         $logger->warn( "Can't instantiate switch ($switch_ip). This request will be failed. "
                 . "Are you sure your switches.conf is correct?" );
         $pf::StatsD::statsd->increment(called() . ".error" );
-        return [ $RADIUS::RLM_MODULE_FAIL, ( 'Reply-Message' => "Switch is not managed by PacketFence" ) ];
+        return [ $RADIUS::RLM_MODULE_FAIL, ( 'Reply-Message' => "Switch is not managed by A3" ) ];
     }
 
     $switch->setCurrentTenant();
@@ -786,11 +786,11 @@ sub switch_access {
         $logger->warn(
             "Unknown switch ($switch_ip). This request will be failed."
         );
-        return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "Switch is not managed by PacketFence") ];
+        return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "Switch is not managed by A3") ];
     }
     if ( isdisabled($switch->{_cliAccess})) {
         $logger->warn("CLI Access is not permit on this switch $switch->{_id}");
-        return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "CLI Access is not allowed by PacketFence on this switch") ];
+        return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "CLI Access is not allowed by A3 on this switch") ];
     }
     my $args = {
         switch => $switch,
@@ -803,9 +803,9 @@ sub switch_access {
         radius_request => $radius_request,
     };
 
-    my ( $return, $message, $source_id, $extra ) = pf::authentication::authenticate( { 
-            'username' =>  $radius_request->{'User-Name'}, 
-            'password' =>  $radius_request->{'User-Password'}, 
+    my ( $return, $message, $source_id, $extra ) = pf::authentication::authenticate( {
+            'username' =>  $radius_request->{'User-Name'},
+            'password' =>  $radius_request->{'User-Password'},
             'rule_class' => $Rules::ADMIN,
             'context' => $pf::constants::realm::RADIUS_CONTEXT,
         }, @{pf::authentication::getInternalAuthenticationSources()} );
@@ -824,11 +824,11 @@ sub switch_access {
             }
         } else {
             $logger->info("User $args->{'user_name'} has no role (Switches CLI - Read or Switches CLI - Write) to permit to login in $args->{'switch'}{'_id'}");
-            return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "User has no role defined in PacketFence to allow switch login (SWITCH_LOGIN_READ or SWITCH_LOGIN_WRITE)") ];
+            return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "User has no role defined in A3 to allow switch login (SWITCH_LOGIN_READ or SWITCH_LOGIN_WRITE)") ];
         }
     } else {
         $logger->info("User $args->{'user_name'} tried to login in $args->{'switch'}{'_id'} but authentication failed");
-        return [ $RADIUS::RLM_MODULE_FAIL, ( 'Reply-Message' => "Authentication failed on PacketFence" ) ];
+        return [ $RADIUS::RLM_MODULE_FAIL, ( 'Reply-Message' => "Authentication failed on A3" ) ];
     }
 }
 

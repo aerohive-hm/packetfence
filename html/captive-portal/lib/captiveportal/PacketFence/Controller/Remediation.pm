@@ -67,7 +67,7 @@ sub index : Path : Args(0) {
     } else {
         $logger->info( "No open violation for " . $mac );
 
-        # TODO - rework to not show "Your computer was not found in the PacketFence database. Please reboot to solve this issue."
+        # TODO - rework to not show "Your computer was not found in the A3 database. Please reboot to solve this issue."
         $self->showError( $c, "error: not found in the database" );
     }
 }

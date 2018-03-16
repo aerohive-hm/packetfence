@@ -8,7 +8,7 @@ pf::pki_provider::packetfence_local
 
 =head1 DESCRIPTION
 
-PacketFence Local (packetfence_local) is a local "PKI" provider allowing a locally generated end-user certificate to be used by the provisionner portal flow.
+A3 Local (packetfence_local) is a local "PKI" provider allowing a locally generated end-user certificate to be used by the provisionner portal flow.
 
 =cut
 
@@ -23,7 +23,7 @@ use pf::log;
 
 extends 'pf::pki_provider';
 
-sub module_description { 'PacketFence Local' }
+sub module_description { 'A3 Local' }
 
 =head1 ATTRIBUTE(S)
 

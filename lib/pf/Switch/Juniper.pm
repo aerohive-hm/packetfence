@@ -162,7 +162,7 @@ sub setAdminStatus {
 
         $logger->trace("sending CLI command '$command'");
         @output = $session->cmd(String => $command, Timeout => '5');
-        @output = $session->cmd(String => 'commit comment "admin link status change by PacketFence"', Timeout => '30');
+        @output = $session->cmd(String => 'commit comment "admin link status change by A3"', Timeout => '30');
 
         $session->in_privileged_mode(0);
     };

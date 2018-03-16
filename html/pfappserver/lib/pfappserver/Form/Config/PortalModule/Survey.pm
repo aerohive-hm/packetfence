@@ -67,5 +67,3 @@ Copyright (C) 2005-2018 Inverse inc.
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 1;
-
-

@@ -76,8 +76,8 @@ has_field 'user_mail_message' =>
    type => 'TextArea',
    label => 'Additional message for the user',
    element_class => ['input-large'],
-   tags => { after_element => \&help, 
-             help => 'A message that will be added to the e-mail sent to the user regarding this violation.' }, 
+   tags => { after_element => \&help,
+             help => 'A message that will be added to the e-mail sent to the user regarding this violation.' },
   );
 has_field 'vclose' =>
   (
@@ -188,14 +188,14 @@ has_field 'vlan' =>
    element_class => ['chzn-deselect'],
    element_attr => {'data-placeholder' => 'Select a Role'},
    tags => { after_element => \&help,
-             help => 'Destination Role where PacketFence should put the client when a violation of this type is open.' }
+             help => 'Destination Role where A3 should put the client when a violation of this type is open.' }
   );
 has_field 'redirect_url' =>
   (
    type => 'Text',
    label => 'Redirection URL',
    tags => { after_element => \&help,
-             help => 'Destination URL where PacketFence will forward the device. By default it will use the Redirection URL from the connection profile configuration.' }
+             help => 'Destination URL where A3 will forward the device. By default it will use the Redirection URL from the connection profile configuration.' }
   );
 has_field 'external_command' =>
   (

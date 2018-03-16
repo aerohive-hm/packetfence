@@ -23,7 +23,7 @@ extends 'pf::pki_provider';
 
 use pf::log;
 
-sub module_description { 'PacketFence PKI' }
+sub module_description { 'A3 PKI' }
 
 =head2 host
 
@@ -97,7 +97,7 @@ sub _post_curl {
     $curl->setopt(CURLOPT_USERNAME, $username);
     $curl->setopt(CURLOPT_PASSWORD, $password);
 
-    $logger->debug("Calling PacketFence PKI service using URI : $uri");
+    $logger->debug("Calling A3 PKI service using URI : $uri");
 
     # Starts the actual request
     my $curl_return_code = $curl->perform;

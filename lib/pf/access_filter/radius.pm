@@ -60,7 +60,7 @@ sub handleAnswerInRule {
     my $radius_reply = {};
     my $status = $RADIUS::RLM_MODULE_OK;
     if (defined $rule) {
-        $radius_reply = {'Reply-Message' => "Request processed by PacketFence"};
+        $radius_reply = {'Reply-Message' => "Request processed by A3"};
         my $i = 1;
         $logger->info(evalParam($rule->{'log'},$args)) if defined($rule->{'log'});
         while (1) {

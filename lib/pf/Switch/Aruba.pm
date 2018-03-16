@@ -42,7 +42,7 @@ Tested on Controller 600 with RADIUS Disconnect running firmware 6.0.x
 We had reports that Telnet-based deauthentication is no longer working with
 the firmware 6 series.
 
-Although this is not a PacketFence issue, upgrading PacketFence to 3.1.0 will
+Although this is not a A3 issue, upgrading A3 to 3.1.0 will
 work-around this situation since we use a new RADIUS-based technique to
 perform deauthentication on Aruba.
 
@@ -576,7 +576,7 @@ sub returnAuthorizeWrite {
    my $radius_reply_ref = {};
    my $status;
    $radius_reply_ref->{'Class'} = 'root';
-   $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by PacketFence";
+   $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by A3";
    $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with write access");
    my $filter = pf::access_filter::radius->new;
    my $rule = $filter->test('returnAuthorizeWrite', $args);
@@ -596,7 +596,7 @@ sub returnAuthorizeRead {
    my $radius_reply_ref = {};
    my $status;
    $radius_reply_ref->{'Class'} = 'read-only';
-   $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by PacketFence";
+   $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by A3";
    $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with read access");
    my $filter = pf::access_filter::radius->new;
    my $rule = $filter->test('returnAuthorizeRead', $args);
