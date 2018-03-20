@@ -1246,10 +1246,6 @@ fi
 %ghost                  %logdir/snmptrapd.log
 %ghost                  %logdir/pfdetect
 %ghost                  %logdir/pfmon
-%doc                    /usr/local/pf/NEWS.asciidoc
-%doc                    /usr/local/pf/NEWS.old
-%doc                    /usr/local/pf/README.md
-%doc                    /usr/local/pf/README.network-devices
 %dir                    /usr/local/pf/sbin
 %attr(0700, root, root) /usr/local/pf/sbin/checkdb-A3
 %attr(0700, root, root) /usr/local/pf/sbin/initdb-A3
@@ -1264,8 +1260,6 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/sbin/system-id
 %attr(0755, pf, pf)     /usr/local/pf/sbin/winbindd-wrapper
 %attr(0755, pf, pf)     /usr/local/pf/sbin/radsniff-wrapper
-%doc                    /usr/local/pf/UPGRADE.asciidoc
-%doc                    /usr/local/pf/UPGRADE.old
 %dir                    /usr/local/pf/var
 %dir                    /usr/local/pf/var/conf
 %dir                    /usr/local/pf/raddb
