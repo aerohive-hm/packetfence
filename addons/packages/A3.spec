@@ -551,12 +551,24 @@ rm -rf $RPM_BUILD_ROOT/usr/local/pf/docs/api
 cp -r html $RPM_BUILD_ROOT/usr/local/pf/
 cp -r lib $RPM_BUILD_ROOT/usr/local/pf/
 cp -r go $RPM_BUILD_ROOT/usr/local/pf/
-cp -r NEWS.asciidoc $RPM_BUILD_ROOT/usr/local/pf/
-cp -r NEWS.old $RPM_BUILD_ROOT/usr/local/pf/
-cp -r README.md $RPM_BUILD_ROOT/usr/local/pf/
-cp -r README.network-devices $RPM_BUILD_ROOT/usr/local/pf/
-cp -r UPGRADE.asciidoc $RPM_BUILD_ROOT/usr/local/pf/
-cp -r UPGRADE.old $RPM_BUILD_ROOT/usr/local/pf/
+
+mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Clustering_Guide.html \
+   $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/A3_Clustering_Guide.html
+mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Installation_Guide.html \
+   $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/A3_Installation_Guide.html
+mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Network_Devices_Configuration_Guide.html \
+   $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/A3_Network_Devices_Configuration_Guide.html
+
+mv $RPM_BUILD_ROOT/usr/local/pf/docs/PacketFence_Clustering_Guide.pdf \
+   $RPM_BUILD_ROOT/usr/local/pf/docs/A3_Clustering_Guide.pdf
+mv $RPM_BUILD_ROOT/usr/local/pf/docs/PacketFence_Installation_Guide.pdf \
+   $RPM_BUILD_ROOT/usr/local/pf/docs/A3_Installation_Guide.pdf
+mv $RPM_BUILD_ROOT/usr/local/pf/docs/PacketFence_Network_Devices_Configuration_Guide.pdf \
+   $RPM_BUILD_ROOT/usr/local/pf/docs/A3_Network_Devices_Configuration_Guide.pdf
+
+# Don't need the developer's guide for A3
+rm $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Developers_Guide.html
+
 # logfiles
 for LOG in %logfiles; do
     touch $RPM_BUILD_ROOT%logdir/$LOG

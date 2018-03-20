@@ -10,7 +10,7 @@
 [%- END -%]
 
 [%- MACRO doc_url(section, guide) BLOCK -%]
-[%- UNLESS guide; guide = 'Administration_Guide'; END -%]
+[%- UNLESS guide; guide = 'Installation_Guide'; END -%]
 [% c.generate_doc_url(section, guide) | none %]
 [%- END -%]
 
