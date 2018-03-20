@@ -407,21 +407,10 @@ for TRANSLATION in de en es fr he_IL it nl pl_PL pt_BR; do
 done
 
 %if %{builddoc} == 1
-    # generating custom XSL for titlepage
-    xsltproc -o docs/docbook/xsl/titlepage-fo.xsl \
-        /usr/share/sgml/docbook/xsl-stylesheets/template/titlepage.xsl \
-        docs/docbook/xsl/titlepage-fo.xml
-    # admin, network device config, devel and ZEN install guides
-    for GUIDE in $(ls docs/PacketFence*.asciidoc | xargs -n1 -I'{}' basename '{}' .asciidoc) ;do
-    asciidoc -a docinfo2 -b docbook -d book \
-        -o docs/docbook/$GUIDE.docbook \
-        docs/$GUIDE.asciidoc
-    xsltproc -o docs/docbook/$GUIDE.fo \
-        docs/docbook/xsl/packetfence-fo.xsl \
-        docs/docbook/$GUIDE.docbook
-    fop -c docs/fonts/fop-config.xml \
-        docs/docbook/$GUIDE.fo \
-        -pdf docs/$GUIDE.pdf
+    make docs/docbook/xsl/titlepage-fo.xsl
+    make docs/docbook/xsl/import-fo.xsl
+    for GUIDE in $(ls docs/PacketFence*.asciidoc | xargs -n1 -I'{}' basename '{}' .asciidoc); do
+        make $GUIDE.pdf $GUIDE.html
     done
 %endif
 
