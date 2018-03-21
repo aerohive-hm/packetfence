@@ -47,19 +47,19 @@
         <h3>[% l('Integration Guides') %]</h3>
         <ul class="nav nav-pills nav-vertical">
           [%
-          guide_sec('_aerohive_networks', 'Aerohive Networks', 'Aerohive_Quick_Install_Guide') | none;
-          guide_sec('_anyfi_networks', 'Anyfi Networks', 'Anyfi_Quick_Install_Guide') | none;
-          guide('Barracuda firewall', 'Barracuda_Quick_Install_Guide') | none;
-          guide('Checkpoint firewall', 'Checkpoint_Quick_Install_Guide') | none;
-          guide_sec('_coovachilli', 'CoovaChilli access controller', 'CoovaChilli_Quick_Integration_Guide') | none;
-          guide('FortiGate firewall', 'FortiGate_Quick_Install_Guide') | none;
-          guide('Microsoft PKI (MSPKI)', 'MSPKI_Quick_Install_Guide') | none;
-          guide('MobileIron mobile device manager', 'MobileIron_Quick_Install_Guide') | none;
-          guide('OpenWrt', 'OpenWrt-Hostapd-15-05_Quick_Install_Guide') | none;
-          guide('OPSWAT Metadefender Endpoint Management', 'OPSWAT_Quick_Install_Guide') | none;
-          guide('Palo Alto Firewall', 'PaloAlto_Quick_Install_Guide') | none;
-          guide('SentinelOne Server', 'SentinelOne_Quick_Install_Guide') | none;
-          guide('Symantec Endpoint Protection Manager', 'SEPM_Quick_Install_Guide') | none;
+          guide_sec('_aerohive_networks', 'Aerohive Networks', 'Network_Devices_Configuration_Guide') | none;
+          guide_sec('_anyfi_networks', 'Anyfi Networks', 'Network_Devices_Configuration_Guide') | none;
+          guide_sec('_barracuda', 'Barracuda Firewall', 'Installation_Guide') | none;
+          guide_sec('_checkpoint', 'Checkpoint Firewall', 'Installation_Guide') | none;
+          guide_sec('_coovachilli', 'CoovaChilli Access Controller', 'Network_Devices_Configuration_Guide') | none;
+          guide_sec('_fortigate', 'FortiGate Firewall', 'Installation_Guide') | none;
+          guide_sec('_microsoft', 'Microsoft PKI (MSPKI)', 'Installation_Guide') | none;
+          guide_sec('_mobileiron', 'MobileIron Mobile Device Manager', 'Installation_Guide') | none;
+          guide_sec('_hostapd', 'OpenWrt', 'Network_Devices_Configuration_Guide') | none;
+          guide_sec('_opswat', 'OPSWAT Metadefender Endpoint Management', 'Installation_Guide') | none;
+          guide_sec('_paloalto', 'Palo Alto Firewall', 'Installation_Guide') | none;
+          guide_sec('_sentinelone', 'SentinelOne Server', 'Installation_Guide') | none;
+          guide_sec('_sepm', 'Symantec Endpoint Protection Manager', 'Installation_Guide') | none;
           %]
         </ul>
       </div>
