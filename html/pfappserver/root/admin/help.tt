@@ -53,13 +53,13 @@
           guide_sec('_checkpoint', 'Checkpoint Firewall', 'Installation_Guide') | none;
           guide_sec('_coovachilli', 'CoovaChilli Access Controller', 'Network_Devices_Configuration_Guide') | none;
           guide_sec('_fortigate', 'FortiGate Firewall', 'Installation_Guide') | none;
-          guide_sec('_microsoft', 'Microsoft PKI (MSPKI)', 'Installation_Guide') | none;
+          guide_sec('_microsoft_pki', 'Microsoft PKI (MSPKI)', 'Installation_Guide') | none;
           guide_sec('_mobileiron', 'MobileIron Mobile Device Manager', 'Installation_Guide') | none;
-          guide_sec('_hostapd', 'OpenWrt', 'Network_Devices_Configuration_Guide') | none;
+          guide_sec('_hostapd_openwrt_chaos_calmer_15_05', 'OpenWrt', 'Network_Devices_Configuration_Guide') | none;
           guide_sec('_opswat', 'OPSWAT Metadefender Endpoint Management', 'Installation_Guide') | none;
-          guide_sec('_paloalto', 'Palo Alto Firewall', 'Installation_Guide') | none;
+          guide_sec('_palo_alto', 'Palo Alto Firewall', 'Installation_Guide') | none;
           guide_sec('_sentinelone', 'SentinelOne Server', 'Installation_Guide') | none;
-          guide_sec('_sepm', 'Symantec Endpoint Protection Manager', 'Installation_Guide') | none;
+          guide_sec('_symantec_sepm', 'Symantec Endpoint Protection Manager', 'Installation_Guide') | none;
           %]
         </ul>
       </div>
