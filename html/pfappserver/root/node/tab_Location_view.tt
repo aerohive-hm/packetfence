@@ -2,7 +2,7 @@
 <table class="table table-condensed table-hover">
 <thead>
   <tr>
-    <th>[% l('Device/AP') %]</th>
+    <th>[% l('Device') %]</th>
     <th>[% l('Device Mac') %]</th>
     <th>[% l('Connection Type') %]</th>
     <th>[% l('Connection Sub Type') %]</th>
