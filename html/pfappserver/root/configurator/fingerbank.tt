@@ -9,8 +9,8 @@
         </div>
         <div class="span14">
           <div class="page-header">
-            <h1>[% l('Fingerbank') %]
-            <small>[% l('Fingerbank on-boarding') %]</small></h1>
+            <h1>[% l('Entitlement') %]
+            <small>[% l('Manage entitlement') %]</small></h1>
           </div>
         </div>
       </div>
@@ -18,39 +18,64 @@
         <div class="span4">
           <div class="well">
             <h3>[% l('Instructions') %]</H3>
-            <p>[% l('On this page, you can configure Fingerbank which is used for device fingerprinting.') %]</p>
-            <p>[% l('If you do not configure a Fingerbank API key, you will not have access to any device profiling capabilities in A3') %]</p>
+            <p>[% l('On this page, you can configure this entitlement which is used for device fingerprinting.') %]</p>
+            <p>[% l('If you do not configure a Entitlement API key, you will not have access to any device profiling capabilities in A3') %]</p>
           </div>
         </div>
         <div class="span14">
           <div class="card">
             <form name="admin" class="form-horizontal">
-              <div class="card-block">
-            <h3>[% l('API Onboarding') %]</h3>
-            <p>[% l('Proceed here:') %] <a href="https://api.fingerbank.org/users/register" target="_blank">https://api.fingerbank.org/users/register</a></p>
+              <div class="card-block" style="height: 250px;">
+            <h3>[% l('Licensing Options') %]</h3>
 
-            <p>[% l('Once done, you will be issued an API key that you need to enter in the following field') %]</p>
+	      <div class="control-group thirtyDayTrial" style="display: inline;">
 
-            <div class="control-group">
-              <label class="control-label" for="api_key">[% l('API key') %]</label>
-              <div class="controls">
-                <input id="api_key" class="text" type="text" value="[% fingerbank_api_key %]"[% IF fingerbank_api_key %] disabled[% END %]>
-                <a id="configure_fingerbank_api_key" href="/config/fingerbank/settings/onboard" class="btn btn-primary"[% IF fingerbank_api_key %] disabled[% END %]>[% l('Get Aboard!') %]</a>
-                <div class="control-group[% IF fingerbank_api_key %] success[% END %]">
-                [% IF fingerbank_api_key %]<span class="help-inline">[% l('Success!') %]</span>[% END %]
-                </div>
-              </div>
-            </div>
+		<div class="card thirtyDayTrial" style="width:45%; float:left; padding: 15px 15px;">
+	          <input id="thirtyDayTrialRadio" style="float: left;" name="licenseRadio" type="radio" />
+		  <label for="thirtyDayTrialRadio" style="padding-left: 25px;">[% l('I would like to try a 30 day trial!') %]</label>
+		</div><!--card-->
 
-            </div>
+   		<div class="card" style="width: 45%; float:left; padding: 15px 15px;">
+                  <input id="entitlementRadio" style="float: left;" name="licenseRadio" type="radio" />
+		  <label for="entitlementRadio" style="padding-left: 25px;">[% l('I have an entitlement key!') %]</label>
+                  <div class="keyInput" style="display: none;">
+		    <fieldset class="form-group" id="entitlementKeyInputs" >
+                      <input class="entitlementKey" id="entitlementKey1" class="text" type="text" maxlength="35" placeholder="Enter" value="">
+        </fieldset>
+		    <br>
+		    <button id="entitlementKeySubmit" onclick="checkKey(); return false;" class="btn btn-primary">[% l('Submit') %]</button>
+	 	  </div>
+		</div>
+		  <!--EULA modal-->
+		<div class="modal fade" id="eulaModal" tabindex="-1" role="dialog" aria-hidden="true">
+  		  <div class="modal-dialog modal-dialog-centered" role="document">
+    		    <div class="modal-content">
+      		      <div class="modal-body">
+		        <h3><b>[% l('Terms and Conditions') %]</b></h3>
+			[% INCLUDE configurator/eula.tt %]
+      		      </div>
+      		      <div class="modal-footer">
+			<div class="agree">
+                          <input type="checkbox" style="float:left; display: none;" id="agreeToEula"/>
+			  <label for="agreeToEula" onclick="agreeEula(); return false;" style="padding-left:15px;">[% l('Agree') %]</label>
+			</div>
+                        <button type="button" onclick="submitAgree(); return false;" class="btn btn-success fixed-right submitAgreement">[% l('Submit') %]</button>
+      		      </div>
+    		    </div>
+  		  </div>
+		</div>
+
+	      </div> <!--end of thirtyDayTrial-->
+		</div> <!--end of card-block-->
+
             <div class="form-actions">
-              <button type="submit" data-msg-done="[% l('Continue') %]" class="btn [% IF fingerbank_api_key %]btn-primary[% ELSE %]btn-danger[% END %] pull-right" href="[% next_step %]">
-                [% IF fingerbank_api_key ; l('Continue') ; ELSE ; l('Continue without Fingerbank') ; END %]
+              <button type="submit" data-msg-done="[% l('Continue') %]" class="btn btn-primary pull-right continueButton" href="[% next_step %]" disabled>
+                [% l('Continue') %]
                 <i class="icon-arrow-circle-right icon-white"></i>
               </button>
-            </div>
+            </div><!--end of formactions-->
             </form>
-          </div>
-        </div>
+          </div><!--end of card-->
+        </div><!--end of span 14-->
       </div>
     </div><!--/container-->

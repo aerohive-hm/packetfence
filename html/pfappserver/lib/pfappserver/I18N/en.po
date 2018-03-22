@@ -6800,23 +6800,23 @@ msgid "Source"
 msgstr ""
 
 # html/pfappserver/root/admin/nodes.tt
-msgid "Source Switch IP"
+msgid "Source Device IP"
 msgstr ""
 
 # html/pfappserver/root/admin/nodes.tt
-msgid "Source Switch Identifier"
+msgid "Source Device Identifier"
 msgstr ""
 
 # html/pfappserver/root/admin/nodes.tt
-msgid "Source Switch MAC"
+msgid "Source Device MAC"
 msgstr ""
 
 # html/pfappserver/root/admin/nodes.tt
-msgid "Source Switch Port"
+msgid "Source Device Port"
 msgstr ""
 
 # html/pfappserver/root/admin/nodes.tt
-msgid "Source Switch Port Description"
+msgid "Source Device Port Description"
 msgstr ""
 
 # html/pfappserver/root/admin/auditing_radius_log.tt
@@ -7028,66 +7028,66 @@ msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
 # html/pfappserver/root/config/switch/list.tt
-msgid "Switch Group"
+msgid "Device Group"
 msgstr ""
 
 # html/pfappserver/root/admin/auditing_option82.tt
 # html/pfappserver/root/admin/auditing_radius_log.tt
 # html/pfappserver/root/admin/nodes.tt
-msgid "Switch Groups"
+msgid "Device Groups"
 msgstr ""
 
 # html/pfappserver/root/config/switch/list.tt
-msgid "Switch ID"
+msgid "Device ID"
 msgstr ""
 
 # html/pfappserver/root/node/search.tt
-msgid "Switch IP Address"
+msgid "Device IP Address"
 msgstr ""
 
 # html/pfappserver/root/node/search.tt
-msgid "Switch Identifier"
+msgid "Device Identifier"
 msgstr ""
 
 # html/pfappserver/root/auditing/radiuslog/view.tt
-msgid "Switch Information"
+msgid "Device Information"
 msgstr ""
 
 # html/pfappserver/root/node/search.tt
-msgid "Switch MAC Address"
+msgid "Device MAC Address"
 msgstr ""
 
 # html/pfappserver/root/node/tab_Location_view.tt
-msgid "Switch Mac"
+msgid "Device Mac"
 msgstr ""
 
 # html/pfappserver/root/node/search.tt
-msgid "Switch Port"
+msgid "Device Port"
 msgstr ""
 
 # html/pfappserver/root/node/search.tt
-msgid "Switch Port Description"
+msgid "Device Port Description"
 msgstr ""
 
 # html/pfappserver/root/config/switch/list.tt
-msgid "Switch Type"
+msgid "Device Type"
 msgstr ""
 
 # html/pfappserver/root/node/search.tt
-msgid "Switch description"
+msgid "Device description"
 msgstr ""
 
 # html/pfappserver/root/config/filters/index.tt
-msgid "Switch filters"
+msgid "Device filters"
 msgstr ""
 
 # html/pfappserver/root/node/tab_Location_view.tt
 # html/pfappserver/root/node/view.tt
-msgid "Switch/AP"
+msgid "Device/AP"
 msgstr ""
 
 # html/pfappserver/root/configuration/define_policy.tt
-msgid "Switches:"
+msgid "Devices:"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Firewall_SSO/PaloAlto.pm
@@ -7283,7 +7283,7 @@ msgid "The DNS name (FQDN) of the domain."
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Wrix.pm
-msgid "The ID of the Switch"
+msgid "The ID of the device"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
@@ -10488,19 +10488,19 @@ msgstr "SSID"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch"
-msgstr "Switch"
+msgstr "Device"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch_group"
-msgstr "Switch Group"
+msgstr "Device Group"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch_mac"
-msgstr "Switch Mac"
+msgstr "Device Mac"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch_port"
-msgstr "Switch Port"
+msgstr "Device Port"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.tenant"
