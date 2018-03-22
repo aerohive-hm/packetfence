@@ -20,7 +20,7 @@ has_field 'id' =>
   (
    type => 'Text',
    required => 1,
-   messages => { required => 'The ID of the Switch'}
+   messages => { required => 'The ID of the device'}
   );
 has_field 'Provider_Identifier' =>
   (

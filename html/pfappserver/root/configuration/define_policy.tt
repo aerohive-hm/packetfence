@@ -1,7 +1,7 @@
 <div class="documentation">
   <h1><i class="icon-id-card"></i> [% l('Policies and Access Control') %]</h1>
 
-  <p> [% l('When an endpoint connects to the network, A3 must be able to assign a role to it, or its user. The role can then be translated to a VLAN, a set of ACL, a switch manufacturer policy identifier or a combinations of all of this.') %]</p>
+  <p> [% l('When an endpoint connects to the network, A3 must be able to assign a role to it, or its user. The role can then be translated to a VLAN, a set of ACL, a device manufacturer policy identifier or a combinations of all of this.') %]</p>
 
   <p>[% l('For A3 to work properly, you must define in the following order:') %]</p>
 

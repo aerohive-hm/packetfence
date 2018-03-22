@@ -2,8 +2,8 @@
 <table class="table table-condensed table-hover">
 <thead>
   <tr>
-    <th>[% l('Switch/AP') %]</th>
-    <th>[% l('Switch Mac') %]</th>
+    <th>[% l('Device/AP') %]</th>
+    <th>[% l('Device Mac') %]</th>
     <th>[% l('Connection Type') %]</th>
     <th>[% l('Connection Sub Type') %]</th>
     <th>[% l('Username') %]</th>
@@ -21,7 +21,7 @@
         [% item.switch | html %]
       [% END %]
       <br/>
-      [% IF item.ssid %] 
+      [% IF item.ssid %]
         <span class="badge badge-info"><i class="icon-signal"></i> [% item.ssid | html %]</span>
       [% ELSE %]
         [% IF item.port.length %]<span class="badge badge-info">[% l('port') %]: [% item.port | html %] [% IF item.ifDesc.length %]([% item.ifDesc | html %])[% END %]</span> [% END %]

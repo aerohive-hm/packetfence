@@ -88,12 +88,12 @@
         { name => 'device_class', label => l('Device class') },
         { name => 'device_type', label => l('Device type') },
         { name => 'category', label => l('Role') },
-        { name => 'switch_id', label => l('Switch Identifier') },
-        { name => 'switch_ip', label => l('Switch IP Address') },
-        { name => 'switch_mac', label => l('Switch MAC Address') },
-        { name => 'switch_port', label => l('Switch Port') },
-        { name => 'switch_port_desc', label => l('Switch Port Description') },
-        { name => 'switch_description', label => l('Switch description') },
+        { name => 'switch_id', label => l('Device Identifier') },
+        { name => 'switch_ip', label => l('Device IP Address') },
+        { name => 'switch_mac', label => l('Device MAC Address') },
+        { name => 'switch_port', label => l('Device Port') },
+        { name => 'switch_port_desc', label => l('Device Port Description') },
+        { name => 'switch_description', label => l('Device description') },
         { name => 'last_ssid', label => l('SSID') },
         { name => 'bypass_vlan', label => l('Bypass VLAN') },
         { name => 'bypass_role', label => l('Bypass Role') },
@@ -170,4 +170,3 @@
       <div id="noResult" class="unwell[% ' hidden' IF items.size > 0 %]">
         <i class="icon-search icon-large"></i><p>[% l('No node found') %]</p>
       </div>
-

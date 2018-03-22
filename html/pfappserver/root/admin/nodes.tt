@@ -14,11 +14,11 @@
     <option value="online">[% l('Online Status') %]</option>
     <option value="person_name">[% l('Person Name') %]</option>
     <option value="status">[% l('Status') %]</option>
-    <option value="switch_id">[% l('Source Switch Identifier') %]</option>
-    <option value="switch_ip">[% l('Source Switch IP') %]</option>
-    <option value="switch_mac">[% l('Source Switch MAC') %]</option>
-    <option value="switch_port">[% l('Source Switch Port') %]</option>
-    <option value="switch_port_desc">[% l('Source Switch Port Description') %]</option>
+    <option value="switch_id">[% l('Source Device Identifier') %]</option>
+    <option value="switch_ip">[% l('Source Device IP') %]</option>
+    <option value="switch_mac">[% l('Source Device MAC') %]</option>
+    <option value="switch_port">[% l('Source Device Port') %]</option>
+    <option value="switch_port_desc">[% l('Source Device Port Description') %]</option>
     <option value="ssid">[% l('SSID') %]</option>
     <option value="user_agent">[% l('User Agent') %]</option>
     <option value="violation">[% l('Violation Name') %]</option>
@@ -129,7 +129,7 @@
       </select>
     </div>
 
-    [% INCLUDE admin/saved_search.inc savedSearchController="SavedSearch::Node" method="POST" %] 
+    [% INCLUDE admin/saved_search.inc savedSearchController="SavedSearch::Node" method="POST" %]
     <div class="sidenav-fluid">
       <div class="row-fluid">
         <div class="sidenav sidenav-section span3">
@@ -181,7 +181,7 @@
               </li>
               <li class="divider"></li>
               <li id="accordion-SwithGroup">
-                <a data-toggle="collapse" data-parent="#accordion-SwithGroup" href="#collapseSwitchGroup" class="collapsed">[% l('Switch Groups') %] <i class="icon-chevron-up pull-right"></i></a>
+                <a data-toggle="collapse" data-parent="#accordion-SwithGroup" href="#collapseSwitchGroup" class="collapsed">[% l('Device Groups') %] <i class="icon-chevron-up pull-right"></i></a>
                 <ul id="collapseSwitchGroup" class="nav nav-list collapse">
                   <li class="sidenav-subsection[% UNLESS switch_groups.size %] sidenav-subsection--last[% END %]">
                     <a data-toggle="collapse" data-parent="#collapseSwitchGroup" href="#collapseSwitchGroupDefault" class="collapsed">[% l('Default') %]<i class="icon-chevron-up pull-right"></i></a>
