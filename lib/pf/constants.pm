@@ -17,8 +17,10 @@ use Readonly;
 use base qw(Exporter);
 our @EXPORT = qw(
     $FALSE $TRUE $YES $NO $default_pid $admin_pid $YELLOW_COLOR $RED_COLOR $GREEN_COLOR
-    $HTTP $HTTPS $HTTP_PORT $HTTPS_PORT $ZERO_DATE $DEFAULT_TENANT_ID
+    $HTTP $HTTPS $HTTP_PORT $HTTPS_PORT $ZERO_DATE $DEFAULT_TENANT_ID $A3_SYSTEM_ID
 );
+
+$ENV{PATH} = "/bin";
 
 # some global constants
 Readonly::Scalar our $FALSE => 0;
@@ -44,6 +46,8 @@ Readonly::Scalar our $HTTP => "http";
 Readonly::Scalar our $HTTPS => "https";
 
 Readonly::Scalar our $DEFAULT_TENANT_ID => 1;
+
+Readonly::Scalar our $A3_SYSTEM_ID => `/usr/bin/cat /etc/A3.systemid`;
 
 =head1 AUTHOR
 

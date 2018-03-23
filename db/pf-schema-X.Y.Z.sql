@@ -1263,3 +1263,23 @@ CREATE TABLE `api_user` (
 
 INSERT INTO pf_version (id, version) VALUES (@VERSION_INT, CONCAT_WS('.', @MAJOR_VERSION, @MINOR_VERSION, @SUBMINOR_VERSION));
 
+--
+-- The following are specific to A3
+--
+CREATE TABLE a3_entitlement (
+    entitlement_key varchar (64) NOT NULL,
+    type            varchar (16) NOT NULL,
+    status          int          NOT NULL,
+    endpoint_count  int          NOT NULL,
+    sub_start       datetime     NOT NULL,
+    sub_end         datetime     NOT NULL,
+    support_start   datetime     NOT NULL,
+    support_end     datetime     NOT NULL,
+    PRIMARY KEY (entitlement_key)
+) ENGINE=InnoDB;
+
+CREATE TABLE a3_eula_acceptance (
+    timestamp datetime NOT NULL,
+    is_synced tinyint  NOT NULL,
+    PRIMARY KEY (timestamp)
+) ENGINE=InnoDB;
