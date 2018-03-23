@@ -92,7 +92,7 @@ Get the current used endpoint capacity
 =cut
 
 sub get_used_capacity {
-    return pf::node->node_count_all();
+    return pf::node->node_count_all()->{nb} // 0;
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
