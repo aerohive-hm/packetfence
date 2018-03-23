@@ -1125,3 +1125,17 @@ eap_fast_opaque_key=0123456789abcdef0123456789ABCDEF
 #
 # EAP-FAST authority ID (Considered only if EAP-FAST is enabled)
 eap_fast_authority_identity=1234
+
+[A3]
+#
+# A3.license_server
+#
+license_server=https://cloud.aerohive.com
+#
+# A3.entitlement_path
+#
+entitlement_path=/a3/entitlement
+#
+# A3.eula_path
+#
+eula_path=/a3/eula

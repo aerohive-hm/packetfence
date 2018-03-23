@@ -7,9 +7,15 @@
 # Ensure we delete the vagrant user if it exists
 userdel vagrant
 
+# Set up A3 System ID
+if [ ! -s /etc/A3.systemid ]; then
+    /usr/local/pf/sbin/system-id > /etc/A3.systemid
+    chmod 444 /etc/A3.systemid
+fi
+
 cat /etc/redhat-release > /etc/issue
 echo "" >> /etc/issue
-echo "[System ID: `/usr/local/pf/sbin/system-id`]" >> /etc/issue
+echo "[System ID: `/usr/bin/cat /etc/A3.systemid`]" >> /etc/issue
 echo "" >> /etc/issue
 echo "Kernel \r on an \m" >> /etc/issue
 echo "" >> /etc/issue
