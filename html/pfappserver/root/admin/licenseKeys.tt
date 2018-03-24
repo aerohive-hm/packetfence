@@ -1,0 +1,18 @@
+[%  jsFiles = [
+        'js/vendor/raphael.min',
+        'app/graphs',
+        'admin/config/items',
+        'js/node',
+        'js/user',
+        'admin/searches',
+        'admin/nodes',
+        'js/reports'
+        ]
+     cssFiles = [
+        'admin/reports'
+        ] -%]
+[% MACRO list_entry(action,description) BLOCK %]
+              <li[% IF section == action %] class="active"[% END %]>
+                <a href="#[% action %]">[% l(description) %]</a>
+              </li>
+[% END -%]

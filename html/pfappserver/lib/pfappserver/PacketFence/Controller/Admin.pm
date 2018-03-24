@@ -227,6 +227,10 @@ our @ROLES_TO_ACTIONS = (
         roles => [qw(USERS_READ USERS_READ_SPONSORED)],
         action => 'users',
     },
+    {
+        roles => [qw()],
+        action => 'licenseKeys',
+    }
 );
 
 =head2 index
@@ -309,7 +313,7 @@ sub auditing :Chained('object') :PathPart('auditing') :Args(0) :AdminRole('AUDIT
 sub nodes :Chained('object') :PathPart('nodes') :Args(0) :AdminRole('NODES_READ') {
     my ( $self, $c ) = @_;
     my $sg = pf::ConfigStore::SwitchGroup->new;
- 
+
     my $switch_groups = [
     map {
         local $_ = $_;
@@ -327,7 +331,7 @@ sub nodes :Chained('object') :PathPart('nodes') :Args(0) :AdminRole('NODES_READ'
         local $_ = $_;
         my $id = $_->{Id};
         my $description = $_->{description};
-        {id => $id, description => $description} 
+        {id => $id, description => $description}
         } @switches_filtered];
 
     $c->stash(
@@ -445,6 +449,17 @@ sub fixpermissions :Chained('object') :PathPart('fixpermissions') :Args(0) {
     $c->stash->{item}->{fixpermissions_result} = \@result;
     $c->stash->{current_view} = 'JSON';
 }
+
+
+=head2 licenseKeys
+
+=cut
+
+sub licenseKeys : Chained('object') :PathPart('licenseKeys') :Args(0){
+    my( $self, $c ) = @_;
+
+}
+
 
 =head1 COPYRIGHT
 
