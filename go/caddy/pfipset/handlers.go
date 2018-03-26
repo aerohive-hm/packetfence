@@ -8,8 +8,10 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/diegoguarnieri/go-conntrack/conntrack"
 	ipset "github.com/digineo/go-ipset"
+	"github.com/gorilla/mux"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -26,6 +28,84 @@ type PostOptions struct {
 	Port    string `json:"port,omitempty"`
 	Mac     string `json:"mac,omitempty"`
 	Type    string `json:"type,omitempty"`
+}
+
+func handleAddIp(res http.ResponseWriter, req *http.Request) {
+	IPSET := pfIPSETFromContext(req.Context())
+
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		panic(err)
+	}
+	var o PostOptions
+	err = json.Unmarshal(body, &o)
+	if err != nil {
+		panic(err)
+	}
+	Ip := net.ParseIP(o.Ip)
+	if Ip == nil {
+		handleError(res, http.StatusBadRequest)
+		return
+	}
+	Local := req.URL.Query().Get("local")
+	setName := mux.Vars(req)["set_name"]
+
+	IPSET.jobs <- job{"Add", setName, Ip.String()}
+	if Local == "0" {
+		updateClusterAddIp(req.Context(), setName, req.Body)
+	}
+	var result = map[string][]*Info{
+		"result": {
+			&Info{Ip: Ip.String(), Status: "ACK"},
+		},
+	}
+
+	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	res.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(res).Encode(result); err != nil {
+		panic(err)
+	}
+
+}
+
+func handleRemoveIp(res http.ResponseWriter, req *http.Request) {
+	IPSET := pfIPSETFromContext(req.Context())
+
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		panic(err)
+	}
+	var o PostOptions
+	err = json.Unmarshal(body, &o)
+	if err != nil {
+		panic(err)
+	}
+	Ip := net.ParseIP(o.Ip)
+	if Ip == nil {
+		handleError(res, http.StatusBadRequest)
+		return
+	}
+	Local := req.URL.Query().Get("local")
+	setName := mux.Vars(req)["set_name"]
+
+	spew.Dump(setName, Ip.String())
+
+	IPSET.jobs <- job{"Del", setName, Ip.String()}
+	if Local == "0" {
+		updateClusterRemoveIp(req.Context(), setName, req.Body)
+	}
+	var result = map[string][]*Info{
+		"result": {
+			&Info{Ip: Ip.String(), Status: "ACK"},
+		},
+	}
+
+	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	res.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(res).Encode(result); err != nil {
+		panic(err)
+	}
+
 }
 
 func handlePassthrough(res http.ResponseWriter, req *http.Request) {
@@ -45,7 +125,7 @@ func handlePassthrough(res http.ResponseWriter, req *http.Request) {
 		handleError(res, http.StatusBadRequest)
 		return
 	}
-	Port, valid_port := validate_port(o.Port)
+	Port, valid_port := validatePort(o.Port)
 	if !valid_port {
 		handleError(res, http.StatusBadRequest)
 		return
@@ -87,7 +167,7 @@ func handleIsolationPassthrough(res http.ResponseWriter, req *http.Request) {
 		handleError(res, http.StatusBadRequest)
 		return
 	}
-	Port, valid_port := validate_port(o.Port)
+	Port, valid_port := validatePort(o.Port)
 	if !valid_port {
 		handleError(res, http.StatusBadRequest)
 		return
@@ -129,7 +209,7 @@ func handleLayer2(res http.ResponseWriter, req *http.Request) {
 		handleError(res, http.StatusBadRequest)
 		return
 	}
-	Type, valid_type := validate_type(o.Type)
+	Type, valid_type := validateType(o.Type)
 	if !valid_type {
 		handleError(res, http.StatusBadRequest)
 		return
@@ -139,12 +219,12 @@ func handleLayer2(res http.ResponseWriter, req *http.Request) {
 		handleError(res, http.StatusBadRequest)
 		return
 	}
-	RoleId, valid_roleid := validate_roleid(o.RoleId)
+	RoleId, valid_roleid := validateRoleId(o.RoleId)
 	if !valid_roleid {
 		handleError(res, http.StatusBadRequest)
 		return
 	}
-	Mac, valid_mac := validate_mac(o.Mac)
+	Mac, valid_mac := validateMac(o.Mac)
 	if !valid_mac {
 		handleError(res, http.StatusBadRequest)
 		return
@@ -222,7 +302,7 @@ func handleMarkIpL2(res http.ResponseWriter, req *http.Request) {
 		handleError(res, http.StatusBadRequest)
 		return
 	}
-	RoleId, valid_roleid := validate_roleid(o.RoleId)
+	RoleId, valid_roleid := validateRoleId(o.RoleId)
 	if !valid_roleid {
 		handleError(res, http.StatusBadRequest)
 		return
@@ -277,7 +357,7 @@ func handleMarkIpL3(res http.ResponseWriter, req *http.Request) {
 		handleError(res, http.StatusBadRequest)
 		return
 	}
-	RoleId, valid_roleid := validate_roleid(o.RoleId)
+	RoleId, valid_roleid := validateRoleId(o.RoleId)
 	if !valid_roleid {
 		handleError(res, http.StatusBadRequest)
 		return
@@ -327,7 +407,7 @@ func handleLayer3(res http.ResponseWriter, req *http.Request) {
 		handleError(res, http.StatusBadRequest)
 		return
 	}
-	Type, valid_type := validate_type(o.Type)
+	Type, valid_type := validateType(o.Type)
 	if !valid_type {
 		handleError(res, http.StatusBadRequest)
 		return
@@ -337,7 +417,7 @@ func handleLayer3(res http.ResponseWriter, req *http.Request) {
 		handleError(res, http.StatusBadRequest)
 		return
 	}
-	RoleId, valid_roleid := validate_roleid(o.RoleId)
+	RoleId, valid_roleid := validateRoleId(o.RoleId)
 	if !valid_roleid {
 		handleError(res, http.StatusBadRequest)
 		return
@@ -399,7 +479,7 @@ func (IPSET *pfIPSET) handleUnmarkMac(res http.ResponseWriter, req *http.Request
 	if err != nil {
 		panic(err)
 	}
-	Mac, valid_mac := validate_mac(o.Mac)
+	Mac, valid_mac := validateMac(o.Mac)
 	if !valid_mac {
 		handleError(res, http.StatusBadRequest)
 		return

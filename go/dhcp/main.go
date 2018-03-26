@@ -61,9 +61,10 @@ func main() {
 	GlobalMacCache = cache.New(5*time.Minute, 10*time.Minute)
 
 	// Read DB config
-	configDatabase := readDBConfig()
+	pfconfigdriver.PfconfigPool.AddStruct(ctx, &pfconfigdriver.Config.PfConf.Database)
+	configDatabase := pfconfigdriver.Config.PfConf.Database
 
-	connectDB(configDatabase, MySQLdatabase)
+	connectDB(configDatabase)
 
 	MySQLdatabase.SetMaxIdleConns(0)
 	MySQLdatabase.SetMaxOpenConns(500)
@@ -84,7 +85,8 @@ func main() {
 	// Read pfconfig
 	DHCPConfig = newDHCPConfig()
 	DHCPConfig.readConfig()
-	webservices = readWebservicesConfig()
+	pfconfigdriver.PfconfigPool.AddStruct(ctx, &pfconfigdriver.Config.PfConf.Webservices)
+	webservices = pfconfigdriver.Config.PfConf.Webservices
 
 	// Queue value
 	var (
@@ -149,7 +151,7 @@ func main() {
 	http.Handle("/", httpauth.SimpleBasicAuth(webservices.User, webservices.Pass)(router))
 
 	srv := &http.Server{
-		Addr:        ":22222",
+		Addr:        "127.0.0.1:22222",
 		IdleTimeout: 5 * time.Second,
 		Handler:     router,
 	}

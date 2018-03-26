@@ -124,6 +124,7 @@ sub iptables_generate {
     $tags{'web_admin_port'} = $Config{'ports'}{'admin'};
     $tags{'webservices_port'} = $Config{'ports'}{'soap'};
     $tags{'aaa_port'} = $Config{'ports'}{'aaa'};
+    $tags{'unifiedapi_port'} = $Config{'ports'}{'unifiedapi'};
     $tags{'httpd_portal_modstatus'} = $Config{'ports'}{'httpd_portal_modstatus'};
     $tags{'httpd_collector_port'} = $Config{'ports'}{'collector'};
     # FILTER
@@ -427,25 +428,29 @@ sub generate_passthrough_rules {
     generate_provisioning_passthroughs();
 
     $logger->info("Adding NAT Masquerade statement.");
-    my $mgmt_int = $management_network->tag("int");
-    my $SNAT_ip;
-    if (defined($management_network->{'Tip'}) && $management_network->{'Tip'} ne '') {
-        if (defined($management_network->{'Tvip'}) && $management_network->{'Tvip'} ne '') {
-            $SNAT_ip = $management_network->{'Tvip'};
-        } else {
-            $SNAT_ip = $management_network->{'Tip'};
-       }
+    my ($SNAT_ip, $mgmt_int);
+    if ($management_network) {
+        $mgmt_int = $management_network->tag("int");
+        if (defined($management_network->{'Tip'}) && $management_network->{'Tip'} ne '') {
+            if (defined($management_network->{'Tvip'}) && $management_network->{'Tvip'} ne '') {
+                $SNAT_ip = $management_network->{'Tvip'};
+            } else {
+                $SNAT_ip = $management_network->{'Tip'};
+           }
+        }
     }
 
-    foreach my $network ( keys %ConfigNetworks ) {
-        my $network_obj = new Net::Netmask( $network, $ConfigNetworks{$network}{'netmask'} );
-        if ( pf::config::is_network_type_inline($network) ) {
-            my $nat = $ConfigNetworks{$network}{'nat_enabled'};
-            if (defined ($nat) && (isenabled($nat))) {
+    if ($SNAT_ip) {
+        foreach my $network ( keys %ConfigNetworks ) {
+            my $network_obj = new Net::Netmask( $network, $ConfigNetworks{$network}{'netmask'} );
+            if ( pf::config::is_network_type_inline($network) ) {
+                my $nat = $ConfigNetworks{$network}{'nat_enabled'};
+                if (defined ($nat) && (isenabled($nat))) {
+                    $$nat_rules_ref .= "-A POSTROUTING -s $network/$network_obj->{BITS} -o $mgmt_int -j SNAT --to $SNAT_ip\n";
+                }
+            } else {
                 $$nat_rules_ref .= "-A POSTROUTING -s $network/$network_obj->{BITS} -o $mgmt_int -j SNAT --to $SNAT_ip\n";
             }
-        } else {
-            $$nat_rules_ref .= "-A POSTROUTING -s $network/$network_obj->{BITS} -o $mgmt_int -j SNAT --to $SNAT_ip\n";
         }
     }
 
@@ -779,6 +784,8 @@ sub generate_domain_rules {
         $$filter_forward_domain .= "-A FORWARD -o $name-b -j ACCEPT\n";
         $$filter_forward_domain .= "-A FORWARD -i $name-b -j ACCEPT\n";
     }
+
+    return if !$management_network;
 
     # MOVE ME TO SOMEWHERE - BUT WHERE ????? - ANYWHERE IS BETTER THAN THIS !
     my $domain_network = "169.254.0.0/16";

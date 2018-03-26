@@ -185,6 +185,21 @@ our @API_V1_ROUTES = (
         Config::TrafficShapingPolicies
         Config::Violations
     ),
+    {
+        controller => 'Translations',
+        collection => {
+            http_methods => {
+                get => "list",
+            },
+            subroutes => undef,
+        },
+        resource => {
+            http_methods => {
+                get => "get",
+            },
+            subroutes => undef,
+        },
+    }
 );
 
 sub startup {

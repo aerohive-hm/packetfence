@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"encoding/binary"
 	"math/rand"
 	"net"
@@ -21,7 +20,7 @@ type NodeInfo struct {
 }
 
 // connectDB connect to the database
-func connectDB(configDatabase pfconfigdriver.PfConfDatabase, db *sql.DB) {
+func connectDB(configDatabase pfconfigdriver.PfConfDatabase) {
 	MySQLdatabase = database.ConnectFromConfig(configDatabase)
 }
 
@@ -233,15 +232,4 @@ func ShuffleIP(a []byte) (r []byte) {
 		_, a = a[0], a[4:]
 	}
 	return ShuffleNetIP(array)
-}
-
-// readWebservicesConfig read pfconfig webservices configuration
-func readWebservicesConfig() pfconfigdriver.PfConfWebservices {
-	var webservices pfconfigdriver.PfConfWebservices
-	webservices.PfconfigNS = "config::Pf"
-	webservices.PfconfigMethod = "hash_element"
-	webservices.PfconfigHashNS = "webservices"
-
-	pfconfigdriver.FetchDecodeSocket(ctx, &webservices)
-	return webservices
 }
