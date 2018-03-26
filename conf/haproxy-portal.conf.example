@@ -1,13 +1,11 @@
 global
   external-check
-%%cpu%%
-        user haproxy
+  user haproxy
 	group haproxy
 	daemon
-	pidfile %%var_dir%%/run/haproxy.pid
+	pidfile %%var_dir%%/run/haproxy-portal.pid
 	log %%active_active_ip%% local0
 	stats socket /tmp/proxystats level admin process 1
-	stats bind-process 1
 	maxconn 4000
 	#Followup of https://github.com/inverse-inc/packetfence/pull/893
 	#haproxy 1.6.11 | intermediate profile | OpenSSL 1.0.1e | SRC: https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxy-1.6.11&openssl=1.0.1e&hsts=yes&profile=intermediate
@@ -48,28 +46,6 @@ defaults
         errorfile 502 %%os_path%%502.http
         errorfile 503 %%os_path%%503.http
         errorfile 504 %%os_path%%504.http
-
-frontend  main
-    bind localhost:3306
-    mode tcp
-    option tcplog
-    default_backend             mysql
-    %%bind-process%%
-
-backend mysql
-    mode tcp
-    option tcplog
-    # disabled for now since it proved to be useless - jsemaan@inverse.ca
-    # TODO: remove it after cluster testing
-    #option external-check
-    #external-check command /usr/local/pf/var/run/db-check
-    #external-check path "/usr/bin:/bin"
-    timeout connect 3s
-%%mysql_backend%%
-
-frontend test-bind-process-2
-    bind localhost:1080
-    use_backend static
 
 backend proxy
     option httpclose

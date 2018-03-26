@@ -17,8 +17,9 @@ dhcpservers=127.0.0.1
 #
 # general.timezone
 #
-#System's timezone in string format. List generated from Perl library DataTime::TimeZone
-timezone=America/Montreal
+# System's timezone in string format. List generated from Perl library DateTime::TimeZone
+# When left empty, it will use the timezone of the server
+timezone=
 
 [network]
 #
@@ -247,6 +248,11 @@ aaa=7070
 #
 # Port the mod_status for httpd.portal listens on.
 httpd_portal_modstatus=1444
+#
+# ports.unified_api
+#
+# port to use for accessing the Unified API
+unifiedapi=9999
 
 [database]
 #
@@ -348,15 +354,25 @@ etcd=enabled
 # Location of the etcd binary. Only necessary to change if you are not running the RPMed version.
 etcd_binary=/usr/bin/etcd
 #
-# services.haproxy
+# services.haproxy-portal
 #
-# Should haproxy be started?
-haproxy=enabled
+# Should haproxy-portal be started?
+haproxy-portal=enabled
 #
-# services.haproxy_binary
+# services.haproxy-portal_binary
 #
-# Location of the haproxy binary. Only necessary to change if you are not running the RPMed version.
-haproxy_binary=/usr/sbin/haproxy-systemd-wrapper
+# Location of the haproxy-portal binary. Only necessary to change if you are not running the RPMed version.
+haproxy-portal_binary=/usr/sbin/haproxy-systemd-wrapper
+#
+# services.haproxy-db
+#
+# Should haproxy-db be started?
+haproxy-db=enabled
+#
+# services.haproxy-db_binary
+#
+# Location of the haproxy-db binary. Only necessary to change if you are not running the RPMed version.
+haproxy-db_binary=/usr/sbin/haproxy-systemd-wrapper
 #
 # services.pffilter
 #
@@ -783,7 +799,7 @@ rate_limiting = enabled
 # captive_portal.rate_limiting_threshold
 #
 # Amount of requests on invalid URLs after which the rate limiting will kick in for this device
-rate_limiting_threshold = 24
+rate_limiting_threshold = 48
 #
 # captive_portal.other_domain_names
 #
