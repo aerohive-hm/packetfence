@@ -189,7 +189,8 @@ sub options_roles {
     my @options_values = $self->form->_get_allowed_options('allowed_roles');
     unless( @options_values ) {
         my $result = $self->form->roles;
-        @options_values = map { $_->{name} } @$result;
+        my %tmp = @$result;
+        @options_values = values %tmp;
     }
     # Build a list of existing roles
     return map { { value => $_, label => $_ } } @options_values;
