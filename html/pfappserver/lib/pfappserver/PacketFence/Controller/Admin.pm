@@ -455,7 +455,7 @@ sub fixpermissions :Chained('object') :PathPart('fixpermissions') :Args(0) {
 
 =cut
 
-sub licenseKeys : Chained('object') :PathPart('licenseKeys') :Args(0){
+sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     my( $self, $c ) = @_;
 
 }

@@ -46,7 +46,6 @@
             <span class="icon-bar"></span>
           </a>
 
-		<!--logo here-->
           <a class="brand visible-phone" href="#">
             <img src="[% c.uri_for('/static/img/aerohive-logo.svg') %]"/>
           </a>
@@ -103,8 +102,8 @@
               <li class="dropdown">
                 <a href="" class="dropdown-toggle" data-toggle="dropdown"><img src="[% c.uri_for('/static/img/icon-account.svg') %]"/></a>
                 <ul class="dropdown-menu">
-                  <li><a href="[% c.uri_for(c.controller('Admin').action_for('logout')) %]"><i class="icon-off"></i> [% l('Log out') %]</a></li>
                   <li><a href="[% c.uri_for(c.controller('Admin').action_for('licenseKeys')) %]"><i class="icon-off"></i> [% l('Manage Keys') %]</a></li>
+                  <li><a href="[% c.uri_for(c.controller('Admin').action_for('logout')) %]"><i class="icon-off"></i> [% l('Log out') %]</a></li>
                 </ul>
               </li>
               <li class="user_info" style="padding-top: 12px; text-transform: lowercase !important; color: #F4F6F9; padding-left: 10px;">
@@ -112,8 +111,8 @@
                   <br>
                 <span>ABC Company</span>
               </li>
-	    </ul>
-          </div><!--/.nav-collapse -->
+	          </ul>
+          </div>
           [%- END %]
         </div>
         [% IF SHOW_READONLY_ERROR %]

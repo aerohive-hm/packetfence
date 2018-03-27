@@ -65,6 +65,15 @@ sub keys :Path('keys') :Args(0) {
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 
+=head2 licenseKeys
+
+=cut
+
+sub licenseKeys :Path('licenseKeys') :Args(0) {
+    my ( $self, $c ) = @_;
+}
+
+
 =head1 AUTHOR
 
 Aerohive Networks, Inc. <info365@aerohive.com>
