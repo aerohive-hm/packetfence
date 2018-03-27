@@ -6,10 +6,12 @@
         'js/user',
         'admin/searches',
         'admin/nodes',
-        'js/reports'
+        'js/reports',
+        'js/licenseKeys'
         ]
      cssFiles = [
-        'admin/reports'
+        'admin/reports',
+        'admin/licenseKeys'
         ] -%]
 [% MACRO list_entry(action,description) BLOCK %]
               <li[% IF section == action %] class="active"[% END %]>
@@ -17,7 +19,40 @@
               </li>
 [% END -%]
 
+<div class="entire form">
+    <div class="head">
+      <h2>LICENSE MANAGEMENT</h2>
+      <br>
+      <span>System ID: F286-0E06-2495-6955-74D1-DE21-6679-71A9</span>
+    </div>
+    <br>
+    <div class="capacity">
+      <span>Licensed Capacity: </span><span class="licenseCapa">15000 </span><span>endpoints</span>
+    <br>
+      <span>Current Used Capacity: </span><span class="currUsedCapa">12719 </span><span>endpoints</span>
+    </div>
+    <hr>
+    <div class="entitlementLicenseKeyInput">
+      <label></label><input/>
+      <button class="pull-right"></button>
+    </div>
+    <!-- table -->
+    <div class="keyTable" id="keyTable">
+      <table>
+        <thead>
+          <tr>
+            <td colspan="[% display_columns.size + 2 %]">
+         [% pagination(c.controller.action_for("search"), page_num, page_count, {by => by, direction => direction}, '', null, {"data-no-refresh" => "yes"}) | none %]
+            </td>
+          </tr>
+          <tr>
+            <th>Entitlement Key</th>
+            <th>Capacity</th>
+            <th>Valid From</th>
+            <th>Valid To</th>
+          </tr>
+        </thead>
 
-<body>
-HEYYYYYYFESFYESFKJS
-</body>
+      </table>
+    </div>
+  </div>

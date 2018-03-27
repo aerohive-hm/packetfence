@@ -65,15 +65,9 @@ function escape_service(service){
 function servicesUpdate(data) {
     // var counterStarted = 0;
     var startFailed = false;
-    // var progressBarFrame = document.getElementById("progress-bar");
-    // var progressBar = document.getElementById("progress");
-    // var width = 0;
-    // var widthTotal = $(".table tbody tr").length;
-    // console.log("widthTtal: " + widthTotal);
     $.each(data.services, function(i, service) {
         // identify services that didn't start and set failure flag
         if (service.status != "0") {
-            updateProgressBar();
             $('#service-' + escape_service(service.name)).fadeOut('fast', function(event) {
                 $(this).text('Started').removeClass('label-error label-warning').addClass('label-success');
             }).fadeIn();
@@ -82,6 +76,7 @@ function servicesUpdate(data) {
             startFailed = true;
         }
     });
+    updateProgressBar();
 
     if (!startFailed) {
         // added a delay for dramatic effect
@@ -97,13 +92,12 @@ function servicesError() {
     });
 }
 
-// $(document).ready(function(){
 function updateProgressBar(){
 	  var progressBarFrame = document.getElementById("progress-bar");
     var progressBar = document.getElementById("progress");
     var width = 0;
   	var widthTotal = $(".table tbody tr").length;
-  	console.log("widthTtal: " + widthTotal);
+  	console.log("widthTotal: " + widthTotal);
   	$('table .label').each(function(){
   	  console.log($(this).text());
 	    if ($(this).text() === 'Started'){
@@ -114,8 +108,7 @@ function updateProgressBar(){
 	      var daemonTextUpdate = $("#daemons");
         $(daemonTextUpdate).text(width).fadeIn(500);
 	      document.getElementById("daemons").innerHTML = width;
-        $(progressBar).css('width', percentageWidth).animate({width: percentageWidth}, 500);;
+        $(progressBar).css('width', percentageWidth).animate({width: percentageWidth}, 100);
 	    }
 	  });
 }
-// });
