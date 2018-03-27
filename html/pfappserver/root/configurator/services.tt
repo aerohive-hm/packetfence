@@ -42,11 +42,31 @@
         </div>
         [% END -%]
 
-        <div class="loadingBlock">
-        [% services %]
+	<div class="total-services" style="">
+    <div class="card">
+	    <div style="padding:25px 25px;">
+        <div class="movingLogo">
+          <svg class="aerohiveLogo" width="175" height="200">
+            <polyline id="hexagon" points="87,0 174,50 174,150 87,200 0,150 0,50 87,0"/>
+            <animate attributeName="fill" values="#ffc007;#dfdfdf;#ffc007;" dur="5s" repeatCount="indefinite" />
+          </svg>
         </div>
+        <div id="progress-bar">
+          <div id="progress">
+          </div>
+        </div>
+        <div class="progressText">
+          <p>Daemons started: <span id="daemons"></span> / [% services.size %]</p>
+        </div>
+	    </div>
+    </div><!--end of card-->
+	</div>
+
+
         <div class="card">
           <div class="card-block">
+	  <div class="btn btn-primary" id="details">Details</div>
+	  <div id="daemonTable">
           <table class="table">
             <thead>
               <tr>
@@ -65,7 +85,8 @@
               [%- END %]
             </tbody>
           </table>
-          </div>
+	  </div><!--end of daemonTable-->
+	  </div>
           <form class="form-horizontal">
             <div class="form-actions">
               <button type="submit" class="btn btn-primary pull-right[% UNLESS completed %] disabled[% END %]" href="[% next_step %]">[% l('Start A3') %]</button>

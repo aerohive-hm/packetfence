@@ -8,6 +8,13 @@ function registerExits() {
     });
 }
 
+
+$(document).ready(function(){
+       $("#details").click(function(){
+           $("#daemonTable").toggle();
+       });
+});
+
 function saveStep(href) {
 
     $('table .label').each(function(index, event) {
@@ -15,7 +22,6 @@ function saveStep(href) {
             $(this).text('Starting').removeClass('label-error label-success').addClass('label-warning');
         }).fadeIn('fast');
     });
-
     $.ajax({
         type: 'POST',
         url: href
@@ -23,7 +29,7 @@ function saveStep(href) {
         setInterval(function(){getStatus(href)}, 10000);
     }).done(function(data) {
         resetAlert($('#services'));
-      
+
     }).fail(function(jqXHR) {
         servicesError();
         var obj = $.parseJSON(jqXHR.responseText);
@@ -41,7 +47,7 @@ function getStatus(href){
     }).done(function(data) {
         resetAlert($('#services'));
         servicesUpdate(data);
-       
+
     }).fail(function(jqXHR) {
         servicesError();
         var obj = $.parseJSON(jqXHR.responseText);
@@ -49,7 +55,7 @@ function getStatus(href){
             showError($('#services table'), obj.status_msg);
         }
     });
-    
+
 }
 
 function escape_service(service){
@@ -57,11 +63,17 @@ function escape_service(service){
 }
 
 function servicesUpdate(data) {
-
+    // var counterStarted = 0;
     var startFailed = false;
+    // var progressBarFrame = document.getElementById("progress-bar");
+    // var progressBar = document.getElementById("progress");
+    // var width = 0;
+    // var widthTotal = $(".table tbody tr").length;
+    // console.log("widthTtal: " + widthTotal);
     $.each(data.services, function(i, service) {
         // identify services that didn't start and set failure flag
         if (service.status != "0") {
+            updateProgressBar();
             $('#service-' + escape_service(service.name)).fadeOut('fast', function(event) {
                 $(this).text('Started').removeClass('label-error label-warning').addClass('label-success');
             }).fadeIn();
@@ -84,3 +96,26 @@ function servicesError() {
         }).fadeIn('fast');
     });
 }
+
+// $(document).ready(function(){
+function updateProgressBar(){
+	  var progressBarFrame = document.getElementById("progress-bar");
+    var progressBar = document.getElementById("progress");
+    var width = 0;
+  	var widthTotal = $(".table tbody tr").length;
+  	console.log("widthTtal: " + widthTotal);
+  	$('table .label').each(function(){
+  	  console.log($(this).text());
+	    if ($(this).text() === 'Started'){
+	      width++;
+        console.log ("width: " + width);
+	      var percentageWidth = Math.round(width * (100/widthTotal)) + '%';
+	      console.log(percentageWidth);
+	      var daemonTextUpdate = $("#daemons");
+        $(daemonTextUpdate).text(width).fadeIn(500);
+	      document.getElementById("daemons").innerHTML = width;
+        $(progressBar).css('width', percentageWidth).animate({width: percentageWidth}, 500);;
+	    }
+	  });
+}
+// });
