@@ -5,7 +5,6 @@
     <title>[% l('Administrator') %] - A3</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A3 Administrator">
-    <meta name="author" content="Inverse">
 
     <!-- styles -->
 [% FOREACH css = cssFiles -%]
@@ -18,6 +17,10 @@
     <!--[if lt IE 9]>
          <script src="[% c.uri_for('/static/app/html5.js') %]"></script>
     <![endif]-->
+    <!-- [% FOREACH css = cssFiles -%]
+        <link rel="stylesheet" href="[% c.uri_for("/static/${css}.css") %]">
+    [% END -%] -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
   </head>
   [% SET SHOW_READONLY_ERROR = c.user_allowed_in_admin() && readonly_mode %]
   <body[% IF SHOW_READONLY_ERROR %] class="navbar-error"[% END %]>
@@ -102,14 +105,12 @@
               <li class="dropdown">
                 <a href="" class="dropdown-toggle" data-toggle="dropdown"><img src="[% c.uri_for('/static/img/icon-account.svg') %]"/></a>
                 <ul class="dropdown-menu">
-                  <li><a href="[% c.uri_for(c.controller('Admin').action_for('licenseKeys')) %]"><i class="icon-off"></i> [% l('Manage Keys') %]</a></li>
+                  <li><a href="[% c.uri_for(c.controller('Admin').action_for('licenseKeys')) %]"><i class="icon-off"></i> [% l('Manage Licenses') %]</a></li>
                   <li><a href="[% c.uri_for(c.controller('Admin').action_for('logout')) %]"><i class="icon-off"></i> [% l('Log out') %]</a></li>
                 </ul>
               </li>
-              <li class="user_info" style="padding-top: 12px; text-transform: lowercase !important; color: #F4F6F9; padding-left: 10px;">
-                <span>[% c.user | html %]@aerohive.com</span>
-                  <br>
-                <span>ABC Company</span>
+              <li class="user_info" style="padding-top: 20px; text-transform: lowercase !important; color: #F4F6F9; padding-left: 10px; padding-right:5px;">
+                <span>[% c.user | html %]</span>
               </li>
 	          </ul>
           </div>

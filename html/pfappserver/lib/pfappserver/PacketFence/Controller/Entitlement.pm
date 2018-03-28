@@ -63,7 +63,6 @@ sub keys :Path('keys') :Args(0) {
     $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
 }
 
-__PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 
 =head2 licenseKeys
 
@@ -71,8 +70,29 @@ __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 
 sub licenseKeys :Path('licenseKeys') :Args(0) {
     my ( $self, $c ) = @_;
+    $c->stash->{template} = "entitlement/licenseKeys.tt";
+
+    $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{max_capacity} = $c->model('Entitlement')->get_licensed_capacity();
+    $c->stash->{used_capacity} = $c->model('Entitlement')->get_used_capacity();
+    $c->stash->{system_id} = `/usr/bin/cat /etc/A3.systemid`;
+
+    $c->forward('View::HTML');
 }
 
+sub licenseKey :Path('licenseKey') :Args(1) {
+    my ( $self, $c, $key ) = @_;
+    $c->stash->{template} = "admin/licenseKeys.tt";
+
+    if ($c->request->method eq 'PUT') {
+        $c->stash->{entitlement_key} = $c->model('Entitlement')->apply_entitlement_key($key);
+    }
+    elsif ($c->request->method eq 'GET') {
+        $c->stash->{entitlement_key} = $c->model('Entitlement')->get_entitlement_key($key);
+    }
+}
+
+__PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 
 =head1 AUTHOR
 

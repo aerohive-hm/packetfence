@@ -1,0 +1,108 @@
+
+.card-div{
+  display: block;
+  background-color: #fff;
+  margin-top: 24px;
+  box-shadow: 0 3px 0 0 #d7d7d7;
+  border-radius: 3px;
+  border: 1px solid #d7d7d7;
+  margin: 20px 200px !important;
+}
+
+.head{
+   padding-bottom: 25px;
+}
+
+h1{
+  padding-bottom: 18px;
+}
+
+.systemId{
+  font-size:20px;
+}
+.pad{
+  padding-bottom: 10px;
+}
+
+#entire-form{
+    margin: 50px 50px;
+}
+
+.capacity{
+  font-size: 20px;
+}
+
+/* INPUT FIELD */
+.entitlementLicenseKeyInput{
+  margin: 0 auto;
+  display: table;
+  padding-bottom: 35px;
+  padding-top: 15px;
+}
+label{
+    float: left;
+    padding-top: 2px;
+}
+#keyInput{
+    float: left;
+    width: 500px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.btn{
+  margin-top: -2px;
+}
+
+/* TABLE CSS */
+#keyLicenseTable{
+    margin: 0 auto;
+    display:table;
+}
+
+#keyLicenseTable th{
+   font-size: 14px;
+}
+
+#keyLicenseTable th, #keyLicenseTable td{
+    width: 150px;
+    text-align: center;
+}
+
+#keyLicenseTable th:first-child, #keyLicenseTable td:first-child{
+    width: 300px;
+    text-align: center;
+}
+
+#keyLicenseTable thead tr{
+  height: 30px;
+  border-top: 1px solid grey;
+  border-bottom: 1px solid grey;
+  display:table-row;
+}
+
+#keyLicenseTable tbody tr{
+  height: 25px;
+  border-bottom: 1px solid #eee;
+  font-family:'Roboto Mono', monospace;
+  font-size: 13px;
+}
+
+#keyLicenseTable.scroll tbody,
+#keyLicenseTable.scroll thead { display: block; }
+#keyLicenseTable.scroll tbody {
+    height: 215px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* show scroll if table is long */
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
