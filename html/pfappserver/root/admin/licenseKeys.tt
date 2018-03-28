@@ -1,10 +1,10 @@
 [%  jsFiles = [
         'js/vendor/raphael.min',
-        'app/graphs',
         'admin/config/items',
         'js/node',
         'js/user',
-        'js/reports',
+        'admin/searches',
+        'admin/nodes',
         'js/licenseKeys'
         ]
      cssFiles = [
@@ -20,37 +20,41 @@
   <div class="card-block">
       <div id="entire-form">
         <div class="head">
-          <h2><b>LICENSE MANAGEMENT</b></h2>
-          <span><b>System ID:</b> F286-0E06-2495-6955-74D1-DE21-6679-71A9</span>
+          <h1><b>LICENSE MANAGEMENT</b></h1>
+          <span><b>System ID:</b> [% system_id %]</span>
         </div>
         <br>
         <div class="capacity">
-          <span>[% l('Licensed Capacity:') %]&nbsp; </span><span id="licenseCapa"></span><span>endpoints</span>
+          <span><b>[% l('Licensed Capacity:') %]</b>&nbsp; </span><span id="licenseCapaSpan"><span id="licenseCapa">[% max_capacity %]</span><span> endpoints</span></span>
         <br>
         <!--Use capacity value will not print-->
-          <span>[% l('Used Capacity:') %]&nbsp; </span><span>[% used_capacity.item('nb') %] </span><span>endpoints</span>
+          <span><b>[% l('Used Capacity:') %]</b>&nbsp; </span><span id="usedCapacitySpan"><span id="usedCapacity">[% used_capacity.item('nb') %]</span><span> endpoints</span></span>
         </div>
         <hr>
         <div class="entitlementLicenseKeyInput">
-            <label>Enter Entitlement Key: </label><input class="keyInputt" max="36"/><button class="btn btn-primary" id="applyKey">Apply</button>
+            <label>[% l('Enter Entitlement Key: ') %]</label><input id="keyInput" max="36"/><button class="btn btn-primary" id="applyKey">Apply</button>
         </div>
         <!-- table -->
         <div class="keyTable" id="keyTable">
           <table id="keyLicenseTable">
             <thead>
               <tr>
-                <td colspan="[% display_columns.size + 2 %]">
-             [% pagination(c.controller.action_for("search"), page_num, page_count, {by => by, direction => direction}, '', null, {"data-no-refresh" => "yes"}) | none %]
-                </td>
-              </tr>
-              <tr>
                 <th>Entitlement Key</th>
                 <th>Capacity</th>
                 <th>Valid From</th>
-                <th>Valid To</th>
+                <th>Valid Until</th>
               </tr>
             </thead>
-
+            <tbody>
+              [% FOREACH key IN entitlement_keys -%]
+              <tr>
+                <td>[% key.entitlement_key %]</td>
+                <td>[% key.endpoint_count %]</td>
+                <td>[% key.sub_start.split(' ').first %]</td>
+                <td>[% key.sub_end.split(' ').first %]</td>
+              </tr>
+            [% END -%]
+            </tbody>
           </table>
         </div>
       </div><!--end of entire-form-->

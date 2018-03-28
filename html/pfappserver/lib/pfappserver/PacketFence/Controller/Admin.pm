@@ -451,14 +451,21 @@ sub fixpermissions :Chained('object') :PathPart('fixpermissions') :Args(0) {
 }
 
 
-# =head2 licenseKeys
-#
-# =cut
-#
-# sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
-#     my( $self, $c ) = @_;
-#
-# }
+=head2 licenseKeys
+
+=cut
+
+sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
+    my( $self, $c ) = @_;
+    $c->stash->{template} = "entitlement/licenseKeys.tt";
+
+    $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{max_capacity} = $c->model('Entitlement')->get_licensed_capacity();
+    $c->stash->{used_capacity} = $c->model('Entitlement')->get_used_capacity();
+    $c->stash->{system_id} = `/usr/bin/cat /etc/A3.systemid`;
+
+    $c->forward('View::HTML');
+}
 
 
 =head1 COPYRIGHT

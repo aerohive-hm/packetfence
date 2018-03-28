@@ -1,4 +1,4 @@
-package pfappserver::PacketFence::Controller::Entitlement;
+package pfappserver::Base::Controller;
 
 =head1 NAME
 
@@ -70,16 +70,17 @@ sub keys :Path('keys') :Args(0) {
 
 sub licenseKeys :Path('licenseKeys') :Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash->{template} = "admin/licenseKeys.tt";
+    $c->stash->{template} = "entitlement/licenseKeys.tt";
 
     $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
     $c->stash->{max_capacity} = $c->model('Entitlement')->get_licensed_capacity();
     $c->stash->{used_capacity} = $c->model('Entitlement')->get_used_capacity();
+    $c->stash->{system_id} = `/usr/bin/cat /etc/A3.systemid`;
 
     $c->forward('View::HTML');
 }
 
-sub licenseKey :Path ('licenseKey') :Args(1) {
+sub licenseKey :Path('licenseKey') :Args(1) {
     my ( $self, $c, $key ) = @_;
     $c->stash->{template} = "admin/licenseKeys.tt";
 
