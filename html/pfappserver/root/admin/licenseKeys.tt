@@ -48,10 +48,10 @@
             <tbody>
               [% FOREACH key IN entitlement_keys -%]
               <tr>
-                <td>[% key.entitlement_key %]</td>
-                <td>[% key.endpoint_count %]</td>
-                <td>[% key.sub_start.split(' ').first %]</td>
-                <td>[% key.sub_end.split(' ').first %]</td>
+                <td class="key">[% key.entitlement_key %]</td>
+                <td class="capacity">[% key.endpoint_count %]</td>
+                <td class="validFrom">[% key.sub_start.split(' ').first %]</td>
+                <td class="validTo">[% key.sub_end.split(' ').first %]</td>
               </tr>
             [% END -%]
             </tbody>

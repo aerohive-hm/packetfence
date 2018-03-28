@@ -18,7 +18,7 @@ use namespace::autoclean;
 use Moose;
 use pfappserver::Form::SavedSearch;
 use pf::admin_roles;
-use pf::constants qw($TRUE $FALSE);
+use pf::constants qw($TRUE $FALSE $A3_SYSTEM_ID);
 use List::MoreUtils qw(none);
 use pf::pfcmd::checkup;
 use pf::cluster;
@@ -457,14 +457,11 @@ sub fixpermissions :Chained('object') :PathPart('fixpermissions') :Args(0) {
 
 sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     my( $self, $c ) = @_;
-    $c->stash->{template} = "entitlement/licenseKeys.tt";
 
     $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
     $c->stash->{max_capacity} = $c->model('Entitlement')->get_licensed_capacity();
     $c->stash->{used_capacity} = $c->model('Entitlement')->get_used_capacity();
-    $c->stash->{system_id} = `/usr/bin/cat /etc/A3.systemid`;
-
-    $c->forward('View::HTML');
+    $c->stash->{system_id} = $A3_SYSTEM_ID;
 }
 
 

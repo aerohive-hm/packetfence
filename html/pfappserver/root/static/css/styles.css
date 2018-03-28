@@ -1819,7 +1819,7 @@ display:block}
 float:right}
 .nav-header{
 display:block;
-padding:3px 15px;
+padding:0px 15px;
 	font-size:11px;
 	font-weight:700;
 	line-height:20px;
@@ -6230,10 +6230,6 @@ display:block}
 		padding-left:10px;
 		padding-right:10px}
 }
-@media (min-width:1200px){
-img{
-	margin-left: -20px;
-}}
 
 @media (min-width:979px) and (max-width:1199px){
 img{
