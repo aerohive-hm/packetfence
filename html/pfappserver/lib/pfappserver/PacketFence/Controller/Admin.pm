@@ -462,6 +462,13 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     $c->stash->{max_capacity} = $c->model('Entitlement')->get_licensed_capacity();
     $c->stash->{used_capacity} = $c->model('Entitlement')->get_used_capacity();
     $c->stash->{system_id} = $A3_SYSTEM_ID;
+
+    if ($c->request->method eq 'POST') {
+        $c->stash->{current_view} = 'JSON';
+
+        # Get data
+
+        # TODO: Get the userinput key and find data in table
 }
 
 

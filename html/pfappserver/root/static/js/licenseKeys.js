@@ -30,9 +30,9 @@ function applyKeyButton(){
     var userKeyInput = document.getElementById('keyInput').value;
     console.log(userKeyInput);
 
-    checkKeyInput(userKeyInput);
-
-    updateKeyTable(userKeyInput);
+    if (checkKeyInput(userKeyInput) == true){
+      updateKeyTable(userKeyInput);
+    }
   });
 }
 
@@ -41,11 +41,11 @@ function updateKeyTable(userKeyInput) {
     var applyKeyButton2 = $("#applyKey");
     applyKeyButton2.on('click', function(e) {
         $.ajax({
-            url : 'https://10.16.134.239:1443/entitlement/key/entitlement-key',
+            url : 'https://10.16.134.239:1443/entitlement/key/P82G9-DA9BA-67LRQ-4KA6B-LK539-3YTXQ',
             type : 'POST',
             dataType : 'json',
             success : function(data) {
-                $('#keyLicenseTable tbody').append("<tr><td>" + data.entitlementKey + "</td><td>" + data.capacity + "</td><td>" + data.validFrom + "</td><td>" + data.validUntil + "</td></tr> ");
+                $('#keyLicenseTable tbody').append("<tr><td>" + data.entitlement_key + "</td><td>" + data.endpoint_count + "</td><td>" + data.sub_start.split(' ').first + "</td><td>" + data.ub_end.split(' ').first + "</td></tr> ");
             },
             error : function() {
                 console.log('error');
@@ -66,13 +66,13 @@ function checkKeyInput(userKeyInput){
     if (checkKeyRegex.test(userKeyInput) == true){
       $(".errMsg").css('display', 'none');
       $("#keyInput").css('border','1px solid #dfdfdf');
-          //need to check if key exists
-
+          //need to check if key exists; ajax call?
     } else {
         $(".errMsg").css('display', 'none');
         applyKeyButton2.after(errMsg);
         $("#keyInput").css('border','1px solid #d9534f');
     }
+    return true;
 }
 
 //check if valid from date is over todays date then turn row into grey
@@ -80,8 +80,9 @@ function dateRangeChecker(){
    var table = $("#keyLicenseTable");
       table.find('tr').each(function(i) {
           var $tableColumns = $(this).find('td');
-          var dateInColumn = $tableColumns.eq(2).text();
-          console.log('Row ' + (i + 1) + ':\n Date: ' + dateInColumn);
+          var validFromColumn = $tableColumns.eq(2).text();
+          var validToColumn = $tableColumns.eq(3).text();
+          console.log('Row ' + (i + 1) + ':\n Date: ' + validFromColumn);
 
           // get todays date
           var todayDate = new Date();
@@ -97,15 +98,21 @@ function dateRangeChecker(){
           var todaysDate = yyyy + '-' + mm + '-' + dd;
           console.log("Today: " + todaysDate);
 
-          var formatDateInColummn = new Date(dateInColumn);
+          var formatValidFromColumn = new Date(validFromColumn);
+          var formatValidToColumn = new Date(validToColumn);
           var formatTodaysDate = new Date(todaysDate);
-          console.log("Formatted Date in column: " + formatDateInColummn);
+          console.log("Formatted Valid From column: " + formatValidFromColumn);
+          console.log("Formatted Valid To column: " + formatValidFromColumn);
           console.log("Formatted Today date: " + formatTodaysDate);
 
-          if (formatDateInColummn > formatTodaysDate){
+          if (formatValidFromColumn > formatTodaysDate){
               $tableColumns.eq(2).closest('tr').css('color', 'grey');
               $tableColumns.eq(2).closest('tr').css('font-style','italic');
               $tableColumns.eq(2).closest('tr').css('background-color','#eee');
+          } else if ((formatTodaysDate - formatValidFromColumn) > 15){
+            // need to recalc; should take in account for Daylight savings?
+          } else{
+              //do nothing
           }
       });
 
