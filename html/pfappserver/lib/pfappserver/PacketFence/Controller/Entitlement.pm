@@ -1,4 +1,4 @@
-package pfappserver::Base::Controller;
+package pfappserver::PacketFence::Controller::Entitlement;
 
 =head1 NAME
 

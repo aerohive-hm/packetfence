@@ -9,9 +9,27 @@
   margin: 20px 200px !important;
 }
 
+.head{
+   padding-bottom: 25px;
+}
+
+h1{
+  padding-bottom: 18px;
+}
+
+.systemId{
+  font-size:20px;
+}
+.pad{
+  padding-bottom: 10px;
+}
 
 #entire-form{
     margin: 50px 50px;
+}
+
+.capacity{
+  font-size: 20px;
 }
 
 /* INPUT FIELD */
@@ -42,6 +60,7 @@ label{
 }
 
 #keyLicenseTable th{
+   font-size: 14px;
 }
 
 #keyLicenseTable th, #keyLicenseTable td{
@@ -55,7 +74,7 @@ label{
 }
 
 #keyLicenseTable thead tr{
-  height: 25px;
+  height: 30px;
   border-top: 1px solid grey;
   border-bottom: 1px solid grey;
   display:table-row;
@@ -64,4 +83,26 @@ label{
 #keyLicenseTable tbody tr{
   height: 25px;
   border-bottom: 1px solid #eee;
+  font-family:'Roboto Mono', monospace;
+  font-size: 13px;
+}
+
+#keyLicenseTable.scroll tbody,
+#keyLicenseTable.scroll thead { display: block; }
+#keyLicenseTable.scroll tbody {
+    height: 215px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* show scroll if table is long */
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }

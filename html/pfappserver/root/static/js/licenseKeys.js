@@ -33,6 +33,7 @@ function applyKeyButton(){
     if (checkKeyInput(userKeyInput) == true){
       updateKeyTable(userKeyInput);
     }
+    //check if key already exists in table
   });
 }
 
@@ -41,11 +42,10 @@ function updateKeyTable(userKeyInput) {
     var applyKeyButton2 = $("#applyKey");
     applyKeyButton2.on('click', function(e) {
         $.ajax({
-            url : 'https://10.16.134.239:1443/entitlement/key/P82G9-DA9BA-67LRQ-4KA6B-LK539-3YTXQ',
-            type : 'POST',
+            url : 'https://10.16.134.239:1443/entitlement/key/' + userKeyInput,
+            type : 'PUT',
             dataType : 'json',
             success : function(data) {
-                $('#keyLicenseTable tbody').append("<tr><td>" + data.entitlement_key + "</td><td>" + data.endpoint_count + "</td><td>" + data.sub_start.split(' ').first + "</td><td>" + data.ub_end.split(' ').first + "</td></tr> ");
             },
             error : function() {
                 console.log('error');
@@ -110,7 +110,10 @@ function dateRangeChecker(){
               $tableColumns.eq(2).closest('tr').css('font-style','italic');
               $tableColumns.eq(2).closest('tr').css('background-color','#eee');
           } else if ((formatTodaysDate - formatValidFromColumn) > 15){
-            // need to recalc; should take in account for Daylight savings?
+
+              // var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+              // var diffDays = Math.float(timeDiff / (1000 * 3600 * 24));
+              // need to recalc; should take in account for Daylight savings?
           } else{
               //do nothing
           }

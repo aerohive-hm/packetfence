@@ -20,6 +20,7 @@
     <!-- [% FOREACH css = cssFiles -%]
         <link rel="stylesheet" href="[% c.uri_for("/static/${css}.css") %]">
     [% END -%] -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
   </head>
   [% SET SHOW_READONLY_ERROR = c.user_allowed_in_admin() && readonly_mode %]
   <body[% IF SHOW_READONLY_ERROR %] class="navbar-error"[% END %]>

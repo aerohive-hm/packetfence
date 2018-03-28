@@ -21,14 +21,11 @@
       <div id="entire-form">
         <div class="head">
           <h1><b>LICENSE MANAGEMENT</b></h1>
-          <span><b>System ID:</b> [% system_id %]</span>
+          <span class="systemId"><b>System ID:</b> [% system_id %]</span>
         </div>
-        <br>
         <div class="capacity">
-          <span><b>[% l('Licensed Capacity:') %]</b>&nbsp; </span><span id="licenseCapaSpan"><span id="licenseCapa">[% max_capacity %]</span><span> endpoints</span></span>
-        <br>
-        <!--Use capacity value will not print-->
-          <span><b>[% l('Used Capacity:') %]</b>&nbsp; </span><span id="usedCapacitySpan"><span id="usedCapacity">[% used_capacity.item('nb') %]</span><span> endpoints</span></span>
+          <div class="pad"><span><b>[% l('Licensed Capacity:') %]</b>&nbsp; </span><span id="licenseCapaSpan"><span id="licenseCapa">[% max_capacity %]</span><span> endpoints</span></span></div>
+          <div><span><b>[% l('Used Capacity:') %]</b>&nbsp; </span><span id="usedCapacitySpan"><span id="usedCapacity">[% used_capacity.item('nb') %]</span><span> endpoints</span></span></div>
         </div>
         <hr>
         <div class="entitlementLicenseKeyInput">
@@ -36,7 +33,7 @@
         </div>
         <!-- table -->
         <div class="keyTable" id="keyTable">
-          <table id="keyLicenseTable">
+          <table id="keyLicenseTable" class="scroll">
             <thead>
               <tr>
                 <th>Entitlement Key</th>
@@ -49,7 +46,7 @@
               [% FOREACH key IN entitlement_keys -%]
               <tr>
                 <td class="key">[% key.entitlement_key %]</td>
-                <td class="capacity">[% key.endpoint_count %]</td>
+                <td class="cap">[% key.endpoint_count %]</td>
                 <td class="validFrom">[% key.sub_start.split(' ').first %]</td>
                 <td class="validTo">[% key.sub_end.split(' ').first %]</td>
               </tr>
