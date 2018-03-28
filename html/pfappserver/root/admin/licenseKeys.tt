@@ -4,13 +4,10 @@
         'admin/config/items',
         'js/node',
         'js/user',
-        'admin/searches',
-        'admin/nodes',
         'js/reports',
         'js/licenseKeys'
         ]
      cssFiles = [
-        'admin/reports',
         'admin/licenseKeys'
         ] -%]
 [% MACRO list_entry(action,description) BLOCK %]
@@ -19,40 +16,43 @@
               </li>
 [% END -%]
 
-<div class="entire form">
-    <div class="head">
-      <h2>LICENSE MANAGEMENT</h2>
-      <br>
-      <span>System ID: F286-0E06-2495-6955-74D1-DE21-6679-71A9</span>
-    </div>
-    <br>
-    <div class="capacity">
-      <span>Licensed Capacity: </span><span class="licenseCapa">15000 </span><span>endpoints</span>
-    <br>
-      <span>Current Used Capacity: </span><span class="currUsedCapa">12719 </span><span>endpoints</span>
-    </div>
-    <hr>
-    <div class="entitlementLicenseKeyInput">
-      <label></label><input/>
-      <button class="pull-right"></button>
-    </div>
-    <!-- table -->
-    <div class="keyTable" id="keyTable">
-      <table>
-        <thead>
-          <tr>
-            <td colspan="[% display_columns.size + 2 %]">
-         [% pagination(c.controller.action_for("search"), page_num, page_count, {by => by, direction => direction}, '', null, {"data-no-refresh" => "yes"}) | none %]
-            </td>
-          </tr>
-          <tr>
-            <th>Entitlement Key</th>
-            <th>Capacity</th>
-            <th>Valid From</th>
-            <th>Valid To</th>
-          </tr>
-        </thead>
+<div class="card-div">
+  <div class="card-block">
+      <div id="entire-form">
+        <div class="head">
+          <h2><b>LICENSE MANAGEMENT</b></h2>
+          <span><b>System ID:</b> F286-0E06-2495-6955-74D1-DE21-6679-71A9</span>
+        </div>
+        <br>
+        <div class="capacity">
+          <span>[% l('Licensed Capacity:') %]&nbsp; </span><span id="licenseCapa"></span><span>endpoints</span>
+        <br>
+        <!--Use capacity value will not print-->
+          <span>[% l('Used Capacity:') %]&nbsp; </span><span>[% used_capacity.item('nb') %] </span><span>endpoints</span>
+        </div>
+        <hr>
+        <div class="entitlementLicenseKeyInput">
+            <label>Enter Entitlement Key: </label><input class="keyInputt" max="36"/><button class="btn btn-primary" id="applyKey">Apply</button>
+        </div>
+        <!-- table -->
+        <div class="keyTable" id="keyTable">
+          <table id="keyLicenseTable">
+            <thead>
+              <tr>
+                <td colspan="[% display_columns.size + 2 %]">
+             [% pagination(c.controller.action_for("search"), page_num, page_count, {by => by, direction => direction}, '', null, {"data-no-refresh" => "yes"}) | none %]
+                </td>
+              </tr>
+              <tr>
+                <th>Entitlement Key</th>
+                <th>Capacity</th>
+                <th>Valid From</th>
+                <th>Valid To</th>
+              </tr>
+            </thead>
 
-      </table>
-    </div>
-  </div>
+          </table>
+        </div>
+      </div><!--end of entire-form-->
+    </div><!--end of card-block-->
+</div> <!--end of card-div -->

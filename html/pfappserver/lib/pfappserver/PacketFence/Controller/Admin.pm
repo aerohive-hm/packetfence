@@ -451,14 +451,14 @@ sub fixpermissions :Chained('object') :PathPart('fixpermissions') :Args(0) {
 }
 
 
-=head2 licenseKeys
-
-=cut
-
-sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
-    my( $self, $c ) = @_;
-
-}
+# =head2 licenseKeys
+#
+# =cut
+#
+# sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
+#     my( $self, $c ) = @_;
+#
+# }
 
 
 =head1 COPYRIGHT
