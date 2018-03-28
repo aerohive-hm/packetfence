@@ -11,20 +11,6 @@ $(document).ready(function(){
 
   applyKeyButton();
 
-  // var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
-  // //need to check if key exists
-  // var userKeyInput = document.getElementById('keyInput').value;
-  // console.log("input1: " + userKeyInput);
-  // //check regex with user input
-  // console.log(checkKeyRegex.test(userKeyInput));
-  // if (checkKeyRegex.test(userKeyInput) == true){
-  //   // check if key exists in keyArray
-  // } else {
-  //     var errMsg = "<span class='errMsg'>Sorry please reenter the license key again.</span>";
-  //     $("label").before(errMsg);
-  //     $("#keyInputt").css('border','1px solid #d9534f');
-  // }
-
 // capacity alert status changes
   if(licenseCapacity.innerHTML > 100000){
      licenseCapacity.innerHTML = "Unlimited";
@@ -34,15 +20,15 @@ $(document).ready(function(){
      $("#usedCapacitySpan").css('color', 'red');
      $("#usedCapacitySpan").after("<span class='glyphicon glyphicon-warning-sign' style='color: orange;'></span>");
   }
-
-
 });
 
 function applyKeyButton(){
   var applyKeyButton2 = $("#applyKey");
-  var userKeyInput = document.getElementById('keyInput').value;
   applyKeyButton2.click(function(){
+    var userKeyInput = document.getElementById('keyInput').value;
     console.log(userKeyInput);
+    checkKeyInput(userKeyInput);
+
   });
 }
 
@@ -52,4 +38,23 @@ function updateKeyTable(a) {
         $('.card').html(response);
       }
     });
+}
+
+function checkKeyInput(userKeyInput){
+    // var userKeyInput = document.getElementById('keyInput').value;
+    var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
+    var errMsg = "<p class='errMsg' style='color:red;'>Sorry please reenter the license key again.</p>";
+    var applyKeyButton2 = $("#applyKey");
+    //need to check if key exists
+    console.log("input1: " + userKeyInput);
+    //check regex with user input
+    console.log(checkKeyRegex.test(userKeyInput));
+    if (checkKeyRegex.test(userKeyInput) == true){
+      $(".errMsg").css('display', 'none');
+      $("#keyInput").css('border','1px solid #dfdfdf');
+    } else {
+        $(".errMsg").css('display', 'none');
+        applyKeyButton2.after(errMsg);
+        $("#keyInput").css('border','1px solid #d9534f');
+    }
 }
