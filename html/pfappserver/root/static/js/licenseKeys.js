@@ -20,6 +20,12 @@ $(document).ready(function(){
      $("#usedCapacitySpan").css('color', 'red');
      $("#usedCapacitySpan").after("<span class='glyphicon glyphicon-warning-sign' style='color: red;'></span>");
   }
+
+  var base_url = window.location.origin;
+  var host = window.location.host;
+  var pathArray = window.location.pathname.split( '/' );
+  console.log("base_url: "+ base_url + " host: " + host + "pathArray: " + pathArray );
+
   dateRangeChecker();
 });
 
@@ -40,12 +46,14 @@ function applyKeyButton(){
 // update table after checking regex
 function updateKeyTable(userKeyInput) {
     var applyKeyButton2 = $("#applyKey");
+    var base_url = window.location.origin;
     applyKeyButton2.on('click', function(e) {
         $.ajax({
-            url : 'https://10.16.134.239:1443/entitlement/key/' + userKeyInput,
+            url : base_url + '/entitlement/key/' + userKeyInput,
             type : 'PUT',
             dataType : 'json',
             success : function(data) {
+                // $("#keyLicenseTable").reload();
             },
             error : function() {
                 console.log('error');
@@ -56,17 +64,15 @@ function updateKeyTable(userKeyInput) {
 
 
 function checkKeyInput(userKeyInput){
-    // var userKeyInput = document.getElementById('keyInput').value;
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
     var errMsg = "<p class='errMsg' style='color:red;'>Sorry please reenter the license key again.</p>";
     var applyKeyButton2 = $("#applyKey");
     console.log("input1: " + userKeyInput);
-    //check regex with user input
+    //check regex with user input; there is check for duplicate already
     console.log(checkKeyRegex.test(userKeyInput));
     if (checkKeyRegex.test(userKeyInput) == true){
       $(".errMsg").css('display', 'none');
       $("#keyInput").css('border','1px solid #dfdfdf');
-          //need to check if key exists; ajax call?
     } else {
         $(".errMsg").css('display', 'none');
         applyKeyButton2.after(errMsg);
@@ -102,18 +108,19 @@ function dateRangeChecker(){
           var formatValidToColumn = new Date(validToColumn);
           var formatTodaysDate = new Date(todaysDate);
           console.log("Formatted Valid From column: " + formatValidFromColumn);
-          console.log("Formatted Valid To column: " + formatValidFromColumn);
+          console.log("Formatted Valid To column: " + formatValidToColumn);
           console.log("Formatted Today date: " + formatTodaysDate);
+
+          var total_days = Math.abs((formatTodaysDate - formatValidToColumn) / (1000 * 60 * 60 * 24));
+          console.log("total after subtraction: " + total_days);
 
           if (formatValidFromColumn > formatTodaysDate){
               $tableColumns.eq(2).closest('tr').css('color', 'grey');
               $tableColumns.eq(2).closest('tr').css('font-style','italic');
               $tableColumns.eq(2).closest('tr').css('background-color','#eee');
-          } else if ((formatTodaysDate - formatValidFromColumn) > 15){
-
-              // var timeDiff = Math.abs(date2.getTime() - date1.getTime());
-              // var diffDays = Math.float(timeDiff / (1000 * 3600 * 24));
-              // need to recalc; should take in account for Daylight savings?
+          } else if (total_days < 30){ //check how many days left till near expiration
+              $tableColumns.eq(2).closest('tr').css('color', '#FFC007');
+              $("#licenseCapaSpan").css('color','#FFC007');
           } else{
               //do nothing
           }
