@@ -20,12 +20,6 @@ $(document).ready(function(){
      $("#usedCapacitySpan").css('color', 'red');
      $("#usedCapacitySpan").after("<span class='glyphicon glyphicon-warning-sign' style='color: red;'></span>");
   }
-
-  var base_url = window.location.origin;
-  var host = window.location.host;
-  var pathArray = window.location.pathname.split( '/' );
-  console.log("base_url: "+ base_url + " host: " + host + "pathArray: " + pathArray );
-
   dateRangeChecker();
 });
 
@@ -36,15 +30,16 @@ function applyKeyButton(){
     var userKeyInput = document.getElementById('keyInput').value;
     console.log(userKeyInput);
 
-    if (checkKeyInput(userKeyInput) == true){
+    checkKeyInput(userKeyInput);
+    if(checkKeyInput(userKeyInput) == true){
       updateKeyTable(userKeyInput);
     }
-    //check if key already exists in table
   });
 }
 
 // update table after checking regex
 function updateKeyTable(userKeyInput) {
+
     var applyKeyButton2 = $("#applyKey");
     var base_url = window.location.origin;
     applyKeyButton2.on('click', function(e) {
@@ -53,7 +48,6 @@ function updateKeyTable(userKeyInput) {
             type : 'PUT',
             dataType : 'json',
             success : function(data) {
-                // $("#keyLicenseTable").reload();
             },
             error : function() {
                 console.log('error');
@@ -69,7 +63,7 @@ function checkKeyInput(userKeyInput){
     var applyKeyButton2 = $("#applyKey");
     console.log("input1: " + userKeyInput);
     //check regex with user input; there is check for duplicate already
-    console.log(checkKeyRegex.test(userKeyInput));
+    console.log(checkKeyRegex.test(userKeyInput)); //TRUE OR FALSE
     if (checkKeyRegex.test(userKeyInput) == true){
       $(".errMsg").css('display', 'none');
       $("#keyInput").css('border','1px solid #dfdfdf');
@@ -78,7 +72,7 @@ function checkKeyInput(userKeyInput){
         applyKeyButton2.after(errMsg);
         $("#keyInput").css('border','1px solid #d9534f');
     }
-    return true;
+    console.log("done checking key");
 }
 
 //check if valid from date is over todays date then turn row into grey
