@@ -20,6 +20,7 @@ EOF
 # A3 installation
 yum install perl -y
 yum install --enablerepo=packetfence,aerohive A3 -y
+yum install --enablerepo=packetfence,aerohive A3-PKI -y
 
 # Don't need our repository anymore
 rm /etc/yum.repos.d/aerohive.repo

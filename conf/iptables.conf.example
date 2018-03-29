@@ -1,5 +1,5 @@
 # iptables template
-# This file is manipulated on PacketFence's startup before being given to iptables
+# This file is manipulated on A3's startup before being given to iptables
 *filter
 
 ### INPUT ###
@@ -34,6 +34,9 @@
 #-A input-management-if --protocol tcp --match tcp --dport 1026 --jump ACCEPT
 # Netdata
 -A input-management-if --protocol tcp --match tcp --dport 19999 --jump ACCEPT
+# A3 PKI
+-A input-management-if --protocol tcp --match tcp --dport 9292 --jump ACCEPT
+-A input-management-if --protocol tcp --match tcp --dport 9393 --jump ACCEPT
 
 # RADIUS
 -A input-management-if --protocol tcp --match tcp --dport 1812 --jump ACCEPT
