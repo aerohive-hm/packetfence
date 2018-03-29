@@ -3,7 +3,7 @@
     <b-navbar toggleable="md" fixed="top" type="dark" class="navbar-expand-md bg-dark">
       <b-nav-toggle target="navbar"></b-nav-toggle>
       <b-navbar-brand>
-        <img src="/static/img/packetfence.white.small.svg"/>
+        <img src="/static/img/aerohive-logo.svg"/>
       </b-navbar-brand>
       <b-collapse is-nav id="navbar" v-if="isAuthenticated">
         <b-navbar-nav>
