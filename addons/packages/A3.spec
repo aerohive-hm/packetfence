@@ -417,6 +417,13 @@ done
 # Build the HTML doc for pfappserver
 make html/pfappserver/root/static/doc
 
+# Build the Vue.js app
+pushd .
+cd html/pfappserver/root/static.alt
+npm install
+npm run build
+popd
+
 # build pfcmd C wrapper
 gcc -g0 src/pfcmd.c -o bin/pfcmd
 # build ntlm_auth_wrapper
