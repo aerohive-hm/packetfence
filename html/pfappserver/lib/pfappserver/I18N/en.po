@@ -24,7 +24,7 @@ msgid "%1 nodes imported, %2 skipped"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Config/Switch.pm
-msgid "%1 Devices have been imported, %2 devices have been skipped"
+msgid "%1 devices have been imported, %2 devices have been skipped"
 msgstr ""
 
 # conf/documentation.conf (advanced.admin_csp_security_headers)
@@ -11297,3 +11297,9 @@ msgstr ""
 # html/pfappserver/root/config/profile/files.tt
 msgid "{percent}% of {total_size}"
 msgstr ""
+
+msgid "multi_source_ids"
+msgstr "Sources"
+
+msgid "actions"
+msgstr "Actions"

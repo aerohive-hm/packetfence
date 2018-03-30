@@ -38,7 +38,7 @@
         [% END -%]
         <ul class="nav nav-pills nav-vertical">
           [%
-          guide('Installation Guide', 'Installation_Guide') | none;
+          guide('Administration Guide', 'Installation_Guide') | none;
           guide('Network Devices Configuration Guide', 'Network_Devices_Configuration_Guide') | none;
           guide('Clustering Quick Installation Guide', 'Clustering_Guide') | none;
           %]

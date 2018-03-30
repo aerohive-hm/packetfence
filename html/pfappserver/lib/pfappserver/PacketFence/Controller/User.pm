@@ -251,8 +251,9 @@ sub create :Local :AdminRoleAny('USERS_CREATE') :AdminRoleAny('USERS_CREATE_MULI
     my ($status, $result, $message);
 
     ($status, $result) = $c->model('Config::Roles')->listFromDB();
-
-    @roles = is_success($status) ? @$result : ();
+    if (is_success($status)) {
+        @roles = @$result;
+    }
 
     $form = pfappserver::Form::User::Create->new(ctx => $c, roles => \@roles);
     $form_single = pfappserver::Form::User::Create::Single->new(ctx => $c);
@@ -512,7 +513,7 @@ sub sms :Local :AdminRole('USERS_UPDATE') {
     $self->audit_current_action($c, status => $status, pids => \@pids);
 
     if (is_success($status)) {
-        $c->stash->{status_msg} = $c->loc('An SMS was sent to [_1] out of [_2] users.',
+        $c->stash->{status_msg} = $c->loc('An sms was sent to [_1] out of [_2] users.',
                                           scalar @pids, scalar @$result);
     }
     else {
@@ -525,6 +526,23 @@ sub sms :Local :AdminRole('USERS_UPDATE') {
 =head1 COPYRIGHT
 
 Copyright (C) 2005-2018 Inverse inc.
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+USA.
 
 =cut
 
