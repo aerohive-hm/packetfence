@@ -39,7 +39,7 @@ has_field 'id' =>
    label => 'IP Address/MAC Address/Range (CIDR)',
    accept => ['default'],
    required => 1,
-   messages => { required => 'Please specify the IP address/MAC address/Range (CIDR) of the switch.' },
+   messages => { required => 'Please specify the IP address/MAC address/Range (CIDR) of the device.' },
   );
 has_field 'description' =>
   (
@@ -52,13 +52,13 @@ has_field 'type' =>
    label => 'Type',
    element_class => ['chzn-deselect'],
    required_when => { 'id' => sub { $_[0] eq 'default' } },
-   messages => { required => 'Please select the type of the switch.' },
+   messages => { required => 'Please select the type of the device.' },
   );
 
 has_field 'group' =>
   (
    type => 'Select',
-   label => 'Switch Group',
+   label => 'Device Group',
    options_method => \&options_groups,
    element_class => ['chzn-select'],
    tags => { after_element => \&help,
@@ -97,7 +97,7 @@ has_field 'VlanMap' =>
 has_field 'RoleMap' =>
   (
    type => 'Toggle',
-   label => 'Role by Switch Role',
+   label => 'Role by Device Role',
    default => undef,
   );
 has_field 'AccessListMap' =>
@@ -117,7 +117,7 @@ has_field 'cliAccess' =>
    type => 'Toggle',
    label => 'CLI Access Enabled',
    tags => { after_element => \&help,
-             help => 'Allow this switch to use A3 as a RADIUS server for CLI access'},
+             help => 'Allow this device to use A3 as a RADIUS server for CLI access'},
   );
 has_field 'ExternalPortalEnforcement' => (
     type    => 'Toggle',
@@ -173,7 +173,7 @@ has_field 'uplink' =>
    type => 'Text',
    label => 'Uplinks',
    tags => { after_element => \&help,
-             help => 'Comma-separated list of the switch uplinks' },
+             help => 'Comma-separated list of the device uplinks' },
   );
 
 ## Inline mode
@@ -574,9 +574,9 @@ sub role_label_wrap {
 
 =head2 update_fields
 
-When editing the default switch, set as required the VLANs mapping of the base roles.
+When editing the default device, set as required the VLANs mapping of the base roles.
 
-For other switches, add placeholders with values from default switch.
+For other devicees, add placeholders with values from default device.
 
 =cut
 
@@ -601,10 +601,10 @@ sub update_fields {
                     $field->element_attr({ 'data-placeholder' => $val });
                 }
                 elsif (
-                    # if there is no value defined in the switch and the place holder is defined
+                    # if there is no value defined in the device and the place holder is defined
                     # We check that it is not disabled because of special cases like uplink_dynamic
                     ( ( !defined($init_object->{$field->name}) && !pf::util::isdisabled($placeholder) )
-                    # or that the value in the switch is enabled
+                    # or that the value in the device is enabled
                         || pf::util::isenabled($field->value) )
                     # we only apply this to Checkbox and Toggle
                     && ($field->type eq "Checkbox" || $field->type eq "Toggle") ) {
@@ -655,14 +655,14 @@ sub build_block_list {
 
 =head2 options_type
 
-Extract the descriptions from the various Switch modules.
+Extract the descriptions from the various device modules.
 
 =cut
 
 sub options_type {
     my $self = shift;
 
-    # Sort vendors and switches for display
+    # Sort vendors and devicees for display
     my @modules;
     foreach my $vendor (sort keys %pf::SwitchFactory::VENDORS) {
         my @switches = map {{ value => $_, label => $pf::SwitchFactory::VENDORS{$vendor}->{$_} }} sort keys %{$pf::SwitchFactory::VENDORS{$vendor}};
@@ -754,7 +754,7 @@ sub options_wsTransport {
 
 If one of the inline triggers is $ALWAYS, ignore any other trigger.
 
-Make sure the selected switch type supports the selected inline triggers.
+Make sure the selected device type supports the selected inline triggers.
 
 Validate the MAC address format of the inline triggers.
 
@@ -775,7 +775,7 @@ sub validate {
         if ($type->require()) {
             @triggers = map { $_->{type} } @{$self->value->{inlineTrigger}};
             if ( @triggers && !$always) {
-                # Make sure the selected switch type supports the selected inline triggers.
+                # Make sure the selected device type supports the selected inline triggers.
                 my %capabilities;
                 @capabilities{$type->new()->inlineCapabilities()} = ();
                 if (keys %capabilities) {

@@ -47,7 +47,7 @@
         [% form.block('vlans').render | none %]
         <div class="control-group">
           <div class="controls">
-            <h6>[% l('Role mapping by switch role') %]</h6>
+            <h6>[% l('Role mapping by device role') %]</h6>
           </div>
         </div>
         [% form.field('RoleMap').render | none %]
@@ -151,7 +151,7 @@
             <div class="unwell unwell-horizontal">
               <p>
                 <i class="icon-group icon-large"></i>
-                [% l('Members can be added after the switch group is saved') %]
+                [% l('Members can be added after the device group is saved') %]
               </p>
             </div>
         [% END %]

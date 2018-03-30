@@ -145,9 +145,9 @@
     <script type="text/javascript" src="[% c.uri_for("/static/${js}.js") %]" charset="UTF-8"></script>
 [% END -%]
 <script type="text/javascript">
-    $(window).on('load',function(){
-        $('#myModal').modal('show');
-    });
+    // $(window).on('load',function(){
+    //     $('#myModal').modal('show');
+    // });
 
 
     var emailForm = $('.emailForm');
@@ -168,8 +168,8 @@
         licenseAlert.slideDown(1000);
       });
       sentEmailButton.click(function(){
-	emailForm.slideUp(1000);
-	successEmailMessage.slideDown(1000);
+      	emailForm.slideUp(1000);
+      	successEmailMessage.slideDown(1000);
       });
     });
 </script>
