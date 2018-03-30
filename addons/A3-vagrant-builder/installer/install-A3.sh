@@ -51,3 +51,7 @@ cat <<EOT >> /usr/local/pf/db/pf-schema.sql
 INSERT INTO password (pid, password, valid_from, expiration, access_duration, access_level, category) VALUES ('demouser', 'demouser', NOW(), '2038-01-01', '1D', NULL, 1);
 
 EOT
+
+# Set up /usr/local/A3 as a alias for /usr/local/pf
+cd /usr/local
+ln -sf pf A3
