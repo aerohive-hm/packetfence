@@ -84,6 +84,11 @@ sub get_json {
     return ($error, $data);
 }
 
+sub unknown_action {
+    my ($self) = @_;
+    return $self->render_error(404, "Unknown path");
+}
+
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>
