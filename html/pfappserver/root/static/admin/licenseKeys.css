@@ -10,11 +10,7 @@
 }
 
 .head{
-   padding-bottom: 25px;
-}
-
-h1{
-  padding-bottom: 18px;
+   padding-bottom: 30px;
 }
 
 .systemId{
@@ -23,6 +19,7 @@ h1{
 .pad{
   padding-bottom: 10px;
 }
+.pad2{}
 
 #entire-form{
     margin: 50px 50px;
@@ -30,14 +27,20 @@ h1{
 
 .capacity{
   font-size: 20px;
+  display: block;
 }
+
+.lcLabel{ width: 200px;  float:left; font-size: 20px;}
+.ucLabel{ width: 200px;  float:left; font-size: 20px;}
+#licenseCapaSpan{ width: 415px; text-align: right;}
+#usedCapacitySpan{ width: 415px; text-align: right;}
 
 /* INPUT FIELD */
 .entitlementLicenseKeyInput{
   margin: 0 auto;
   display: table;
-  padding-bottom: 35px;
   padding-top: 15px;
+  height: 65px;
 }
 label{
     float: left;

@@ -24,8 +24,18 @@
           <span class="systemId"><b>System ID:</b> [% system_id %]</span>
         </div>
         <div class="capacity">
-          <div class="pad"><span><b>[% l('Licensed Capacity:') %]</b>&nbsp; </span><span id="licenseCapaSpan"><span id="licenseCapa">[% max_capacity %]</span><span> endpoints</span></span></div>
-          <div><span><b>[% l('Used Capacity:') %]</b>&nbsp; </span><span id="usedCapacitySpan"><span id="usedCapacity">[% used_capacity.item('nb') %]</span><span> endpoints</span></span></div>
+          <div class="pad">
+            <label class="lcLabel"><b>[% l('Licensed Capacity:') %]</b></label>
+            <div id="licenseCapaSpan">
+              <span id="licenseCapa">[% max_capacity %]</span><span> endpoints</span>
+            </div>
+          </div>
+          <div class="pad2">
+            <label class="ucLabel"><b>[% l('Used Capacity:') %]</b></label>
+            <div id="usedCapacitySpan">
+              <span id="usedCapacity">[% used_capacity.item('nb') %]</span><span> endpoints</span>
+            </div>
+          </div>
         </div>
         <hr>
         <div class="entitlementLicenseKeyInput">
