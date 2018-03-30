@@ -9,4 +9,4 @@
     <option value="9007199254740992" [% "selected=selected" IF per_page == 9007199254740992 %]>[% l('All') %]</option>
   </select>
 [% END %]
-[% l('Display [_1] entries per page', [per_page_select]) | none %]
+<div>[% l('Display') %] [% [_1] %] [ l('entries per page'), %] [% ([per_page_select]) | none %]</div>
