@@ -3,12 +3,12 @@
 # general.domain
 #
 # Domain name of A3 system.
-domain=packetfence.org
+domain=example.com
 #
 # general.hostname
 #
 # Hostname of A3 system.  This is concatenated with the domain in Apache rewriting rules and therefore must be resolvable by clients.
-hostname=packetfence
+hostname=a3
 #
 # general.dhcpservers
 #
@@ -171,7 +171,7 @@ default_access_duration=12h
 #
 # Email address to which notifications of rogue DHCP servers, violations with an action of "email", or any other
 # A3-related message goes to.
-emailaddr=pf@localhost
+emailaddr=a3@localhost
 #
 # alerting.fromaddr
 #
@@ -188,7 +188,7 @@ smtpserver=localhost
 #
 #Subject prefix for email notifications of rogue DHCP servers, violations with an action of "email", or any other
 #A3-related message.
-subjectprefix=PF Alert:
+subjectprefix=A3 Alert:
 #
 # alerting.smtp_encryption
 #
