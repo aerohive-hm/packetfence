@@ -42,7 +42,22 @@ sub key :Path('key') :Args(1) {
     my ( $self, $c, $key ) = @_;
 
     if ($c->request->method eq 'PUT') {
-        $c->stash->{entitlement_key} = $c->model('Entitlement')->apply_entitlement_key($key);
+        my $ek = $c->model('Entitlement')->apply_entitlement_key($key);
+
+        if ($ek->{err_status}) {
+            if ($ek->{err_status} == $STATUS::CONFLICT) {
+                $c->stash->{status_msg} = $c->loc("Entitlement key is already in use.");
+            }
+            elsif ($ek->{err_status} >= 500) {
+                $c->stash->{status_msg} = $c->loc("Unable to validate entitlement key at this time. Try again later.");
+            }
+            else {
+                $c->stash->{status_msg} = $c->loc("Entitlement key does not exist or is not valid.");
+            }
+        }
+        else {
+            $c->stash->{entitlement_key} = $ek;
+        }
     }
     elsif ($c->request->method eq 'GET') {
         $c->stash->{entitlement_key} = $c->model('Entitlement')->get_entitlement_key($key);
