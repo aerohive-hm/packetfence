@@ -59,6 +59,10 @@ button, input, select, textarea {
   border: initial;
 }
 
+.navbar .brand {
+  padding: 0;
+}
+
 .navbar-search .search-query {
   font-family: "Quicksand", Helvetica, Ariel, sans-serif;
 }
