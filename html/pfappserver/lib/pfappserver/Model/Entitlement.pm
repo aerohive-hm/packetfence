@@ -43,14 +43,22 @@ sub apply_entitlement_key {
     my ( $self, $key ) = @_;
     my $logger = get_logger();
 
+    $logger->info("Validating entitlement key $key...");
+
     # Send key to Aerohive to validate
     my $responseHash = pf::a3_entitlement::verify($key);
 
-    # On success, save entitlement properties and return object
     if ($responseHash) {
-        if (pf::a3_entitlement::create($key, $responseHash)) {
-            $logger->info("Total capacity is now " . $self->get_licensed_capacity());
-            return pf::a3_entitlement::find_one($key);
+        if ($responseHash->{err_status}) {
+            $logger->warn("Got error response ($responseHash->{err_status}) for $key");
+            return $responseHash;
+        }
+        else {
+            # On success, save entitlement properties and return object
+            if (pf::a3_entitlement::create($key, $responseHash)) {
+                $logger->info("Total capacity is now " . $self->get_licensed_capacity());
+                return pf::a3_entitlement::find_one($key);
+            }
         }
     }
 

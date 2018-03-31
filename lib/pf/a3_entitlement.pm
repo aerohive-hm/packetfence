@@ -161,7 +161,13 @@ sub verify {
         my $response_code = $curl->getinfo(CURLINFO_HTTP_CODE);
 
         $logger->info("response $response_code: $response_body");
-        return $json->decode($response_body);
+
+        if (is_success($response_code)) {
+            return $json->decode($response_body);
+        }
+        else {
+            return { err_status => $response_code };
+        }
     }
     else {
         $logger->error("Failed to contact ACS to validate entitlement key: retcode = $retcode");
