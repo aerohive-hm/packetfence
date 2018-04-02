@@ -36,7 +36,7 @@ my @steps = (
     { id          => 'admin',
       title       => 'Administration',
       description => 'Configure access to the admin interface' },
-    { id          => 'fingerbank',
+    { id          => 'entitlement',
       title       => 'Entitlement',
       description => 'Configure entitlement' },
     { id          => 'services',
@@ -252,46 +252,9 @@ sub networks :Chained('object') :PathPart('networks') :Args(0) {
     $c->stash->{csp_headers} = { style => "'unsafe-inline'" };
 }
 
-=head2 database
-
-Database setup (step 3)
-
-=cut
-
-#  fixme this is not like we built the rest of pfappserver.. re-architect?
-# the GET is expected to fail on first run, then the javascript calls it again and it should pass...
-# sub database :Chained('object') :PathPart('database') :Args(0) {
-#     my ( $self, $c ) = @_;
-#
-#     # Default username if nothing else have already been entered (provide a pre-filled field)
-#     $c->session->{root_user} = 'root' if (!defined($c->session->{root_user}));
-#
-#     # Check MySQLd status by fetching pid
-#     $c->stash->{mysqld_running} = 1 if ($c->model('Config::System')->check_mysqld_status() ne 0);
-#
-#     if ($c->request->method eq 'GET') {
-#         delete $c->session->{completed}->{$c->action->name};
-#         # Check if the database and user exist
-#         my $database_ref = \%{$Config{'database'}};
-#         $c->stash->{'database'} = $database_ref;
-#         # hash-slice assigning values to the list
-#         my ($pf_user, $pf_pass, $pf_db) = @{$database_ref}{qw/user pass db/};
-#         if ($pf_user && $pf_pass && $pf_db) {
-#             # throwing away result since we don't use it
-#             my ($status) = $c->model('DB')->connect($pf_db, $pf_user, $pf_pass);
-#             if (is_success($status)) {
-#                 # everything has been done successfully
-#                 $c->session->{completed}->{$c->action->name} = 1;
-#                 # we need to restart mariadb so that it applies the network configuration
-#                 system("sudo /usr/bin/systemctl restart packetfence-mariadb");
-#             }
-#         }
-#     }
-# }
-
 =head2 configuration
 
-PacketFence minimal configuration (step 4)
+A3 minimal configuration (step 3)
 
 =cut
 
@@ -408,7 +371,7 @@ sub configuration :Chained('object') :PathPart('configuration') :Args(0) {
 
 =head2 admin
 
-Administrator account (step 5)
+Administrator account (step 4)
 
 =cut
 
@@ -440,17 +403,15 @@ sub admin :Chained('object') :PathPart('admin') :Args(0) {
     }
 }
 
-=head2 fingerbank
+=head2 entitlement
 
-Fingerbank setup (step 6)
+Entitlement setup (step 5)
 
 =cut
 
-sub fingerbank :Chained('object') :PathPart('fingerbank') :Args(0) {
+sub entitlement :Chained('object') :PathPart('entitlement') :Args(0) {
     my ($self, $c) = @_;
     $c->session->{completed}->{$c->action->name} = 1;
-    my $config = fingerbank::Config::get_config;
-    $c->stash->{fingerbank_api_key} = $config->{'upstream'}{'api_key'};
 }
 
 =head2 services
