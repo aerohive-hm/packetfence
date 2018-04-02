@@ -1,4 +1,4 @@
-[% jsFiles = ['configurator/fingerbank'] -%]
+[%  jsFiles = ['configurator/entitlement'] -%]
     <div class="container-fluid">
       [% INCLUDE configurator/tracker.inc %]
       <div class="row-fluid">
@@ -18,8 +18,7 @@
         <div class="span4">
           <div class="well">
             <h3>[% l('Instructions') %]</H3>
-            <p>[% l('On this page, you can configure this entitlement which is used for device fingerprinting.') %]</p>
-            <p>[% l('If you do not configure a Entitlement API key, you will not have access to any device profiling capabilities in A3') %]</p>
+            <p>[% l('On this page, you can apply an entitlement key if you already have one. Otherwise, you can select a trial license to evaluate A3.') %]</p>
           </div>
         </div>
         <div class="span14">
