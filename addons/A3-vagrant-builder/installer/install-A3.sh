@@ -55,3 +55,9 @@ EOT
 # Set up /usr/local/A3 as a alias for /usr/local/pf
 cd /usr/local
 ln -sf pf A3
+
+# Install temporary Fingerbank API key
+cat <<EOF > /usr/local/fingerbank/conf/fingerbank.conf
+[upstream]
+api_key=b201fafa5549042bb1b23948de1c7997bfdd8103
+EOF
