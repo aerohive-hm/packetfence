@@ -1,33 +1,33 @@
-package pfconfig::namespaces::interfaces::listen_ints;
+package pfconfig::namespaces::resource::unified_api_system_user;
 
 =head1 NAME
 
-pfconfig::namespaces::interfaces::listen_ints
+pfconfig::namespaces::resource::unified_api_system_user
 
 =cut
 
 =head1 DESCRIPTION
 
-pfconfig::namespaces::interfaces::listen_ints
+pfconfig::namespaces::resource::unified_api_system_user
 
 =cut
 
 use strict;
 use warnings;
 
-use base 'pfconfig::namespaces::interfaces';
+use base 'pfconfig::namespaces::resource';
 
-sub init {
-    my ($self, $host_id) = @_;
-    $self->{child_resources} = [ 'config::Stats' ];
-
-    $self->{_interfaces} = defined($host_id) ? $self->{cache}->get_cache("interfaces($host_id)") : $self->{cache}->get_cache("interfaces");
-}
+use pf::file_paths qw($unified_api_system_pass_file);
+use File::Slurp qw(read_file);
 
 sub build {
     my ($self) = @_;
+    my $pass = read_file($unified_api_system_pass_file);
 
-    return $self->{_interfaces}->{listen_ints};
+    return {
+        user => "system",
+        pass => $pass,
+    };
 }
 
 
@@ -63,4 +63,3 @@ USA.
 # vim: set shiftwidth=4:
 # vim: set expandtab:
 # vim: set backspace=indent,eol,start:
-
