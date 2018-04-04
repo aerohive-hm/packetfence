@@ -477,7 +477,7 @@ Readonly::Scalar our $CONTROLAUTO => 2; # aka force control auto
 
 =head1 AEROHIVE
 
-AeroHive constants
+Aerohive constants
 
 =cut
 
