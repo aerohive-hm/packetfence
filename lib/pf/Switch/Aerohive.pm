@@ -79,16 +79,16 @@ obtain image version information from switch
 
 sub getVersion {
     my ($self) = @_;
-    my $oid_AeroHiveSoftwareVersion = '1.3.6.1.2.1.1.1.0'; #
+    my $oid_AerohiveSoftwareVersion = '1.3.6.1.2.1.1.1.0'; #
     my $logger = $self->logger;
     if ( !$self->connectRead() ) {
         return '';
     }
 
-    $logger->trace("SNMP get_request for AeroHiveSoftwareVersion: $oid_AeroHiveSoftwareVersion");
-    my $result = $self->{_sessionRead}->get_request( -varbindlist => [$oid_AeroHiveSoftwareVersion] );
+    $logger->trace("SNMP get_request for AerohiveSoftwareVersion: $oid_AerohiveSoftwareVersion");
+    my $result = $self->{_sessionRead}->get_request( -varbindlist => [$oid_AerohiveSoftwareVersion] );
     if (defined($result)) {
-        return $result->{$oid_AeroHiveSoftwareVersion};
+        return $result->{$oid_AerohiveSoftwareVersion};
     }
 
     # none of the above worked
