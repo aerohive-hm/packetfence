@@ -30,7 +30,26 @@ Retrieve the list of entitlement keys currently installed on this system.
 =cut
 
 sub list_entitlement_keys {
-    return pf::a3_entitlement::find_all();
+    # return pf::a3_entitlement::find_all();
+    my $entitlements = pf::a3_entitlement::find_all();
+
+    if($entitlements) {
+        my $not = time();
+
+        foreach my $key (@$entitlements) {
+            my $start = str2time($key->{sub_start});
+            my $end   = str2time($key->{sub_end});
+
+            if ($now < $start || $now > $end) {
+                $key->{lic_status} = "notValidExpired"
+            } elsif (($end - $now) <= 30 * 24 * 60 * 60) {
+                $key->{lic_status} = "expiringSoon"
+            } else {
+                $key->{lic_status} = "";
+            }
+        }
+    }
+    return $entitlements;
 }
 
 =head2 apply

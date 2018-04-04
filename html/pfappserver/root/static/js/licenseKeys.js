@@ -8,12 +8,20 @@ $(document).ready(function(){
   var usedCapacity2 = $("#usedCapacity");
   var usedCapacity3 = $("#usedCapacitySpan");
   var licenseCapacity3 = $("#licenseCapaSpan");
-  console.log(licenseCapacity.innerHTML);
+  console.log("license Cap right now: " + licenseCapacity.innerHTML);
 
   applyKeyButton();
   dateRangeChecker();
-// capacity alert status changes
-  if(licenseCapacity.innerHTML >= 100000){
+  updateCapacities();
+});
+
+function updateCapacities(){
+  var licenseCapacity = document.getElementById("licenseCapa");
+  var usedCapacity = document.getElementById("usedCapacity");
+  var usedCapacity2 = $("#usedCapacity");
+  console.log("licence Capacity: " + licenseCapacity.innerHTML);
+  if(licenseCapacity.innerHTML >= 100000 || licenseCapacity.innerHTML === "Unlimited"){
+    console.log("changing innerHTML for lice capa");
      licenseCapacity.innerHTML = "Unlimited";
   }
   if(usedCapacity.innerHTML > licenseCapacity.innerHTML){
@@ -21,7 +29,8 @@ $(document).ready(function(){
      $("#usedCapacitySpan").css('color', 'red');
      $("#usedCapacitySpan").after("<span class='glyphicon glyphicon-warning-sign' style='color: red;'></span>");
   }
-});
+  console.log("updating capacities");
+}
 
 // apply button press
 function applyKeyButton(){
@@ -29,7 +38,6 @@ function applyKeyButton(){
   applyKeyButton2.click(function(){
     var userKeyInput = document.getElementById('keyInput').value;
     console.log(userKeyInput);
-    // checkKeyInput(userKeyInput);
     console.log("CHECKING KEY REGEX:");
     console.log(checkKeyInput(userKeyInput));
     var errMsg = "<p class='errMsg' style='color:red;'>Key does not exist. Please reenter the key again.</p>";
@@ -37,13 +45,16 @@ function applyKeyButton(){
         $(".errMsg").css('display', 'none');
         $("#keyInput").css('border','1px solid #dfdfdf');
         updateKeyTable(userKeyInput);
+        dateRangeChecker();
         console.log("updated table styling after ajax call ");
+        return true;
     } else {
         $(".errMsg").css('display', 'none');
         applyKeyButton2.after(errMsg).slideDown();
         $("#keyInput").css('border','1px solid #d9534f');
     }
   });
+  console.log("applied new button press");
 }
 
 // update table after checking regex
@@ -54,10 +65,7 @@ function updateKeyTable(userKeyInput) {
         url : base_url + '/entitlement/key/' + userKeyInput,
         type : 'PUT',
         dataType : 'json',
-        success : function(data) {
-          $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
-          // dateRangeChecker();
-        },
+        success : success,
         error : function() {
           var errMsg2 = "<p class='errMsg' style='color:red;'>This key is not found or not valid.</p>";
           var errMsg3 = "<p class='errMsg' style='color:red;'>This key is already deactivated.</p>";
@@ -75,19 +83,31 @@ function updateKeyTable(userKeyInput) {
           }
         }
     });
-    dateRangeChecker();
     console.log("updated key");
 }
 
+function success(data){
+    $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
+    $("#licenseCapa").load(window.location + " #licenseCapa");
+    var capacity = $("#licenseCapa").attr("data-capacity");
+    console.log("capacity: " + capacity);
+    capacity = $("#licenseCapa").attr('data-capacity', document.getElementById('licenseCapa').innerHTML);
+    if (capacity >= 100000){
+      // console.log("changeing capacity to new data capacity");
+        console.log("changeing capacity to new data capacity2");
+        document.getElementById('licenseCapa').innerHTML = "Unlimited";
+      // $("#licenseCapa").load(window.location + " #licenseCapa");
+    }
+    console.log("new license capa: " + document.getElementById('licenseCapa').innerHTML);
+}
 
 function checkKeyInput(userKeyInput){
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
     var errMsg = "<p class='errMsg' style='color:red;'>Sorry please reenter the license key again.</p>";
     var applyKeyButton2 = $("#applyKey");
-    console.log("user input: " + userKeyInput);
+    // console.log("user input: " + userKeyInput);
     //check regex with user input; there is check for duplicate already
     console.log(checkKeyRegex.test(userKeyInput)); //TRUE OR FALSE
-    // if(userKeyInput.charAt(0) != 2 || userKeyInput.charAt(0) != 3){
       if (checkKeyRegex.test(userKeyInput)){
           $(".errMsg").css('display', 'none');
           $("#keyInput").css('border','1px solid #dfdfdf');
@@ -98,7 +118,6 @@ function checkKeyInput(userKeyInput){
           $("#keyInput").css('border','1px solid #d9534f');
           return false;
       }
-    // }
     console.log("done checking key");
 }
 
@@ -123,17 +142,18 @@ function dateRangeChecker(){
             mm = '0' + mm;
         }
         var todaysDate = yyyy + '-' + mm + '-' + dd;
-        console.log("Today: " + todaysDate);
+        // console.log("Today: " + todaysDate);
 
         var formatValidFromColumn = new Date(validFromColumn);
         var formatValidToColumn = new Date(validToColumn);
         var formatTodaysDate = new Date(todaysDate);
-        console.log("Formatted Valid From column: " + formatValidFromColumn);
-        console.log("Formatted Valid To column: " + formatValidToColumn);
-        console.log("Formatted Today date: " + formatTodaysDate);
+        // console.log("Formatted Valid From column: " + formatValidFromColumn);
+        // console.log("Formatted Valid To column: " + formatValidToColumn);
+        // console.log("Formatted Today date: " + formatTodaysDate);
 
-        var total_days = Math.abs((formatValidToColumn - formatTodaysDate) / (1000 * 60 * 60 * 24));
-        console.log("total after subtraction: " + total_days);
+        var total_days = (formatValidToColumn - formatTodaysDate) / (1000 * 60 * 60 * 24);
+        // var total_days = (formatTodaysDate - formatValidToColumn) / (1000 * 60 * 60 * 24);
+        // console.log("total after subtraction: " + total_days);
 
         if (formatValidFromColumn > formatTodaysDate){
             $tableColumns.eq(2).closest('tr').css('color', 'grey');
@@ -144,7 +164,7 @@ function dateRangeChecker(){
             $tableColumns.eq(2).closest('tr').css('font-style','italic');
             $tableColumns.eq(2).closest('tr').css('background-color','#eee');
         }
-        if (total_days < 30){ //check how many days left till near expiration
+        if (total_days < 30 && total_days > 0){ //check how many days left till near expiration
             $tableColumns.eq(2).closest('tr').css('color', '#FFC007');
             $("#licenseCapaSpan").css('color','#FFC007');
         }

@@ -210,9 +210,12 @@
             <ul class="nav nav-list">
               [%- IF can_access("CONFIGURATION_MAIN_READ") %]
               [%- IF can_access("PFMON_READ") %]
+              
               [% pf_section_entry( 'main', 'Main Configuration', subsections.main) | none %]
+              <!-- [% FOREACH subsection_tab IN pf_section_entry( 'main', 'Main Configuration', subsections.main) %] -->
+              <!-- <span>[% subsection_tab.main %]</span> -->
+              <!-- [% END %] -->
               [%- END %]
-              [% pf_section_entry( 'database', 'Database', subsections.database) | none %]
               [% pf_section_entry( 'active_active', 'Cluster') | none %]
               [% pf_section_entry( 'radius_authentication_methods', 'Authentication Methods') | none %]
               [% pf_section_entry( 'node_import', 'Node Import') | none %]
@@ -233,4 +236,3 @@
         </div><!--/row-->
       </div>
     </div><!--/.container-fluid-->
-

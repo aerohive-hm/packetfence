@@ -60,7 +60,7 @@ our %ALLOWED_SECTIONS = (
     ports             => undef,
     provisioning      => undef,
     proxies           => undef,
-    services          => undef,
+    # services          => undef,
     snmp_traps        => undef,
     webservices       => undef,
     guests_admin_registration     => undef,
@@ -375,13 +375,13 @@ sub all_subsections : Private {
                     controller => 'Controller::Configuration',
                     action => 'section',
                     action_args => ['database'],
-                    name => 'General', 
+                    name => 'General',
                 },
                 database_advanced => {
                     controller => 'Controller::Configuration',
                     action => 'section',
                     action_args => ['database_advanced'],
-                    name => 'Advanced', 
+                    name => 'Advanced',
                 },
             );
             return \%map;
@@ -391,9 +391,9 @@ sub all_subsections : Private {
             tie my %map, 'Tie::IxHash', (
                 domain => {
                     controller => 'Controller::Config::Domain',
-                    name => 'Active Directory Domains', 
+                    name => 'Active Directory Domains',
                 },
-                realm => { 
+                realm => {
                     controller => 'Controller::Config::Realm',
                     name => 'REALMS',
                 },
@@ -421,30 +421,30 @@ sub all_subsections : Private {
                     controller => 'Controller::Configuration',
                     action => 'section',
                     action_args => ['general'],
-                    name => 'General Configuration', 
+                    name => 'General Configuration',
                 },
                 alerting => {
                     controller => 'Controller::Configuration',
                     action => 'section',
                     action_args => ['alerting'],
-                    name => 'Alerting', 
+                    name => 'Alerting',
                 },
                 advanced => {
                     controller => 'Controller::Configuration',
                     action => 'section',
                     action_args => ['advanced'],
-                    name => 'Advanced', 
+                    name => 'Advanced',
                 },
                 maintenance => {
                     controller => 'Controller::Config::Pfmon',
-                    name => 'Maintenance', 
-                },
-                services => {
-                    controller => 'Controller::Configuration',
-                    action => 'section',
-                    action_args => ['services'],
-                    name => 'Services', 
-                },
+                    name => 'Maintenance',
+                }
+                # services => {
+                #     controller => 'Controller::Configuration',
+                #     action => 'section',
+                #     action_args => ['services'],
+                #     name => 'Services',
+                # },
             );
             return \%map;
         }->(),
@@ -455,17 +455,17 @@ sub all_subsections : Private {
                     controller => 'Controller::Configuration',
                     action => 'section',
                     action_args => ['network'],
-                    name => 'Network Settings', 
+                    name => 'Network Settings',
                 },
                 interfaces => {
                     controller => 'Controller::Interface',
-                    name => 'Interfaces', 
+                    name => 'Interfaces',
                 },
                 inline => {
                     controller => 'Controller::Configuration',
                     action => 'section',
                     action_args => ['inline'],
-                    name => 'Inline', 
+                    name => 'Inline',
                 },
                 trafficshaping => {
                     controller => 'Controller::Config::TrafficShaping',
@@ -475,13 +475,13 @@ sub all_subsections : Private {
                     controller => 'Controller::Configuration',
                     action => 'section',
                     action_args => ['fencing'],
-                    name => 'Fencing', 
+                    name => 'Fencing',
                 },
                 parking => {
                     controller => 'Controller::Configuration',
                     action => 'section',
                     action_args => ['parking'],
-                    name => 'Device Parking', 
+                    name => 'Device Parking',
                 },
             );
             return \%map;
@@ -491,35 +491,35 @@ sub all_subsections : Private {
             tie my %map, 'Tie::IxHash', (
                 general => {
                     controller => 'Controller::Config::Fingerbank::Settings',
-                    name => 'General Settings', 
+                    name => 'General Settings',
                 },
                 combinations => {
                     controller => 'Controller::Config::Fingerbank::Combination',
-                    name => 'Combinations', 
+                    name => 'Combinations',
                 },
                 devices => {
                     controller => 'Controller::Config::Fingerbank::Device',
-                    name => 'Devices', 
+                    name => 'Devices',
                 },
                 dhcp_fingerprints => {
                     controller => 'Controller::Config::Fingerbank::DHCP_Fingerprint',
-                    name => 'DHCP Fingerprints', 
+                    name => 'DHCP Fingerprints',
                 },
                 dhcp_vendors => {
                     controller => 'Controller::Config::Fingerbank::DHCP_Vendor',
-                    name => 'DHCP Vendors', 
+                    name => 'DHCP Vendors',
                 },
                 dhcp6_fingerprints => {
                     controller => 'Controller::Config::Fingerbank::DHCP6_Fingerprint',
-                    name => 'DHCPv6 Fingerprints', 
+                    name => 'DHCPv6 Fingerprints',
                 },
                 dhcp6_enterprises => {
                     controller => 'Controller::Config::Fingerbank::DHCP6_Enterprise',
-                    name => 'DHCPv6 Enterprises', 
+                    name => 'DHCPv6 Enterprises',
                 },
                 mac_vendors => {
                     controller => 'Controller::Config::Fingerbank::MAC_Vendor',
-                    name => 'MAC Vendors', 
+                    name => 'MAC Vendors',
                 },
                 user_agents => {
                     controller => 'Controller::Config::Fingerbank::User_Agent',
@@ -528,16 +528,16 @@ sub all_subsections : Private {
             );
             return \%map;
         }->(),
-        
+
         scans => sub {
             tie my %map, 'Tie::IxHash', (
                 scan_engines => {
                     controller => 'Controller::Config::Scan',
-                    name => 'Scan Engines', 
+                    name => 'Scan Engines',
                 },
                 wmi_rules => {
                     controller => 'Controller::Config::WMI',
-                    name => 'WMI Rules', 
+                    name => 'WMI Rules',
                 },
             );
             return \%map;
