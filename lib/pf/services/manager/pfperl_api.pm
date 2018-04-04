@@ -1,14 +1,14 @@
-package pf::services::manager::pfunified_api;
+package pf::services::manager::pfperl_api;
 
 =head1 NAME
 
-pf::services::manager::pfunified_api -
+pf::services::manager::pfperl_api -
 
 =cut
 
 =head1 DESCRIPTION
 
-pf::services::manager::pfunified_api
+pf::services::manager::pfperl_api
 
 =cut
 
@@ -17,7 +17,7 @@ use warnings;
 use Moo;
 extends 'pf::services::manager';
 
-has '+name' => (default => sub { 'pfunified_api' } );
+has '+name' => (default => sub { 'pfperl-api' } );
 
 =head1 AUTHOR
 
