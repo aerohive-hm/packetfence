@@ -47,7 +47,7 @@
                     <tr>
                       <td>
                         <label class="checkbox">
-                          <input type="checkbox" name="enforcement" value="webauth"[% IF c.session.enforcements.hotspot %] checked=""[% END %] /> [% l('WebAuth enforcement') %]
+                          <input type="checkbox" name="enforcement" value="webauth"[% IF c.session.enforcements.webauth %] checked=""[% END %] /> [% l('WebAuth enforcement') %]
                           <div class="help-block">
                             [% l('A3 is the server that assigns the Role (or ACL) to the devices. This mode is for web authentication.') %]
                           </div>
