@@ -56,32 +56,11 @@ EOT
 cd /usr/local
 ln -sf pf A3
 
+# Add pfcmd to /usr/local/bin for convenience
+ln -sf /usr/local/pf/bin/pfcmd /usr/local/bin/pfcmd
+
 # Install temporary Fingerbank API key
 cat <<EOF > /usr/local/fingerbank/conf/fingerbank.conf
 [upstream]
 api_key=b201fafa5549042bb1b23948de1c7997bfdd8103
-host=api.fingerbank.org
-port=443
-use_https=enabled
-db_path = /api/v2/download/db
-sqlite_db_retention = 2
-
-[collector]
-host=127.0.0.1
-port=4723
-use_https=enabled
-inactive_endpoints_expiration=168
-arp_lookup=disabled
-query_cache_time=1440
-db_persistence_interval=60
-
-[query]
-record_unmatched = disabled
-
-[proxy]
-use_proxy = disabled
-host =
-port =
-verify_ssl = enabled
 EOF
-chmod 775 /usr/local/fingerbank/collector/set-env-fingerbank-conf.pl
