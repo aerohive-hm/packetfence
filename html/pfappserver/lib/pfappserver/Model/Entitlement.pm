@@ -13,6 +13,8 @@ Catalyst Model.
 use strict;
 use warnings;
 
+use Date::Parse;
+
 use Moose;
 
 use pf::log;
