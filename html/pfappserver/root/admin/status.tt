@@ -59,7 +59,7 @@
 	<!--end of email form fill out-->
 
 	<!--SUCCESS MESSAGE SENT EMAIL-->
-        <!-- <div class="modal-content successEmailMessage" style="display:none;"> 
+        <!-- <div class="modal-content successEmailMessage" style="display:none;">
           <div class="modal-header" style="background-color: #4cae4c; color:#F4F6F9; font-weight:400; text-align:center;">
             <h3 class="modal-title"><b>Successfully sent</b></h3>
           </div>

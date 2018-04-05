@@ -27,7 +27,7 @@
           <div class="pad">
             <label class="lcLabel"><b>[% l('Licensed Capacity:') %]</b></label>
             <div id="licenseCapaSpan">
-              <span id="licenseCapa">[% max_capacity %]</span><span> endpoints</span>
+              <span id="licenseCapa" data-capacity="[% max_capacity %]" >[% max_capacity %]</span><span> endpoints</span>
             </div>
           </div>
           <div class="pad2">
@@ -54,7 +54,7 @@
             </thead>
             <tbody>
               [% FOREACH key IN entitlement_keys -%]
-              <tr>
+              <tr class="[% key.lic_status %]">
                 <td class="key">[% key.entitlement_key %]</td>
                 <td class="cap">[% key.endpoint_count %]</td>
                 <td class="validFrom">[% key.sub_start.split(' ').first %]</td>

@@ -98,6 +98,16 @@ label{
     overflow-x: hidden;
 }
 
+.notValidExpired{
+    color: grey;
+    font-style: italic;
+    background-color: #eee;
+}
+
+.expiringSoon{
+    color: #FFC007;
+}
+
 /* show scroll if table is long */
 ::-webkit-scrollbar {
     -webkit-appearance: none;
