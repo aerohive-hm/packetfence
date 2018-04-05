@@ -34,7 +34,7 @@ sub list_entitlement_keys {
     my $entitlements = pf::a3_entitlement::find_all();
 
     if($entitlements) {
-        my $not = time();
+        my $now = time();
 
         foreach my $key (@$entitlements) {
             my $start = str2time($key->{sub_start});

@@ -14,7 +14,7 @@ type=Choice
 modules=default_login_policy,default_guest_policy,default_oauth_policy,default_billing_policy,default_saml_policy,default_blackhole_policy
 
 [default_login_policy]
-description=LOGIN
+description=Username/password login
 type=Authentication::Login
 
 [default_guest_policy]

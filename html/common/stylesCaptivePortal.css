@@ -5,3 +5,15 @@
 #dots{
   padding-bottom:20px;
 }
+
+h1, h2, h3{
+  color: #333;
+}
+
+.dot--active div, .dot:hover div{
+  background-color: #FFC007 !important;
+}
+
+.dot div{
+  border: 2px solid #FFC007 !important;
+}

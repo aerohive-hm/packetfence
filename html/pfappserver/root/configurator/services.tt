@@ -62,36 +62,37 @@
     </div><!--end of card-->
 	</div>
 
-
         <div class="card">
           <div class="card-block">
-	  <div class="btn btn-primary" id="details">Details</div>
-	  <div id="daemonTable">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>[% l('Daemon') %]</th>
-                <th>[% l('Status') %]</th>
-              </tr>
-              </thead>
-            <tbody>
-              [%- FOREACH service IN services %]
-              <tr>
-                <td>[% service.name %]</td>
-                <td><span id="service-[% service.name %]"
-                  class="label[% IF service.status %] label-success[% END %]">
-                  [%- IF service.status %][% l('Started') %][%- ELSE -%][% l('Stopped') %][% END -%]</span></td>
-              </tr>
-              [%- END %]
-            </tbody>
-          </table>
-	  </div><!--end of daemonTable-->
-	  </div>
-          <form class="form-horizontal">
-            <div class="form-actions">
-              <button type="submit" class="btn btn-primary pull-right[% UNLESS completed %] disabled[% END %]" href="[% next_step %]">[% l('Start A3') %]</button>
+            <div class="start-button" style="width: 100%;">
+              <form class="form-horizontal">
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary pull-right[% UNLESS completed %] disabled[% END %]" href="[% next_step %]">[% l('Start A3') %]</button>
+                </div>
+              </form>
             </div>
-          </form>
+        	  <div class="btn btn-primary" id="details" style="width: 100%;">Details</div>
+        	  <div id="daemonTable">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>[% l('Daemon') %]</th>
+                        <th>[% l('Status') %]</th>
+                      </tr>
+                      </thead>
+                    <tbody>
+                      [%- FOREACH service IN services %]
+                      <tr>
+                        <td>[% service.name %]</td>
+                        <td><span id="service-[% service.name %]"
+                          class="label[% IF service.status %] label-success[% END %]">
+                          [%- IF service.status %][% l('Started') %][%- ELSE -%][% l('Stopped') %][% END -%]</span></td>
+                      </tr>
+                      [%- END %]
+                    </tbody>
+                  </table>
+        	  </div><!--end of daemonTable-->
+      	  </div>
           <div id="serviceErrors" class="alert alert-danger[% UNLESS error %] hide[% END %]">
             <button class="close" data-dismiss="alert">&times;</button>
             <strong>[% l('Console Output') %]</strong>
