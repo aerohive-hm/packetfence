@@ -410,7 +410,7 @@ done
     make docs/docbook/xsl/titlepage-fo.xsl
     make docs/docbook/xsl/import-fo.xsl
     for GUIDE in $(ls docs/PacketFence*.asciidoc | xargs -n1 -I'{}' basename '{}' .asciidoc); do
-        make $GUIDE.pdf $GUIDE.html
+        make $GUIDE.html
     done
 %endif
 
@@ -566,13 +566,6 @@ mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Ins
    $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/A3_Installation_Guide.html
 mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Network_Devices_Configuration_Guide.html \
    $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/A3_Network_Devices_Configuration_Guide.html
-
-mv $RPM_BUILD_ROOT/usr/local/pf/docs/PacketFence_Clustering_Guide.pdf \
-   $RPM_BUILD_ROOT/usr/local/pf/docs/A3_Clustering_Guide.pdf
-mv $RPM_BUILD_ROOT/usr/local/pf/docs/PacketFence_Installation_Guide.pdf \
-   $RPM_BUILD_ROOT/usr/local/pf/docs/A3_Installation_Guide.pdf
-mv $RPM_BUILD_ROOT/usr/local/pf/docs/PacketFence_Network_Devices_Configuration_Guide.pdf \
-   $RPM_BUILD_ROOT/usr/local/pf/docs/A3_Network_Devices_Configuration_Guide.pdf
 
 # Don't need the developer's guide for A3
 rm $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Developers_Guide.html
@@ -1139,9 +1132,6 @@ fi
 %dir                    /usr/local/pf/html/pfappserver/root/static/doc
 %doc                    /usr/local/pf/html/pfappserver/root/static/doc/*
 %doc                    /usr/local/pf/docs/*.asciidoc
-%if %{builddoc} == 1
-%doc                    /usr/local/pf/docs/*.pdf
-%endif
 %doc                    /usr/local/pf/docs/*.xml
 %doc                    /usr/local/pf/docs/fdl-1.2.txt
 %dir                    /usr/local/pf/docs/includes
