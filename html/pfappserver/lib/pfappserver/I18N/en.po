@@ -10120,6 +10120,10 @@ msgstr "Apple Devices"
 msgid "mobileiron"
 msgstr "MobileIron"
 
+# pf::provisioner (Provisioners)
+msgid "jamf"
+msgstr "Jamf"
+
 # pf::api (Allowed actions)
 msgid "modify_node"
 msgstr "Modify node by MAC"
@@ -11303,3 +11307,8 @@ msgstr "Sources"
 
 msgid "actions"
 msgstr "Actions"
+
+msgid "modules"
+msgstr "Modules"
+
+
