@@ -27,9 +27,12 @@ function saveStep(href) {
         url: href
     }).always(function(data) {
         setInterval(function(){getStatus(href)}, 10000);
+        updateProgressBar();
     }).done(function(data) {
         resetAlert($('#services'));
-
+        var stopAnimation = document.getElementById("movingLogo");
+        stopAnimation.classList.remove("startRotation");
+          console.log("STOP");
     }).fail(function(jqXHR) {
         servicesError();
         var obj = $.parseJSON(jqXHR.responseText);
@@ -47,7 +50,7 @@ function getStatus(href){
     }).done(function(data) {
         resetAlert($('#services'));
         servicesUpdate(data);
-
+        // where it stops after all of them start
     }).fail(function(jqXHR) {
         servicesError();
         var obj = $.parseJSON(jqXHR.responseText);
@@ -76,7 +79,7 @@ function servicesUpdate(data) {
             startFailed = true;
         }
     });
-    updateProgressBar();
+    // updateProgressBar();
 
     if (!startFailed) {
         // added a delay for dramatic effect
@@ -92,23 +95,23 @@ function servicesError() {
     });
 }
 
+var progressBarFrame = document.getElementById("progress-bar");
+var progressBar = document.getElementById("progress");
+var width;
+var widthTotal = $(".table tbody tr").length;
 function updateProgressBar(){
-	  var progressBarFrame = document.getElementById("progress-bar");
-    var progressBar = document.getElementById("progress");
-    var width = 0;
-  	var widthTotal = $(".table tbody tr").length;
   	console.log("widthTotal: " + widthTotal);
   	$('table .label').each(function(){
   	  console.log($(this).text());
 	    if ($(this).text() === 'Started'){
 	      width++;
         console.log ("width: " + width);
-	      var percentageWidth = Math.round(width * (100/widthTotal)) + '%';
+	      var percentageWidth = Math.round((width+1) * (100/widthTotal)) + '%';
 	      console.log(percentageWidth);
 	      var daemonTextUpdate = $("#daemons");
         $(daemonTextUpdate).text(width).fadeIn(500);
 	      document.getElementById("daemons").innerHTML = width;
-        $(progressBar).css('width', percentageWidth).animate({width: percentageWidth}, 100);
+        $(progressBar).css('width', percentageWidth).animate({width: percentageWidth}, 50);
 	    }
 	  });
 }

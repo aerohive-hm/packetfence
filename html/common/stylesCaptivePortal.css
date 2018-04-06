@@ -17,3 +17,15 @@ h1, h2, h3{
 .dot div{
   border: 2px solid #FFC007 !important;
 }
+
+.media__body {
+  padding-top: 5px;
+}
+
+html{
+  color: white;
+}
+
+.media--error .iconic use {
+    fill: #fff !important;
+}
