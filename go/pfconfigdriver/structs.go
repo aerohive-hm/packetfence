@@ -65,6 +65,7 @@ type configStruct struct {
 			PfconfigNS string `val:"resource::cluster_hosts_ip"`
 		}
 	}
+	UnifiedApiSystemUser UnifiedApiSystemUser
 }
 
 var Config configStruct
@@ -133,6 +134,14 @@ type PfConfWebservices struct {
 	AAAPort        string `json:"aaa_port"`
 	UnifiedAPIPort string `json:"unifiedapi_port"`
 	Host           string `json:"host"`
+}
+
+type UnifiedApiSystemUser struct {
+	StructConfig
+	PfconfigMethod string `val:"hash_element"`
+	PfconfigNS     string `val:"resource::unified_api_system_user"`
+	User           string `json:"user"`
+	Pass           string `json:"pass"`
 }
 
 type PfConfDatabase struct {
@@ -375,4 +384,8 @@ type PfStats struct {
 	MySQLQuery     string `json:"mysql_query"`
 	Interval       string `json:"interval"`
 	Host           string `json:"host"`
+	ApiMethod      string `json:"api_method"`
+	ApiPayload     string `json:"api_payload"`
+	ApiPath        string `json:"api_path"`
+	ApiCompile     string `json:"api_compile"`
 }
