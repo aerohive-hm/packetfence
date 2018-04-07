@@ -166,19 +166,19 @@ display:none;
 
     <script>
   	$(document).ready(function(){
-          $('#entitlementRadio').click(function () {
+         $('#entitlementRadio').click(function () {
   	     $('.keyInput').css('display', 'inline');
-             $('.continueButton').prop("disabled", true);
+         $('.continueButton').prop("disabled", true);
   	  });
   	  $('#thirtyDayTrialRadio').click(function(){
   	     $('.keyInput').css('display', 'none');
   	     $('.continueButton').prop("disabled", false);
   	  });
+      $('#startA3button').on("click", function(){
+          console.log("presee inside ");
+          $('#movingLogo').addClass('startRotation');
+      });
   	});
-    $('#startA3button').on("click", function(){
-      console.log("presee inside ");
-        $('#movingLogo').addClass('startRotation');
-    });
 
     </script>
     <script>

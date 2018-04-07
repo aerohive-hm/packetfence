@@ -61,65 +61,31 @@ function applyKeyButton(){
 function updateKeyTable(userKeyInput) {
     var applyKeyButton2 = $("#applyKey");
     var base_url = window.location.origin;
-    // $.ajax({
-    //     url : base_url + '/entitlement/key/' + userKeyInput,
-    //     type : 'PUT',
-    //     dataType : 'json',
-    //     success : success,
-    //     error : function() {
-    //       var errMsg2 = "<p class='errMsg' style='color:red;'>This key is not found or not valid.</p>";
-    //       var errMsg3 = "<p class='errMsg' style='color:red;'>This key is already deactivated.</p>";
-    //       var checkFirstCharOfInput = userKeyInput.charAt(0);
-    //       if (checkFirstCharOfInput === '3') {
-    //           $(".errMsg").css('display', 'none');
-    //           applyKeyButton2.after(errMsg3).slideDown("slow");
-    //           $("#keyInput").css('border','1px solid #dfdfdf');
-    //       }else if (checkFirstCharOfInput === '2'){
-    //           $(".errMsg").css('display', 'none');
-    //           applyKeyButton2.after(errMsg2).slideDown("slow");
-    //           $("#keyInput").css('border','1px solid #dfdfdf');
-    //       }else{
-    //         console.log("error");
-    //       }
-    //     }
-    // });
-
     $.ajax({
-        type: 'PUT',
-        url: base_url + '/entitlement/key/' + userKeyInput
-    }).done(function(data) {
-        $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
-        $("#licenseCapa").load(window.location + " #licenseCapa");
-        var capacity = $("#licenseCapa").attr("data-capacity");
-        console.log("capacity: " + capacity);
-        capacity = $("#licenseCapa").attr('data-capacity', document.getElementById('licenseCapa').innerHTML);
-        if (capacity >= 100000){
-          // console.log("changeing capacity to new data capacity");
-            console.log("changeing capacity to new data capacity2");
-            document.getElementById('licenseCapa').innerHTML = "Unlimited";
-          // $("#licenseCapa").load(window.location + " #licenseCapa");
-        }
-        console.log("new license capa: " + document.getElementById('licenseCapa').innerHTML);
-
-    }).fail(function(jqXHR) {
-        var errMsg2 = "<p class='errMsg' style='color:red;'>This key is not found or not valid.</p>";
-        var errMsg3 = "<p class='errMsg' style='color:red;'>This key is already deactivated.</p>";
-        var checkFirstCharOfInput = userKeyInput.charAt(0);
-        if (checkFirstCharOfInput === '3') {
-            $(".errMsg").css('display', 'none');
-            applyKeyButton2.after(errMsg3).slideDown("slow");
-            $("#keyInput").css('border','1px solid #dfdfdf');
-        }else if (checkFirstCharOfInput === '2'){
-            $(".errMsg").css('display', 'none');
-            applyKeyButton2.after(errMsg2).slideDown("slow");
-            $("#keyInput").css('border','1px solid #dfdfdf');
-        }else{
-          var obj = $.parseJSON(jqXHR.responseText);
-          if(obj) {
-              showError($('#services table'), obj.status_msg);
+        url : base_url + '/entitlement/key/' + userKeyInput,
+        type : 'PUT',
+        dataType : 'json',
+        success : function(data){
+          $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
+          $("#licenseCapa").load(window.location + " #licenseCapa");
+        },
+        error : function() {
+          var errMsg2 = "<p class='errMsg' style='color:red;'>This key is not found or not valid.</p>";
+          var errMsg3 = "<p class='errMsg' style='color:red;'>This key is already deactivated.</p>";
+          var checkFirstCharOfInput = userKeyInput.charAt(0);
+          if (checkFirstCharOfInput === '3') {
+              $(".errMsg").css('display', 'none');
+              applyKeyButton2.after(errMsg3).slideDown("slow");
+              $("#keyInput").css('border','1px solid #dfdfdf');
+          }else if (checkFirstCharOfInput === '2'){
+              $(".errMsg").css('display', 'none');
+              applyKeyButton2.after(errMsg2).slideDown("slow");
+              $("#keyInput").css('border','1px solid #dfdfdf');
+          }else{
+            console.log("error");
           }
         }
-     });
+    });
      console.log("updated key");
 }
 

@@ -89,4 +89,3 @@ sub merge_yaml_into_component {
         }
     }
 }
-

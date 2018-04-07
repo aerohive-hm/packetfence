@@ -10,13 +10,12 @@ function registerExits() {
 
 
 $(document).ready(function(){
-       $("#details").click(function(){
-           $("#daemonTable").toggle();
-       });
+     $("#details").click(function(){
+         $("#daemonTable").toggle();
+     });
 });
 
 function saveStep(href) {
-
     $('table .label').each(function(index, event) {
         $(this).fadeIn().delay(100*index).fadeOut('fast', function(event) {
             $(this).text('Starting').removeClass('label-error label-success').addClass('label-warning');
@@ -27,12 +26,9 @@ function saveStep(href) {
         url: href
     }).always(function(data) {
         setInterval(function(){getStatus(href)}, 10000);
-        updateProgressBar();
     }).done(function(data) {
         resetAlert($('#services'));
-        var stopAnimation = document.getElementById("movingLogo");
-        stopAnimation.classList.remove("startRotation");
-          console.log("STOP");
+          console.log("done saveStep");
     }).fail(function(jqXHR) {
         servicesError();
         var obj = $.parseJSON(jqXHR.responseText);
@@ -50,6 +46,7 @@ function getStatus(href){
     }).done(function(data) {
         resetAlert($('#services'));
         servicesUpdate(data);
+        console.log("done getStatus");
         // where it stops after all of them start
     }).fail(function(jqXHR) {
         servicesError();
@@ -58,7 +55,7 @@ function getStatus(href){
             showError($('#services table'), obj.status_msg);
         }
     });
-
+    updateProgressBar();
 }
 
 function escape_service(service){
@@ -66,7 +63,6 @@ function escape_service(service){
 }
 
 function servicesUpdate(data) {
-    // var counterStarted = 0;
     var startFailed = false;
     $.each(data.services, function(i, service) {
         // identify services that didn't start and set failure flag
@@ -79,7 +75,6 @@ function servicesUpdate(data) {
             startFailed = true;
         }
     });
-    // updateProgressBar();
 
     if (!startFailed) {
         // added a delay for dramatic effect
@@ -91,27 +86,34 @@ function servicesError() {
     $('table .label').each(function(index, event) {
         $(this).fadeIn().delay(100*index).fadeOut('fast', function(event) {
             $(this).text('Unknown').removeClass('label-error label-success').addClass('label-warning');
+            var stopAnimation = document.getElementById("movingLogo");
+            stopAnimation.classList.remove("startRotation");
         }).fadeIn('fast');
     });
+
 }
 
-var progressBarFrame = document.getElementById("progress-bar");
-var progressBar = document.getElementById("progress");
-var width;
-var widthTotal = $(".table tbody tr").length;
 function updateProgressBar(){
+  var progressBarFrame = document.getElementById("progress-bar");
+  var progressBar = document.getElementById("progress");
+  var widthTotal = $(".table tbody tr").length;
+  var width = 0;
   	console.log("widthTotal: " + widthTotal);
   	$('table .label').each(function(){
   	  console.log($(this).text());
 	    if ($(this).text() === 'Started'){
 	      width++;
         console.log ("width: " + width);
-	      var percentageWidth = Math.round((width+1) * (100/widthTotal)) + '%';
-	      console.log(percentageWidth);
-	      var daemonTextUpdate = $("#daemons");
-        $(daemonTextUpdate).text(width).fadeIn(500);
-	      document.getElementById("daemons").innerHTML = width;
-        $(progressBar).css('width', percentageWidth).animate({width: percentageWidth}, 50);
 	    }
 	  });
+    var percentageWidth = Math.round((width) * (100/widthTotal)) + '%';
+    console.log(percentageWidth);
+    var daemonTextUpdate = $("#daemons");
+    $(daemonTextUpdate).text(width).fadeIn(500);
+    document.getElementById("daemons").innerHTML = width;
+    $(progressBar).css('width', percentageWidth).animate({width: percentageWidth}, 1000);
+    if (width === widthTotal){
+        var stopAnimation = document.getElementById("movingLogo");
+        stopAnimation.classList.remove("startRotation");
+    }
 }
