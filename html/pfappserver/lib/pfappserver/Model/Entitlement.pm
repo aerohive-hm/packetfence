@@ -115,7 +115,7 @@ sub get_licensed_capacity {
 
     if ($total == 0) {
         my $all_entitlements = pf::a3_entitlement::find_all();
-        my $trial_info       = get_trial_info();
+        my ($trial_status, $trial_info) = get_trial_info();
 
         if (@$all_entitlements == 0 && $trial_info) {
             if (time() < str2time($trial_info->{sub_end})) {
