@@ -18,6 +18,8 @@ use Date::Parse;
 use Moose;
 
 use pf::log;
+use pf::error qw(is_success is_error);
+use pf::constants qw($TRUE $FALSE);
 use pf::a3_entitlement;
 use pf::node;
 
@@ -111,6 +113,17 @@ sub get_licensed_capacity {
         $total += $entitlement->{endpoint_count};
     }
 
+    if ($total == 0) {
+        my $all_entitlements = pf::a3_entitlement::find_all();
+        my $trial_info       = get_trial_info();
+
+        if (@$all_entitlements == 0 && $trial_info) {
+            if (time() < str2time($trial_info->{sub_end})) {
+                $total = $trial_info->{endpoint_count};
+            }
+        }
+    }
+
     return $total;
 }
 
@@ -122,6 +135,67 @@ Get the current used endpoint capacity
 
 sub get_used_capacity {
     return pf::node->node_count_all()->{nb} // 0;
+}
+
+=head2 is_trial_eligible
+
+Return whether this A3 system is eligible for a trial
+
+=cut
+
+sub is_trial_eligible {
+    my $entitlements = pf::a3_entitlement::find_all();
+    my $trial_status = get_trial_info();
+
+    return $trial_status == $STATUS::NOT_FOUND && @$entitlements == 0;
+}
+
+=head2 start_trial
+
+Starts a trial if eligible
+
+=cut
+
+sub start_trial {
+    if (is_trial_eligible) {
+        if (is_success(pf::a3_entitlement::create_trial())) {
+            my ($status, $trial) = get_trial_info();
+            return $status == $STATUS::OK ? $STATUS::CREATED : $status, $trial;
+        }
+        else {
+            return $STATUS::INTERNAL_SERVER_ERROR;
+        }
+    }
+    else {
+        return $STATUS::CONFLICT;
+    }
+}
+
+=head2 get_trial_info
+
+Get information about the status of the trial
+
+=cut
+
+sub get_trial_info {
+    my $trial = pf::a3_entitlement::get_trial();
+
+    if ($trial != $FALSE) {
+        my $now = time();
+        my $end = str2time($trial->{sub_end});
+
+        if ($now < $end) {
+            $trial->{is_expired} = $FALSE;
+            $trial->{expires_in} = $end - $now;
+        }
+        else {
+            $trial->{is_expired} = $TRUE;
+        }
+        return $STATUS::OK, $trial;
+    }
+    else {
+        return $STATUS::NOT_FOUND;
+    }
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
