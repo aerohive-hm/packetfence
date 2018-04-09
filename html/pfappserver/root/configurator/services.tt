@@ -45,7 +45,7 @@
 	<div class="total-services" style="">
     <div class="card">
 	    <div style="padding:25px 25px;">
-        <div class="movingLogo">
+        <div id="movingLogo">
           <svg class="aerohiveLogo" width="175" height="200">
             <polyline id="hexagon" points="87,0 174,50 174,150 87,200 0,150 0,50 87,0"/>
             <animate attributeName="fill" values="#ffc007;#dfdfdf;#ffc007;" dur="5s" repeatCount="indefinite" />
@@ -64,14 +64,17 @@
 
         <div class="card">
           <div class="card-block">
-            <div class="start-button" style="width: 100%;">
+            <div class="start-button">
               <form class="form-horizontal">
-                <div class="form-actions">
-                  <button type="submit" class="btn btn-primary pull-right[% UNLESS completed %] disabled[% END %]" href="[% next_step %]">[% l('Start A3') %]</button>
+                <h3 style="margin:0 auto; display: table;">Press Start A3 to start services.</h3>
+                <div class="form-actions" style="padding-left: 15px !important;">
+                  <button id="startA3button" type="submit" style="width: 100%;float:left;" class="btn btn-primary [% UNLESS completed %] disabled[% END %]" href="[% next_step %]">[% l('Start A3') %]</button>
                 </div>
               </form>
             </div>
-        	  <div class="btn btn-primary" id="details" style="width: 100%;">Details</div>
+          </div>
+          <div class="card-block">
+        	  <div class="btn btn-primary" id="details"> More Details</div>
         	  <div id="daemonTable">
                   <table class="table">
                     <thead>

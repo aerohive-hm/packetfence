@@ -65,7 +65,10 @@ function updateKeyTable(userKeyInput) {
         url : base_url + '/entitlement/key/' + userKeyInput,
         type : 'PUT',
         dataType : 'json',
-        success : success,
+        success : function(data){
+          $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
+          $("#licenseCapa").load(window.location + " #licenseCapa");
+        },
         error : function() {
           var errMsg2 = "<p class='errMsg' style='color:red;'>This key is not found or not valid.</p>";
           var errMsg3 = "<p class='errMsg' style='color:red;'>This key is already deactivated.</p>";
@@ -83,7 +86,7 @@ function updateKeyTable(userKeyInput) {
           }
         }
     });
-    console.log("updated key");
+     console.log("updated key");
 }
 
 function success(data){

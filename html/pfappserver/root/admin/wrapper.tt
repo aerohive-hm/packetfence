@@ -20,11 +20,13 @@
     <!-- [% FOREACH css = cssFiles -%]
         <link rel="stylesheet" href="[% c.uri_for("/static/${css}.css") %]">
     [% END -%] -->
+        <link rel="stylesheet" href="[% c.uri_for('/static/css/A3styleNew.css') %]">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+
   </head>
   [% SET SHOW_READONLY_ERROR = c.user_allowed_in_admin() && readonly_mode %]
   <body[% IF SHOW_READONLY_ERROR %] class="navbar-error"[% END %]>
-
+  
     <div class="alert alert-block hide">
       <button class="close" data-dismiss="alert">&times;</button>
       <strong>[% l('Warning!') %]</strong> <span></span>

@@ -10,7 +10,7 @@ function initStep() {
   $('#configure_fingerbank_api_key').click(function(e) {
     e.preventDefault();
     var btn = $(e.target);
-    
+
     $.ajax({
         headers: {
           'Accept':'application/json',
@@ -35,3 +35,29 @@ function initStep() {
   });
 }
 
+function checkIfKeyEntered(){
+    $.ajax({
+        type: 'GET',
+        url: '/eula',
+        // data: ,
+    }).done(function(response){
+        console.log(response);
+        return response;
+    }).fail(function(jqXHR){
+
+    });
+    return true;
+}
+
+function userSubmitEula(){
+    var checked = false;
+    $.ajax({
+        type: 'POST',
+        url: '/eula',
+        // data:
+    }).done(function(data){
+        checked = true;
+    }).fail(function(data){
+
+    });
+}
