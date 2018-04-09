@@ -14,9 +14,15 @@ use strict;
 use warnings;
 use Readonly;
 
+use POSIX qw(strftime);
+
 Readonly::Scalar our $KEY_STATUS_UNUSED   => 1;
 Readonly::Scalar our $KEY_STATUS_ACTIVE   => 2;
 Readonly::Scalar our $KEY_STATUS_INACTIVE => 3;
+
+Readonly::Scalar our $TRIAL_KEY           => "TRIAL";
+Readonly::Scalar our $TRIAL_TYPE          => "Trial";
+Readonly::Scalar our $TRIAL_CAPACITY      => 100;
 
 use pf::log;
 use pf::error qw(is_success is_error);
@@ -50,7 +56,11 @@ Returns all of the entitlement keys applied to the current system
 sub find_all {
     my $logger = get_logger();
 
-    my ($status, $iter) = pf::dal::a3_entitlement->search();
+    my ($status, $iter) = pf::dal::a3_entitlement->search(
+        -where => {
+            type => { "!=" => $TRIAL_TYPE }
+        },
+    );
 
     # Find all entitlement keys on this system
     if (is_success($status)) {
@@ -73,6 +83,7 @@ sub find_active {
 
     my ($status, $iter) = pf::dal::a3_entitlement->search(
         -where => {
+            type => { "!=" => $TRIAL_TYPE },
             status => $KEY_STATUS_ACTIVE,
             -and => [
                 \['unix_timestamp(now()) >= unix_timestamp(sub_start)'],
@@ -120,6 +131,50 @@ sub create {
     }
 
     return $status;
+}
+
+=head2 create_trial
+
+Creates a new trial entitlement record in the database
+
+=cut
+
+sub create_trial {
+    my $logger = get_logger();
+
+    my $now = time();
+    my $end = $now + 30 * 24 * 60 * 60;
+
+    my $start  = strftime( "%Y-%m-%d %H:%M:%S", gmtime($now) );
+    my $expire = strftime( "%Y-%m-%d %H:%M:%S", gmtime($end) );
+
+    my $status = pf::dal::a3_entitlement->create({
+        entitlement_key => $TRIAL_KEY,
+        type            => $TRIAL_TYPE,
+        status          => $KEY_STATUS_ACTIVE,
+        endpoint_count  => $TRIAL_CAPACITY,
+        sub_start       => $start,
+        sub_end         => $expire,
+        support_start   => $start,
+        support_end     => $expire
+    });
+
+    if (is_success($status)) {
+        $logger->info("Added trial key to database for $TRIAL_CAPACITY endpoints expiring at $expire");
+    }
+    else {
+        $logger->error("Failed to add trial key to database");
+    }
+
+    return $status;
+}
+
+=head2 get_trial
+
+=cut
+
+sub get_trial {
+    return find_one($TRIAL_KEY);
 }
 
 =head2 verify

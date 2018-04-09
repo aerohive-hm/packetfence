@@ -15,6 +15,8 @@ use warnings;
 
 use Moose;
 
+use pf::error qw(is_success is_error);
+
 BEGIN {extends 'Catalyst::Controller'; }
 
 =head1 METHODS
@@ -56,11 +58,18 @@ sub key :Path('key') :Args(1) {
             }
         }
         else {
-            $c->stash->{entitlement_key} = $ek;
+            $c->stash->{entitlement} = make_ek_hash($ek);
         }
     }
     elsif ($c->request->method eq 'GET') {
-        $c->stash->{entitlement_key} = $c->model('Entitlement')->get_entitlement_key($key);
+        my $ek = $c->model('Entitlement')->get_entitlement_key($key);
+
+        if ($ek) {
+            $c->stash->{entitlement} = make_ek_hash($ek);
+        }
+        else {
+            $c->response->status($STATUS::NOT_FOUND);
+        }
     }
 }
 
@@ -77,7 +86,6 @@ sub keys :Path('keys') :Args(0) {
 
     $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
 }
-
 
 =head2 licenseKeys
 
@@ -105,6 +113,55 @@ sub licenseKey :Path('licenseKey') :Args(1) {
     elsif ($c->request->method eq 'GET') {
         $c->stash->{entitlement_key} = $c->model('Entitlement')->get_entitlement_key($key);
     }
+}
+
+=head2 trial
+
+Initiate trial / get trial status
+
+Usage: /entitlement/trial
+
+=cut
+
+sub trial :Path('trial') :Args(0) {
+    my ( $self, $c ) = @_;
+    my ($status, $trial);
+
+    if ($c->request->method eq 'POST') {
+        # Start a trial if available
+        ($status, $trial) = $c->model('Entitlement')->start_trial();
+    }
+    else {
+        # Get current trial status
+        ($status, $trial) = $c->model('Entitlement')->get_trial_info();
+    }
+
+    $c->response->status($status);
+
+    if (is_success($status)) {
+        $c->stash->{trial} = [
+            {
+                endpoint_count => $trial->{endpoint_count},
+                is_expired     => $trial->{is_expired},
+                expires_in     => $trial->{expires_in}
+            }
+        ];
+    }
+}
+
+sub make_ek_hash {
+    my ($ek) = @_;
+
+    return {
+        entitlement_key => $ek->{entitlement_key},
+        type            => $ek->{type},
+        status          => $ek->{status},
+        endpoint_count  => $ek->{endpoint_count},
+        sub_start       => $ek->{sub_start},
+        sub_end         => $ek->{sub_end},
+        support_start   => $ek->{support_start},
+        support_end     => $ek->{support_end}
+    };
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
