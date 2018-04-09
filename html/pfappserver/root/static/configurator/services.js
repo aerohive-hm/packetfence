@@ -55,7 +55,6 @@ function getStatus(href){
             showError($('#services table'), obj.status_msg);
         }
     });
-    updateProgressBar();
 }
 
 function escape_service(service){
@@ -75,7 +74,7 @@ function servicesUpdate(data) {
             startFailed = true;
         }
     });
-
+    updateProgressBar();
     if (!startFailed) {
         // added a delay for dramatic effect
         window.setTimeout(function() { $('#modalRedirection').modal({ show: true }); }, 2000 );
