@@ -727,10 +727,113 @@ sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
 # Getting rid of wrong ipv6 dns address
 sed -i 's/\%.*$//g' /etc/resolv.conf
 
-# Enabling ip forwarding
-echo "# ip forwarding enabled by A3" > /etc/sysctl.d/99-ip_forward.conf
-echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.d/99-ip_forward.conf
-sysctl -p /etc/sysctl.d/99-ip_forward.conf
+# sysctl settings for A3
+cat <<EOF > /etc/sysctl.d/99-A3.conf
+# Allow packet forwarding
+net.ipv4.ip_forward=1
+
+# Allow listening on non local ip
+net.ipv4.ip_nonlocal_bind = 1
+
+# Allowed local port range
+net.ipv4.ip_local_port_range = 1025 65534
+
+# Increase number of incoming connections
+net.core.somaxconn = 65534
+
+# Increase the read-buffer space allocatable
+net.ipv4.tcp_rmem = 8192 87380 16777216
+net.ipv4.udp_rmem_min = 16384
+
+# Increase the write-buffer-space allocatable
+net.ipv4.tcp_wmem = 8192 65536 16777216
+net.ipv4.udp_wmem_min = 16384
+
+# Increase the maximum total buffer-space allocatable
+# This is measured in units of pages (4096 bytes)
+net.ipv4.tcp_mem = 65536 131072 262144
+net.ipv4.udp_mem = 65536 131072 262144
+
+# Increase number of incoming connections backlog
+net.core.netdev_max_backlog = 65536
+
+# Increase the maximum amount of option memory buffers
+net.core.optmem_max = 25165824
+
+# Increase the tcp-time-wait buckets pool size to prevent simple DOS attacks
+net.ipv4.tcp_max_tw_buckets = 1440000
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 1
+
+# Default Socket Receive Buffer
+net.core.rmem_default = 31457280
+
+# Maximum Socket Receive Buffer
+net.core.rmem_max = 12582912
+
+# Default Socket Send Buffer
+net.core.wmem_default = 31457280
+
+# Maximum Socket Send Buffer
+net.core.wmem_max = 12582912
+
+# Force gc to clean-up quickly
+net.ipv4.neigh.default.gc_interval = 3600
+
+# Set ARP cache entry timeout
+net.ipv4.neigh.default.gc_stale_time = 3600
+
+# Setup DNS threshold for arp
+net.ipv4.neigh.default.gc_thresh3 = 4096
+net.ipv4.neigh.default.gc_thresh2 = 2048
+net.ipv4.neigh.default.gc_thresh1 = 1024
+
+# lower time_wait timeout to cut the number of entries in the conntrack table
+# default: 120
+net.netfilter.nf_conntrack_tcp_timeout_time_wait = 30
+
+# Bump maximum of conntrack entries
+# default: 65536
+# to raise this properly, we need to grow nf_conntrack hashsize accordingly (from 16384 to 65535)
+net.netfilter.nf_conntrack_max = 262144
+
+# Controls source route verification
+net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv4.tcp_max_syn_backlog = 100000
+net.core.netdev_max_backlog = 100000
+net.ipv4.tcp_slow_start_after_idle = 0 90
+
+# Number of times SYNACKs for passive TCP connection.
+net.ipv4.tcp_synack_retries = 2
+
+# Protect Against TCP Time-Wait
+net.ipv4.tcp_rfc1337 = 1
+
+# Control Syncookies
+net.ipv4.tcp_syncookies = 1
+
+# Decrease the time default value for tcp_fin_timeout connection
+net.ipv4.tcp_fin_timeout = 15
+
+# Decrease the time default value for connections to keep alive
+net.ipv4.tcp_keepalive_time = 300
+net.ipv4.tcp_keepalive_probes = 5
+net.ipv4.tcp_keepalive_intvl = 15
+
+# MariaDB Tuning
+vm.swappiness = 1
+fs.file-max = 2097152
+vm.dirty_ratio = 60
+vm.dirty_background_ratio = 2
+
+# Sets the time before the kernel considers migrating a proccess to another core
+kernel.sched_migration_cost_ns = 5000000
+
+# Group tasks by TTY
+kernel.sched_autogroup_enabled = 0
+EOF
+sysctl -p /etc/sysctl.d/99-A3.conf
 
 # reloading systemd unit files
 /bin/systemctl daemon-reload
@@ -1246,7 +1349,7 @@ fi
 %dir                    /usr/local/pf/go
                         /usr/local/pf/go/*
 
-%dir                    /usr/local/pf/logs
+%dir(02755, pf, pf)     /usr/local/pf/logs
 # logfiles
 %ghost                  %logdir/packetfence.log
 %ghost                  %logdir/snmptrapd.log

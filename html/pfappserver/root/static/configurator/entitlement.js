@@ -55,18 +55,19 @@ function checkUserSubmitTrial(){
     var trialPressed = document.getElementById("thirtyDayTrialRadio");
     var keyEnteredPressed = document.getElementById("entitlementRadio");
     var checkedTrial = false;
+    var radioValue;
+    $('input').on('change', function() {
+      radioValue = $('input:radio[name="licenseRadio"]:checked').val();
+      console.log(radioValue);
+    });
     $(".continueButton").on("click", function(){
-        $('input').on('change', function() {
-          var radioValue = $('input:radio[name="licenseRadio"]:checked').val();
-          console.log(radioValue);
-        });
+        console.log("inside click continue func!");
         if (radioValue = "trial" ){
           console.log("yes! trial");
           userSubmitEula();
         }
         console.log("continue");
     });
-    return checkedTrial;
 }
 
 $(document).ready(function(){
@@ -86,9 +87,6 @@ function userSubmitEula(){
     }).done(function(data){
         console.log(data);
         console.log("success!");
-        if (data != null){
-          checked = true;
-        }
     }).fail(function(data){
         console.log("error");
     });

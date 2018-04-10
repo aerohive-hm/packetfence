@@ -64,3 +64,18 @@ cat <<EOF > /usr/local/fingerbank/conf/fingerbank.conf
 [upstream]
 api_key=b201fafa5549042bb1b23948de1c7997bfdd8103
 EOF
+
+# Update syslog config
+cd /etc && patch -p0 <<EOF
+--- rsyslog.conf	2018-04-09 22:45:24.467160894 +0000
++++ rsyslog.conf.new	2018-04-09 22:53:01.103250343 +0000
+@@ -51,7 +51,7 @@
+
+ # Log anything (except mail) of level info or higher.
+ # Don't log private authentication messages!
+-*.info;mail.none;authpriv.none;cron.none                /var/log/messages
++*.info;mail.none;authpriv.none;cron.none                -/var/log/messages
+
+ # The authpriv file has restricted access.
+ authpriv.*                                              /var/log/secure
+EOF

@@ -7,6 +7,18 @@
 # Ensure we delete the vagrant user if it exists
 userdel vagrant
 
+# Set up some VMware-related environment variables
+# vmblock is block filesystem driver to provide drag-and-drop functionality from the remote console.
+vmware_guest_vmblock_enable="NO"
+# vmhgfs is the driver that allows the shared files feature of VMware Workstation and other products that use it.
+vmware_guest_vmhgfs_enable="NO"
+# vmemctl is driver for memory ballooning
+vmware_guest_vmmemctl_enable="YES"
+# vmxnet is paravirtualized network driver
+vmware_guest_vmxnet_enable="YES"
+# vmware guest daemon (guestd) is the daemon for controlling communication between the guest and the host including time synchronization.
+vmware_guestd_enable="YES"
+
 # Set up A3 System ID
 if [ ! -s /etc/A3.systemid ]; then
     /usr/local/pf/sbin/system-id > /etc/A3.systemid
