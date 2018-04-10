@@ -147,6 +147,7 @@ sub trial :Path('trial') :Args(0) {
             }
         ];
     }
+
 }
 
 sub make_ek_hash {

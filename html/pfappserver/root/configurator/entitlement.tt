@@ -30,12 +30,12 @@
 	      <div class="control-group thirtyDayTrial" style="display: inline;">
 
 		<div class="card thirtyDayTrial" style="width:45%; float:left; padding: 15px 15px;">
-	          <input id="thirtyDayTrialRadio" style="float: left;" name="licenseRadio" type="radio" />
+	          <input id="thirtyDayTrialRadio" style="float: left;" name="licenseRadio" type="radio" value="trial"/>
 		  <label for="thirtyDayTrialRadio" style="padding-left: 25px;">[% l('I would like to try a 30 day trial!') %]</label>
 		</div><!--card-->
 
    		<div class="card" style="width: 45%; float:left; padding: 15px 15px;">
-                  <input id="entitlementRadio" style="float: left;" name="licenseRadio" type="radio" />
+                  <input id="entitlementRadio" style="float: left;" name="licenseRadio" type="radio" value="validKey"/>
 		  <label for="entitlementRadio" style="padding-left: 25px;">[% l('I have an entitlement key!') %]</label>
                   <div class="keyInput" style="display: none;">
 		    <fieldset class="form-group" id="entitlementKeyInputs" >
@@ -52,7 +52,7 @@
       		      <div class="modal-body">
 		        <h3><b>[% l('Terms and Conditions') %]</b></h3>
 			[% INCLUDE configurator/eula.tt %]
-      		      </div>
+    </div>
       		      <div class="modal-footer">
 			<div class="agree">
                           <input type="checkbox" style="float:left; display: none;" id="agreeToEula"/>

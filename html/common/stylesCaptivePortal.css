@@ -1,13 +1,43 @@
-.box--small img{
-  width: 300px;
+img.u-padding-bottom{
+  width: 400px;
+  display: table;
+  margin: 0 auto;
+}
+
+header{
+  width: 600px;
+  display: table !important;
+  margin: 0 auto;
+}
+main{
+  width: 600px;
+  display: table !important;
+  margin: 0 auto;
+  padding-bottom: 25px;
+}
+footer{
+  width: 600px;
+  display: table !important;
+  margin: 0 auto;
 }
 
 #dots{
-  padding-bottom:20px;
+  padding-bottom: 25px;
+  display: table;
+  margin: 0 auto;
+}
+
+.restart{
+  padding-top: 25px;
+  /* vertical-align: top; */
 }
 
 h1, h2, h3{
   color: #333;
+}
+
+h1{
+  text-align: center;
 }
 
 .dot--active div, .dot:hover div{

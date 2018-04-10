@@ -25,10 +25,7 @@
         <div class="c-frame c-frame--first">
           <div class="u-padding-horizontal u-padding-horizontal@tablet">
             <div class="o-pack o-pack--middle">
-              <div class="o-pack__item">
-                <div id="dots"></div>
-              </div>
-              <div class="o-pack__item o-layout--right">
+              <div class="o-pack__item o-layout--right restart">
                 [%- IF show_restart %]
                 <a href="/logout">
                   [% svgIcon(id='ic_replay_black_24px', size='tiny', variant='secondary') %]
@@ -55,7 +52,9 @@
           <div class="o-layout--center u-padding-horizontal u-padding-horizontal@tablet">
 
             [% IF logo %]<img src="[% logo %]" class="u-padding-bottom"/>[% END %]
-
+            <div class="o-pack__item">
+              <div id="dots"></div>
+            </div>
             [% IF title.defined %]
             <!-- START title -->
             <h1 class="o-layout--center">[% i18n(title) %]</h1>

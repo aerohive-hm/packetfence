@@ -55,6 +55,8 @@ sub eula :Path('/eula') :Args(0) {
     elsif ($c->request->method eq 'GET') {
         $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
     }
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
