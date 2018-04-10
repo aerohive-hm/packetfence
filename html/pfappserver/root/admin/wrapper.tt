@@ -26,7 +26,7 @@
   </head>
   [% SET SHOW_READONLY_ERROR = c.user_allowed_in_admin() && readonly_mode %]
   <body[% IF SHOW_READONLY_ERROR %] class="navbar-error"[% END %]>
-  
+    [% IF IS_EULA_NEEDED %]
     <div class="alert alert-block hide">
       <button class="close" data-dismiss="alert">&times;</button>
       <strong>[% l('Warning!') %]</strong> <span></span>
@@ -147,9 +147,6 @@
     <script type="text/javascript" src="[% c.uri_for("/static/${js}.js") %]" charset="UTF-8"></script>
 [% END -%]
 <script type="text/javascript">
-    // $(window).on('load',function(){
-    //     $('#myModal').modal('show');
-    // });
 
 
     var emailForm = $('.emailForm');
@@ -175,5 +172,6 @@
       });
     });
 </script>
+  [% END %]
   </body>
 </html>

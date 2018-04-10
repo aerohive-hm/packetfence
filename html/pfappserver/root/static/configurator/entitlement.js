@@ -35,29 +35,61 @@ function initStep() {
   });
 }
 
-function checkIfKeyEntered(){
-    $.ajax({
-        type: 'GET',
-        url: '/eula',
-        // data: ,
-    }).done(function(response){
-        console.log(response);
-        return response;
-    }).fail(function(jqXHR){
 
+// function checkIfKeyEntered(){
+//     var base_url = window.location.origin;
+//    //var to grab state of page
+//     $.ajax({
+//         type: 'GET',
+//         url: '/eula',
+//         // data: ,
+//     }).done(function(response){
+//         console.log("response: " + response);
+//     }).fail(function(jqXHR){
+//
+//     });
+//     return true;
+// }
+
+function checkUserSubmitTrial(){
+    var trialPressed = document.getElementById("thirtyDayTrialRadio");
+    var keyEnteredPressed = document.getElementById("entitlementRadio");
+    var checkedTrial = false;
+    $(".continueButton").on("click", function(){
+        $('input').on('change', function() {
+          var radioValue = $('input:radio[name="licenseRadio"]:checked').val();
+          console.log(radioValue);
+        });
+        if (radioValue = "trial" ){
+          console.log("yes! trial");
+          userSubmitEula();
+        }
+        console.log("continue");
     });
-    return true;
+    return checkedTrial;
 }
 
+$(document).ready(function(){
+  // checkIfKeyEntered();
+  checkUserSubmitTrial();
+});
+
+
 function userSubmitEula(){
+    var base_url = window.location.origin;
+    var agreePressed = document.getElementById("");
     var checked = false;
     $.ajax({
         type: 'POST',
-        url: '/eula',
-        // data:
+        url: base_url + '/entitlement/trial',
+        dataType: json
     }).done(function(data){
-        checked = true;
+        console.log(data);
+        console.log("success!");
+        if (data != null){
+          checked = true;
+        }
     }).fail(function(data){
-
+        console.log("error");
     });
 }
