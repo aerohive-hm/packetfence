@@ -28,7 +28,8 @@ footer{
 }
 
 .restart{
-  left:0;
+  padding-top: 25px;
+  /* vertical-align: top; */
 }
 
 h1, h2, h3{
