@@ -26,7 +26,6 @@
   </head>
   [% SET SHOW_READONLY_ERROR = c.user_allowed_in_admin() && readonly_mode %]
   <body[% IF SHOW_READONLY_ERROR %] class="navbar-error"[% END %]>
-    [% IF IS_EULA_NEEDED %]
     <div class="alert alert-block hide">
       <button class="close" data-dismiss="alert">&times;</button>
       <strong>[% l('Warning!') %]</strong> <span></span>
@@ -172,6 +171,5 @@
       });
     });
 </script>
-  [% END %]
   </body>
 </html>
