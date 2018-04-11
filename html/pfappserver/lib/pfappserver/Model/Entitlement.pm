@@ -134,6 +134,8 @@ Get the current used endpoint capacity
 =cut
 
 sub get_used_capacity {
+    # TODO: This is wrong.  query accounting session for very latest
+    # Suggestion to use auth logs and add up daily totals every night.
     return pf::node->node_count_all()->{nb} // 0;
 }
 
