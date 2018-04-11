@@ -250,9 +250,7 @@ sub returnRadiusAccessAccept {
         # Roles are configured and the user should have one
         if (defined($role) && $role ne ""  && isenabled($self->{_RoleMap})) {
             $radius_reply_ref = {
-                'Tunnel-Medium-Type' => $RADIUS::IP,
-                'Tunnel-Type' => $RADIUS::GRE,
-                'Tunnel-Private-Group-ID' => $role,
+                'Filter-Id' => $role
             };
         }
 
