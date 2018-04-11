@@ -40,7 +40,6 @@
       <button class="close" data-dismiss="alert">&times;</button>
       <strong>[% l('Error!') %]</strong> <span></span>
     </div>
-
     <div id="navbar" class="navbar navbar-fixed-top navbar-inverse[% IF SHOW_READONLY_ERROR %] navbar-error[% END %]">
       <div class="navbar-inner">
         <div class="row-fluid">
@@ -116,6 +115,7 @@
 	          </ul>
           </div>
           [%- END %]
+
         </div>
         [% IF SHOW_READONLY_ERROR %]
         <div class="row-error">
@@ -126,7 +126,14 @@
       </div>
     </div>
 [% content | none %]
-
+    <!-- <trial indicator -->
+    <div class="trial-clock-indicator pull-right">
+        <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
+    </div>
+    <div id="clockTrialDiv">
+      <p>Time left of trial: <text>[30] days</text></p>
+      <div><div class="time-indicator"><div class="time-indicator-bar"></div></div></div>
+    </div>
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -142,6 +149,7 @@
     <script type="text/javascript" src="[% c.uri_for('/static/js/vendor/jquery-extra.min.js') %]"></script>
     <script type="text/javascript" src="[% c.uri_for('/static/js/vendor/bootstrap.min.js') %]"></script>
     <script type="text/javascript" src="[% c.uri_for('/static/js/pfappserver.js') %]"></script>
+    <script type="text/javascript" src="[% c.uri_for('/static/js/adminWrapper.js') %]"></script>
 [% FOREACH js = jsFiles -%]
     <script type="text/javascript" src="[% c.uri_for("/static/${js}.js") %]" charset="UTF-8"></script>
 [% END -%]

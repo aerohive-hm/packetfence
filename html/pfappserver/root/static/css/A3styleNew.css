@@ -110,6 +110,49 @@ button, input, select, textarea {
   color: #494a48;
 }
 
+.trial-clock-indicator{
+  height: 50px; width: 50px; background-color:#333; color: white; z-index:15; bottom:25px; right:25px; position:fixed;
+  -webkit-box-shadow: 0px 0px 10px 0px rgba(38,38,38,0.62);
+  -moz-box-shadow: 0px 0px 10px 0px rgba(38,38,38,0.62);
+  box-shadow: 0px 0px 10px 0px rgba(38,38,38,0.62);
+  cursor: pointer;
+}
+#clock-icon{
+  height: 25px; width:25px; padding-top: 12px; display:table; margin:0 auto;
+}
+
+#clockTrialDiv {
+    color: white;
+    background-color: #333;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(38,38,38,0.62);
+    -moz-box-shadow: 0px 0px 10px 0px rgba(38,38,38,0.62);
+    box-shadow: 0px 0px 10px 0px rgba(38,38,38,0.62);
+    z-index:10; bottom:25px; right:25px; position:fixed;
+    float:right;
+    overflow: hidden;
+    text-align:justify;
+    width: 250px;
+    height: 50px;
+}
+
+#clockTrialDiv p{
+  margin-top: 5px;
+  margin-bottom: 1px;
+  margin-left: 10px;
+}
+
+.time-indicator {
+  margin-left: 10px;
+  width: 180px;
+  background-color: #ddd;
+}
+
+.time-indicator-bar {
+  width: 7px;
+  height: 15px;
+  background-color: #FFC007;
+}
+
 .breadcrumb > li {
   text-shadow: none;
 }
@@ -121,7 +164,15 @@ button, input, select, textarea {
 .sidenav-icon-list li {
   height: 2em;
   padding: 11px 0;
-  text-align: center
+  text-align: center;
+}
+
+.sidenav .sidenav-icon-list .nav-header, .sidenav .sidenav-icon-list .nav-header li{
+  margin-top: -12px;
+}
+
+.span3 ul.nav.sidenav-icon-list{
+  padding-top: 11px;
 }
 
 .card .navbar-inner, .card-title {
