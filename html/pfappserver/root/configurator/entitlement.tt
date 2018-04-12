@@ -68,6 +68,9 @@
 		</div> <!--end of card-block-->
 
             <div class="form-actions">
+              <div class="alert alert-warning" id="selection-warning" role="alert" style="display:none; margin-left: -25px;">
+                You already selected trial. You will be brought to the next step.
+              </div>
               <button type="submit" data-msg-done="[% l('Continue') %]" class="btn btn-primary pull-right continueButton" href="[% next_step %]" disabled>
                 [% l('Continue') %]
                 <i class="icon-arrow-circle-right icon-white"></i>
