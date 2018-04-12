@@ -1,37 +1,13 @@
-#
-# Copyright (C) 2005-2018 Inverse inc.
-#
-# See the enclosed file COPYING for license information (GPL).
-# If you did not receive this file, see
-# http://www.fsf.org/licensing/licenses/gpl.html
-
-
 [192.168.0.1]
-description=Test Switch
-type = Cisco::Catalyst_2900XL
-mode = production
-uplink = 23,24
-#SNMPVersion = 3
-#SNMPEngineID = 0000000000000
-#SNMPUserNameRead = readUser
-#SNMPAuthProtocolRead = MD5
-#SNMPAuthPasswordRead = authpwdread
-#SNMPPrivProtocolRead = DES 
-#SNMPPrivPasswordRead = privpwdread
-#SNMPUserNameWrite = writeUser
-#SNMPAuthProtocolWrite = MD5
-#SNMPAuthPasswordWrite = authpwdwrite
-#SNMPPrivProtocolWrite = DES 
-#SNMPPrivPasswordWrite = privpwdwrite
-#SNMPVersionTrap = 3
-#SNMPUserNameTrap = readUser
-#SNMPAuthProtocolTrap = MD5
-#SNMPAuthPasswordTrap = authpwdread
-#SNMPPrivProtocolTrap = DES
-#SNMPPrivPasswordTrap = privpwdread
+description = Test Access Point
+group = Aerohive_AP
 
 [192.168.1.0/24]
-description=Test Range Switch
-type = Cisco::Catalyst_2900XL
+description = Test Range of Access Points
+group = Aerohive_AP
+
+[group Aerohive_AP]
+description = Aerohive Access Points
+type = Aerohive::AP
 mode = production
-uplink = 23,24
+deauthMethod = RADIUS
