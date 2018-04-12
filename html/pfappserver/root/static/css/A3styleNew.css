@@ -147,8 +147,8 @@ button, input, select, textarea {
   background-color: #ddd;
 }
 
-.time-indicator-bar {
-  width: 7px;
+#time-indicator-bar {
+  width: 170px;
   height: 15px;
   background-color: #FFC007;
 }

@@ -2714,6 +2714,11 @@ msgstr ""
 msgid "Example"
 msgstr ""
 
+# html/pfappserver/root/admin/wrapper.tt
+msgid "Time left of trial: "
+msgstr ""
+
+
 # html/pfappserver/root/config/source/index.tt
 msgid "Exclusive"
 msgstr ""
@@ -11310,5 +11315,3 @@ msgstr "Actions"
 
 msgid "modules"
 msgstr "Modules"
-
-

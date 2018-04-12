@@ -22,7 +22,7 @@ function timeLeft(){
          seconds = data.trial[0].expires_in;
          var parseSeconds = parseInt(seconds, 10);
          days  = Math.floor(parseSeconds / (3600*24));
-         hours = Math.floor(seconds / 3600);
+         hours = Math.floor(parseSeconds / 3600);
          console.log("Days: " + days);
          numberOfDaysLeft = days;
          if (numberOfDaysLeft > 1){

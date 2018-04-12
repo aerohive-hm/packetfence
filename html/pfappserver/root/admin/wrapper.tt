@@ -131,8 +131,8 @@
         <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
     </div>
     <div id="clockTrialDiv">
-      <p>Time left of trial: <span id="daysLeft"></span></p>
-      <div><div class="time-indicator"><div class="time-indicator-bar"></div></div></div>
+      <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
+      <div><div class="time-indicator"><div id="time-indicator-bar"></div></div></div>
     </div>
     <!-- Le javascript
     ================================================== -->

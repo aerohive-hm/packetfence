@@ -2924,6 +2924,10 @@ msgstr "Erreur en tentant de récupérer les processus actifs."
 msgid "Error!"
 msgstr "Erreur !"
 
+# html/pfappserver/root/admin/wrapper.tt
+msgid "Time left of trial: "
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/Field/ExtendedDuration.pm
 msgid "Example"
 msgstr "Exemple"
