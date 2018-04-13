@@ -174,3 +174,7 @@ function dateRangeChecker(){
       });
       console.log("checked date");
 }
+
+function isEulaAccepted(){
+
+}
