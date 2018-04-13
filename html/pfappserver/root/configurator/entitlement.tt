@@ -46,26 +46,26 @@
 	 	  </div>
 		</div>
 		  <!--EULA modal-->
-		<div class="modal fade" id="eulaModal" tabindex="-1" role="dialog" aria-hidden="true">
-  		  <div class="modal-dialog modal-dialog-centered" role="document">
-    		    <div class="modal-content">
-      		      <div class="modal-body">
-        		        <h3><b>[% l('Terms and Conditions') %]</b></h3>
-        			[% INCLUDE configurator/eula.tt %]
-                </div>
-              	<div class="modal-footer">
-        			      <div class="agree">
-                        <input type="checkbox" style="float:left; display: none;" id="agreeToEula"/>
-        			          <label for="agreeToEula" onclick="agreeEula(); return false;" style="padding-left:15px;">[% l('Agree') %]</label>
-        			      </div>
-                    <button type="button" onclick="submitAgree(); return false;" class="btn btn-success fixed-right submitAgreement">[% l('Submit') %]</button>
-              	</div>
-    		     </div>
-  		  </div>
-		</div>
+  		<div class="modal fade" id="eulaModal" tabindex="-1" role="dialog" aria-hidden="true">
+    		  <div class="modal-dialog modal-dialog-centered" role="document">
+      		    <div class="modal-content">
+        		      <div class="modal-body">
+          		        <h3><b>[% l('Terms and Conditions') %]</b></h3>
+          			[% INCLUDE configurator/eula.tt %]
+                  </div>
+                	<div class="modal-footer">
+          			      <div class="agree">
+                          <input type="checkbox" style="float:left; display: none;" id="agreeToEula"/>
+          			          <label for="agreeToEula" onclick="agreeEula(); return false;" style="padding-left:15px;">[% l('Agree') %]</label>
+          			      </div>
+                      <button type="button" onclick="submitAgree(); return false;" class="btn btn-success fixed-right submitAgreement">[% l('Submit') %]</button>
+                	</div>
+      		     </div>
+    		  </div>
+  		</div>
 
-	      </div> <!--end of thirtyDayTrial-->
-		</div> <!--end of card-block-->
+	   </div> <!--end of thirtyDayTrial-->
+	</div> <!--end of card-block-->
 
             <div class="form-actions">
               <div class="alert alert-warning" id="selection-warning" role="alert" style="display:none; margin-left: -25px;">

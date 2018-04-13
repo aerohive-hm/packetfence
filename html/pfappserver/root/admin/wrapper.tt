@@ -114,6 +114,15 @@
               </li>
 	          </ul>
           </div>
+
+          <!-- <trial indicator -->
+          <div class="trial-clock-indicator pull-right">
+              <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
+          </div>
+          <div id="clockTrialDiv">
+            <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
+            <div><div class="time-indicator"><div id="time-indicator-bar"></div></div></div>
+          </div>
           [%- END %]
 
         </div>
@@ -126,14 +135,6 @@
       </div>
     </div>
 [% content | none %]
-    <!-- <trial indicator -->
-    <div class="trial-clock-indicator pull-right">
-        <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
-    </div>
-    <div id="clockTrialDiv">
-      <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
-      <div><div class="time-indicator"><div id="time-indicator-bar"></div></div></div>
-    </div>
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

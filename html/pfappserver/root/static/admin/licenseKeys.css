@@ -32,8 +32,8 @@
 
 .lcLabel{ width: 200px;  float:left; font-size: 20px;}
 .ucLabel{ width: 200px;  float:left; font-size: 20px;}
-#licenseCapaSpan{ width: 415px; text-align: right;}
-#usedCapacitySpan{ width: 415px; text-align: right;}
+#licenseCapaSpan{ width: 500px; text-align: right;}
+#usedCapacitySpan{ width: 500px; text-align: right;}
 
 /* INPUT FIELD */
 .entitlementLicenseKeyInput{

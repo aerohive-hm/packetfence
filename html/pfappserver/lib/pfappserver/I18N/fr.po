@@ -2926,7 +2926,7 @@ msgstr "Erreur !"
 
 # html/pfappserver/root/admin/wrapper.tt
 msgid "Time left of trial: "
-msgstr ""
+msgstr "Temps d'essai laissé: "
 
 # html/pfappserver/lib/pfappserver/Form/Field/ExtendedDuration.pm
 msgid "Example"

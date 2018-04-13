@@ -7,6 +7,7 @@ $(document).ready(function(){
     });
   });
   timeLeft();
+  document.getElementById("time-indicator").style.width = 30 * 6;
 });
 
 function timeLeft(){
