@@ -141,7 +141,7 @@ button, input, select, textarea {
   margin-left: 10px;
 }
 
-.time-indicator {
+#time-indicator {
   margin-left: 10px;
   width: 180px;
   background-color: #ddd;
@@ -178,6 +178,15 @@ button, input, select, textarea {
 .card .navbar-inner, .card-title {
   border-bottom: none;
 }
+
+/* for modal popup reminder */
+/* #popup{
+    height : 50px;
+    background-color:blue;
+    position: fixed;
+    z-index: 20;
+} */
+
 
 @media (min-width: 979px) and (max-width: 1199px) {
   img {

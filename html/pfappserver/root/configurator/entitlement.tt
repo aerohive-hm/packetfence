@@ -54,9 +54,9 @@
           			[% INCLUDE configurator/eula.tt %]
                   </div>
                 	<div class="modal-footer">
-          			      <div class="agree">
-                          <input type="checkbox" style="float:left; display: none;" id="agreeToEula"/>
-          			          <label for="agreeToEula" onclick="agreeEula(); return false;" style="padding-left:15px;">[% l('Agree') %]</label>
+          			      <div class="agree" onclick="agreeEula(); return false;">
+                          <input type="checkbox" style="float:left;" value="agree" id="agreeToEula"/>
+          			          <label for="agreeToEula" style="padding-left:15px;">[% l('Agree') %]</label>
           			      </div>
                       <button type="button" onclick="submitAgree(); return false;" class="btn btn-success fixed-right submitAgreement">[% l('Submit') %]</button>
                 	</div>

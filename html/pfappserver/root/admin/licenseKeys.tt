@@ -39,7 +39,7 @@
         </div>
         <hr>
         <div class="entitlementLicenseKeyInput">
-            <label>[% l('Enter Entitlement Key: ') %]</label><input id="keyInput" max="36"/>[% IF is_eula_accepted %] <button class="btn btn-primary" id="applyKey">Apply</button> [% ELSE %]<button class="btn btn-primary" id="applyKey">Apply</button>[% END %]
+            <label>[% l('Enter Entitlement Key: ') %]</label><input id="keyInput" max="36"/>[% IF is_eula_accepted %] <button class="btn btn-primary" id="applyKey">Apply</button> [% ELSE %]<button class="btn btn-primary" class="for-non-eula" id="applyKey">Apply</button>[% END %]
         </div>
         <!-- table -->
         <div class="keyTable" id="keyTable">

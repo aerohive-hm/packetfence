@@ -51,7 +51,7 @@ our %ALLOWED_SECTIONS = (
     database_advanced => undef,
     fencing           => undef,
     general           => undef,
-    inline            => undef,
+    # inline            => undef,
     metadefender      => undef,
     mse_tab           => undef,
     network           => undef,
@@ -405,11 +405,11 @@ sub all_subsections : Private {
             tie my %map, 'Tie::IxHash', (
                 switch => {
                     controller => 'Controller::Config::Switch',
-                    name => 'Switches',
+                    name => 'Devices',
                 },
                 switch_group => {
                     controller => 'Controller::Config::SwitchGroup',
-                    name => 'Switch Groups',
+                    name => 'Device Groups',
                 },
             );
             return \%map;
@@ -461,16 +461,16 @@ sub all_subsections : Private {
                     controller => 'Controller::Interface',
                     name => 'Interfaces',
                 },
-                inline => {
-                    controller => 'Controller::Configuration',
-                    action => 'section',
-                    action_args => ['inline'],
-                    name => 'Inline',
-                },
-                trafficshaping => {
-                    controller => 'Controller::Config::TrafficShaping',
-                    name => 'Inline Traffic Shaping',
-                },
+                # inline => {
+                #     controller => 'Controller::Configuration',
+                #     action => 'section',
+                #     action_args => ['inline'],
+                #     name => 'Inline',
+                # },
+                # trafficshaping => {
+                #     controller => 'Controller::Config::TrafficShaping',
+                #     name => 'Inline Traffic Shaping',
+                # },
                 fencing => {
                     controller => 'Controller::Configuration',
                     action => 'section',

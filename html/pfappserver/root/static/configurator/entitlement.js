@@ -8,9 +8,8 @@ $(document).ready(function(){
      $('.keyInput').css('display', 'none');
      $('.continueButton').prop("disabled", false);
   });
-
   checkKey();
-
+  userPressedAgree();
 });
 
 // *** Check regex: When user clicks submit, check the input first, then open modal ***
@@ -57,6 +56,18 @@ function agreeEula(){
   $(".agree").slideUp();
   $(".submitAgreement").show();
   //ajax call here
+  agreeInput.onclick = function() {
+      // access properties using this keyword
+      if (this.checked) {
+          // if checked ...
+          alert("eula value: "+ this.value );
+      } else {
+          alert();
+
+      }
+  };
+
+  // if submitAgreement sent
 }
 function submitAgree(){
   var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
@@ -69,8 +80,6 @@ function submitAgree(){
   $('#entitlementKeyInputs').after(submitSpan);
 }
 
-
-
 function registerExits() {
     $('#tracker a, .form-actions button').click(function(event) {
         var href = $(this).attr('href');
@@ -78,35 +87,6 @@ function registerExits() {
         return false; // don't follow link
     });
 }
-
-// function initStep() {
-//   $('#configure_fingerbank_api_key').click(function(e) {
-//     e.preventDefault();
-//     var btn = $(e.target);
-//
-//     $.ajax({
-//         headers: {
-//           'Accept':'application/json',
-//         },
-//         type: 'POST',
-//         url: btn.attr('href'),
-//         data: { api_key: $('#api_key').val() }
-//     }).done(function(data) {
-//         btn.addClass('disabled');
-//         $('#api_key').attr('disabled', '');
-//         resetAlert(btn.closest('.control-group'));
-//         showSuccess(btn.closest('.control-group'), data.status_msg);
-//
-//         var continueBtn = btn.closest('form').find('[type="submit"]');
-//         continueBtn.removeClass("btn-danger").addClass("btn-primary").html(continueBtn.data("msg-done"));
-//     }).fail(function(jqXHR) {
-//         var obj = $.parseJSON(jqXHR.responseText);
-//         showError(btn.closest('.control-group'), obj.status_msg);
-//     });
-//
-//     return false;
-//   });
-// }
 
 function checkUserSubmitTrial(){
     var trialPressed = document.getElementById("thirtyDayTrialRadio");
@@ -121,6 +101,8 @@ function checkUserSubmitTrial(){
         console.log("inside click continue func!");
         if (radioValue = "trial" ){
           console.log("yes! trial");
+          userSubmitTrial();
+        }else{
           userSubmitEula();
         }
         console.log("continue");
@@ -134,17 +116,15 @@ $(document).ready(function(){
 });
 
 
-function userSubmitEula(){
+function userSubmitTrial(){
     var base_url = window.location.origin;
-    var agreePressed = document.getElementById("");
-    var errorDiv
     var checked = false;
     $.ajax({
         type: 'POST',
         url: base_url + '/entitlement/trial'
     }).done(function(data){
         console.log(data);
-        console.log("success!");
+        console.log("trial success!");
         $('#entitlementRadio').prop("disabled", true);
         $('#entitlementKey1').prop("disabled", true);
     }).fail(function(xhr, status, error){
@@ -154,4 +134,24 @@ function userSubmitEula(){
         }
     });
     return false;
+}
+
+function userSubmitEula(){
+  var base_url = window.location.origin;
+  var agreeChecked = document.getElementById("#agreeToEula");
+  var checked = false;
+  $.ajax({
+      type: 'POST',
+      url: base_url + 'entitlement/eula'
+  }).done(function(data){
+      console.log(data);
+      console.log("eula key success!");
+      userPressedAgree();
+  }).fail(function(xhr, status, error){
+      console.log(error);
+      if (error){
+         document.getElementById('selection-warning').style.display = 'block';
+      }
+  });
+  return false;
 }
