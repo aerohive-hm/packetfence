@@ -124,10 +124,12 @@ $(function() {
     // Add show/hide button to password field if the 'password-button' template is loaded
     $('input[type="password"]').each(function() {
       var $input = $(this);
+      var $parent = $input.parent();
       var $tmp = $('[data-template="password-button"]').first();
       if ($tmp.length === 0) return; // template not found
       var $btn = $tmp.find('button').first();
-      $input.addClass('u-4/5').addClass('input-extend').after($tmp);
+      $input.after($tmp);
+      $btn.before($input);
 
       $btn.click(function(event) {
         var change = "", label = "", state = "";
@@ -143,8 +145,6 @@ $(function() {
         var rep = $("<input type='" + change + "' />")
             .attr("id", $input.attr("id"))
             .attr("name", $input.attr("name"))
-            .attr('class', $input.attr('class'))
-            .addClass('input-password')
             .val($input.val())
             .insertBefore($input);
         $input.remove();
