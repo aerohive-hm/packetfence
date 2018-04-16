@@ -6,6 +6,7 @@ $(document).ready(function(){
       width: "toggle"
     });
   });
+
   timeLeft();
   document.getElementById("time-indicator").style.width = 30 * 6;
 });
@@ -32,7 +33,8 @@ function timeLeft(){
             $("#daysLeft").html(numberOfDaysLeft + " " + "day");
          }
          document.getElementById("time-indicator-bar").style.width = numberOfDaysLeft;
-         //fix plural issue for days
+         //add modal show up after days gets to 5
+
       },
       fail: function(){
          console.log(error);

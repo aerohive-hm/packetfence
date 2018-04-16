@@ -18,4 +18,3 @@
       <h2>[% l('Inline Traffic Shaping Policy') %]</h2>
 
       [% INCLUDE config/trafficshaping/list.tt %]
-

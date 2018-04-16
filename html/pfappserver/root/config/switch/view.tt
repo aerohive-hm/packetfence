@@ -12,7 +12,7 @@
     <ul class="nav nav-tabs">
       <li [% UNLESS tab == "switchGroupMembers" %]class="active"[% END %]><a href="#switchDefinition" data-toggle="tab">[% l('Definition') %]</a></li>
       <li><a href="#switchRoles" data-toggle="tab">[% l('Roles') %]</a></li>
-      <li><a href="#switchInline" data-toggle="tab">[% l('Inline') %]</a></li>
+      <!-- <li><a href="#switchInline" data-toggle="tab">[% l('Inline') %]</a></li> -->
       <li><a href="#switchRADIUS" data-toggle="tab">[% l('RADIUS') %]</a></li>
       <li><a href="#switchSNMP" data-toggle="tab">[% l('SNMP') %]</a></li>
       <li><a href="#switchCLI" data-toggle="tab">[% l('CLI') %]</a></li>

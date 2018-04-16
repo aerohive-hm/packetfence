@@ -1,6 +1,7 @@
 //toggles
 $(document).ready(function(){
-     $('#entitlementRadio').click(function () {
+  //(1)toggle clicks to hide and disable input fields of key radio btn option
+  $('#entitlementRadio').click(function () {
      $('.keyInput').css('display', 'inline');
      $('.continueButton').prop("disabled", true);
   });
@@ -10,10 +11,9 @@ $(document).ready(function(){
   });
 
   checkKey();
-
 });
 
-// *** Check regex: When user clicks submit, check the input first, then open modal ***
+// (2) Check regex: When user clicks submit, check the input first, then open modal
 function checkKey(){
   var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
   var sampleKey = ["P82G9-DA9BA-67LRQ-4KA6B-LK539-3YTXQ","SF89F-08SF8-908F9-0S8F9-0890F-S9RS9"];  //need to check if key exists
@@ -48,103 +48,58 @@ function checkKey(){
 	     $("#entitlementKey").css('border','1px solid #d9534f');
    }
  }
+
+//check if the user pressed trail or key radio button
+ function checkUserSubmitTrial(){
+     var trialPressed = document.getElementById("thirtyDayTrialRadio"); //trial radiobutton
+     var keyEnteredPressed = document.getElementById("entitlementRadio"); //enter key radiobutton
+     var radioValue; //used to get value of the radio button to check
+     $('input').on('change', function() {
+       radioValue = $('input:radio[name="licenseRadio"]:checked').val();
+       console.log(radioValue);
+     }); //checks which radio button is pressed
+     $(".continueButton").on("click", function(){
+         console.log("inside click continue func!");
+         if (radioValue = "trial" ){
+           console.log("yes! trial");
+           userSubmitTrial();
+         }else{
+           userSubmitEula();//check if keyEnteredPressed
+           //send key
+         }
+         console.log("continue");
+     }); //if use press trial then after pressing continue call function to submit trial,
+         //else check if submit pressed, send key and then check continue.
+     return false;
+ }
+
+ $(document).ready(function(){
+     var agreeInput = document.getElementById('agreeToEula');
+     var valid = false;
+     checkUserSubmitTrial(); //check which radio button the user pressed
+     $('.agreeToEula').click(function() {
+         //changes checkbox to submit button
+         $(".agree").slideUp();
+         $(".agree").delay(3000);
+         $(".submitAgreement").slideDown();
+     });
+     $('.submitAgreement').click(function(){
+         userSubmitEula();
+     })
+ });
+
 //if user selects both agree and submit button the the modal disappears and then te
 // 30 day trail is disabled and the user can only press the continue button. add a green
 //check mark next to the input box.
-function agreeEula(){
-  var agreeInput = document.getElementById('agreeToEula');
-  var valid = false;
-  $(".agree").slideUp();
-  $(".submitAgreement").show();
-  //ajax call here
-}
-function submitAgree(){
-  var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
-  $('#eulaModal').modal('hide');
-  $('#thirtyDayTrialRadio').prop("disabled", true);
-  $('#entitlementKey1').prop("disabled", true);
-  $('#entitlementKeySubmit').css('display', 'none');
-  $('.errMsg').hide();
-  $('.continueButton').prop("disabled", false);
-  $('#entitlementKeyInputs').after(submitSpan);
-}
-
-
-
-function registerExits() {
-    $('#tracker a, .form-actions button').click(function(event) {
-        var href = $(this).attr('href');
-        window.location.href = href;
-        return false; // don't follow link
-    });
-}
-
-// function initStep() {
-//   $('#configure_fingerbank_api_key').click(function(e) {
-//     e.preventDefault();
-//     var btn = $(e.target);
-//
-//     $.ajax({
-//         headers: {
-//           'Accept':'application/json',
-//         },
-//         type: 'POST',
-//         url: btn.attr('href'),
-//         data: { api_key: $('#api_key').val() }
-//     }).done(function(data) {
-//         btn.addClass('disabled');
-//         $('#api_key').attr('disabled', '');
-//         resetAlert(btn.closest('.control-group'));
-//         showSuccess(btn.closest('.control-group'), data.status_msg);
-//
-//         var continueBtn = btn.closest('form').find('[type="submit"]');
-//         continueBtn.removeClass("btn-danger").addClass("btn-primary").html(continueBtn.data("msg-done"));
-//     }).fail(function(jqXHR) {
-//         var obj = $.parseJSON(jqXHR.responseText);
-//         showError(btn.closest('.control-group'), obj.status_msg);
-//     });
-//
-//     return false;
-//   });
-// }
-
-function checkUserSubmitTrial(){
-    var trialPressed = document.getElementById("thirtyDayTrialRadio");
-    var keyEnteredPressed = document.getElementById("entitlementRadio");
-    var checkedTrial = false;
-    var radioValue;
-    $('input').on('change', function() {
-      radioValue = $('input:radio[name="licenseRadio"]:checked').val();
-      console.log(radioValue);
-    });
-    $(".continueButton").on("click", function(){
-        console.log("inside click continue func!");
-        if (radioValue = "trial" ){
-          console.log("yes! trial");
-          userSubmitEula();
-        }
-        console.log("continue");
-    });
-    return false;
-}
-
-$(document).ready(function(){
-  // checkIfKeyEntered();
-  checkUserSubmitTrial();
-});
-
-
-function userSubmitEula(){
+function userSubmitTrial(){
     var base_url = window.location.origin;
-    var agreePressed = document.getElementById("");
-    var errorDiv
     var checked = false;
     $.ajax({
         type: 'POST',
         url: base_url + '/entitlement/trial'
     }).done(function(data){
         console.log(data);
-        console.log("success!");
+        console.log("trial success!");
         $('#entitlementRadio').prop("disabled", true);
         $('#entitlementKey1').prop("disabled", true);
     }).fail(function(xhr, status, error){
@@ -154,4 +109,46 @@ function userSubmitEula(){
         }
     });
     return false;
+}
+
+function userSubmitEula(){
+  var base_url = window.location.origin;
+  var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
+  //add ajax call here after submit button pressed
+  $.ajax({
+      type: 'POST',
+      url: base_url + '/eula'
+  }).done(function(data){
+      console.log(data);
+      console.log("sent eula! press continue to finish process");
+      // $()
+      var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
+       $('#eulaModal').modal('hide');
+       $('#thirtyDayTrialRadio').prop("disabled", true);
+       $('#entitlementKey1').prop("disabled", true);
+       $('#entitlementKeySubmit').css('display', 'none');
+       $('.errMsg').hide();
+       $('.continueButton').prop("disabled", false);
+       $('#entitlementKeyInputs').after(submitSpan);
+
+  }).fail(function(xhr, status, error){
+      console.log(error);
+      if (error){
+         document.getElementById('selection-warning').style.display = 'block';
+      }
+  });
+}
+
+//for continue button when user applied a key after accepting eula
+function applyKey(){
+
+}
+
+//idk what this code from packetfence is for but check later
+function registerExits() {
+    $('#tracker a, .form-actions button').click(function(event) {
+        var href = $(this).attr('href');
+        window.location.href = href;
+        return false; // don't follow link
+    });
 }

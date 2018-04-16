@@ -176,5 +176,5 @@ function dateRangeChecker(){
 }
 
 function isEulaAccepted(){
-
+    
 }
