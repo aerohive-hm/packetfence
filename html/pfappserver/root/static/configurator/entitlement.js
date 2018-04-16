@@ -133,15 +133,39 @@ function userSubmitEula(){
 
   }).fail(function(xhr, status, error){
       console.log(error);
-      if (error){
-         document.getElementById('selection-warning').style.display = 'block';
-      }
+      console.log("sent eula! press continue to finish process");
+      // $()
+      var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
+       $('#eulaModal').modal('hide');
+       $('#thirtyDayTrialRadio').prop("disabled", true);
+       $('#entitlementKey1').prop("disabled", true);
+       $('#entitlementKeySubmit').css('display', 'none');
+       $('.errMsg').hide();
+       $('.continueButton').prop("disabled", false);
+       $('#entitlementKeyInputs').after(submitSpan);
+      // if (error){
+      //    document.getElementById('selection-warning').style.display = 'block';
+      // }
   });
 }
 
 //for continue button when user applied a key after accepting eula
-function applyKey(){
-
+function updateKeyTable(userKeyInput) {
+    var applyKeyButton2 = $("#applyKey");
+    var base_url = window.location.origin;
+    $.ajax({
+        url : base_url + '/entitlement/key/' + userKeyInput,
+        type : 'PUT',
+        dataType : 'json',
+        success : function(data){
+          $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
+          $("#licenseCapa").load(window.location + " #licenseCapa");
+        },
+        error : function(xhr, status, error){
+            console.log(error);
+       }
+    });
+     console.log("updated key");
 }
 
 //idk what this code from packetfence is for but check later

@@ -13,6 +13,10 @@ $(document).ready(function(){
   applyKeyButton();
   dateRangeChecker();
   updateCapacities();
+
+  $('.no-submitted-eula').click(function(){
+    $('#eulaModal').modal('show');
+  });
 });
 
 function updateCapacities(){
@@ -173,8 +177,4 @@ function dateRangeChecker(){
         }
       });
       console.log("checked date");
-}
-
-function isEulaAccepted(){
-    
 }

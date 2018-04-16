@@ -21,7 +21,7 @@
         <link rel="stylesheet" href="[% c.uri_for("/static/${css}.css") %]">
     [% END -%] -->
         <link rel="stylesheet" href="[% c.uri_for('/static/css/A3styleNew.css') %]">
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
 
   </head>
   [% SET SHOW_READONLY_ERROR = c.user_allowed_in_admin() && readonly_mode %]
@@ -129,11 +129,11 @@
           <!-- [% ELSE %] -->
           <!-- LICENSE KEY MODAL-->
 
-              <div class="modal fade" id="myModal">
-                <div class="modal-dialog" role="document">
+              <!-- <div class="modal fade" id="myModal">
+                <div class="modal-dialog" role="document"> -->
 
           	<!--BEGINNING ALERT TEXT-->
-                  <div class="modal-content licenseAlert">
+                  <!-- <div class="modal-content licenseAlert">
                     <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
                       <h3 class="modal-title"><b>SUBSCRIPTION ENDING IN <span id="daysLeft"></span> DAYS</b></h3>
                     </div>
@@ -147,11 +147,11 @@
           	    <button type="button" class="btn btn-success licenseKey">Enter License Key</button>
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
-                  </div>
+                  </div> -->
           	<!--END OF ALERT TEXT-->
 
           	<!--EMAIL FORM FILL OUT-->
-                  <div class="modal-content emailForm" style="display: none;">
+                  <!-- <div class="modal-content emailForm" style="display: none;">
                     <div class="modal-header" style="background-color: #333; color:#F4F6F9; font-weight:400; text-align:center;">
                       <h3 class="modal-title"><b>Email Form</b></h3>
                     </div>
@@ -175,11 +175,11 @@
                       <button type="button" class="btn btn-primary emailSentSuccess">Send Email</button>
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
-                  </div>
+                  </div> -->
           	<!--end of email form fill out-->
 
           	<!--SUCCESS MESSAGE SENT EMAIL-->
-                  <div class="modal-content successEmailMessage" style="display:none;">
+                  <!-- <div class="modal-content successEmailMessage" style="display:none;">
                     <div class="modal-header" style="background-color: #4cae4c; color:#F4F6F9; font-weight:400; text-align:center;">
                       <h3 class="modal-title"><b>Successfully sent</b></h3>
                     </div>
@@ -190,11 +190,11 @@
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
-                  </div>
+                  </div> -->
 
           	<!--end of success message-->
-                </div>
-              </div>
+                <!-- </div>
+              </div> -->
 
           <!--END OF MODAL-->
           <!-- [% END %] -->
