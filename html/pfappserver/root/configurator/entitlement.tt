@@ -1,4 +1,5 @@
-[%  jsFiles = ['configurator/entitlement'] -%]
+[%  jsFiles = ['configurator/entitlement']
+    cssFiles = ['configurator/entitlementStyle'] -%]
     <div class="container-fluid">
       [% INCLUDE configurator/tracker.inc %]
       <div class="row-fluid">
@@ -25,57 +26,57 @@
           <div class="card">
             <form name="admin" class="form-horizontal">
               <div class="card-block" style="height: 250px;">
-            <h3>[% l('Licensing Options') %]</h3>
+                  <h3>[% l('Licensing Options') %]</h3>
+            	    <div class="control-group thirtyDayTrial" style="display: inline;">
+                  		<div class="card thirtyDayTrial" style="width:45%; float:left; padding: 15px 15px;">
+                  	     <input id="thirtyDayTrialRadio" style="float: left;" name="licenseRadio" type="radio" value="trial"/>
+                  		   <label for="thirtyDayTrialRadio" style="padding-left: 25px;">[% l('I would like to try a 30 day trial!') %]</label>
+                  		</div>
+                      <!--card-->
+                   		<div class="card" style="width: 45%; float:left; padding: 15px 15px;">
+                          <input id="entitlementRadio" style="float: left;" name="licenseRadio" type="radio" value="validKey"/>
+                		      <label for="entitlementRadio" style="padding-left: 25px;">[% l('I have an entitlement key!') %]</label>
+                          <div class="keyInput" style="display: none;">
+                      		    <fieldset class="form-group" id="entitlementKeyInputs" >
+                                  <input class="entitlementKey" id="entitlementKey1" class="text" type="text" maxlength="35" placeholder="Enter" value="">
+                              </fieldset>
+                    		      <br>
+                    		      <button id="entitlementKeySubmit" onclick="checkKey(); return false;" class="btn btn-primary">[% l('Submit') %]</button>
+                	 	      </div>
+                		   </div>
+                		  <!--EULA modal-->
+                  		<div class="modal fade" id="eulaModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    		  <div class="modal-dialog modal-dialog-centered" role="document">
+                      		    <div class="modal-content">
+                        		      <div class="modal-body">
+                          		        <h3><b>[% l('Terms and Conditions') %]</b></h3>
+                          			[% INCLUDE configurator/eula.tt %]
+                                  </div>
+                                	<div class="modal-footer">
+                          			      <div class="agree">
+                                          <label class="agreeToEula">
+                                              <input type="checkbox" id="agreeToEula" value="agree">
+                                              <span id="checkmark"></span>
+                                          </label><span class="agreeText">[% l('Agree') %]</span>
+                          			      </div>
+                                      <button type="button" class="btn btn-success fixed-right submitAgreement">[% l('Submit') %]</button>
+                                	</div>
+                      		     </div>
+                    		  </div>
+                  		</div>
+                      <!--end of EULA modal-->
+            	    </div> <!--end of thirtyDayTrial-->
+            	</div> <!--end of card-block-->
 
-	      <div class="control-group thirtyDayTrial" style="display: inline;">
-
-		<div class="card thirtyDayTrial" style="width:45%; float:left; padding: 15px 15px;">
-	          <input id="thirtyDayTrialRadio" style="float: left;" name="licenseRadio" type="radio" value="trial"/>
-		  <label for="thirtyDayTrialRadio" style="padding-left: 25px;">[% l('I would like to try a 30 day trial!') %]</label>
-		</div><!--card-->
-
-   		<div class="card" style="width: 45%; float:left; padding: 15px 15px;">
-                  <input id="entitlementRadio" style="float: left;" name="licenseRadio" type="radio" value="validKey"/>
-		  <label for="entitlementRadio" style="padding-left: 25px;">[% l('I have an entitlement key!') %]</label>
-                  <div class="keyInput" style="display: none;">
-		    <fieldset class="form-group" id="entitlementKeyInputs" >
-                      <input class="entitlementKey" id="entitlementKey1" class="text" type="text" maxlength="35" placeholder="Enter" value="">
-        </fieldset>
-		    <br>
-		    <button id="entitlementKeySubmit" onclick="checkKey(); return false;" class="btn btn-primary">[% l('Submit') %]</button>
-	 	  </div>
-		</div>
-		  <!--EULA modal-->
-  		<div class="modal fade" id="eulaModal" tabindex="-1" role="dialog" aria-hidden="true">
-    		  <div class="modal-dialog modal-dialog-centered" role="document">
-      		    <div class="modal-content">
-        		      <div class="modal-body">
-          		        <h3><b>[% l('Terms and Conditions') %]</b></h3>
-          			[% INCLUDE configurator/eula.tt %]
-                  </div>
-                	<div class="modal-footer">
-          			      <div class="agree" onclick="agreeEula(); return false;">
-                          <input type="checkbox" style="float:left;" value="agree" id="agreeToEula"/>
-          			          <label for="agreeToEula" style="padding-left:15px;">[% l('Agree') %]</label>
-          			      </div>
-                      <button type="button" onclick="submitAgree(); return false;" class="btn btn-success fixed-right submitAgreement">[% l('Submit') %]</button>
-                	</div>
-      		     </div>
-    		  </div>
-  		</div>
-
-	   </div> <!--end of thirtyDayTrial-->
-	</div> <!--end of card-block-->
-
-            <div class="form-actions">
-              <div class="alert alert-warning" id="selection-warning" role="alert" style="display:none; margin-left: -25px;">
-                You already selected trial. You will be brought to the next step.
-              </div>
-              <button type="submit" data-msg-done="[% l('Continue') %]" class="btn btn-primary pull-right continueButton" href="[% next_step %]" disabled>
-                [% l('Continue') %]
-                <i class="icon-arrow-circle-right icon-white"></i>
-              </button>
-            </div><!--end of formactions-->
+              <div class="form-actions">
+                <div class="alert alert-warning" id="selection-warning" role="alert" style="display:none; margin-left: -25px;">
+                  You already selected trial. You will be brought to the next step.
+                </div>
+                <button type="submit" data-msg-done="[% l('Continue') %]" class="btn btn-primary pull-right continueButton" href="[% next_step %]" disabled>
+                  [% l('Continue') %]
+                  <i class="icon-arrow-circle-right icon-white"></i>
+                </button>
+              </div><!--end of formactions-->
             </form>
           </div><!--end of card-->
         </div><!--end of span 14-->
