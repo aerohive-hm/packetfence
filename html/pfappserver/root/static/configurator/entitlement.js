@@ -122,6 +122,14 @@ function userSubmitEula(){
       console.log(data);
       console.log("sent eula! press continue to finish process");
       // $()
+      var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
+       $('#eulaModal').modal('hide');
+       $('#thirtyDayTrialRadio').prop("disabled", true);
+       $('#entitlementKey1').prop("disabled", true);
+       $('#entitlementKeySubmit').css('display', 'none');
+       $('.errMsg').hide();
+       $('.continueButton').prop("disabled", false);
+       $('#entitlementKeyInputs').after(submitSpan);
 
   }).fail(function(xhr, status, error){
       console.log(error);
