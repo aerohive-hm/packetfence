@@ -115,14 +115,20 @@
 	          </ul>
           </div>
 
-          <!-- <trial indicator -->
-          <div class="trial-clock-indicator pull-right">
-              <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
-          </div>
-          <div id="clockTrialDiv">
-            <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
-            <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
-          </div>
+              [% IF is_eula_accepted %]
+              [% ELSE %]
+              <!-- <trial indicator -->
+              <div class="trialIndicator">
+                <div class="trial-clock-indicator pull-right">
+                    <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
+                </div>
+                <div id="clockTrialDiv">
+                  <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
+                  <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
+                </div>
+              </div>
+              [% END %] <!--for trialindecator-->
+
           [%- END %]
 
           <!-- [% IF is_eula_needed %] -->

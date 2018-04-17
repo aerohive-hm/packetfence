@@ -9,19 +9,18 @@ $(document).ready(function(){
      $('.keyInput').css('display', 'none');
      $('.continueButton').prop("disabled", false);
   });
-
   checkKey();
 });
 
 // (2) Check regex: When user clicks submit, check the input first, then open modal
 function checkKey(){
-  var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
-  var sampleKey = ["P82G9-DA9BA-67LRQ-4KA6B-LK539-3YTXQ","SF89F-08SF8-908F9-0S8F9-0890F-S9RS9"];  //need to check if key exists
-  var errMsg = "<span class='errMsg'>Sorry please reenter the license key again.</span>";
-  var errMsg2 = "<span class='errMsg' style='color:red;'>This key is not found or not valid.</span>";
-  var errMsg3 = "<span class='errMsg' style='color:red;'>This key is already deactivated.</span>";
-  var errMsgX = "<span class='errMsg' style='color:red;'>This key is already expired.</span>"
-  var userKeyInput = document.getElementById('entitlementKey1').value;
+   var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
+   var sampleKey = ["P82G9-DA9BA-67LRQ-4KA6B-LK539-3YTXQ","SF89F-08SF8-908F9-0S8F9-0890F-S9RS9"];  //need to check if key exists
+   var errMsg = "<span class='errMsg'>Sorry please reenter the license key again.</span>";
+   var errMsg2 = "<span class='errMsg' style='color:red;'>This key is not found or not valid.</span>";
+   var errMsg3 = "<span class='errMsg' style='color:red;'>This key is already deactivated.</span>";
+   var errMsgX = "<span class='errMsg' style='color:red;'>This key is already expired.</span>"
+   var userKeyInput = document.getElementById('entitlementKey1').value;
    console.log("input1: " + userKeyInput);
    //check regex with user input
    console.log(checkKeyRegex.test(userKeyInput));
@@ -40,7 +39,7 @@ function checkKey(){
        $("#keyInput").css('border','1px solid #dfdfdf');
    }else if (checkKeyRegex.test(userKeyInput) == true){
        $(".errMsg").css('display', 'none');
-	     $('#eulaModal').modal({backdrop:'static', keyboard: false })   // initialized with no keyboard
+	     $('#eulaModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
 	     $('#eulaModal').modal('show');
    } else {
        $(".errMsg").css('display', 'none');
@@ -63,7 +62,7 @@ function checkKey(){
          if (radioValue = "trial" ){
            console.log("yes! trial");
            userSubmitTrial();
-         }else{
+         }else if (radioValue = "validKey"){
            userSubmitEula();//check if keyEnteredPressed
            //send key
          }
@@ -114,6 +113,7 @@ function userSubmitTrial(){
 function userSubmitEula(){
   var base_url = window.location.origin;
   var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
+  var userKeyInput = document.getElementById('entitlementKey1').value;
   //add ajax call here after submit button pressed
   $.ajax({
       type: 'POST',
@@ -124,28 +124,22 @@ function userSubmitEula(){
       // $()
       var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
        $('#eulaModal').modal('hide');
+       $(".modal-backdrop").hide();
        $('#thirtyDayTrialRadio').prop("disabled", true);
        $('#entitlementKey1').prop("disabled", true);
        $('#entitlementKeySubmit').css('display', 'none');
        $('.errMsg').hide();
        $('.continueButton').prop("disabled", false);
        $('#entitlementKeyInputs').after(submitSpan);
-
+       if (checkKey(userKeyInput)){
+          updateKeyTable(userKeyInput);
+       }
   }).fail(function(xhr, status, error){
       console.log(error);
-      console.log("sent eula! press continue to finish process");
       // $()
-      var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
-       $('#eulaModal').modal('hide');
-       $('#thirtyDayTrialRadio').prop("disabled", true);
-       $('#entitlementKey1').prop("disabled", true);
-       $('#entitlementKeySubmit').css('display', 'none');
-       $('.errMsg').hide();
-       $('.continueButton').prop("disabled", false);
-       $('#entitlementKeyInputs').after(submitSpan);
-      // if (error){
-      //    document.getElementById('selection-warning').style.display = 'block';
-      // }
+      if (error){
+         // document.getElementById('selection-warning').style.display = 'block';
+      }
   });
 }
 
