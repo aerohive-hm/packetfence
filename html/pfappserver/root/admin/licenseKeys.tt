@@ -28,7 +28,7 @@
           <div class="pad">
             <label class="lcLabel"><b>[% l('Licensed Capacity:') %]</b></label>
             <div id="licenseCapaSpan">
-              <span id="licenseCapa" data-capacity="[% max_capacity %]" >[% max_capacity %]</span><span> endpoints</span>[% IF is_eula_accepted %][% ELSE %][% IF max_capacity == 100 %]<span class="licenseTrialText"> (trial only) </span>[% ELSE %] [% END %][% END %]
+              <span id="licenseCapa" data-capacity="[% max_capacity %]" >[% max_capacity %]</span><span> endpoints</span>[% IF is_eula_accepted %][% ELSE %]<span class="licenseTrialText"> (trial only) </span>[% END %]
             </div>
           </div>
           <div class="pad2">
@@ -40,7 +40,7 @@
         </div>
         <hr>
         <div class="entitlementLicenseKeyInput">
-            <label>[% l('Enter Entitlement Key: ') %]</label><input id="keyInput" max="36"/>[% IF is_eula_accepted %] <button class="btn btn-primary submitted-eula" id="applyKey">Apply</button> [% ELSE %]<button class="btn btn-primary no-submitted-eula" id="applyKey">Apply</button>[% END %]
+            <label>[% l('Enter Entitlement Key: ') %]</label><input id="keyInput" max="36"/>[% IF is_eula_needed %] <button class="btn btn-primary submitted-eula" id="applyKey">Apply</button> [% ELSE %]<button class="btn btn-primary no-submitted-eula" id="applyKey">Apply</button>[% END %]
         </div>
         <!-- table -->
         <div class="keyTable" id="keyTable">
@@ -69,6 +69,7 @@
     </div><!--end of card-block-->
 </div> <!--end of card-div -->
 
+[% IF is_eula_needed %]
 <!--EULA modal-->
 <div class="modal fade" id="eulaModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -90,3 +91,5 @@
     </div>
 </div>
 <!--end of EULA modal-->
+[% ELSE %]
+[% END %]

@@ -9,8 +9,40 @@ $(document).ready(function(){
      $('.keyInput').css('display', 'none');
      $('.continueButton').prop("disabled", false);
   });
+  var userKeyInput = document.getElementById('entitlementKey1').value;
+  checkUserSubmitTrial(); //check which radio button the user pressed
+  $('.agreeToEula').click(function() {
+      //changes checkbox to submit button
+      $(".agree").slideUp();
+      $(".agree").delay(3000);
+      $(".submitAgreement").slideDown();
+  });
   checkKey();
+  submitKeyButton();
+  $('.submitAgreement').click(function(){
+      userSubmitEula();
+  })
 });
+
+// 1.) They enter a key
+// 2.) They press submit, check if key is valid, if key valid, send POST to /entitlement/key.
+// 3.) after submitting, open up modal for eula.
+// 4.) submit on eula gets pressed; sent post call to /eula
+
+// (1), (2)
+function submitKeyButton(){
+  var applyKeyButton = $("#entitlementKeySubmit");
+  applyKeyButton.click(function(){
+    var userKeyInput = document.getElementById('entitlementKey1').value;
+    console.log(userKeyInput);
+    console.log("CHECKING KEY REGEX:");
+    console.log(checkKey(userKeyInput));
+    return false;
+  });
+  console.log("submitKeybutton success");
+
+}
+
 
 // (2) Check regex: When user clicks submit, check the input first, then open modal
 function checkKey(){
@@ -25,6 +57,7 @@ function checkKey(){
    //check regex with user input
    console.log(checkKeyRegex.test(userKeyInput));
    var checkFirstCharOfInput = userKeyInput.charAt(0);
+
    if (checkFirstCharOfInput === '3') {
        $(".errMsg").css('display', 'none');
        $("#entitlementKeyInputs").before(errMsg3);
@@ -39,8 +72,7 @@ function checkKey(){
        $("#keyInput").css('border','1px solid #dfdfdf');
    }else if (checkKeyRegex.test(userKeyInput) == true){
        $(".errMsg").css('display', 'none');
-	     $('#eulaModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
-	     $('#eulaModal').modal('show');
+       updateKeyTable(userKeyInput);
    } else {
        $(".errMsg").css('display', 'none');
        $("#entitlementKeyInputs").before(errMsg);
@@ -48,44 +80,6 @@ function checkKey(){
    }
  }
 
-//check if the user pressed trail or key radio button
- function checkUserSubmitTrial(){
-     var trialPressed = document.getElementById("thirtyDayTrialRadio"); //trial radiobutton
-     var keyEnteredPressed = document.getElementById("entitlementRadio"); //enter key radiobutton
-     var radioValue; //used to get value of the radio button to check
-     $('input').on('change', function() {
-       radioValue = $('input:radio[name="licenseRadio"]:checked').val();
-       console.log(radioValue);
-     }); //checks which radio button is pressed
-     $(".continueButton").on("click", function(){
-         console.log("inside click continue func!");
-         if (radioValue = "trial" ){
-           console.log("yes! trial");
-           userSubmitTrial();
-         }else if (radioValue = "validKey"){
-           userSubmitEula();//check if keyEnteredPressed
-           //send key
-         }
-         console.log("continue");
-     }); //if use press trial then after pressing continue call function to submit trial,
-         //else check if submit pressed, send key and then check continue.
-     return false;
- }
-
- $(document).ready(function(){
-     var agreeInput = document.getElementById('agreeToEula');
-     var valid = false;
-     checkUserSubmitTrial(); //check which radio button the user pressed
-     $('.agreeToEula').click(function() {
-         //changes checkbox to submit button
-         $(".agree").slideUp();
-         $(".agree").delay(3000);
-         $(".submitAgreement").slideDown();
-     });
-     $('.submitAgreement').click(function(){
-         userSubmitEula();
-     })
- });
 
 //if user selects both agree and submit button the the modal disappears and then te
 // 30 day trail is disabled and the user can only press the continue button. add a green
@@ -101,6 +95,7 @@ function userSubmitTrial(){
         console.log("trial success!");
         $('#entitlementRadio').prop("disabled", true);
         $('#entitlementKey1').prop("disabled", true);
+        console.log("userSubmitTrial success");
     }).fail(function(xhr, status, error){
         console.log(error);
         if (error){
@@ -110,10 +105,38 @@ function userSubmitTrial(){
     return false;
 }
 
+
+//for continue button when user applied a key after accepting eula
+function updateKeyTable(userKeyInput) {
+    var applyKeyButton2 = $("#applyKey");
+    var base_url = window.location.origin;
+    $.ajax({
+        url : base_url + '/entitlement/key/' + userKeyInput,
+        type : 'PUT',
+        dataType : 'json'
+      }).done(function(data){
+         console.log(data);
+         console.log("updateKeyTable success");
+         openModal();
+      }).fail(function(xhr, status, error){
+        console.log("updateKeyTable error: ");
+        console.log(error);
+      });
+     console.log("updated key");
+}
+
+//after sending key open modal
+function openModal(){
+   $('#eulaModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
+   $('#eulaModal').modal('show');
+   console.log("eula modal opening");
+}
+
+//user submit modal, send POST
 function userSubmitEula(){
   var base_url = window.location.origin;
   var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
-  var userKeyInput = document.getElementById('entitlementKey1').value;
+  // var userKeyInput = document.getElementById('entitlementKey1').value;
   //add ajax call here after submit button pressed
   $.ajax({
       type: 'POST',
@@ -121,7 +144,7 @@ function userSubmitEula(){
   }).done(function(data){
       console.log(data);
       console.log("sent eula! press continue to finish process");
-      // $()
+
       var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
        $('#eulaModal').modal('hide');
        $(".modal-backdrop").hide();
@@ -131,36 +154,39 @@ function userSubmitEula(){
        $('.errMsg').hide();
        $('.continueButton').prop("disabled", false);
        $('#entitlementKeyInputs').after(submitSpan);
-       if (checkKey(userKeyInput)){
-          updateKeyTable(userKeyInput);
-       }
+       console.log("userSubmitEula success");
   }).fail(function(xhr, status, error){
       console.log(error);
-      // $()
-      if (error){
-         // document.getElementById('selection-warning').style.display = 'block';
-      }
   });
 }
 
-//for continue button when user applied a key after accepting eula
-function updateKeyTable(userKeyInput) {
-    var applyKeyButton2 = $("#applyKey");
-    var base_url = window.location.origin;
-    $.ajax({
-        url : base_url + '/entitlement/key/' + userKeyInput,
-        type : 'PUT',
-        dataType : 'json',
-        success : function(data){
-          $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
-          $("#licenseCapa").load(window.location + " #licenseCapa");
-        },
-        error : function(xhr, status, error){
-            console.log(error);
-       }
-    });
-     console.log("updated key");
-}
+//press continue button
+//check which radio button value pressed.
+//check if the user pressed trail or key radio button
+ function checkUserSubmitTrial(){
+     var trialPressed = document.getElementById("thirtyDayTrialRadio"); //trial radiobutton
+     var keyEnteredPressed = document.getElementById("entitlementRadio"); //enter key radiobutton
+     var radioValue; //used to get value of the radio button to check
+     $('input').on('change', function() {
+       radioValue = $('input:radio[name="licenseRadio"]:checked').val();
+       console.log(radioValue);
+     }); //checks which radio button is pressed
+     $(".continueButton").on("click", function(){
+         console.log("inside click continue func!");
+         if (radioValue = "trial" ){
+           console.log("Yes! trial");
+           userSubmitTrial();
+         } else if (radioValue = "validKey"){
+           console.log("No! trial");
+         } else{
+           console.log("no pick");
+         }
+         console.log("continuing now");
+     }); //if use press trial then after pressing continue call function to submit trial,
+         //else check if submit pressed, send key and then check continue.
+     return false;
+ }
+
 
 //idk what this code from packetfence is for but check later
 function registerExits() {
