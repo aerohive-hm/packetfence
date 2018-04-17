@@ -1,5 +1,27 @@
 #The default for maintenance tasks
 
+[acct_maintenance]
+#
+# type
+#
+# The type of task to perform
+type=acct_maintenance
+#
+# description
+#
+# The description of task to perform
+description=Task that controls the inline accounting maintenance (bandwidth checks).
+#
+# status
+#
+# If the task acct_maintenance is enabled
+status=enabled
+#
+# interval
+#
+# At which interval to run the acct maintenance pfmon task
+interval=60s
+
 [auth_log_cleanup]
 #
 # type
@@ -79,7 +101,7 @@ type=cluster_check
 # description
 #
 # The description of task to perform
-description=Checks the health state of the cluster and attempts to resolve any detected conflicts.
+description=Task that checks the health state of the cluster and attempts to resolve any detected conflicts.
 #
 # status
 #
@@ -101,7 +123,7 @@ type=fingerbank_data_update
 # description
 #
 # The description of task to perform
-description=Controls updates of the local Fingerbank data from the cloud API.
+description=Task that controls updates of the local Fingerbank data from the cloud API.
 #
 # status
 #
@@ -112,6 +134,28 @@ status=enabled
 #
 # At which interval to run the fingerbank data update pfmon task
 interval=1D
+
+[inline_accounting_maintenance]
+#
+# type
+#
+# The type of task to perform
+type=inline_accounting_maintenance
+#
+# description
+#
+# The description of task to perform
+description=Task that controls the inline accounting maintenance (bandwidth checks).
+#
+# status
+#
+# If the task inline_accounting_maintenance is enabled
+status=enabled
+#
+# interval
+#
+# At which interval to run the inline accounting maintenance pfmon task
+interval=60s
 
 [ip4log_cleanup]
 #
@@ -307,7 +351,7 @@ type=nodes_maintenance
 # description
 #
 # The description of task to perform
-description=Deregisters nodes that have a deregistration date that has passed.
+description=Task to unregister nodes that have an unregistration date older than the current date and time.
 #
 # status
 #
@@ -329,7 +373,7 @@ type=option82_query
 # description
 #
 # The description of task to perform
-description=Queries compatible switches for DHCP Option 82 switch MAC address.
+description=Task to query compatible switches for DHCP Option 82 switch MAC address.
 #
 # status
 #
@@ -351,7 +395,7 @@ type=person_cleanup
 # description
 #
 # The description of task to perform
-description=Deletes users that do not own any devices. Locally created users will only be deleted when their account expires.
+description=Task to delete users that do not own any device. Locally created users will only be deleted when their account expires.
 #
 # status
 #
@@ -373,7 +417,7 @@ type=populate_ntlm_redis_cache
 # description
 #
 # The description of task to perform
-description=Controls the population of the Active Directory NTLM cache.
+description=Task to control the population of the Active Directory NTLM cache.
 #
 # status
 #
@@ -395,7 +439,7 @@ type=provisioning_compliance_poll
 # description
 #
 # The description of task to perform
-description=Runs the polling enforcement on the provisioners.
+description=Task that runs the polling enforcement on the provisioners.
 #
 # status
 #
@@ -454,16 +498,16 @@ type=queue_stats
 # description
 #
 # The description of task to perform
-description=Controls the polling of queue statistics.
+description=Task that controls the polling of pfqueue's stats (queue counts).
 #
 # status
 #
-# If the task queue_stats is enabled
+# If the task violation_maintenance is enabled
 status=enabled
 #
 # interval
 #
-# At which interval to run the queue stats pfmon task
+# At which interval to run the violation maintenance pfmon task
 interval=60s
 
 [violation_maintenance]
@@ -476,7 +520,7 @@ type=violation_maintenance
 # description
 #
 # The description of task to perform
-description=Controls the execution of delayed violations.
+description=Task that controls the execution of delayed violation.
 #
 # status
 #
@@ -508,7 +552,7 @@ type=switch_cache_lldpLocalPort_description
 # description
 #
 # The description of task to perform
-description=Caches switches' LLDP local port descriptions.
+description=Cache switches LLDP local port descriptions
 #
 # status
 #
@@ -535,16 +579,16 @@ type=certificates_check
 # description
 #
 # The description of task to perform
-description=Checks the validity of TLS certificates.
+description=Check for SSL certificates validity
 #
 # status
 #
-# If the task certificates_check is enabled
+# If the task switch_cache_lldpLocalPort_description is enabled
 status=enabled
 #
 # interval
 #
-# At which interval to run the certificates check pfmon task
+# At which interval to run the switch_cache_lldpLocalPort_description pfmon task
 interval=12h
 #
 # delay
@@ -554,5 +598,5 @@ delay=30D
 #
 # certificates
 #
-# TLS certificate(s) to be monitored
+# SSL certificate(s) to be monitored
 certificates=/usr/local/pf/conf/ssl/server.pem,/usr/local/pf/raddb/certs/server.crt
