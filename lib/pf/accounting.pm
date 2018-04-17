@@ -620,6 +620,21 @@ sub cache {
     return pf::CHI->new(namespace => "accounting");
 }
 
+=item count_active
+
+=cut
+
+# TODO: Verify whether this is correct
+sub count_active {
+    my ($status, $count) = pf::dal::radacct->count(
+        -where => {
+            acctstoptime => undef
+        }
+    );
+
+    return $count;
+}
+
 =item _db_item
 
 _db_item

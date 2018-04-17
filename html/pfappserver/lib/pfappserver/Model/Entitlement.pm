@@ -21,7 +21,7 @@ use pf::log;
 use pf::error qw(is_success is_error);
 use pf::constants qw($TRUE $FALSE);
 use pf::a3_entitlement;
-use pf::node;
+use pf::accounting;
 
 extends 'Catalyst::Model';
 
@@ -134,9 +134,7 @@ Get the current used endpoint capacity
 =cut
 
 sub get_used_capacity {
-    # TODO: This is wrong.  query accounting session for very latest
-    # Suggestion to use auth logs and add up daily totals every night.
-    return pf::node->node_count_all()->{nb} // 0;
+    return pf::accounting::count_active();
 }
 
 =head2 is_trial_eligible
