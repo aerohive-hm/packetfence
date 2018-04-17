@@ -16,7 +16,6 @@ use warnings;
 use pf::log;
 
 use Moose;
-use pf::log;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
