@@ -5,6 +5,7 @@
      cssFiles = [
         'admin/status',
         ] -%]
+
     <div class="sidenav-fluid">
       <div class="row-fluid" style="width: 100%">
         <div class="sidenav sidenav-section span3">
