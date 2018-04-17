@@ -148,7 +148,6 @@ button, input, select, textarea {
 }
 
 #time-indicator-bar {
-  width: 170px;
   height: 15px;
   background-color: #FFC007;
 }

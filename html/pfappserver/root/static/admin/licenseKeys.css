@@ -9,6 +9,10 @@
   margin: 20px 200px !important;
 }
 
+#eulaModal{
+  display:none;
+}
+
 .head{
    padding-bottom: 30px;
 }
@@ -102,6 +106,10 @@ label{
     color: grey;
     font-style: italic;
     background-color: #eee;
+}
+
+.submitAgreement{
+    display: none;
 }
 
 .expiringSoon{

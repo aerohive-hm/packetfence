@@ -13,7 +13,24 @@ $(document).ready(function(){
   applyKeyButton();
   dateRangeChecker();
   updateCapacities();
+
+  $('.no-submitted-eula').click(function(){
+    $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
+    $("#licenseCapa").load(window.location + " #licenseCapa");
+  });
+
+  $('.agreeToEula').click(function() {
+      //changes checkbox to submit button
+      $(".agree").slideUp();
+      $(".agree").delay(3000);
+      $(".submitAgreement").slideDown();
+  });
+  $('.submitAgreement').click(function(){
+      userSubmitEula();
+  })
 });
+
+
 
 function updateCapacities(){
   var licenseCapacity = document.getElementById("licenseCapa");
@@ -68,8 +85,10 @@ function updateKeyTable(userKeyInput) {
         success : function(data){
           $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
           $("#licenseCapa").load(window.location + " #licenseCapa");
+          $(".trialIndicator").hide();
         },
-        error : function() {
+        error : function(error) {
+          console.log(error);
           var errMsg2 = "<p class='errMsg' style='color:red;'>This key is not found or not valid.</p>";
           var errMsg3 = "<p class='errMsg' style='color:red;'>This key is already deactivated.</p>";
           var checkFirstCharOfInput = userKeyInput.charAt(0);
@@ -82,7 +101,7 @@ function updateKeyTable(userKeyInput) {
               applyKeyButton2.after(errMsg2).slideDown("slow");
               $("#keyInput").css('border','1px solid #dfdfdf');
           }else{
-            console.log("error");
+            console.log(error);
           }
         }
     });
@@ -92,6 +111,7 @@ function updateKeyTable(userKeyInput) {
 function success(data){
     $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
     $("#licenseCapa").load(window.location + " #licenseCapa");
+    $(".licenseTrialText").hide();
     var capacity = $("#licenseCapa").attr("data-capacity");
     console.log("capacity: " + capacity);
     capacity = $("#licenseCapa").attr('data-capacity', document.getElementById('licenseCapa').innerHTML);
@@ -175,6 +195,20 @@ function dateRangeChecker(){
       console.log("checked date");
 }
 
-function isEulaAccepted(){
-    
+function userSubmitEula(){
+  var base_url = window.location.origin;
+  //add ajax call here after submit button pressed
+  $.ajax({
+      type: 'POST',
+      url: base_url + '/eula'
+  }).done(function(data){
+      console.log(data);
+      console.log("sent eula! update key");
+       if (checkKey(userKeyInput)){
+          updateKeyTable(userKeyInput);
+       }
+  }).fail(function(xhr, status, error){
+      console.log(error);
+      console.log("uhoh error");
+  });
 }

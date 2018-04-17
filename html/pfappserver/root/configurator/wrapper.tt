@@ -14,8 +14,10 @@
     <link href="[% c.uri_for('/static/css/styles.css') %]" rel="stylesheet">
     <link href="[% c.uri_for('/static/configurator/common.css') %]" rel="stylesheet">
     <link href="[% c.uri_for('/static/configurator/servicesAni.css') %]" rel="stylesheet">
+    <link rel="stylesheet" href="[% c.uri_for('/static/css/A3styleNew.css') %]">
 
 <style>
+
 .entitlementKey{
   width: 300px;
 }

@@ -59,7 +59,7 @@
                                               <span id="checkmark"></span>
                                           </label><span class="agreeText">[% l('Agree') %]</span>
                           			      </div>
-                                      <button type="button" class="btn btn-success fixed-right submitAgreement">[% l('Submit') %]</button>
+                                      <button type="button" class="btn btn-success fixed-right submitAgreement" data-dismiss="modal">[% l('Submit') %]</button>
                                 	</div>
                       		     </div>
                     		  </div>
