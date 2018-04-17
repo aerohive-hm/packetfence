@@ -30,8 +30,6 @@ $(document).ready(function(){
   })
 });
 
-
-
 function updateCapacities(){
   var licenseCapacity = document.getElementById("licenseCapa");
   var usedCapacity = document.getElementById("usedCapacity");
@@ -62,7 +60,7 @@ function applyKeyButton(){
         $(".errMsg").css('display', 'none');
         $("#keyInput").css('border','1px solid #dfdfdf');
         updateKeyTable(userKeyInput);
-        dateRangeChecker();
+        // dateRangeChecker();
         console.log("updated table styling after ajax call ");
         return true;
     } else {
@@ -81,13 +79,26 @@ function updateKeyTable(userKeyInput) {
     $.ajax({
         url : base_url + '/entitlement/key/' + userKeyInput,
         type : 'PUT',
-        dataType : 'json',
-        success : function(data){
-          $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
-          $("#licenseCapa").load(window.location + " #licenseCapa");
-          $(".trialIndicator").hide();
-        },
-        error : function(error) {
+        dataType : 'json'
+        }).done(function(data){
+           console.log(data);
+           $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
+           $("#licenseCapa").load(window.location + " #licenseCapa");
+           $(".licenseTrialText").hide();
+           var capacity = $("#licenseCapa").attr("data-capacity");
+           console.log("capacity: " + capacity);
+           capacity = $("#licenseCapa").attr('data-capacity', document.getElementById('licenseCapa').innerHTML);
+           if (capacity >= 100000){
+               console.log("changeing capacity to new data capacity2");
+               document.getElementById('licenseCapa').innerHTML = "Unlimited";
+           }
+           console.log("new license capa: " + document.getElementById('licenseCapa').innerHTML);
+           console.log("updateKeyTable success");
+           // if (){
+             openModal();
+           // }
+        }).fail(function(xhr, status, error){
+          console.log("updateKeyTable error: ");
           console.log(error);
           var errMsg2 = "<p class='errMsg' style='color:red;'>This key is not found or not valid.</p>";
           var errMsg3 = "<p class='errMsg' style='color:red;'>This key is already deactivated.</p>";
@@ -103,26 +114,10 @@ function updateKeyTable(userKeyInput) {
           }else{
             console.log(error);
           }
-        }
-    });
-     console.log("updated key");
+        });
+       console.log("updated key");
 }
 
-function success(data){
-    $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
-    $("#licenseCapa").load(window.location + " #licenseCapa");
-    $(".licenseTrialText").hide();
-    var capacity = $("#licenseCapa").attr("data-capacity");
-    console.log("capacity: " + capacity);
-    capacity = $("#licenseCapa").attr('data-capacity', document.getElementById('licenseCapa').innerHTML);
-    if (capacity >= 100000){
-      // console.log("changeing capacity to new data capacity");
-        console.log("changeing capacity to new data capacity2");
-        document.getElementById('licenseCapa').innerHTML = "Unlimited";
-      // $("#licenseCapa").load(window.location + " #licenseCapa");
-    }
-    console.log("new license capa: " + document.getElementById('licenseCapa').innerHTML);
-}
 
 function checkKeyInput(userKeyInput){
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
@@ -195,6 +190,13 @@ function dateRangeChecker(){
       console.log("checked date");
 }
 
+//open eula
+function openModal(){
+   $('#eulaModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
+   $('#eulaModal').modal('show');
+   console.log("eula modal opening");
+}
+
 function userSubmitEula(){
   var base_url = window.location.origin;
   //add ajax call here after submit button pressed
@@ -203,12 +205,11 @@ function userSubmitEula(){
       url: base_url + '/eula'
   }).done(function(data){
       console.log(data);
-      console.log("sent eula! update key");
-       if (checkKey(userKeyInput)){
-          updateKeyTable(userKeyInput);
-       }
+      console.log("sent eula! congrats no more trial");
+      $('.trialIndicator').remove();
+      $('#eulaModal').modal('hide');
+      $(".modal-backdrop").hide();
   }).fail(function(xhr, status, error){
       console.log(error);
-      console.log("uhoh error");
   });
 }

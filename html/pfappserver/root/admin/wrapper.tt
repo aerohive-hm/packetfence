@@ -127,7 +127,8 @@
                   <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
                 </div>
               </div>
-              [% END %] <!--for trialindecator-->
+              [% END %]
+              <!--for trialindecator-->
 
           [%- END %]
 
@@ -142,11 +143,13 @@
       </div>
     </div>
     <!-- [%- IF c.user_allowed_in_admin() %] -->
+    
     <!-- LICENSE KEY MODAL-->
+
       <div class="modal fade" id="myModal" style="display: none;">
         <div class="modal-dialog" role="document">
       <!--BEGINNING ALERT TEXT-->
-            <div class="modal-content licenseAlert">
+             <div class="modal-content licenseAlert">
               <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
                 <h3 class="modal-title"><b>Subscription ending in <span id="daysLeft"></span></b></h3>
               </div>

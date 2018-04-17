@@ -20,7 +20,6 @@ function timeLeft(){
   var seconds = 0;
   var hours = 0;
   var days = 0;
-  // var isshow = localStorage.getItem('status');
   $.ajax({
       type: 'GET',
       url: base_url + '/entitlement/trial'
@@ -31,7 +30,7 @@ function timeLeft(){
          hours = Math.floor(parseSeconds / 3600);
          console.log("Days: " + days);
          // numberOfDaysLeft = days + 1;
-         numberOfDaysLeft = 5;
+         numberOfDaysLeft = days + 1;
          var percentageWidth = Math.round((numberOfDaysLeft) * (100/30)) + '%';
          if (numberOfDaysLeft > 15 && numberOfDaysLeft < 29){
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
@@ -50,12 +49,10 @@ function timeLeft(){
          }else {
            $("#daysLeft").html(numberOfDaysLeft + " " + "day");
            $(timeBar).css('width', percentageWidth);
+           // modal to show for actually expire
          }
     }).fail(function(xhr, status, error){
-        // console.log(error);
-        // if (error){
-        //    document.getElementById('selection-warning').style.display = 'block';
-        // }
+        $('.trialIndicator').remove();
     });
     return numOfDaysLeft;
 }

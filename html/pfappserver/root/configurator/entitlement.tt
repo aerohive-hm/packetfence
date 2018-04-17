@@ -41,7 +41,7 @@
                                   <input class="entitlementKey" id="entitlementKey1" class="text" type="text" maxlength="35" placeholder="Enter" value="">
                               </fieldset>
                     		      <br>
-                    		      <button id="entitlementKeySubmit" onclick="checkKey(); return false;" class="btn btn-primary">[% l('Submit') %]</button>
+                    		      <button id="entitlementKeySubmit"  class="btn btn-primary">[% l('Submit') %]</button>
                 	 	      </div>
                 		   </div>
                 		  <!--EULA modal-->
@@ -70,10 +70,10 @@
 
               <div class="form-actions">
                 <div class="alert alert-warning" id="selection-warning" role="alert" style="display:none; margin-left: -25px;">
-                  You already selected trial. You will be brought to the next step.
+                  [% l('You already selected trial. You will be brought to the next step.') %]
                 </div>
                 <div class="alert alert-warning" id="selection-warning2" role="alert" style="display:none; margin-left: -25px;">
-                  You already submitted a key. You will be brought to the next step.
+                  [% l('You already submitted a key. You will be brought to the next step.') %]
                 </div>
                 <button type="submit" data-msg-done="[% l('Continue') %]" class="btn btn-primary pull-right continueButton" href="[% next_step %]" disabled>
                   [% l('Continue') %]
