@@ -13,8 +13,9 @@ Catalyst Controller.
 use strict;
 use warnings;
 
-use Moose;
 use pf::log;
+
+use Moose;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
