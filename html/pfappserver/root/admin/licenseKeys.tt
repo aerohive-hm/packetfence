@@ -16,7 +16,7 @@
                 <a href="#[% action %]">[% l(description) %]</a>
               </li>
 [% END -%]
-<div class="alert alert-success" id='success-alert' role="alert" style="display:none; position:fixed; z-index:25; left: 50%;">
+<div class="alert alert-success" id='success-alert' role="alert" style="display:none; position:fixed; z-index:25; left: 40%;">
     <span id="errorMessage"></span>
 </div>
 
