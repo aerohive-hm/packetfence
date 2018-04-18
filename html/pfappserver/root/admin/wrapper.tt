@@ -159,10 +159,10 @@
               <div class="modal-body">
                 <p>Hello [% c.user | html %]. It looks like your subscription is almost ending. Please renew your license by # of days to continue using it. You can do this by calling this number: </p>
                  <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">408-123-4567</p>
-                <p>You can also send an email, by pressing the button below <b>"Send Email"</b> where you can prefill a form to send out an email. Thanks again for using our service. </p>
+                <p>[% l('You can also send an email, by pressing the button below ') %]<b>"Send Email"</b> where you can prefill a form to send out an email. Thanks again for using our service. </p>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary toggle-emailForm">Send Email</button>
+                <button type="button" class="btn btn-primary toggle-emailForm">[% l('Send Email') %]</button>
           <button type="button" class="btn btn-success licenseKey">Enter License Key</button>
                 <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">Close</button>
               </div>

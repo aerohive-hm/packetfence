@@ -1,0 +1,53 @@
+.entitlementKey{
+  width: 300px;
+}
+#entitlementKeyInputs{
+  padding-left: 25px;
+  padding-top: 15px;
+}
+#entitlementKeySubmit{
+  margin-left: 25px;
+  width: 314px;
+}
+
+#eulaModal{
+  display:none;
+}
+.errMsg{
+  color:#d9534f;
+  padding-left:25px;
+}
+
+.agree{
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.submitAgreement{
+  display:none;
+}
+
+.modal-footer{
+  background-color: white;
+}
+
+.modal-footer .submitAgreement{
+  width: 100%;
+}
+#progress-bar {
+  width: 100%;
+  background-color: #ddd;
+}
+
+#progress {
+  width: 1%;
+  height: 30px;
+  background-color: #FFC007;
+}
+
+#daemonTable{
+display:none;
+}

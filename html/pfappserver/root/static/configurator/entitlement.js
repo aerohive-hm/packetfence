@@ -1,6 +1,6 @@
-//toggles
+
 $(document).ready(function(){
-  //(1)toggle clicks to hide and disable input fields of key radio btn option
+  //toggle clicks to hide and disable input fields of key radio btn option
   $('#entitlementRadio').click(function () {
      $('.keyInput').css('display', 'inline');
      $('.continueButton').prop("disabled", true);
@@ -24,12 +24,9 @@ $(document).ready(function(){
   })
 });
 
+
 // 1.) They enter a key
 // 2.) They press submit, check if key is valid, if key valid, send POST to /entitlement/key.
-// 3.) after submitting, open up modal for eula.
-// 4.) submit on eula gets pressed; sent post call to /eula
-
-// (1), (2)
 function submitKeyButton(){
   var applyKeyButton = $("#entitlementKeySubmit");
   applyKeyButton.click(function(){
@@ -136,8 +133,7 @@ function openModal(){
 function userSubmitEula(){
   var base_url = window.location.origin;
   var submitSpan = "<span style='padding-left: 25px; color:#5cb85c;'>Complete! Press Continue to finish the process.</span>";
-  // var userKeyInput = document.getElementById('entitlementKey1').value;
-  //add ajax call here after submit button pressed
+  //after submit button pressed
   $.ajax({
       type: 'POST',
       url: base_url + '/eula'
@@ -188,7 +184,6 @@ function userSubmitEula(){
  }
 
 
-//idk what this code from packetfence is for but check later
 function registerExits() {
     $('#tracker a, .form-actions button').click(function(event) {
         var href = $(this).attr('href');
