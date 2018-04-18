@@ -1,6 +1,4 @@
 
-// all html elements;
-// commented out console log lines;
 
 $(document).ready(function(){
   var licenseCapacity = document.getElementById("licenseCapa");
@@ -123,7 +121,6 @@ function checkKeyInput(userKeyInput){
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
     var errMsg = "<p class='errMsg' style='color:red;'>Sorry please reenter the license key again.</p>";
     var applyKeyButton2 = $("#applyKey");
-    // console.log("user input: " + userKeyInput);
     //check regex with user input; there is check for duplicate already
     console.log(checkKeyRegex.test(userKeyInput)); //TRUE OR FALSE
       if (checkKeyRegex.test(userKeyInput)){
@@ -146,7 +143,6 @@ function dateRangeChecker(){
         var $tableColumns = $(this).find('td');
         var validFromColumn = $tableColumns.eq(2).text();
         var validToColumn = $tableColumns.eq(3).text();
-        // console.log('Row ' + (i + 1) + ':\n Date: ' + validFromColumn);
 
         // get todays date
         var todayDate = new Date();
@@ -160,18 +156,12 @@ function dateRangeChecker(){
             mm = '0' + mm;
         }
         var todaysDate = yyyy + '-' + mm + '-' + dd;
-        // console.log("Today: " + todaysDate);
 
         var formatValidFromColumn = new Date(validFromColumn);
         var formatValidToColumn = new Date(validToColumn);
-        var formatTodaysDate = new Date(todaysDate);
-        // console.log("Formatted Valid From column: " + formatValidFromColumn);
-        // console.log("Formatted Valid To column: " + formatValidToColumn);
-        // console.log("Formatted Today date: " + formatTodaysDate);
+        var formatTodaysDate = new Date(todaysDate
 
         var total_days = (formatValidToColumn - formatTodaysDate) / (1000 * 60 * 60 * 24);
-        // var total_days = (formatTodaysDate - formatValidToColumn) / (1000 * 60 * 60 * 24);
-        // console.log("total after subtraction: " + total_days);
 
         if (formatValidFromColumn > formatTodaysDate){
             $tableColumns.eq(2).closest('tr').css('color', 'grey');
@@ -197,9 +187,9 @@ function openModal(){
    console.log("eula modal opening");
 }
 
+//user submits eula with button press 
 function userSubmitEula(){
   var base_url = window.location.origin;
-  //add ajax call here after submit button pressed
   $.ajax({
       type: 'POST',
       url: base_url + '/eula'
