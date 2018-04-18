@@ -108,6 +108,12 @@ label{
     background-color: #eee;
 }
 
+.deactivated{
+    color: red;
+    text-decoration: line-through;
+    background-color: #eee;
+}
+
 .submitAgreement{
     display: none;
 }

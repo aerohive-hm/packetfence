@@ -1148,9 +1148,21 @@ eap_fast_authority_identity=1234
 #
 license_server=https://cloud.aerohive.com
 #
+# A3.license_username
+#
+license_username=A3
+#
+# A3.license_password
+#
+license_password=LDAZyHA2uiL51PKDsU4BZG74VSIlHskmFczYO7T3
+#
 # A3.entitlement_path
 #
 entitlement_path=/a3/entitlement
+#
+# A3.verify_path
+#
+verify_path=/a3/entitlement/verify
 #
 # A3.eula_path
 #

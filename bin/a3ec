@@ -1,0 +1,109 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+a3ec - A3 Entitlement Check
+
+=head1 SYNOPSIS
+
+Checks for deactivated entitlement keys
+
+=cut
+
+use warnings;
+use strict;
+
+use Data::Dumper;
+
+use lib '/usr/local/pf/lib';
+
+use JSON;
+use WWW::Curl::Easy;
+
+use pf::error qw(is_success);
+use pf::log;
+use pf::config qw(
+    %Config
+);
+use pf::a3_entitlement;
+
+BEGIN {
+    #Ensure that the file permissions of the log file is correct 0660
+    umask (0);
+    use constant INSTALL_DIR => '/usr/local/pf';
+    use lib INSTALL_DIR . "/lib";
+    use pf::log (service => 'a3ec');
+}
+
+our $PROGRAM_NAME = $0 = "a3ec";
+
+my $logger = get_logger( $PROGRAM_NAME );
+
+my $entitlements = pf::a3_entitlement::find_all();
+my $entitlement_map = {};
+
+if (@$entitlements == 0) {
+    $logger->info("No entitlements to check, exiting.")
+    exit 0;
+}
+
+foreach (@$entitlements) {
+    $entitlement_map->{$_->{entitlement_key}} = $_;
+}
+
+my @entitlement_keys = keys(%$entitlement_map);
+
+my $verify_request = {
+    systemId => `/usr/bin/cat /etc/A3.systemid`,
+    keys => \@entitlement_keys
+};
+
+my $request_uri = $Config{A3}->{license_server} . $Config{A3}->{verify_path};
+
+$logger->info("Sending EK verification request to ACS at $request_uri; request is:\n" . Dumper($verify_request));
+
+my $curl = WWW::Curl::Easy->new;
+my $json = JSON->new->allow_nonref;
+
+$curl->setopt(CURLOPT_POST, 1);
+$curl->setopt(CURLOPT_URL, $request_uri);
+
+if ($Config{A3}->{license_username} && $Config{A3}->{license_password}) {
+    $logger->info("Including basic auth credentials in request");
+    $curl->setopt(CURLOPT_USERNAME, $Config{A3}->{license_username});
+    $curl->setopt(CURLOPT_PASSWORD, $Config{A3}->{license_password});
+}
+
+$curl->setopt(CURLOPT_HTTPHEADER, [
+    'Content-Type: application/json',
+    'Accept: application/json'
+]);
+
+$curl->setopt(CURLOPT_POSTFIELDS, $json->encode($verify_request));
+
+my $response_body = '';
+$curl->setopt(CURLOPT_WRITEDATA, \$response_body);
+
+my $retcode = $curl->perform;
+
+if ($retcode == 0) {
+    my $response_code = $curl->getinfo(CURLINFO_HTTP_CODE);
+
+    $logger->info("Response from ACS: $response_code: $response_body");
+
+    if (is_success($response_code)) {
+        my $data = $json->decode($response_body);
+
+        foreach my $bad_ek (@{ $data->{results} }) {
+            my $bad_entitlement = $entitlement_map->{ $bad_ek->{key} };
+
+            if ($bad_entitlement) {
+                $bad_entitlement->{status} = $bad_ek->{status};
+                $bad_entitlement->save;
+            }
+        }
+    }
+}
+else {
+    $logger->error("Failed to contact ACS to validate entitlement keys: retcode = $retcode");
+}

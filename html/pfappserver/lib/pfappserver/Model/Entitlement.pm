@@ -48,6 +48,8 @@ sub list_entitlement_keys {
                 $key->{lic_status} = "notValidExpired"
             } elsif (($end - $now) <= 30 * 24 * 60 * 60) {
                 $key->{lic_status} = "expiringSoon"
+            } elsif ($key->{status} == $pf::a3_entitlement::KEY_STATUS_INACTIVE) {
+                $key->{lic_status} = "deactivated"
             } else {
                 $key->{lic_status} = "";
             }
