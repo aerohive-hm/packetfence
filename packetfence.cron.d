@@ -13,3 +13,6 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # Synchronization for /usr/local/fingerbank
 #*/15 * * * *  pf [ ! -d /var/lib/mysql/pf ] && rsync -e 'ssh -i /usr/local/pf/.ssh/packetfence-sync' --delete -logDprtuv --exclude=logs/* $SYNC_SERVER_IP:/usr/local/fingerbank /usr/local
 
+# Periodic Entitlement Checks
+# TODO: Randomize the date and time on install
+0   0   1   *   *   pf  /usr/local/pf/bin/a3ec
