@@ -120,7 +120,7 @@ sub get_bundle {
 
     my $email = $args->{'certificate_email'};
     my $cn = $args->{'certificate_cn'};
-    my $organisation = $self->organization;
+    my $organization = $self->organization;
     my $state = $self->state;
     my $profile = $self->profile;
     my $country = $self->country;
@@ -130,7 +130,7 @@ sub get_bundle {
 
     my $post_fields =
       "mail=" . uri_escape($email)
-      . "&organisation=" . uri_escape($organisation)
+      . "&organization=" . uri_escape($organization)
       . "&st=" . uri_escape($state)
       . "&country=" . uri_escape($country)
       . "&profile=" . uri_escape($profile)
