@@ -16,6 +16,9 @@
                 <a href="#[% action %]">[% l(description) %]</a>
               </li>
 [% END -%]
+<div class="alert alert-success" id='success-alert' role="alert" style="display:none; position:fixed; z-index:25; left: 40%;">
+    <span id="errorMessage"></span>
+</div>
 
 <div class="card-div">
   <div class="card-block">
@@ -28,7 +31,7 @@
           <div class="pad">
             <label class="lcLabel"><b>[% l('Licensed Capacity:') %]</b></label>
             <div id="licenseCapaSpan">
-              <span id="licenseCapa" data-capacity="[% max_capacity %]" >[% max_capacity %]</span><span> endpoints</span>[% IF is_eula_accepted %][% ELSE %]<span class="licenseTrialText"> (trial only) </span>[% END %]
+              <span id="licenseCapa" data-capacity="[% max_capacity %]" >[% max_capacity %]</span><span> endpoints</span>[% IF is_eula_accepted %][% ELSE %][% IF max_capacity==100 %]<span class="licenseTrialText"> (trial only) </span>[% ELSE %][% END %][% END %]
             </div>
           </div>
           <div class="pad2">

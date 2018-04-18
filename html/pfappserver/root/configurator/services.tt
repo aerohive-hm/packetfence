@@ -46,7 +46,7 @@
     <div class="card">
 	    <div style="padding:25px 25px;">
         <div id="movingLogo">
-          <img class="aerohiveLogo" src="[% c.uri_for('/static/configurator/logo.bug_BLK.svg') %]"  width="175" height="200"></img>
+          <img class="aerohiveLogo" src="[% c.uri_for('/static/configurator/loadingicon.svg') %]"  width="175" height="200"></img>
           <!-- <svg class="aerohiveLogo" width="175" height="200">
             <polyline id="hexagon" points="87,0 174,50 174,150 87,200 0,150 0,50 87,0"/>
             <animate attributeName="fill" values="#ffc007;#dfdfdf;#ffc007;" dur="5s" repeatCount="indefinite" />
