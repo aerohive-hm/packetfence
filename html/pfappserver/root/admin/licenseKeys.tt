@@ -31,7 +31,7 @@
           <div class="pad">
             <label class="lcLabel"><b>[% l('Licensed Capacity:') %]</b></label>
             <div id="licenseCapaSpan">
-              <span id="licenseCapa" data-capacity="[% max_capacity %]" >[% max_capacity %]</span><span> endpoints</span>[% IF is_eula_accepted %][% ELSE %][% IF max_capacity==100 %]<span class="licenseTrialText"> (trial only) </span>[% ELSE %][% END %][% END %]
+              <span id="licenseCapa" data-capacity="[% max_capacity %]" >[% IF max_capacity > 100000 %]Unlimited[% ELSE %][% max_capacity %][% END %]</span><span> endpoints</span>[% IF is_eula_accepted %][% ELSE %][% IF max_capacity==100 %]<span class="licenseTrialText"> (trial only) </span>[% ELSE %][% END %][% END %]
             </div>
           </div>
           <div class="pad2">
