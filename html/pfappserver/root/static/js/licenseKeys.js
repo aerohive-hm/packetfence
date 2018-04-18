@@ -81,7 +81,21 @@ function updateKeyTable(userKeyInput) {
         type : 'PUT',
         dataType : 'json'
         }).done(function(data){
+           console.log("status message data: ");
            console.log(data);
+           var checkFirstCharOfInput = userKeyInput.charAt(0);
+           var errMsg = data.status_msg;
+           if (checkFirstCharOfInput === '3' || checkFirstCharOfInput === '2' ) {
+               document.getElementById('errorMessage').innerHTML = errMsg;
+               $("#success-alert").show(); // use slide down for animation
+               setTimeout(function () {
+                 $("#success-alert").slideUp(300);
+               }, 2000);
+           } else {
+
+           }
+
+           //update capacity
            $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
            $("#licenseCapa").load(window.location + " #licenseCapa");
            $(".licenseTrialText").hide();
@@ -94,26 +108,26 @@ function updateKeyTable(userKeyInput) {
            }
            console.log("new license capa: " + document.getElementById('licenseCapa').innerHTML);
            console.log("updateKeyTable success");
-           // if (){
-             openModal();
-           // }
+
+           //open modal if eula hasn't been accepted
+            openModal();
         }).fail(function(xhr, status, error){
           console.log("updateKeyTable error: ");
           console.log(error);
-          var errMsg2 = "<p class='errMsg' style='color:red;'>This key is not found or not valid.</p>";
-          var errMsg3 = "<p class='errMsg' style='color:red;'>This key is already deactivated.</p>";
-          var checkFirstCharOfInput = userKeyInput.charAt(0);
-          if (checkFirstCharOfInput === '3') {
-              $(".errMsg").css('display', 'none');
-              applyKeyButton2.after(errMsg3).slideDown("slow");
-              $("#keyInput").css('border','1px solid #dfdfdf');
-          }else if (checkFirstCharOfInput === '2'){
-              $(".errMsg").css('display', 'none');
-              applyKeyButton2.after(errMsg2).slideDown("slow");
-              $("#keyInput").css('border','1px solid #dfdfdf');
-          }else{
-            console.log(error);
-          }
+          // var errMsg2 = "<p class='errMsg' style='color:red;'>This key is not found or not valid.</p>";
+          // var errMsg3 = "<p class='errMsg' style='color:red;'>This key is already deactivated.</p>";
+          // var checkFirstCharOfInput = userKeyInput.charAt(0);
+          // if (checkFirstCharOfInput === '3') {
+          //     $(".errMsg").css('display', 'none');
+          //     applyKeyButton2.after(errMsg3).slideDown("slow");
+          //     $("#keyInput").css('border','1px solid #dfdfdf');
+          // }else if (checkFirstCharOfInput === '2'){
+          //     $(".errMsg").css('display', 'none');
+          //     applyKeyButton2.after(errMsg2).slideDown("slow");
+          //     $("#keyInput").css('border','1px solid #dfdfdf');
+          // }else{
+          //   console.log(error);
+          // }
         });
        console.log("updated key");
 }

@@ -100,6 +100,8 @@ sub licenseKeys :Path('licenseKeys') :Args(0) {
     $c->stash->{used_capacity} = $c->model('Entitlement')->get_used_capacity();
     $c->stash->{system_id} = `/usr/bin/cat /etc/A3.systemid`;
 
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->forward('View::HTML');
 }
 
