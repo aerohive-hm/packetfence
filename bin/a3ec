@@ -43,7 +43,7 @@ my $entitlements = pf::a3_entitlement::find_all();
 my $entitlement_map = {};
 
 if (@$entitlements == 0) {
-    $logger->info("No entitlements to check, exiting.")
+    $logger->info("No entitlements to check, exiting.");
     exit 0;
 }
 
