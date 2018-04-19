@@ -16,7 +16,7 @@
   <VirtualSystem ovf:id="A3">
     <Info>Aerohive A3 Virtual Appliance</Info>
     <Name>A3</Name>
-    <OperatingSystemSection ovf:id="101">
+    <OperatingSystemSection ovf:id="107">
       <Info>The kind of installed guest operating system</Info>
       <Description>CentOS 7 (64-bit)</Description>
     </OperatingSystemSection>
