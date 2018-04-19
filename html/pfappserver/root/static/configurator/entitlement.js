@@ -34,6 +34,9 @@ function submitKeyButton(){
     console.log(userKeyInput);
     console.log("CHECKING KEY REGEX:");
     console.log(checkKey(userKeyInput));
+    if (checkKey(userKeyInput)){
+      updateKeyTable(userKeyInput);
+    }
     return false;
   });
   console.log("submitKeybutton success");
@@ -53,28 +56,39 @@ function checkKey(){
    console.log("input1: " + userKeyInput);
    //check regex with user input
    console.log(checkKeyRegex.test(userKeyInput));
-   var checkFirstCharOfInput = userKeyInput.charAt(0);
-
-   if (checkFirstCharOfInput === '3') {
+   // var checkFirstCharOfInput = userKeyInput.charAt(0);
+   if (checkKeyRegex.test(userKeyInput)){
        $(".errMsg").css('display', 'none');
-       $("#entitlementKeyInputs").before(errMsg3);
        $("#keyInput").css('border','1px solid #dfdfdf');
-   }else if (checkFirstCharOfInput === '2'){
-       $(".errMsg").css('display', 'none');
-       $("#entitlementKeyInputs").before(errMsg2);
-       $("#keyInput").css('border','1px solid #dfdfdf');
-   }else if (checkFirstCharOfInput === 'X'){
-       $(".errMsg").css('display', 'none');
-       $("#entitlementKeyInputs").before(errMsgX);
-       $("#keyInput").css('border','1px solid #dfdfdf');
-   }else if (checkKeyRegex.test(userKeyInput) == true){
-       $(".errMsg").css('display', 'none');
-       updateKeyTable(userKeyInput);
+       return true;
    } else {
        $(".errMsg").css('display', 'none');
        $("#entitlementKeyInputs").before(errMsg);
-	     $("#entitlementKey").css('border','1px solid #d9534f');
+       $("#keyInput").css('border','1px solid #d9534f');
+       return false;
    }
+   console.log("done checking key");
+
+   // if (checkFirstCharOfInput === '3') {
+   //     $(".errMsg").css('display', 'none');
+   //     $("#entitlementKeyInputs").before(errMsg3);
+   //     $("#keyInput").css('border','1px solid #dfdfdf');
+   // }else if (checkFirstCharOfInput === '2'){
+   //     $(".errMsg").css('display', 'none');
+   //     $("#entitlementKeyInputs").before(errMsg2);
+   //     $("#keyInput").css('border','1px solid #dfdfdf');
+   // }else if (checkFirstCharOfInput === 'X'){
+   //     $(".errMsg").css('display', 'none');
+   //     $("#entitlementKeyInputs").before(errMsgX);
+   //     $("#keyInput").css('border','1px solid #dfdfdf');
+   // }else if (checkKeyRegex.test(userKeyInput) == true){
+   //     $(".errMsg").css('display', 'none');
+   //     updateKeyTable(userKeyInput);
+   // } else {
+   //     $(".errMsg").css('display', 'none');
+   //     $("#entitlementKeyInputs").before(errMsg);
+	 //     $("#entitlementKey").css('border','1px solid #d9534f');
+   // }
  }
 
 
@@ -112,9 +126,20 @@ function updateKeyTable(userKeyInput) {
         type : 'PUT',
         dataType : 'json'
       }).done(function(data){
-         console.log(data);
          console.log("updateKeyTable success");
-         openModal();
+         console.log("status message data: ");
+         console.log(data);
+         var checkFirstCharOfInput = userKeyInput.charAt(0);
+         var errMsg = data.status_msg;
+         if (errMsg != null ) {
+             document.getElementById('errorMessage').innerHTML = errMsg;
+             $("#success-alert").show(); // use slide down for animation
+             setTimeout(function () {
+               $("#success-alert").slideUp(300);
+             }, 2000);
+         } else {
+            openModal();
+         }
       }).fail(function(xhr, status, error){
         console.log("updateKeyTable error: ");
         console.log(error);

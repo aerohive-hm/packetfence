@@ -92,7 +92,6 @@ function updateKeyTable(userKeyInput) {
            } else {
 
            }
-
            //update capacity
            $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
            $("#licenseCapa").load(window.location + " #licenseCapa");
@@ -187,7 +186,7 @@ function openModal(){
    console.log("eula modal opening");
 }
 
-//user submits eula with button press 
+//user submits eula with button press
 function userSubmitEula(){
   var base_url = window.location.origin;
   $.ajax({
