@@ -4,7 +4,7 @@
 <!--BEGINNING ALERT TEXT-->
        <div class="modal-content licenseAlert">
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
-          <h3 class="modal-title"><b>[% l('Subscription ending in %] <span id="daysLeft"></span></b></h3>
+          <h3 class="modal-title"><b>[% l('Subscription ending in') %] <span id="daysLeft"></span></b></h3>
         </div>
         <div class="modal-body">
           <p>Hello [% c.user | html %]. It looks like your subscription is almost ending. Please renew your license by # of days to continue using it. You can do this by calling this number: </p>
@@ -62,3 +62,5 @@
       </div>
 
 <!--end of success message-->
+  </div>
+</div>

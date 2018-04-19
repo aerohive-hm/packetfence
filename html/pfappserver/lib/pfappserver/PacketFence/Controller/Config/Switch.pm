@@ -63,7 +63,7 @@ sub begin :Private {
     $c->stash->{current_model_instance} = $model;
     $c->stash->{switch_default} = $switch_default;
 
-    $c->stash->{model_name} = "Switch";
+    $c->stash->{model_name} = "Device";
     $c->stash->{controller_namespace} = "Config::Switch";
     $c->stash->{current_form_instance} = $c->form("Config::Switch", roles => $c->stash->{roles});
 }
@@ -286,7 +286,7 @@ A method to be able to import switches from a CSV
 
 sub import_csv :Local :Args(0) :AdminRole('SWITCHES_CREATE') {
     my ( $self, $c ) = @_;
-   
+
     my $logger = pf::log->get_logger();
     my $upload = $c->req->upload('importcsv');
     my $file = $upload->fh;
@@ -336,7 +336,7 @@ sub import_csv :Local :Args(0) :AdminRole('SWITCHES_CREATE') {
             $logger->warn("This entry has been skipped because this IP: $switch_ip is existing in the switch configuration file.");
             next;
         }
-    
+
         my $switch_group = @$fields[2];
         ( $status, $msg ) = $model_group->hasId($switch_group);
         if (is_error($status)) {

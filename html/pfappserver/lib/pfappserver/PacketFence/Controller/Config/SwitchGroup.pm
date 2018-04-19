@@ -54,7 +54,7 @@ sub begin :Private {
     $c->stash->{current_model_instance} = $model;
     $c->stash->{switch_default} = $switch_default;
 
-    $c->stash->{model_name} = "Switch Group";
+    $c->stash->{model_name} = "Device Group";
     $c->stash->{controller_namespace} = "Config::SwitchGroup";
     $c->stash->{current_form_instance} = $c->form("Config::SwitchGroup", roles => $c->stash->{roles});
 }

@@ -4,17 +4,17 @@
 <!--BEGINNING ALERT TEXT-->
        <div class="modal-content licenseAlert">
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
-          <h3 class="modal-title"><b>[% l('Your license has expired%] <span id="daysLeft"></span></b></h3>
+          <h3 class="modal-title"><b>[% l('Your license has expired') %] <span id="daysLeft"></span></b></h3>
         </div>
         <div class="modal-body">
-          <p>Hello [% c.user | html %]. It looks like your subscription has ended. Please renew your license to continue using it. You can do this by calling this number: </p>
+          <p>[% l('Hello') %] [% c.user | html %]. [% l('It looks like your subscription has ended. Please renew your license to continue using it. You can do this by calling this number: ') %]</p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">408-123-4567</p>
-          <p>You can also send an email, by pressing the button below <b>"Send Email"</b> where you can prefill a form to send out an email. Thanks again for using our service. </p>
+          <p>[% l('You can also send an email, by pressing the button below') %] <b>"Send Email"</b> [% l('where you can prefill a form to send out an email. Thanks again for using our service.') %] </p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary toggle-emailForm">Send Email</button>
-    <button type="button" class="btn btn-success licenseKey">Enter License Key</button>
-          <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary toggle-emailForm">[% l('Send Email') %]</button>
+    <button type="button" class="btn btn-success licenseKey">[% l('Enter License Key') %]</button>
+          <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">[% l('Close') %]</button>
         </div>
       </div>
 <!--END OF ALERT TEXT-->
@@ -28,21 +28,21 @@
     <form style="text-align:center;">
       <div class="form-group">
         <label class="col-md-4"> [% l('First name:') %]</label> <div class="col-md-4"><input type="text" name="fname"></div>
-          <label>Last name:</label> <input type="text" name="lname">
+          <label>[% l('Last name:') %]</label> <input type="text" name="lname">
       </div>
       <div class="form-group">
-        <label>Company:</label> <div class="col-md-4"><input type="text" name="company"></div>
-        <label>Company Email:</label> <input type="text" name="email"><br>
+        <label>[% l('Company:') %]</label> <div class="col-md-4"><input type="text" name="company"></div>
+        <label>[% l('Company Email:') %]</label> <input type="text" name="email"><br>
         </div>
       <div class="form-group">
-        <label>Phone Number:</label> <input type="number" style="width:50px;"> - <input type="number" style="width:52px;"> - <input type="number" style="width:52px;">
+        <label>[% l('Phone Number:') %]</label> <input type="number" style="width:50px;"> - <input type="number" style="width:52px;"> - <input type="number" style="width:52px;">
       </div>
     </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-danger toggle-licenseAlert">Go Back</button>
-          <button type="button" class="btn btn-primary emailSentSuccess">Send Email</button>
-          <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger toggle-licenseAlert">[% l('Go Back') %]</button>
+          <button type="button" class="btn btn-primary emailSentSuccess">[% l('Send Email') %]</button>
+          <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">[% l('Close') %]</button>
         </div>
       </div>
 <!--end of email form fill out-->
@@ -50,14 +50,14 @@
 <!--SUCCESS MESSAGE SENT EMAIL-->
       <div class="modal-content successEmailMessage" style="display:none;">
         <div class="modal-header" style="background-color: #4cae4c; color:#F4F6F9; font-weight:400; text-align:center;">
-          <h3 class="modal-title"><b>Successfully sent</b></h3>
+          <h3 class="modal-title"><b>[% l('Successfully sent') %]</b></h3>
         </div>
         <div class="modal-body">
-          The email has been successfully sent. Please wait for an email back to receive a license key.<br>
-          Thank you.
+          [% l('The email has been successfully sent. Please wait for an email back to receive a license key.') %]<br>
+          [% l('Thank you.') %]
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">[% l('Close') %]</button>
         </div>
       </div>
 

@@ -68,27 +68,6 @@ function checkKey(){
        return false;
    }
    console.log("done checking key");
-
-   // if (checkFirstCharOfInput === '3') {
-   //     $(".errMsg").css('display', 'none');
-   //     $("#entitlementKeyInputs").before(errMsg3);
-   //     $("#keyInput").css('border','1px solid #dfdfdf');
-   // }else if (checkFirstCharOfInput === '2'){
-   //     $(".errMsg").css('display', 'none');
-   //     $("#entitlementKeyInputs").before(errMsg2);
-   //     $("#keyInput").css('border','1px solid #dfdfdf');
-   // }else if (checkFirstCharOfInput === 'X'){
-   //     $(".errMsg").css('display', 'none');
-   //     $("#entitlementKeyInputs").before(errMsgX);
-   //     $("#keyInput").css('border','1px solid #dfdfdf');
-   // }else if (checkKeyRegex.test(userKeyInput) == true){
-   //     $(".errMsg").css('display', 'none');
-   //     updateKeyTable(userKeyInput);
-   // } else {
-   //     $(".errMsg").css('display', 'none');
-   //     $("#entitlementKeyInputs").before(errMsg);
-	 //     $("#entitlementKey").css('border','1px solid #d9534f');
-   // }
  }
 
 
@@ -200,7 +179,7 @@ function userSubmitEula(){
          } else if (radioValue = "validKey"){
            console.log("No! trial");
          } else{
-           console.log("no pick");
+           console.log("fail to pick");
          }
          console.log("continuing now");
      }); //if use press trial then after pressing continue call function to submit trial,

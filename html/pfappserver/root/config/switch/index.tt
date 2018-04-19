@@ -42,7 +42,7 @@
 
         [% IF controller_namespace == 'Config::Switch' %]
           <div class="btn-group">
-            <a class="btn dropdown-toggle" data-toggle="dropdown">[% l('Add switch') %] <span class="caret"></span></a>
+            <a class="btn dropdown-toggle" data-toggle="dropdown">[% l('Add device') %] <span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li class="disabled"><a href="#">[% l('To group') %]</a></li>
               [% FOREACH group IN switch_groups %]

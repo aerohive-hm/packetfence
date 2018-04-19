@@ -107,7 +107,7 @@ function updateKeyTable(userKeyInput) {
            console.log("updateKeyTable success");
 
            //open modal if eula hasn't been accepted
-            openModal();
+            openEulaModal();
         }).fail(function(xhr, status, error){
           console.log("updateKeyTable error: ");
           console.log(error);
@@ -180,7 +180,7 @@ function dateRangeChecker(){
 }
 
 //open eula
-function openModal(){
+function openEulaModal(){
    $('#eulaModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
    $('#eulaModal').modal('show');
    console.log("eula modal opening");
