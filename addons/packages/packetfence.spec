@@ -53,7 +53,7 @@ Source: http://www.packetfence.org/downloads/PacketFence/src/%{real_name}-%{vers
 %endif
 
 # Log related globals
-%global logfiles packetfence.log snmptrapd.log pfdetect pfmon
+%global logfiles packetfence.log snmptrapd.log pfdetect pfmon violation.log
 %global logdir /usr/local/pf/logs
 
 BuildRequires: gettext, httpd, ipset-devel, pkgconfig
@@ -652,6 +652,9 @@ fi
 
 
 %post -n %{real_name}
+if [ "$1" = "2" ]; then
+    /usr/local/pf/bin/pfcmd service pf updatesystemd
+fi
 
 /usr/bin/mkdir -p /var/log/journal/
 echo "Restarting journald to enable persistent logging"
@@ -1252,6 +1255,7 @@ fi
 # logfiles
 %ghost                  %logdir/packetfence.log
 %ghost                  %logdir/snmptrapd.log
+%ghost                  %logdir/violation.log
 %ghost                  %logdir/pfdetect
 %ghost                  %logdir/pfmon
 %doc                    /usr/local/pf/NEWS.asciidoc
