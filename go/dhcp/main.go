@@ -294,6 +294,7 @@ func (h *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 	options := p.ParseOptions()
 	answer.MAC = p.CHAddr()
 	answer.SrcIP = h.Ipv4
+	answer.Iface = h.intNet
 
 	ctx = log.AddToLogContext(ctx, "mac", answer.MAC.String())
 
@@ -408,13 +409,11 @@ func (h *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 					if handler.available.Contains(element) {
 						// Ip is available, return OFFER with this ip address
 						free = int(element)
-					} else {
-						// Return NAK if the ip is not available
-						log.LoggerWContext(ctx).Info(p.CHAddr().String() + " Nak xID " + sharedutils.ByteToString(p.XId()))
-						answer.D = dhcp.ReplyPacket(p, dhcp.NAK, handler.ip.To4(), nil, 0, nil)
-						return answer
 					}
-				} else {
+				}
+
+				// If we still haven't found an IP address to offer, we get the next one
+				if free == 0 {
 					element := i.Next()
 					handler.available.Remove(element)
 					free = int(element)
@@ -488,7 +487,8 @@ func (h *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 
 			return answer
 
-		case dhcp.Request:
+		case dhcp.Request, dhcp.Inform:
+
 			reqIP := net.IP(options[dhcp.OptionRequestedIPAddress])
 			if reqIP == nil {
 				reqIP = net.IP(p.CIAddr())
