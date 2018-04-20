@@ -95,8 +95,7 @@ redirect_url =
 #     match
 #     match_not
 #
-# action can be all the http codes
+# action can be any of the HTTP status codes
 #
-# redirect_url can be what you want like http://www.packetfence.org/.
-# of course if you want to use redirect_url then set the action to 302.
-
+# redirect_url can be any URL you would like, but you must remember
+# to set the action to 302 for redirection.

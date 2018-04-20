@@ -2,7 +2,7 @@
 type=builtin
 description= All Authentications
 long_description=<<EOT
-All the authentications (RADIUS, portal) that have occured on the server.
+All the authentications (RADIUS, portal) that have occurred on the server.
 EOT
 # The table to search from
 base_table=auth_log

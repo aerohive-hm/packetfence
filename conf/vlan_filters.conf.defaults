@@ -1,6 +1,4 @@
-# defaults PacketFence's rules for PacketFence
-
-# This rules are predefined in PacketFence and disconnect device that coming from a secure connection to an open one.
+# These rules are predefined in A3 and disconnect device that are coming from a secure connection to an open one.
 
 [pf_wired_mac_auth]
 filter = connection_type
@@ -33,9 +31,9 @@ operator = is
 value = yes
 
 # Rule definition : 
-#   If the device comes from a Wireless secure connection (802.1x) and is currently connected to an open SSID
+#   If the device comes from a Wireless secure connection (802.1X) and is currently connected to an open SSID
 #   And if it is currently registered and was previously auto-registered
-# This is to prevent an autoregistered 802.1x user to switch to an Open SSID and keep the same level of access
+# This is to prevent an autoregistered 802.1X user to switch to an Open SSID and keep the same level of access
 # That will make sure, the user will be presented the captive portal if he switches from secure to open
 # We do *NOT* apply this logic to wired as supplicant failures would unregister the device
 # To apply this flow to wired, see the example pf_deauth_from_wireless_secure in vlan_filters.conf.example

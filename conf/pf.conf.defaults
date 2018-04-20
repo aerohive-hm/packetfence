@@ -64,7 +64,7 @@ dhcpoption82logger=disabled
 #
 # network.dhcp_filter_by_message_types
 #
-# Which dhcp message types are being listened by the pfdhcplistener.
+# Which DHCP message types are being listened by the pfdhcplistener.
 # Do not change unless you know what you are doing
 #Possibilities are: DHCPOFFER,DHCPREQUEST,DHCPDECLINE,DHCPACK,DHCPRELEASE
 dhcp_filter_by_message_types=DHCPREQUEST,DHCPACK
@@ -77,7 +77,7 @@ dhcp_filter_by_message_types=DHCPREQUEST,DHCPACK
 force_listener_update_on_ack=disabled
 #
 # network.interfaceSNAT
-# Choose interface(s) where you want to enable snat for passthrough (by default it's the management interface)
+# Choose interface(s) where you want to enable SNAT for passthrough (by default it's the management interface)
 interfaceSNAT=
 #
 #
@@ -126,7 +126,7 @@ passthroughs=
 #
 # fencing.proxy_passthroughs
 #
-# Comma-delimited list of domains to be use for apache passthrough
+# Comma-delimited list of domains to be use for Apache passthrough
 proxy_passthroughs=crl.geotrust.com,ocsp.geotrust.com,crl.thawte.com,ocsp.thawte.com,crl.comodoca.com,ocsp.comodoca.com,crl.incommon.org,ocsp.incommon.org,crl.usertrust.com,ocsp.usertrust.com,mscrl.microsoft.com,crl.microsoft.com,ocsp.apple.com,ocsp.digicert.com,ocsp.entrust.com,srvintl-crl.verisign.com,ocsp.verisign.com,ctldl.windowsupdate.com,crl.globalsign.net,pki.google.com,www.microsoft.com,crl.godaddy.com,ocsp.godaddy.com,certificates.godaddy.com,crl.globalsign.com,secure.globalsign.com,cacerts.digicert.com,crt.comodoca.com,crl.incommon-rsa.org,crl.quovadisglobal.com,cert.incommon.org,crt.usertrust.com,crl.verisign.com,crl.starfieldtech.com,developer.apple.com,ts-crl.ws.symantec.com,certificates.intel.com
 #
 # fencing.isolation_passthrough
@@ -143,7 +143,7 @@ isolation_passthroughs=
 #
 # fencing.interception_proxy
 #
-# When enabled, packetfence will intercept proxy request to somes specified port
+# When enabled, A3 will intercept proxy request to some specified port
 interception_proxy=disabled
 #
 # fencing.interception_proxy_port
@@ -231,17 +231,17 @@ admin=1443
 #
 # ports.soap
 #
-# Port of the soap interface listens on.
+# Port the SOAP interface listens on.
 soap=9090
 #
 # ports.collector
 #
-# Port of the collector interface listens on.
+# Port the collector interface listens on.
 collector=9292
 #
 # ports.aaa
 #
-# Port of the aaa http interface listens on.
+# Port the AAA HTTP interface listens on.
 aaa=7070
 #
 # ports.httpd_portal_modstatus
@@ -251,7 +251,7 @@ httpd_portal_modstatus=1444
 #
 # ports.unified_api
 #
-# port to use for accessing the Unified API
+# Port to use for accessing the Unified API
 unifiedapi=9999
 
 [database]
@@ -269,17 +269,17 @@ port=3306
 # database.db
 #
 # Name of the MySQL database used by A3.
-db=pf
+db=A3
 #
 # database.user
 #
-# Username of the account with access to the MySQL database used by A3. Changing this parameter after the initial configuration will *not* change it in the database it self, only in the configuration.
-user=pf
+# Username of the account with access to the MySQL database used by A3. Changing this parameter after the initial configuration will *not* change it in the database itself, only in the configuration.
+user=A3
 #
 # database.pass
 #
-# Password for the mysql database used by A3. Changing this parameter after the initial configuration will *not* change it in the database it self, only in the configuration.
-pass=packet
+# Password for the MySQL database used by A3. Changing this parameter after the initial configuration will *not* change it in the database itself, only in the configuration.
+pass=
 
 [database_advanced]
 #
@@ -481,20 +481,20 @@ pfmon=enabled
 #
 # services.redis_cache
 #
-# Should redis be managed by A3?
+# Should Redis be managed by A3?
 redis_cache=enabled
 # services.redis_queue
 #
-# Should redis be managed by A3?
+# Should Redis be managed by A3?
 redis_queue=enabled
 # services.redis_ntlm_cache
 #
-# Should redis be managed by A3?
-redis_ntlm_cache=disabled
+# Should Redis be managed by A3?
+redis_ntlm_cache=enabled
 #
 # services.redis_binary
 #
-# Location of the redis binary. Only necessary to change if you are not running the pre-packaged version.
+# Location of the Redis binary. Only necessary to change if you are not running the pre-packaged version.
 redis_binary=/usr/bin/redis-server
 #
 # services.pfdhcplistener
@@ -639,20 +639,20 @@ bounce_duration = 4s
 #
 # Controls whether or not the trap_limit feature is enabled. Trap limiting is
 # a way to limit the damage done by malicious users or misbehaving switch 
-# that sends too many traps to PacketFence causing it to be overloaded. Trap
+# that sends too many traps to A3 causing it to be overloaded. Trap
 # limiting is controlled by the trap_limit_threshold and trap_limit_action 
 # parameters. Default is enabled.
 trap_limit = enabled
 #
 # snmp_traps.trap_limit_threshold
 #
-# Maximum number of SNMP traps that a switchport can send to PacketFence within
+# Maximum number of SNMP traps that a switchport can send to A3 within
 # a minute without being flagged as DoS. Defaults to 100
 trap_limit_threshold = 100
 #
 # snmp_traps.trap_limit_action
 #
-# Action that PacketFence will take if the snmp_traps.trap_limit_threshold is reached.
+# Action that A3 will take if the snmp_traps.trap_limit_threshold is reached.
 # Defaults to none. email will send an email every hour if the limit's still reached.
 # shut will shut the port on the switch and will also send an email even if email is not
 # specified.
@@ -661,8 +661,8 @@ trap_limit_action =
 [inline]
 # inline.accounting
 #
-# Should we handle accouting data for inline clients?
-# This controls inline accouting tasks in pfmon.
+# Should we handle accounting data for inline clients?
+# This controls inline accounting tasks in pfmon.
 accounting = disabled
 #
 # inline.layer3_accounting_session_timeout
@@ -709,10 +709,10 @@ network_detection=enabled
 # This IP is used as the webserver who hosts the common/network-access-detection.gif which is used to detect if network
 # access was enabled. 
 # It cannot be a domain name since it is used in registration or quarantine where DNS is blackholed.
-# It is recommended that you allow your users to reach your packetfence server and put your LAN's PacketFence IP.
-# By default we will make this reach PacketFence's website as an easy solution.
+# It is recommended that you allow your users to reach your A3 server and put your LAN's A3 IP.
+# By default we will make this reach Aerohive's website as an easy solution.
 #
-network_detection_ip = 192.95.20.194
+network_detection_ip = 52.6.185.3
 #
 # captive_portal.network_detection_initial_delay
 #
@@ -748,7 +748,7 @@ request_timeout = 15
 # (HTTP level) effectively doing reverse proxying then the captive portal no 
 # longer sees the IP of the node trying to access the portal. In that case,
 # the load-balancers must do SSL offloading and add a X-Forwarded-By header
-# in the HTTP traffic they forward to PacketFence. Most do by default. Then
+# in the HTTP traffic they forward to A3. Most do by default. Then
 # in this parameter you must specify the IP of the various load balancers.
 # This will instruct the captive portal to look for client IPs in the 
 # X-Forwarded-For instead of the actual TCP session when it matches an IP
@@ -859,13 +859,13 @@ hashing_cost=8
 #
 # advanced.disable_pf_domain_auth
 #
-# Disable Active-Directory domain configuration from within PacketFence
+# Disable Active Directory domain configuration from within A3
 disable_pf_domain_auth=disabled
 #
 # advanced.ntlm_redis_cache
 #
 # Enables a Redis driven cache for NTLM authentication. 
-# In order for this to work, you need to setup proper NT hash syncronization between your PacketFence server and your AD.
+# In order for this to work, you need to setup proper NT hash syncronization between your A3 server and your AD.
 # Refer to the Administration guide for more details.
 # Applying this requires a restart of radiusd.
 ntlm_redis_cache=disabled
@@ -1048,7 +1048,7 @@ conflict_resolution_threshold=5m
 #
 # active_active.galera_replication
 #
-# Whether or not to activate galera cluster when using a cluster
+# Whether or not to activate MariaDB Galera cluster when using a cluster
 galera_replication=enabled
 #
 # active_active.galera_replication_username
