@@ -1,5 +1,8 @@
 [%  jsFiles = ['configurator/entitlement']
     cssFiles = ['configurator/entitlementStyle'] -%]
+    <div class="alert alert-danger" id='success-alert' role="alert" style="display:none; position:fixed; z-index:25; left: 40%;">
+        <span id="errorMessage"></span>
+    </div>
     <div class="container-fluid">
       [% INCLUDE configurator/tracker.inc %]
       <div class="row-fluid">
@@ -70,10 +73,7 @@
 
               <div class="form-actions">
                 <div class="alert alert-warning" id="selection-warning" role="alert" style="display:none; margin-left: -25px;">
-                  [% l('You already selected trial. You will be brought to the next step.') %]
-                </div>
-                <div class="alert alert-warning" id="selection-warning2" role="alert" style="display:none; margin-left: -25px;">
-                  [% l('You already submitted a key. You will be brought to the next step.') %]
+                  [% l('You've already selected. You will be brought to the next step.') %]
                 </div>
                 <button type="submit" data-msg-done="[% l('Continue') %]" class="btn btn-primary pull-right continueButton" href="[% next_step %]" disabled>
                   [% l('Continue') %]
