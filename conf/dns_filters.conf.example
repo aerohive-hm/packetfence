@@ -1,4 +1,5 @@
-# DNS filter configuration
+# DNS Filter Configuration
+# ========================
 #
 # You can trigger rules in pfdns on a specific scope (registration, isolation, inline, dnsenforcement)
 #

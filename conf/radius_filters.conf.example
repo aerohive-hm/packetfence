@@ -1,4 +1,5 @@
 # RADIUS Filter Configuration
+# ===========================
 # 
 # You are able to rewrite the RADIUS response based on attributes values, by default the RADIUS filter
 # response will be merged with the original RADIUS response. (to overwrite it, add merge_answer = no).
