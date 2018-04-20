@@ -664,7 +664,7 @@ else
 fi
 
 #Check if log files exist and create them with the correct owner
-for fic_log in packetfence.log redis_cache.log
+for fic_log in packetfence.log redis_cache.log violation.log
 do
 if [ ! -e /usr/local/pf/logs/$fic_log ]; then
   touch /usr/local/pf/logs/$fic_log
@@ -690,7 +690,7 @@ if [ ! -f /usr/local/pf/conf/unified_api_system_pass ]; then
     date +%s | sha256sum | base64 | head -c 32 > /usr/local/pf/conf/unified_api_system_pass
 fi
 
-for service in httpd snmptrapd portreserve redis
+for service in httpd snmptrapd portreserve redis netdata
 do
   if /bin/systemctl -a | grep $service > /dev/null 2>&1; then
     echo "Disabling $service startup script"
