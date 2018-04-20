@@ -115,25 +115,26 @@
 	          </ul>
           </div>
 
-              [% IF is_eula_accepted %]
-              [% ELSE %]
-              [% IF max_capacity==100 %]
-              <!-- <trial indicator -->
-              <div class="trialIndicator">
-                <div class="trial-clock-indicator pull-right">
-                    <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
-                </div>
-                <div id="clockTrialDiv">
-                  <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
-                  <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
-                </div>
+          [% IF is_eula_accepted %]
+          [% ELSE %]
+            [% IF max_capacity==100 %]
+            <!-- <trial indicator -->
+            <div class="trialIndicator">
+              <div class="trial-clock-indicator pull-right">
+                  <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
               </div>
-              [% ELSE %]
-              [% END %]
-              [% END %]
-              <!--for trialindecator-->
+              <div id="clockTrialDiv">
+                <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
+                <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
+              </div>
+            </div>
+            [% ELSE %]
+            [% END %]
+          [% END %]
+          <!--for trialindecator-->
 
           [%- END %]
+          <!-- end of if user allowed in admin-->
 
         </div>
 
@@ -145,78 +146,10 @@
         [% END %]
       </div>
     </div>
-    <!-- [%- IF c.user_allowed_in_admin() %] -->
-    <div>[% INCLUDE admin/almostExpiringModal.tt %]</div>
-     <!-- [% INCLUDE admin/expiredModal.tt %] -->
-    <!-- LICENSE KEY MODAL-->
 
-      <!-- <div class="modal fade" id="myModal" style="display: none;">
-        <div class="modal-dialog" role="document"> -->
-      <!--BEGINNING ALERT TEXT-->
-             <!-- <div class="modal-content licenseAlert">
-              <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
-                <h3 class="modal-title"><b>Subscription ending <span id="daysLeft"></span></b></h3>
-              </div>
-              <div class="modal-body">
-                <p>Hello [% c.user | html %]. It looks like your subscription is almost ending. Please renew your license by # of days to continue using it. You can do this by calling this number: </p>
-                 <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">408-123-4567</p>
-                <p>[% l('You can also send an email, by pressing the button below ') %]<b>"Send Email"</b> where you can prefill a form to send out an email. Thanks again for using our service. </p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-primary toggle-emailForm">[% l('Send Email') %]</button>
-          <button type="button" class="btn btn-success licenseKey">Enter License Key</button>
-                <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">Close</button>
-              </div>
-            </div> -->
-      <!--END OF ALERT TEXT-->
+    [% INCLUDE admin/almostExpiringModal.tt %]
+    [% INCLUDE admin/expiredModal.tt %]
 
-      <!--EMAIL FORM FILL OUT-->
-            <!-- <div class="modal-content emailForm" style="display: none;">
-              <div class="modal-header" style="background-color: #333; color:#F4F6F9; font-weight:400; text-align:center;">
-                <h3 class="modal-title"><b>Email Form</b></h3>
-              </div>
-              <div class="modal-body">
-          <form style="text-align:center;">
-            <div class="form-group">
-              <label class="col-md-4"> First name:</label> <div class="col-md-4"><input type="text" name="fname"></div>
-                <label>Last name:</label> <input type="text" name="lname">
-            </div>
-            <div class="form-group">
-              <label>Company:</label> <div class="col-md-4"><input type="text" name="company"></div>
-              <label>Company Email:</label> <input type="text" name="email"><br>
-              </div>
-            <div class="form-group">
-              <label>Phone Number:</label> <input type="number" style="width:50px;"> - <input type="number" style="width:52px;"> - <input type="number" style="width:52px;">
-            </div>
-          </form>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-danger toggle-licenseAlert">Go Back</button>
-                <button type="button" class="btn btn-primary emailSentSuccess">Send Email</button>
-                <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">Close</button>
-              </div>
-            </div> -->
-      <!--end of email form fill out-->
-
-      <!--SUCCESS MESSAGE SENT EMAIL-->
-            <!-- <div class="modal-content successEmailMessage" style="display:none;">
-              <div class="modal-header" style="background-color: #4cae4c; color:#F4F6F9; font-weight:400; text-align:center;">
-                <h3 class="modal-title"><b>Successfully sent</b></h3>
-              </div>
-              <div class="modal-body">
-                The email has been successfully sent. Please wait for an email back to receive a license key.<br>
-                Thank you.
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">Close</button>
-              </div>
-            </div> -->
-
-      <!--end of success message-->
-          <!-- </div> -->
-        <!-- </div> -->
-    <!--END OF MODAL-->
-    <!-- [%- END %] -->
 [% content | none %]
     <!-- Le javascript
     ================================================== -->
