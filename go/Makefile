@@ -36,6 +36,12 @@ pfstats:
         cd - && \
         mv stats/stats pfstats
 
+ahpwgen:
+	cd ahpwgen && \
+	go build && \
+	cd - && \
+	mv ahpwgen/ahpwgen ahpwgen
+
 .PHONY: clean-caddy-src
 
 clean-caddy-src:

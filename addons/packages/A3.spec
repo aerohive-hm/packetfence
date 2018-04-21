@@ -973,6 +973,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/pfupdate
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/maintenance
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/node
+%attr(0700, root, root) /usr/local/pf/bin/ahpwgen
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdhcp
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdns
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfstats
