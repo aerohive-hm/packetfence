@@ -91,7 +91,7 @@ if build_mode; then
   mv pfdns $BINDST/
   make pfstats
   mv pfstats $BINDST/
-  make ahpwgen
+  make ahpwgen-bin
   mv ahpwgen-bin $BINDST/
 
 elif test_mode; then

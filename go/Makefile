@@ -36,7 +36,7 @@ pfstats:
         cd - && \
         mv stats/stats pfstats
 
-ahpwgen:
+ahpwgen-bin:
 	cd ahpwgen && \
 	go build && \
 	cd - && \
