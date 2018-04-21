@@ -92,7 +92,7 @@ if build_mode; then
   make pfstats
   mv pfstats $BINDST/
   make ahpwgen
-  mv ahpwgen $BINDST/
+  mv ahpwgen-bin $BINDST/
 
 elif test_mode; then
   make test

@@ -40,7 +40,7 @@ ahpwgen:
 	cd ahpwgen && \
 	go build && \
 	cd - && \
-	mv ahpwgen/ahpwgen ahpwgen
+	mv ahpwgen/ahpwgen ahpwgen-bin
 
 .PHONY: clean-caddy-src
 

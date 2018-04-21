@@ -563,6 +563,8 @@ mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Net
 # Don't need the developer's guide for A3
 rm $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Developers_Guide.html
 
+mv /usr/local/pf/bin/ahpwgen-bin /usr/local/pf/bin/ahpwgen
+
 # logfiles
 for LOG in %logfiles; do
     touch $RPM_BUILD_ROOT%logdir/$LOG
