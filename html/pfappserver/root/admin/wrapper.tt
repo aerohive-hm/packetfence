@@ -102,6 +102,9 @@
                   <li id="fixpermissions_task"><a href="" id="fixpermissions_task_toggle">[% l('Fix permissions') %]</a></li>
                 </ul>
               </li>
+              [% IF is_eula_needed %]
+              <span>eula accepted? [% is_eula_accepted %]</span>
+              [% END %]
               <li class="dropdown">
                 <a href="" class="dropdown-toggle" data-toggle="dropdown"><img src="[% c.uri_for('/static/img/icon-account.svg') %]"/></a>
                 <ul class="dropdown-menu">
@@ -116,8 +119,9 @@
           </div>
 
           [% IF is_eula_accepted %]
+
           [% ELSE %]
-            [% IF max_capacity==100 %]
+            <!-- [% IF max_capacity==100 %] -->
             <!-- <trial indicator -->
             <div class="trialIndicator">
               <div class="trial-clock-indicator pull-right">
@@ -128,8 +132,8 @@
                 <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
               </div>
             </div>
-            [% ELSE %]
-            [% END %]
+            <!-- [% ELSE %] -->
+            <!-- [% END %] -->
           [% END %]
           <!--for trialindecator-->
 
@@ -146,9 +150,13 @@
         [% END %]
       </div>
     </div>
-
-    [% INCLUDE admin/almostExpiringModal.tt %]
-    [% INCLUDE admin/expiredModal.tt %]
+    [%- IF c.user_allowed_in_admin() %]
+      [% IF is_eula_accepted %]
+      [% ELSE %]
+        [% INCLUDE admin/almostExpiringModal.tt %]
+        [% INCLUDE admin/expiredModal.tt %]
+      [% END %]
+    [% END %]
 
 [% content | none %]
     <!-- Le javascript

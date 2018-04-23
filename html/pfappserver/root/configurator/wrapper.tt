@@ -138,7 +138,7 @@ display:none;
   	$(document).ready(function(){
       $('#startA3button').on("click", function(){
           console.log("presee inside ");
-          $('.bee').addClass('startRotation');
+          $('#bee').addClass('startRotation');
       });
   	});
 

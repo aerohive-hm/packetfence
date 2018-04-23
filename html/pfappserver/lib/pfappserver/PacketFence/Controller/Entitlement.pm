@@ -14,8 +14,10 @@ use strict;
 use warnings;
 
 use Moose;
-
 use pf::error qw(is_success is_error);
+
+use pf::log;
+use Data::Dumper;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
@@ -93,6 +95,8 @@ sub keys :Path('keys') :Args(0) {
 
 sub licenseKeys :Path('licenseKeys') :Args(0) {
     my ( $self, $c ) = @_;
+    my $logger = get_logger();
+
     $c->stash->{template} = "entitlement/licenseKeys.tt";
 
     $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
@@ -103,18 +107,10 @@ sub licenseKeys :Path('licenseKeys') :Args(0) {
     my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->forward('View::HTML');
-}
 
-sub licenseKey :Path('licenseKey') :Args(1) {
-    my ( $self, $c, $key ) = @_;
-    $c->stash->{template} = "admin/licenseKeys.tt";
+    $logger->info("Data = $c->stash->{is_eula_needed}");
 
-    if ($c->request->method eq 'PUT') {
-        $c->stash->{entitlement_key} = $c->model('Entitlement')->apply_entitlement_key($key);
-    }
-    elsif ($c->request->method eq 'GET') {
-        $c->stash->{entitlement_key} = $c->model('Entitlement')->get_entitlement_key($key);
-    }
+    # $logger->info(“Stash = “ . Dumper($c->stash->{is_eula_needed}));
 }
 
 =head2 trial
