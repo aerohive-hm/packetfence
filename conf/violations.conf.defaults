@@ -205,7 +205,7 @@ auto_enable=Y
 vlan=registration
 
 #
-# 1300000 - 1399999 Reserved for PacketFence violations
+# 1300000 - 1399999 Reserved for A3 violations
 #
 [1300000]
 desc=Generic

@@ -1,4 +1,4 @@
-### Root/Parent (PacketFence) logger ###
+### Root/Parent (A3) logger ###
 # Will log everything (even categories defined to log in another appender) unless 
 # specified using the additivity parameter
 log4perl.rootLogger = INFO, PFSYSLOG
@@ -6,10 +6,10 @@ log4perl.rootLogger = INFO, PFSYSLOG
 ### Categories ###
 # Below, you can specify different categories (based on package names) for different logging levels
 
-### Global (PacketFence) log facility configuration ###
+### Global (A3) log facility configuration ###
 ### Not meant to be modified ###
 log4perl.appender.PFSYSLOG                                = Log::Dispatch::Syslog
-log4perl.appender.PFSYSLOG.ident                          = packetfence
+log4perl.appender.PFSYSLOG.ident                          = A3
 log4perl.appender.PFSYSLOG.facility                       = local5
 log4perl.appender.PFSYSLOG.layout.ConversionPattern       = %p %X{proc}(%X{tid}): %m (%M)%n
 log4perl.appender.PFSYSLOG.layout                         = PatternLayout

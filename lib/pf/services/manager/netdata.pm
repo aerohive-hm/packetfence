@@ -22,6 +22,7 @@ use pf::file_paths qw(
 use pf::log;
 use pf::util;
 use pf::cluster;
+use pf::constants;
 
 use pf::config qw(
     $management_network
@@ -33,8 +34,26 @@ use Moo;
 extends 'pf::services::manager';
 
 has '+name' => (default => sub { 'netdata' } );
+has '+optional' => ( default => sub {'1'} );
 
 tie our @authentication_sources_monitored, 'pfconfig::cached_array', "resource::authentication_sources_monitored";
+
+=head2 postStartCleanup
+
+Stub method to be implemented in services if needed.
+
+=cut
+
+sub postStartCleanup {
+    my ($self,$quick) = @_;
+    my $logger = get_logger();
+    sleep 40;
+    unless ($self->pid) {
+        $logger->error("$self->name died or has failed to start");
+        return $FALSE;
+    }
+    return $TRUE;
+}
 
 sub generateConfig {
     my ($self,$quick) = @_;
@@ -69,7 +88,7 @@ families: *
    every: 10s
     crit: \$gauge != 1
    units: ok/failed
-    info: states if source eduroam1 is available
+    info: Source eduroam1 unavailable
    delay: down 5m multiplier 1.5 max 1h
       to: sysadmin
 
@@ -79,7 +98,7 @@ families: *
    every: 10s
     crit: \$gauge != 1
    units: ok/failed
-    info: states if source eduroam2 is available
+    info: Source eduroam2 unavailable
    delay: down 5m multiplier 1.5 max 1h
       to: sysadmin
 
@@ -92,7 +111,7 @@ families: *
    every: 10s
     crit: \$gauge != 1
    units: ok/failed
-    info: states if source $source->{'id'} is available
+    info: Source $source->{'id'} unavailable
    delay: down 5m multiplier 1.5 max 1h
       to: sysadmin
 
@@ -182,7 +201,7 @@ EOT
     parse_template( \%tags, "$conf_dir/monitoring/python.d/postfix.conf", "$generated_conf_dir/monitoring/python.d/postfix.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/python.d/redis.conf", "$generated_conf_dir/monitoring/python.d/redis.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/python.d/web_log.conf", "$generated_conf_dir/monitoring/python.d/web_log.conf" );
-    parse_template( \%tags, "$conf_dir/monitoring/statsd.d/example.conf", "$generated_conf_dir/monitoring/statsd.d/example.conf" );
+    parse_template( \%tags, "$conf_dir/monitoring/statsd.d/packetfence.conf", "$generated_conf_dir/monitoring/statsd.d/packetfence.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/stream.conf", "$generated_conf_dir/monitoring/stream.conf" );
     return 1;
 }

@@ -1,21 +1,24 @@
-# DNS filter configuration
+# DNS Filter Configuration
+# ========================
 #
-# you can trigger rule in pfdns on specific scope (registration, isolation, inline, dnsenforcement)
+# You can trigger rules in pfdns on a specific scope (registration, isolation, inline, dnsenforcement)
 #
 # Make a simple rule like this:
 #
-# [packetfence]
+# [aerohive]
 # filter = qname
 # operator = is
-# value = www.packetfence.org
+# value = www.aerohive.com
 #
-# [1:packetfence]
+# [1:aerohive]
 # scope = registration
 # answer = 30 IN A 10.0.0.1
 # rcode = NOERROR
 #
-# It means that when pfdns receive a dns request for the dns name www.packetfence.org then it will answer the ip 10.0.0.1
-# see http://search.cpan.org/~nlnetlabs/Net-DNS-0.74/lib/Net/DNS/RR.pm for more details
+# It means that when pfdns receive a DNS request for the DNS name www.aerohive.com,
+# then it will answer with the IP address 10.0.0.1.
+#
+# See http://search.cpan.org/~nlnetlabs/Net-DNS-0.74/lib/Net/DNS/RR.pm for more details.
 #
 #
 #
@@ -46,7 +49,7 @@
 #
 # value can be:
 #
-# - for qname the fqdn search (www.packetfence.org)
+# - for qname the fqdn search (www.aerohive.com)
 #
 # - for qclass
 #    IN              1 the Internet

@@ -4,7 +4,11 @@ OVFTOOL=/usr/bin/ovftool
 VAGRANT=/usr/bin/vagrant
 VBOXMANAGE=/usr/bin/VBoxManage
 
-/usr/bin/rm -rf work/ A3.ova
+/usr/bin/rm -rf work/ devel A3.ova
+
+if [ "$BUILD_TYPE" != "RELEASE" ]; then
+    /usr/bin/touch devel
+fi
 
 $VAGRANT destroy -f
 

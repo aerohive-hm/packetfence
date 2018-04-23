@@ -1,6 +1,7 @@
-# Dhcp filter configuration
+# DHCP Filter Configuration
+# =========================
 # 
-# you are able to take an action based on the dhcp information. 
+# You are able to take an action based on the DHCP information.
 #
 # Make a simple rule like this:
 #

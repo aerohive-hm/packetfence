@@ -57,7 +57,7 @@
 -A input-management-if --protocol tcp --match tcp --dport 9392 --jump ACCEPT
 # Nessus Administration Interface
 -A input-management-if --protocol tcp --match tcp --dport 8834 --jump ACCEPT
-# PacketFence-PKI
+# A3-PKI
 # -A input-management-if --protocol tcp --match tcp --dport 9393 --jump ACCEPT
 # -A input-management-if --protocol tcp --match tcp --dport 9292 --jump ACCEPT
 
@@ -146,7 +146,7 @@
 -A input-highavailability-if --protocol tcp --match tcp --dport 4444 --jump ACCEPT
 -A input-highavailability-if --protocol tcp --match tcp --dport 4567 --jump ACCEPT
 -A input-highavailability-if --protocol tcp --match tcp --dport 4568 --jump ACCEPT
-#PacketFence MariaDB Quorum server
+#A3 MariaDB Quorum server
 -A input-highavailability-if --protocol tcp --match tcp --dport 7890 --jump ACCEPT
 -A input-highavailability-if --protocol tcp --match tcp --dport 7891 --jump ACCEPT
 # Corosync

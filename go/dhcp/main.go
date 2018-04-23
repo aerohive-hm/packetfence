@@ -185,7 +185,7 @@ func main() {
 			req.Close = true
 			resp, err := cli.Do(req)
 			if resp != nil {
-				defer resp.Body.Close()
+				resp.Body.Close()
 			}
 			if err == nil {
 				daemon.SdNotify(false, "WATCHDOG=1")
@@ -294,6 +294,7 @@ func (h *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 	options := p.ParseOptions()
 	answer.MAC = p.CHAddr()
 	answer.SrcIP = h.Ipv4
+	answer.Iface = h.intNet
 
 	ctx = log.AddToLogContext(ctx, "mac", answer.MAC.String())
 
@@ -408,13 +409,11 @@ func (h *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 					if handler.available.Contains(element) {
 						// Ip is available, return OFFER with this ip address
 						free = int(element)
-					} else {
-						// Return NAK if the ip is not available
-						log.LoggerWContext(ctx).Info(p.CHAddr().String() + " Nak xID " + sharedutils.ByteToString(p.XId()))
-						answer.D = dhcp.ReplyPacket(p, dhcp.NAK, handler.ip.To4(), nil, 0, nil)
-						return answer
 					}
-				} else {
+				}
+
+				// If we still haven't found an IP address to offer, we get the next one
+				if free == 0 {
 					element := i.Next()
 					handler.available.Remove(element)
 					free = int(element)
@@ -449,7 +448,7 @@ func (h *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 			var options = make(map[dhcp.OptionCode][]byte)
 			for key, value := range handler.options {
 				if key == dhcp.OptionDomainNameServer || key == dhcp.OptionRouter {
-					options[key] = ShuffleIP(value)
+					options[key] = ShuffleIP(value, int64(p.CHAddr()[5]))
 				} else {
 					options[key] = value
 				}
@@ -488,7 +487,8 @@ func (h *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 
 			return answer
 
-		case dhcp.Request:
+		case dhcp.Request, dhcp.Inform:
+
 			reqIP := net.IP(options[dhcp.OptionRequestedIPAddress])
 			if reqIP == nil {
 				reqIP = net.IP(p.CIAddr())
@@ -532,7 +532,7 @@ func (h *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 					var options = make(map[dhcp.OptionCode][]byte)
 					for key, value := range handler.options {
 						if key == dhcp.OptionDomainNameServer || key == dhcp.OptionRouter {
-							options[key] = ShuffleIP(value)
+							options[key] = ShuffleIP(value, int64(p.CHAddr()[5]))
 						} else {
 							options[key] = value
 						}

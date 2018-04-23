@@ -54,7 +54,7 @@ Source: http://10.16.134.140/src/%{real_name}-%{version}-%{rev}.tar.gz
 %endif
 
 # Log related globals
-%global logfiles packetfence.log snmptrapd.log pfdetect pfmon
+%global logfiles packetfence.log snmptrapd.log pfdetect pfmon violation.log
 %global logdir /usr/local/pf/logs
 
 BuildRequires: gettext, httpd, ipset-devel, pkgconfig
@@ -563,6 +563,8 @@ mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Net
 # Don't need the developer's guide for A3
 rm $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Developers_Guide.html
 
+mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen
+
 # logfiles
 for LOG in %logfiles; do
     touch $RPM_BUILD_ROOT%logdir/$LOG
@@ -648,6 +650,9 @@ fi
 
 
 %post -n %{real_name}
+if [ "$1" = "2" ]; then
+    /usr/local/pf/bin/pfcmd service pf updatesystemd
+fi
 
 /usr/bin/mkdir -p /var/log/journal/
 echo "Restarting journald to enable persistent logging"
@@ -661,7 +666,7 @@ else
 fi
 
 #Check if log files exist and create them with the correct owner
-for fic_log in packetfence.log redis_cache.log
+for fic_log in packetfence.log redis_cache.log violation.log
 do
 if [ ! -e /usr/local/pf/logs/$fic_log ]; then
   touch /usr/local/pf/logs/$fic_log
@@ -687,7 +692,7 @@ if [ ! -f /usr/local/pf/conf/unified_api_system_pass ]; then
     date +%s | sha256sum | base64 | head -c 32 > /usr/local/pf/conf/unified_api_system_pass
 fi
 
-for service in httpd snmptrapd portreserve redis
+for service in httpd snmptrapd portreserve redis netdata
 do
   if /bin/systemctl -a | grep $service > /dev/null 2>&1; then
     echo "Disabling $service startup script"
@@ -970,6 +975,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/pfupdate
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/maintenance
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/node
+%attr(0700, root, root) /usr/local/pf/bin/ahpwgen
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdhcp
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdns
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfstats
@@ -1347,6 +1353,7 @@ fi
 # logfiles
 %ghost                  %logdir/packetfence.log
 %ghost                  %logdir/snmptrapd.log
+%ghost                  %logdir/violation.log
 %ghost                  %logdir/pfdetect
 %ghost                  %logdir/pfmon
 %dir                    /usr/local/pf/sbin

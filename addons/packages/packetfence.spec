@@ -53,7 +53,7 @@ Source: http://www.packetfence.org/downloads/PacketFence/src/%{real_name}-%{vers
 %endif
 
 # Log related globals
-%global logfiles packetfence.log snmptrapd.log pfdetect pfmon
+%global logfiles packetfence.log snmptrapd.log pfdetect pfmon violation.log
 %global logdir /usr/local/pf/logs
 
 BuildRequires: gettext, httpd, ipset-devel, pkgconfig
@@ -652,6 +652,9 @@ fi
 
 
 %post -n %{real_name}
+if [ "$1" = "2" ]; then
+    /usr/local/pf/bin/pfcmd service pf updatesystemd
+fi
 
 /usr/bin/mkdir -p /var/log/journal/
 echo "Restarting journald to enable persistent logging"
@@ -665,7 +668,7 @@ else
 fi
 
 #Check if log files exist and create them with the correct owner
-for fic_log in packetfence.log redis_cache.log
+for fic_log in packetfence.log redis_cache.log violation.log
 do
 if [ ! -e /usr/local/pf/logs/$fic_log ]; then
   touch /usr/local/pf/logs/$fic_log
@@ -691,7 +694,7 @@ if [ ! -f /usr/local/pf/conf/unified_api_system_pass ]; then
     date +%s | sha256sum | base64 | head -c 32 > /usr/local/pf/conf/unified_api_system_pass
 fi
 
-for service in httpd snmptrapd portreserve redis
+for service in httpd snmptrapd portreserve redis netdata
 do
   if /bin/systemctl -a | grep $service > /dev/null 2>&1; then
     echo "Disabling $service startup script"
@@ -1252,6 +1255,7 @@ fi
 # logfiles
 %ghost                  %logdir/packetfence.log
 %ghost                  %logdir/snmptrapd.log
+%ghost                  %logdir/violation.log
 %ghost                  %logdir/pfdetect
 %ghost                  %logdir/pfmon
 %doc                    /usr/local/pf/NEWS.asciidoc

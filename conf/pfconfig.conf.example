@@ -3,7 +3,7 @@ backend=mysql
 
 [mysql]
 host=localhost
-user=pf
-pass=packet
-db=pf
+user=A3
+pass=changeme
+db=A3
 port=3306

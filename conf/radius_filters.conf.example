@@ -1,7 +1,8 @@
-# Radius filter configuration
+# RADIUS Filter Configuration
+# ===========================
 # 
-# you are able to rewrite the radius answer based on attributes values, by default the radius filter
-# answer will be merge with the original radius answer. (to overwrite it add merge_answer = no).
+# You are able to rewrite the RADIUS response based on attributes values, by default the RADIUS filter
+# response will be merged with the original RADIUS response. (to overwrite it, add merge_answer = no).
 # Also by default the status of the answer will be RLM_MODULE_OK but this status can be overwritten by
 # the status attribute.
 # The status attribute can have the following values (See http://wiki.freeradius.org/modules/Rlm_perl for more details):
@@ -16,11 +17,11 @@
 # RLM_MODULE_UPDATED
 # RLM_MODULE_NUMCODES
 #
-# you can use 3 scopes in the radius filter:
+# You can use 3 scopes in the RADIUS filter:
 # returnRadiusAccessAccept is when you return the answer for a device access
 # returnAuthorizeRead is when you return the answer for the switch read login access
 # returnAuthorizeWrite is when you return the answer for the switch write login access
-# returnAuthorizeVoip  is when you return the answer for a VoIP
+# returnAuthorizeVoip is when you return the answer for VoIP
 #
 # Make a simple rule like this:
 #
@@ -34,7 +35,7 @@
 #operator = is
 #value = 00:11:22:33:44:55
 #
-#This rule will return the VLAN ID id 42 for this specific MAC address
+#This rule will return the VLAN ID 42 for this specific MAC address
 #
 #[1:macauth&mac]
 #scope = returnRadiusAccessAccept
@@ -43,7 +44,7 @@
 #answer2 = Tunnel-Type => 13
 #answer3 = Tunnel-Private-Group-ID => 42
 #
-# This rule will return access-accept if there is no violation
+# This rule will return Access-Accept if there is no violation
 #
 #[violation]
 #filter = violation
@@ -54,9 +55,9 @@
 #
 # Advanced rule:
 #
-# This rule will return the vlan id associated to the user role and Cisco-AVPair where the attributes
+# This rule will return the VLAN ID associated to the user role and Cisco-AVPair where the attributes
 # has been evaluated.
-# merge_answer mean to not merge the original answer with radius filter answer.
+# merge_answer mean to not merge the original answer with RADIUS filter response.
 #[3:macauth&!violation]
 #scope = returnRadiusAccessAccept
 #merge_answer = no
@@ -65,7 +66,7 @@
 #answer3 = Tunnel-Private-Group-ID => $vlan
 #answer4 = Cisco-AVPair => url-redirect-acl=$user_role;url-redirect=${switch._portalURL}/cep$session_id
 #
-# All the answer in the rule is computed by PacketFence so you can set static and dynamic values
+# All the answer in the rule is computed by A3 so you can set static and dynamic values
 # Let say you defined this answer and the $user_role value is set to default:
 #
 #answer1 = Tunnel-Medium-Type => 6
@@ -73,7 +74,7 @@
 #answer3 = Tunnel-Private-Group-ID => ${switch._vlans.$user_role}
 #answer4 = Cisco-AVPair => url-redirect-acl=$user_role;url-redirect=${switch._portalURL}/cep$session_id
 #
-# PacketFence will first evaluate simple variables like $user_role to default then it will evaluate
+# A3 will first evaluate simple variables like $user_role to default then it will evaluate
 # ${switch._vlans.default} to 1 (see switch hash above).
 #
 #'node_info => {
@@ -96,20 +97,18 @@
 #'wasInline' => 0,
 #...
 #
-# Then PacketFence will evaluate the answer4 to Cisco-AVPair => url-redirect-acl=default;url-redirect=http://192.168.1.2/cepab23bc
+# Then A3 will evaluate the answer4 to Cisco-AVPair => url-redirect-acl=default;url-redirect=http://192.168.1.2/cepab23bc
 #
 # You can also define a range of int values and it will return a random number in this range:
 #
 # answer5 = Session-Timeout => 200..300,500..700
 #
-# will return a radius attribute Session-Timeout with a value between 200 and 300 or between 500 and 700
+# will return a RADIUS attribute Session-Timeout with a value between 200 and 300 or between 500 and 700
 #
 #### Fingerbank example ####
 #
 # There are two ways to detect if the device is an Android phone, either by looking at the hierarchy of device ID or looking at the hierarchy of device names
-# Although using device names is more intuitive, they are subject to (very rare) changes, so using the ID is recommended
-# To find a device ID by the name, the following command can be used : '/usr/local/pf/bin/pfcmd fingerbank find_device_id "Generic Android"'
-# See the Fingerbank section in the PacketFence Administration interface for a list of all devices or https://api.fingerbank.org/devices
+# Although using device names is more intuitive, they are subject to (very rare) changes, so using the ID is recommended.
 #
 # This would then give us the following condition (note the use of includes) : 
 #[android_by_id]
@@ -123,7 +122,7 @@
 #operator = includes
 #value = Generic Android
 #
-# Next, lets add filtering on the Android operating system version using:
+# Next, let's add filtering on the Android operating system version using:
 # (CAUTION: the version is not always available, when not present, this condition will return false)
 #[version_4_plus]
 #filter = fingerbank_info.version
@@ -136,7 +135,7 @@
 #operator = greater_equals
 #value = 30
 #
-# The above will ensure that the score is higher than 30 (included) which is the level at which Fingerbank uses informations that aren't easily spoofable for its decision.
+# The above will ensure that the score is higher than 30 (included) which is the level at which Fingerbank uses information that isn't easily spoofable for its decision.
 #
 # We could now create a filter that sets the Session-Timeout to 5 minutes for all Android phones versions 4 and above that have a score of at least 30
 #

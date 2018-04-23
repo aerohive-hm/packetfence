@@ -1,6 +1,5 @@
-
-# VLAN FILTERS configuration
-# ==========================
+# VLAN Filter Configuration
+# =========================
 #
 # Scopes
 # ------
@@ -181,7 +180,7 @@
 # EXAMPLES
 # --------
 #
-# - When PacketFence tries to get the normal VLAN for the node and if the category of the node is
+# - When A3 tries to get the normal VLAN for the node and if the category of the node is
 # the default one, we return the role "nointernet" (which you will have configured in the switch configuration).
 # [category]
 # filter = node_info.category
@@ -193,7 +192,7 @@
 # role = nointernet
 #
 #
-# - When PacketFence tries to get the normal VLAN for the node and if the category of the node is 
+# - When A3 tries to get the normal VLAN for the node and if the category of the node is
 # the default one and the ssid is OpenWrt-SECURE and the time is between 11am and 2pm from Monday to Friday,
 # we return the role "nointernet" (which you will have configured in the switch configuration).
 # [2]
@@ -240,7 +239,7 @@
 #
 # - This will autoregister machine auth on ethernet EAP or EAP-TLS connection and refuse 
 # user auth if there wasn't machine auth before (you must add a role machine and a role 
-# REJECT (value: -1) in packetfence's role and switch configuration.
+# REJECT (value: -1) in A3's role and switch configuration.
 #[EthernetEAP]
 #filter = connection_type
 #operator = is
@@ -295,7 +294,7 @@
 #role = machine
 #
 #
-#### Unregister an auto-registered 802.1x device falling back to MAB ####
+#### Unregister an auto-registered 802.1X device falling back to MAB ####
 #
 # The conditions below are already defined in vlan_filters.conf.defaults
 # To activate this filter you only need to add this section
@@ -321,8 +320,6 @@
 ##
 ## There are two ways to detect if the device is an Android phone, either by looking if the device is linked to the "Android OS" device by using its ID (33453) or by its name (Android OS)
 ## Although using device names is more intuitive, they are subject to (very rare) changes, so using the ID is recommended
-## To find a device ID by the name, the following command can be used : '/usr/local/pf/bin/pfcmd fingerbank find_device_id "Android OS"'
-## See the Fingerbank section in the PacketFence Administration interface for a list of all devices or https://api.fingerbank.org/devices
 ##
 ## This would then give us the following condition (note the use of fingerbank::device_is_a) : 
 #[android_by_id]
@@ -348,7 +345,7 @@
 #filter = fingerbank_info.score
 #operator = greater_equals
 #value = 30
-## The above will ensure that the score is higher than 30 (included) which is the level at which Fingerbank uses informations that aren't easily spoofable for its decision.
+## The above will ensure that the score is higher than 30 (included) which is the level at which Fingerbank uses information that isn't easily spoofable for its decision.
 ##
 ## We could now create a filter that auto registers Android phones versions 4 and above that have a score of at least 30
 ##

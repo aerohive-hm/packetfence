@@ -37,6 +37,7 @@ docs/docbook/xsl/import-fo.xsl:
 		-a docinfo2 \
 		-b docbook \
 		-d book \
+		-f docs/docbook/docbook45.conf \
 		-o docs/docbook/$(notdir $<).docbook \
 		$<
 	xsltproc \
@@ -146,6 +147,12 @@ chown_pf:
 fingerbank:
 	rm -f /usr/local/pf/lib/fingerbank
 	ln -s /usr/local/fingerbank/lib/fingerbank /usr/local/pf/lib/fingerbank \
+
+.PHONY: systemd
+
+systemd:
+	cp /usr/local/pf/conf/systemd/packetfence* /usr/lib/systemd/system/
+	systemctl daemon-reload
 
 .PHONY: pf-dal
 

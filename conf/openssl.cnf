@@ -1,19 +1,19 @@
 HOME            = ./ 
 RANDFILE        = $ENV::HOME/.rnd 
 
-################################################################################
-# These fields will be used to create the PacketFence X509 Digital Certificate #
-#       Default Values are good for default PacketFence configuration          #
-################################################################################
+#######################################################################
+# These fields will be used to create the A3 X509 Digital Certificate #
+#       Default Values are good for default A3 configuration          #
+#######################################################################
 
 [ req_distinguished_name ] 
 
-C		= CA
-ST		= QC
-L		= Montreal
-O		= Inverse
+C		= US
+ST		= CA
+L		= Milpitas
+O		= Aerohive Networks
 CN		= 127.0.0.1
-emailAddress	= support@inverse.ca
+emailAddress	= support@aerohive.com
 
 ############################################################################
 #    YOU DO NOT NEED TO MODIFY WHAT IS FOLLOWING, UNLESS YOU ARE A GURU    #
@@ -37,7 +37,7 @@ RANDFILE        = $HOME/private/.rand
 x509_extensions = custom 
 default_days    = 1825
 default_crl_days= 90
-default_md      = SHA1
+default_md      = SHA256
 preserve        = Yes
 policy          = policy_optional 
 

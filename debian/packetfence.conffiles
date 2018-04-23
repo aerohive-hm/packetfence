@@ -43,7 +43,6 @@
 /usr/local/pf/conf/scan.conf
 /usr/local/pf/conf/switches.conf
 /usr/local/pf/conf/syslog.conf
-/usr/local/pf/conf/dhcpd.conf
 /usr/local/pf/conf/haproxy-db.conf
 /usr/local/pf/conf/haproxy-portal.conf
 /usr/local/pf/conf/cluster.conf
@@ -104,6 +103,7 @@
 /usr/local/pf/html/common/scss/_elements.input.scss
 /usr/local/pf/html/common/scss/_elements.links.scss
 /usr/local/pf/html/common/scss/_elements.page.scss
+/usr/local/pf/html/common/scss/_objects.aup.scss
 /usr/local/pf/html/common/scss/_objects.box.scss
 /usr/local/pf/html/common/scss/_objects.flag.scss
 /usr/local/pf/html/common/scss/_objects.layout.scss

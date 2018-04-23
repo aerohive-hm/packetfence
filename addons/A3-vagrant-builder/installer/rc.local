@@ -23,6 +23,11 @@ vmware_guestd_enable="YES"
 if [ ! -s /etc/A3.systemid ]; then
     /usr/local/pf/sbin/system-id > /etc/A3.systemid
     chmod 444 /etc/A3.systemid
+
+    # Set the root password
+    if [ ! -f /etc/devel ]; then
+        /usr/bin/cat /etc/A3.systemid | /usr/local/pf/bin/ahpwgen | passwd root --stdin
+    fi
 fi
 
 # Regenerate server API system user password

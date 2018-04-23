@@ -73,7 +73,7 @@
 
               <div class="form-actions">
                 <div class="alert alert-warning" id="selection-warning" role="alert" style="display:none; margin-left: -25px;">
-                   You've already selected. You will be brought to the next step.
+                  [% l('You\'ve already selected. You will be brought to the next step.') %]
                 </div>
                 <button type="submit" data-msg-done="[% l('Continue') %]" class="btn btn-primary pull-right continueButton" href="[% next_step %]" disabled>
                   [% l('Continue') %]

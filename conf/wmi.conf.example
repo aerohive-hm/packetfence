@@ -28,7 +28,7 @@ action = dynamic_register_node
 action_param = mac = $mac, username = $result->{'UserName'}
 EOT
 
-# Detect the running process and if it exist then bybass the scan
+# Detect the running process and if it exist then bypass the scan
 [Process_Running]
 namespace=ROOT\cimv2
 request=select Name from Win32_Process
