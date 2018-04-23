@@ -109,8 +109,8 @@ sub licenseKeys :Path('licenseKeys') :Args(0) {
     $c->forward('View::HTML');
 
     $logger->info("Data = $c->stash->{is_eula_needed}");
-    # $logger->info(“Stash = “ . Dumper($c->stash->{is_eula_needed}));
 
+    # $logger->info(“Stash = “ . Dumper($c->stash->{is_eula_needed}));
 }
 
 =head2 trial

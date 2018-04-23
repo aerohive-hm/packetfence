@@ -102,7 +102,9 @@
                   <li id="fixpermissions_task"><a href="" id="fixpermissions_task_toggle">[% l('Fix permissions') %]</a></li>
                 </ul>
               </li>
-              <span>eula accepted? [% is_eula_needed %]</span>
+              [% IF is_eula_needed %]
+              <span>eula accepted? [% is_eula_accepted %]</span>
+              [% END %]
               <li class="dropdown">
                 <a href="" class="dropdown-toggle" data-toggle="dropdown"><img src="[% c.uri_for('/static/img/icon-account.svg') %]"/></a>
                 <ul class="dropdown-menu">
@@ -148,8 +150,13 @@
         [% END %]
       </div>
     </div>
-    [% INCLUDE admin/almostExpiringModal.tt %]
-    [% INCLUDE admin/expiredModal.tt %]
+    [%- IF c.user_allowed_in_admin() %]
+      [% IF is_eula_accepted %]
+      [% ELSE %]
+        [% INCLUDE admin/almostExpiringModal.tt %]
+        [% INCLUDE admin/expiredModal.tt %]
+      [% END %]
+    [% END %]
 
 [% content | none %]
     <!-- Le javascript
