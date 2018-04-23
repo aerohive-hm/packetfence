@@ -516,11 +516,8 @@ cp Makefile $RPM_BUILD_ROOT/usr/local/pf/
 cp -r bin $RPM_BUILD_ROOT/usr/local/pf/
 cp -r addons/pfconfig/ $RPM_BUILD_ROOT/usr/local/pf/addons/
 cp -r addons/captive-portal/ $RPM_BUILD_ROOT/usr/local/pf/addons/
-cp -r addons/dev-helpers/ $RPM_BUILD_ROOT/usr/local/pf/addons/
 cp -r addons/high-availability/ $RPM_BUILD_ROOT/usr/local/pf/addons/
 cp -r addons/integration-testing/ $RPM_BUILD_ROOT/usr/local/pf/addons/
-cp -r addons/packages/ $RPM_BUILD_ROOT/usr/local/pf/addons/
-cp -r addons/upgrade/ $RPM_BUILD_ROOT/usr/local/pf/addons/
 cp -r addons/watchdog/ $RPM_BUILD_ROOT/usr/local/pf/addons/
 cp -r addons/AD/* $RPM_BUILD_ROOT/usr/local/pf/addons/AD/
 cp -r addons/monit/ $RPM_BUILD_ROOT/usr/local/pf/addons/
@@ -543,15 +540,11 @@ rmdir addons/pfarp_remote/initrd
 rmdir addons/pfarp_remote/conf
 rmdir addons/pfarp_remote
 cp -r db $RPM_BUILD_ROOT/usr/local/pf/
-cp -r docs $RPM_BUILD_ROOT/usr/local/pf/
-rm -rf $RPM_BUILD_ROOT/usr/local/pf/docs/archives
-rm -rf $RPM_BUILD_ROOT/usr/local/pf/docs/docbook
-rm -rf $RPM_BUILD_ROOT/usr/local/pf/docs/fonts
-rm -rf $RPM_BUILD_ROOT/usr/local/pf/docs/images
-rm -rf $RPM_BUILD_ROOT/usr/local/pf/docs/api
 cp -r html $RPM_BUILD_ROOT/usr/local/pf/
 cp -r lib $RPM_BUILD_ROOT/usr/local/pf/
-cp -r go $RPM_BUILD_ROOT/usr/local/pf/
+
+mkdir $RPM_BUILD_ROOT/usr/local/pf/docs
+cp docs/pfcmd.help $RPM_BUILD_ROOT/usr/local/pf/docs
 
 mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Clustering_Guide.html \
    $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/A3_Clustering_Guide.html
@@ -564,6 +557,12 @@ mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Net
 rm $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Developers_Guide.html
 
 mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen
+
+# Exclude new Vue.js content for now
+rm -rf $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static.alt/
+
+# Exclude tests
+rm -rf $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/t/
 
 # logfiles
 for LOG in %logfiles; do
@@ -607,10 +606,10 @@ fi
 
 if ! /usr/bin/id pf &>/dev/null; then
     if ! /bin/getent group  pf &>/dev/null; then
-        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "PacketFence" -M pf || \
+        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "A3" -M pf || \
                 echo Unexpected error adding user "pf" && exit
     else
-        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "PacketFence" -M pf -g pf || \
+        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "A3" -M pf -g pf || \
                 echo Unexpected error adding user "pf" && exit
     fi
 fi
@@ -628,10 +627,10 @@ fi
 
 if ! /usr/bin/id pf &>/dev/null; then
     if ! /bin/getent group  pf &>/dev/null; then
-        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "PacketFence" -M pf || \
+        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "A3" -M pf || \
                 echo Unexpected error adding user "pf" && exit
     else
-        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "PacketFence" -M pf -g pf || \
+        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "A3" -M pf -g pf || \
                 echo Unexpected error adding user "pf" && exit
     fi
 fi
@@ -640,10 +639,10 @@ fi
 
 if ! /usr/bin/id pf &>/dev/null; then
     if ! /bin/getent group  pf &>/dev/null; then
-        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "PacketFence" -M pf || \
+        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "A3" -M pf || \
                 echo Unexpected error adding user "pf" && exit
     else
-        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "PacketFence" -M pf -g pf || \
+        /usr/sbin/useradd -r -d "/usr/local/pf" -s /bin/sh -c "A3" -M pf -g pf || \
                 echo Unexpected error adding user "pf" && exit
     fi
 fi
@@ -684,12 +683,12 @@ make conf/ssl/server.pem
 
 # Create server local RADIUS secret
 if [ ! -f /usr/local/pf/conf/local_secret ]; then
-    date +%s | sha256sum | base64 | head -c 32 > /usr/local/pf/conf/local_secret
+    head -c 24 /dev/urandom | base64 | head -c 32 > /usr/local/pf/conf/local_secret
 fi
 
 # Create server API system user password
 if [ ! -f /usr/local/pf/conf/unified_api_system_pass ]; then
-    date +%s | sha256sum | base64 | head -c 32 > /usr/local/pf/conf/unified_api_system_pass
+    head -c 24 /dev/urandom | base64 | head -c 32 > /usr/local/pf/conf/unified_api_system_pass
 fi
 
 for service in httpd snmptrapd portreserve redis netdata
@@ -836,7 +835,7 @@ sysctl -p /etc/sysctl.d/99-A3.conf
 # reloading systemd unit files
 /bin/systemctl daemon-reload
 
-#Starting PacketFence.
+#Starting A3.
 echo "Starting A3 Administration GUI..."
 #removing old cache
 rm -rf /usr/local/pf/var/cache/
@@ -849,16 +848,12 @@ rm -rf /usr/local/pf/var/cache/
 /bin/systemctl enable packetfence-routes
 /bin/systemctl isolate packetfence-base
 /bin/systemctl enable packetfence-httpd.admin
-/bin/systemctl enable packetfence-iptables
 
 /usr/local/pf/bin/pfcmd configreload
 /bin/systemctl start packetfence-httpd.admin
 
-
-
 echo Installation complete
-echo "  * Please fire up your Web browser and go to https://@ip_packetfence:1443/configurator to complete your A3 configuration."
-echo "  * Please stop your iptables service if you don't have access to configurator."
+echo "  * Open your web browser and navigate to https://@ip_packetfence:1443/configurator to complete your A3 configuration."
 
 %post -n %{real_name}-remote-arp-sensor
 echo "Adding A3 remote ARP Sensor startup script"
@@ -943,22 +938,16 @@ fi
                         /usr/local/pf/addons/AD/*
 %dir                    /usr/local/pf/addons/captive-portal/
                         /usr/local/pf/addons/captive-portal/*
-%dir                    /usr/local/pf/addons/dev-helpers/
-                        /usr/local/pf/addons/dev-helpers/*
 %dir                    /usr/local/pf/addons/high-availability/
                         /usr/local/pf/addons/high-availability/*
 %dir                    /usr/local/pf/addons/integration-testing/
                         /usr/local/pf/addons/integration-testing/*
 %dir                    /usr/local/pf/addons/monit
                         /usr/local/pf/addons/monit/*
-%dir                    /usr/local/pf/addons/packages
-                        /usr/local/pf/addons/packages/*
 %dir                    /usr/local/pf/addons/pfconfig
 %dir                    /usr/local/pf/addons/pfconfig/comparator
 %attr(0755, pf, pf)     /usr/local/pf/addons/pfconfig/comparator/*.pl
 %attr(0755, pf, pf)     /usr/local/pf/addons/pfconfig/comparator/*.sh
-%dir                    /usr/local/pf/addons/upgrade
-%attr(0755, pf, pf)     /usr/local/pf/addons/upgrade/*.pl
 %dir                    /usr/local/pf/addons/watchdog
 %attr(0755, pf, pf)     /usr/local/pf/addons/watchdog/*.sh
 %dir                    /usr/local/pf/bin
@@ -1220,25 +1209,11 @@ fi
 %config(noreplace)      /usr/local/pf/conf/traffic_shaping.conf
                         /usr/local/pf/conf/traffic_shaping.conf.example
 %dir                    /usr/local/pf/db
-                        /usr/local/pf/db/*
-%dir                    /usr/local/pf/docs
-%dir                    /usr/local/pf/docs/enforcement
-%doc                    /usr/local/pf/docs/enforcement/*
-%dir                    /usr/local/pf/docs/firewall
-%doc                    /usr/local/pf/docs/firewall/*
-%dir                    /usr/local/pf/docs/networkdevice
-%doc                    /usr/local/pf/docs/networkdevice/*
-%dir                    /usr/local/pf/docs/pki
-%doc                    /usr/local/pf/docs/pki/*
-%dir                    /usr/local/pf/docs/provisioner
-%doc                    /usr/local/pf/docs/provisioner/*
+                        /usr/local/pf/db/pf-schema-X.Y.Z.sql
+                        /usr/local/pf/db/pf-schema.sql
 %dir                    /usr/local/pf/html/pfappserver/root/static/doc
 %doc                    /usr/local/pf/html/pfappserver/root/static/doc/*
-%doc                    /usr/local/pf/docs/*.asciidoc
-%doc                    /usr/local/pf/docs/*.xml
-%doc                    /usr/local/pf/docs/fdl-1.2.txt
-%dir                    /usr/local/pf/docs/includes
-%doc                    /usr/local/pf/docs/includes/*.asciidoc
+%dir                    /usr/local/pf/docs
 %doc                    /usr/local/pf/docs/pfcmd.help
 %dir                    /usr/local/pf/html
 %dir                    /usr/local/pf/html/captive-portal
@@ -1291,9 +1266,6 @@ fi
 
 %dir                    /usr/local/pf/html/captive-portal/script
                         /usr/local/pf/html/captive-portal/script/*
-%dir                    /usr/local/pf/html/captive-portal/t
-                        /usr/local/pf/html/captive-portal/t/*
-                        /usr/local/pf/html/captive-portal/content/PacketFenceAgent.apk
 %dir                    /usr/local/pf/html/captive-portal/templates
                         /usr/local/pf/html/captive-portal/templates/*
 %dir                    /usr/local/pf/html/common
@@ -1345,9 +1317,6 @@ fi
 %config(noreplace)      /usr/local/pf/lib/pf/roles/custom.pm
 %config(noreplace)      /usr/local/pf/lib/pf/role/custom.pm
 %config(noreplace)      /usr/local/pf/lib/pf/web/custom.pm
-
-%dir                    /usr/local/pf/go
-                        /usr/local/pf/go/*
 
 %dir %attr(2755, pf, pf) /usr/local/pf/logs
 # logfiles
