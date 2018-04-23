@@ -158,7 +158,7 @@ function dateRangeChecker(){
 
         var formatValidFromColumn = new Date(validFromColumn);
         var formatValidToColumn = new Date(validToColumn);
-        var formatTodaysDate = new Date(todaysDate
+        var formatTodaysDate = new Date(todaysDate);
 
         var total_days = (formatValidToColumn - formatTodaysDate) / (1000 * 60 * 60 * 24);
 

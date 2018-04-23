@@ -187,7 +187,6 @@ function userSubmitEula(){
      return false;
  }
 
-
 function registerExits() {
     $('#tracker a, .form-actions button').click(function(event) {
         var href = $(this).attr('href');

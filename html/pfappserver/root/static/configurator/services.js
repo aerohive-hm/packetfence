@@ -111,8 +111,8 @@ function updateProgressBar(){
     $(daemonTextUpdate).text(width).fadeIn(500);
     document.getElementById("daemons").innerHTML = width;
     $(progressBar).css('width', percentageWidth).animate({width: percentageWidth}, 1000);
-    if (width === widthTotal - 1){
-        var stopAnimation = document.getElementById("movingLogo");
+    if (width === widthTotal){
+        var stopAnimation = document.getElementById("bee");
         stopAnimation.classList.remove("startRotation");
         //make bee fly off page, check bezier curve, not infinite animation
     }

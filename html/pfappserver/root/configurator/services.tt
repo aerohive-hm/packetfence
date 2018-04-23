@@ -52,7 +52,7 @@
               <path fill="transparent" stroke-dasharray="15, 10, 5, 10" stroke="#dddddd" stroke-width="1" d="M148.9,6 51.1,6 2.2,90.7 51.1,175.4 148.9,175.4 197.8,90.7 z" class="path"></path>
           </svg>
           <!--bee-->
-          <div class="bee"><img class="beeSvg" src="[% c.uri_for('/static/configurator/bee.svg') %]" height="50px"/ ></div>
+          <div class="bee" id="bee"><img class="beeSvg" src="[% c.uri_for('/static/configurator/bee.svg') %]" height="50px"/ ></div>
 
         </div>
         <div id="progress-bar">
