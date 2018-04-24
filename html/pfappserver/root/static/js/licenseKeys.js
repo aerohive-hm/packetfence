@@ -105,7 +105,7 @@ function updateKeyTable(userKeyInput) {
            }
            console.log("new license capa: " + document.getElementById('licenseCapa').innerHTML);
            console.log("updateKeyTable success");
-
+           document.getElementById("keyValue").value = "";
            //open modal if eula hasn't been accepted
             openEulaModal();
         }).fail(function(xhr, status, error){

@@ -457,11 +457,15 @@ sub fixpermissions :Chained('object') :PathPart('fixpermissions') :Args(0) {
 
 sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     my( $self, $c ) = @_;
+    my $logger = get_logger();
 
     $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
     $c->stash->{max_capacity} = $c->model('Entitlement')->get_licensed_capacity();
     $c->stash->{used_capacity} = $c->model('Entitlement')->get_used_capacity();
     $c->stash->{system_id} = $A3_SYSTEM_ID;
+
+    $logger->info("Data = $c->stash->{is_eula_accepted}");
+    # $logger->info("Data = $c->stash->{is_eula_needed}");
 
     if ($c->request->method eq 'POST') {
         $c->stash->{current_view} = 'JSON';

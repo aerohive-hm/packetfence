@@ -95,7 +95,6 @@ sub keys :Path('keys') :Args(0) {
 
 sub licenseKeys :Path('licenseKeys') :Args(0) {
     my ( $self, $c ) = @_;
-    my $logger = get_logger();
 
     $c->stash->{template} = "entitlement/licenseKeys.tt";
 
@@ -107,10 +106,6 @@ sub licenseKeys :Path('licenseKeys') :Args(0) {
     my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->forward('View::HTML');
-
-    $logger->info("Data = $c->stash->{is_eula_needed}");
-
-    # $logger->info(“Stash = “ . Dumper($c->stash->{is_eula_needed}));
 }
 
 =head2 trial
