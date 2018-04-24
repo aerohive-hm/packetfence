@@ -308,10 +308,10 @@ sub generate_doc_url {
     my ($section, $guide) = @_;
     $guide //= "installation";
 
-    my $version = pf::version::version_get_release() =~ / ([0-9]+\.[0-9]+)\.[0-9]+$/ // "1.0";
+    my $doc_version = pf::version::version_get_release() =~ / ([0-9]+\.[0-9]+)\.[0-9]+$/ ? $1 : "1.0";
 
-    return $section ? "https://docs.aerohive.com/a3/v$version/$guide.htm#$section"
-                    : "https://docs.aerohive.com/a3/v$version/$guide.htm";
+    return $section ? "https://docs.aerohive.com/a3/v$doc_version/$guide.htm#$section"
+                    : "https://docs.aerohive.com/a3/v$doc_version/$guide.htm";
 }
 
 =head2 generate_doc_url
