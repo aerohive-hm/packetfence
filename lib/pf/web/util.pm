@@ -26,6 +26,7 @@ use pf::file_paths qw($ssl_configuration_file);
 use pf::util;
 use pf::config::util;
 use pf::web;
+use pf::version;
 use File::Slurp;
 
 BEGIN {
@@ -305,8 +306,12 @@ Generate the URL to a section of documentation
 
 sub generate_doc_url {
     my ($section, $guide) = @_;
-    $guide //= "Installation_Guide";
-    return "/static/doc/A3_$guide.html#$section"
+    $guide //= "installation";
+
+    my $version = pf::version::version_get_release() =~ / ([0-9]+\.[0-9]+)\.[0-9]+$/ // "1.0";
+
+    return $section ? "https://docs.aerohive.com/a3/v$version/$guide.htm#$section"
+                    : "https://docs.aerohive.com/a3/v$version/$guide.htm";
 }
 
 =head2 generate_doc_url
