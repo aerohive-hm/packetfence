@@ -30,6 +30,9 @@ if [ ! -s /etc/A3.systemid ]; then
     fi
 fi
 
+# Regenerate server local RADIUS secret
+/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/head -c32 > /usr/local/pf/conf/local_secret
+
 # Regenerate server API system user password
 /usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/head -c32 > /usr/local/pf/conf/unified_api_system_pass
 
