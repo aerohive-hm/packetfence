@@ -45,9 +45,9 @@ input_password		= whatever
 output_password		= whatever
 
 [client]
-countryName		= FR
-stateOrProvinceName	= Radius
-localityName		= Somewhere
-organizationName	= Example Inc.
-emailAddress		= user@example.org
+countryName		= US
+stateOrProvinceName	= CA
+localityName		= Milpitas
+organizationName	= Aerohive Networks, Inc.
+emailAddress		= support@aerohive.com
 commonName		= user@example.org

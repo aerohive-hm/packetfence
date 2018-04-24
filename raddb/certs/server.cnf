@@ -45,10 +45,9 @@ input_password		= whatever
 output_password		= whatever
 
 [server]
-countryName		= FR
-stateOrProvinceName	= Radius
-localityName		= Somewhere
-organizationName	= Example Inc.
-emailAddress		= admin@example.org
+countryName		= US
+stateOrProvinceName	= CA
+localityName		= Milpitas
+organizationName	= Aerohive Networks, Inc.
+emailAddress		= support@aerohive.com
 commonName		= "Example Server Certificate"
-
