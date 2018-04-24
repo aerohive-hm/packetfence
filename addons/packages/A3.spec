@@ -406,17 +406,6 @@ for TRANSLATION in de en es fr he_IL it nl pl_PL pt_BR; do
       --output-file conf/locale/$TRANSLATION/LC_MESSAGES/packetfence.mo
 done
 
-%if %{builddoc} == 1
-    make docs/docbook/xsl/titlepage-fo.xsl
-    make docs/docbook/xsl/import-fo.xsl
-    for GUIDE in $(ls docs/PacketFence*.asciidoc | xargs -n1 -I'{}' basename '{}' .asciidoc); do
-        make $GUIDE.html
-    done
-%endif
-
-# Build the HTML doc for pfappserver
-make html/pfappserver/root/static/doc
-
 # build pfcmd C wrapper
 gcc -g0 src/pfcmd.c -o bin/pfcmd
 # build ntlm_auth_wrapper
@@ -545,16 +534,6 @@ cp -r lib $RPM_BUILD_ROOT/usr/local/pf/
 
 mkdir $RPM_BUILD_ROOT/usr/local/pf/docs
 cp docs/pfcmd.help $RPM_BUILD_ROOT/usr/local/pf/docs
-
-mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Clustering_Guide.html \
-   $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/A3_Clustering_Guide.html
-mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Installation_Guide.html \
-   $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/A3_Installation_Guide.html
-mv $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Network_Devices_Configuration_Guide.html \
-   $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/A3_Network_Devices_Configuration_Guide.html
-
-# Don't need the developer's guide for A3
-rm $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static/doc/PacketFence_Developers_Guide.html
 
 mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen
 

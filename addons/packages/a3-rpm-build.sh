@@ -74,11 +74,10 @@ fi
 echo -e "\n\n\n"
 echo "Building the RPMs"
 echo "*****************"
-/usr/bin/rpmbuild -ba --define "ver $VERSION" --define 'snapshot 1' --define "dist $DIST" --define "rev 0.$DATE" --define "builddoc 1" $BUILD_DIR/SPECS/A3.spec 1>/dev/null
+/usr/bin/rpmbuild -ba --define "ver $VERSION" --define 'snapshot 1' --define "dist $DIST" --define "rev 0.$DATE" $BUILD_DIR/SPECS/A3.spec 1>/dev/null
 
 if [[ "$?" != "0" ]]; then
 	echo "Problem building the RPM. Aborting build process..." && exit 3
 else
     echo "RPM built properly"
 fi
-
