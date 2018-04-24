@@ -50,7 +50,7 @@ our %ALLOWED_SECTIONS = (
     database          => undef,
     database_advanced => undef,
     fencing           => undef,
-    general           => undef,
+    # general           => undef,
     # inline            => undef,
     metadefender      => undef,
     mse_tab           => undef,
@@ -489,10 +489,10 @@ sub all_subsections : Private {
 
         profiling => sub {
             tie my %map, 'Tie::IxHash', (
-                general => {
-                    controller => 'Controller::Config::Fingerbank::Settings',
-                    name => 'General Settings',
-                },
+                # general => {
+                #     controller => 'Controller::Config::Fingerbank::Settings',
+                #     name => 'General Settings',
+                # },
                 combinations => {
                     controller => 'Controller::Config::Fingerbank::Combination',
                     name => 'Combinations',

@@ -30,6 +30,9 @@ use DateTime;
 use fingerbank::Constant;
 use fingerbank::Model::Device;
 
+use pf::log;
+use Data::Dumper;
+
 BEGIN { extends 'pfappserver::Base::Controller'; }
 
 =head1 METHODS
@@ -459,13 +462,20 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     my( $self, $c ) = @_;
     my $logger = get_logger();
 
-    $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+
+    $c->stash->{entitlement_keys} = $entitlements;
     $c->stash->{max_capacity} = $c->model('Entitlement')->get_licensed_capacity();
     $c->stash->{used_capacity} = $c->model('Entitlement')->get_used_capacity();
     $c->stash->{system_id} = $A3_SYSTEM_ID;
 
-    $logger->info("Data = $c->stash->{is_eula_accepted}");
-    # $logger->info("Data = $c->stash->{is_eula_needed}");
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
+
+    $logger->info("is_eula_accepted = $c->stash->{is_eula_accepted}");
+    $logger->info("is_eula_needed = $c->stash->{is_eula_needed}");
+
+    $logger->info("stash contains: " . Dumper($c->stash));
 
     if ($c->request->method eq 'POST') {
         $c->stash->{current_view} = 'JSON';
