@@ -1190,8 +1190,6 @@ fi
 %dir                    /usr/local/pf/db
                         /usr/local/pf/db/pf-schema-X.Y.Z.sql
                         /usr/local/pf/db/pf-schema.sql
-%dir                    /usr/local/pf/html/pfappserver/root/static/doc
-%doc                    /usr/local/pf/html/pfappserver/root/static/doc/*
 %dir                    /usr/local/pf/docs
 %doc                    /usr/local/pf/docs/pfcmd.help
 %dir                    /usr/local/pf/html
