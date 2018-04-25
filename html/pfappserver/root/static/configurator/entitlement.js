@@ -48,22 +48,21 @@ function submitKeyButton(){
 function checkKey(){
    var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
    var sampleKey = ["P82G9-DA9BA-67LRQ-4KA6B-LK539-3YTXQ","SF89F-08SF8-908F9-0S8F9-0890F-S9RS9"];  //need to check if key exists
-   var errMsg = "<span class='errMsg'>Sorry please reenter the license key again.</span>";
-   var errMsg2 = "<span class='errMsg' style='color:red;'>This key is not found or not valid.</span>";
-   var errMsg3 = "<span class='errMsg' style='color:red;'>This key is already deactivated.</span>";
-   var errMsgX = "<span class='errMsg' style='color:red;'>This key is already expired.</span>"
+   // var errMsg = "<span class='errMsg'>Sorry please reenter the license key again.</span>";
+   // var errMsg2 = "<span class='errMsg' style='color:red;'>This key is not found or not valid.</span>";
+   // var errMsg3 = "<span class='errMsg' style='color:red;'>This key is already deactivated.</span>";
+   // var errMsgX = "<span class='errMsg' style='color:red;'>This key is already expired.</span>"
    var userKeyInput = document.getElementById('entitlementKey1').value;
    console.log("input1: " + userKeyInput);
    //check regex with user input
    console.log(checkKeyRegex.test(userKeyInput));
-   // var checkFirstCharOfInput = userKeyInput.charAt(0);
    if (checkKeyRegex.test(userKeyInput)){
-       $(".errMsg").css('display', 'none');
+       // $(".errMsg").css('display', 'none');
        $("#keyInput").css('border','1px solid #dfdfdf');
        return true;
    } else {
-       $(".errMsg").css('display', 'none');
-       $("#entitlementKeyInputs").before(errMsg);
+       // $(".errMsg").css('display', 'none');
+       // $("#entitlementKeyInputs").before(errMsg);
        $("#keyInput").css('border','1px solid #d9534f');
        return false;
    }

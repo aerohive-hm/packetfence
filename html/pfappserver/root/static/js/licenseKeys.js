@@ -123,17 +123,17 @@ function updateKeyTable(userKeyInput) {
 
 function checkKeyInput(userKeyInput){
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
-    var errMsg = "<p class='errMsg' style='color:red;'>Sorry please reenter the license key again.</p>";
+    // var errMsg = "<p class='errMsg' style='color:red;'>Sorry please reenter the license key again.</p>";
     var applyKeyButton2 = $("#applyKey");
     //check regex with user input; there is check for duplicate already
     console.log(checkKeyRegex.test(userKeyInput)); //TRUE OR FALSE
       if (checkKeyRegex.test(userKeyInput)){
-          $(".errMsg").css('display', 'none');
+          // $(".errMsg").css('display', 'none');
           $("#keyInput").css('border','1px solid #dfdfdf');
           return true;
       } else {
-          $(".errMsg").css('display', 'none');
-          applyKeyButton2.after(errMsg);
+          // $(".errMsg").css('display', 'none');
+          // applyKeyButton2.after(errMsg);
           $("#keyInput").css('border','1px solid #d9534f');
           return false;
       }
