@@ -62,37 +62,39 @@
                 <td class="key">[% key.entitlement_key %]</td>
                 <td class="cap">[% key.endpoint_count %]</td>
                 <td class="validFrom">[% key.sub_start.split(' ').first %]</td>
-                <td class="validTo">[% key.sub_end.split(' ').first %]</td>
+                <td class="validTo">[% key.sub_end.split(' ').first %]<span>[% now()-(key.sub_end.split(' ').first) %]</span></td>
               </tr>
-            [% END -%]
+             [% END -%]
             </tbody>
           </table>
         </div>
       </div><!--end of entire-form-->
     </div><!--end of card-block-->
 </div> <!--end of card-div -->
-
 [% IF is_eula_needed %]
-<!--EULA modal-->
-<div class="modal fade" id="eulaModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <h3><b>[% l('Terms and Conditions') %]</b></h3>
-          [% INCLUDE configurator/eula.tt %]
-            </div>
-            <div class="modal-footer">
-                <div class="agree">
-                    <label class="agreeToEula">
-                        <input type="checkbox" id="agreeToEula" value="agree">
-                        <span id="checkmark"></span>
-                    </label><span class="agreeText">[% l('Agree') %]</span>
-                </div>
-                <button type="button" class="btn btn-success fixed-right submitAgreement">[% l('Submit') %]</button>
-            </div>
-         </div>
-    </div>
-</div>
-<!--end of EULA modal-->
 [% ELSE %]
+<!--EULA modal-->
+  [% IF is_eula_accepted %]
+  [% ELSE %]
+    <div class="modal fade" id="eulaModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3><b>[% l('Terms and Conditions') %]</b></h3>
+                    [% INCLUDE configurator/eula.tt %]
+                </div>
+                <div class="modal-footer">
+                    <div class="agree">
+                        <label class="agreeToEula">
+                            <input type="checkbox" id="agreeToEula" value="agree">
+                            <span id="checkmark"></span>
+                        </label><span class="agreeText">[% l('Agree') %]</span>
+                    </div>
+                    <button type="button" class="btn btn-success submitAgreement">[% l('Submit') %]</button>
+                </div>
+             </div>
+        </div>
+    </div>
+  [% END %]
+<!--end of EULA modal-->
 [% END %]

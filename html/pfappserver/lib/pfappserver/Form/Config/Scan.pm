@@ -79,7 +79,7 @@ has_field 'registration' =>
    type => 'Checkbox',
    label => 'Scan on registration',
    tags => { after_element => \&help,
-             help => 'If this option is enabled, the PF system will scan each host after registration is complete.' },
+             help => 'If this option is enabled, the A3 system will scan each host after registration is complete.' },
   );
 
 has_field 'pre_registration' =>
@@ -87,7 +87,7 @@ has_field 'pre_registration' =>
    type => 'Checkbox',
    label => 'Scan before registration',
    tags => { after_element => \&help,
-             help => 'If this option is enabled, the PF system will scan host before the registration.' },
+             help => 'If this option is enabled, the A3 system will scan host before the registration.' },
   );
 
 has_field 'post_registration' =>
@@ -95,7 +95,7 @@ has_field 'post_registration' =>
    type => 'Checkbox',
    label => 'Scan after registration',
    tags => { after_element => \&help,
-             help => 'If this option is enabled, the PF system will scan host after on the production VLAN.' },
+             help => 'If this option is enabled, the A3 system will scan host after on the production VLAN.' },
   );
 
 has_field 'oses' =>

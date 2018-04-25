@@ -115,29 +115,24 @@
 	          </ul>
           </div>
 
-          <!-- [% IF is_eula_accepted %] -->
-
-          <!-- [% ELSE %] -->
-            [% IF max_capacity==100 %]
-            <!-- <trial indicator -->
-            <div class="trialIndicator">
-              <div class="trial-clock-indicator pull-right">
-                  <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
+            [% IF is_eula_accepted %]
+            [% ELSE %]
+              <!-- <trial indicator -->
+              <div class="trialIndicator" id="trialIndicator">
+                <div class="trial-clock-indicator pull-right">
+                    <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
+                </div>
+                <div id="clockTrialDiv">
+                    <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
+                    <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
+                </div>
               </div>
-              <div id="clockTrialDiv">
-                <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
-                <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
-              </div>
-            </div>
-            <!-- [% ELSE %] -->
+            <!--for trialindecator-->
             [% END %]
-          [% END %]
-          <!--for trialindecator-->
-
-          [%- END %]
-          <!-- end of if user allowed in admin-->
 
         </div>
+        [%- END %]
+        <!-- end of if user allowed in admin-->
 
         [% IF SHOW_READONLY_ERROR %]
         <div class="row-error">
@@ -149,10 +144,13 @@
     </div>
     [%- IF c.user_allowed_in_admin() %]
     <!-- use date here? -->
-      [% IF max_capacity==100 %]
+      [% IF is_eula_accepted %]
+      [% ELSE %]
+      <!-- for trial -->
         [% INCLUDE admin/almostExpiringModal.tt %]
         [% INCLUDE admin/expiredModal.tt %]
       [% END %]
+      <!-- need for when regular key expires -->
     [% END %]
 
 [% content | none %]
@@ -178,32 +176,6 @@
 [% FOREACH js = jsFiles -%]
     <script type="text/javascript" src="[% c.uri_for("/static/${js}.js") %]" charset="UTF-8"></script>
 [% END -%]
-    <script type="text/javascript">
-      //
-        var emailForm = $('.emailForm');
-        var emailFormButton = $('.toggle-emailForm');
-        var licenseAlertButton = $('.toggle-licenseAlert');
-        var licenseAlert = $('.licenseAlert');
-        var sentEmailButton = $('.emailSentSuccess');
-        var successEmailMessage = $('.successEmailMessage');
-        $(document).ready(function() {
-          emailForm.hide();
-          successEmailMessage.hide();
-          emailFormButton.click(function() {
-            licenseAlert.slideUp(1000);
-            emailForm.slideDown(1000);
-          });
-          licenseAlertButton.click(function() {
-            emailForm.slideUp(1000);
-            licenseAlert.slideDown(1000);
-          });
-          sentEmailButton.click(function(){
-          	emailForm.slideUp(1000);
-          	successEmailMessage.slideDown(1000);
-          });
-        });
-    </script>
-
 
  </body>
 </html>

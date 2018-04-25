@@ -13,17 +13,21 @@ $(document).ready(function(){
   updateCapacities();
 
   $('.no-submitted-eula').click(function(){
+    openEulaModal();
+    console.log("nosubmit eula button  was pressed");
     $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
     $("#licenseCapa").load(window.location + " #licenseCapa");
   });
 
   $('.agreeToEula').click(function() {
       //changes checkbox to submit button
+      console.log("submitAgreement was pressed");
       $(".agree").slideUp();
       $(".agree").delay(3000);
       $(".submitAgreement").slideDown();
   });
   $('.submitAgreement').click(function(){
+    console.log("submitAgreement was pressed");
       userSubmitEula();
   })
 });
@@ -89,13 +93,12 @@ function updateKeyTable(userKeyInput) {
                setTimeout(function () {
                  $("#success-alert").slideUp(300);
                }, 2000);
-           } else {
-
            }
+
            //update capacity
            $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
            $("#licenseCapa").load(window.location + " #licenseCapa");
-           $(".licenseTrialText").hide();
+           $("#trialIndicator").load(window.location + " #trialIndicator");
            var capacity = $("#licenseCapa").attr("data-capacity");
            console.log("capacity: " + capacity);
            capacity = $("#licenseCapa").attr('data-capacity', document.getElementById('licenseCapa').innerHTML);
@@ -106,8 +109,10 @@ function updateKeyTable(userKeyInput) {
            console.log("new license capa: " + document.getElementById('licenseCapa').innerHTML);
            console.log("updateKeyTable success");
            document.getElementById("keyValue").value = "";
+
            //open modal if eula hasn't been accepted
-            openEulaModal();
+           openEulaModal();
+
         }).fail(function(xhr, status, error){
           console.log("updateKeyTable error: ");
           console.log(error);
@@ -198,6 +203,7 @@ function userSubmitEula(){
       $('.trialIndicator').remove();
       $('#eulaModal').modal('hide');
       $(".modal-backdrop").hide();
+      $(".licenseTrialText").hide();
   }).fail(function(xhr, status, error){
       console.log(error);
   });
