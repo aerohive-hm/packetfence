@@ -106,6 +106,7 @@ sub licenseKeys :Path('licenseKeys') :Args(0) {
     my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->forward('View::HTML');
+
 }
 
 =head2 trial
@@ -156,6 +157,7 @@ sub make_ek_hash {
         support_start   => $ek->{support_start},
         support_end     => $ek->{support_end}
     };
+
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
