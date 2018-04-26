@@ -13,11 +13,11 @@
 # lzammit <lzammit@inverse.ca>, 2014-2018
 msgid ""
 msgstr ""
-"Project-Id-Version: PacketFence\n"
+"Project-Id-Version: 1.0.0\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: 2018-01-24 15:23+0000\n"
-"Last-Translator: lzammit <lzammit@inverse.ca>\n"
-"Language-Team: French (http://www.transifex.com/inverse/packetfence/language/fr/)\n"
+"Last-Translator: Aerohive Networks, Inc.\n"
+"Language-Team: French\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1258,8 +1258,8 @@ msgstr "Enfant"
 
 # conf/documentation.conf (network.interfaceSNAT)
 msgid ""
-"Choose interface(s) where you want to enable SNAT for passthrough (by "
-"default it's the management interface)"
+"Choose interface(s) where you want to enable SNAT for passthrough "
+"(by default, it is the management interface)"
 msgstr "Choisissez l’interface(s) sur laquelle vous voulez activer le Source NAT (par défaut c’est l’interface de Management)"
 
 # html/pfappserver/root/user/list_password.tt
@@ -3368,6 +3368,14 @@ msgid ""
 " a chance to load the redirection page."
 msgstr "Nombre de secondes d’attente avant que le webservice désassocie ou attribue un VLAN. Si il n’y a pas de délai d’attente, l’appareil peut changer de VLAN avant d’avoir eu l’occasion de charger la page de redirection."
 
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "I have an entitlement key!"
+msgstr "J'ai une clé d‘activation!"
+
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "I would like to try a 30 day trial!"
+msgstr "Je voudrais essayer un essai de 30 jours!"
+
 # html/pfappserver/lib/pfappserver/Form/Config/Fingerbank/DHCP6_Enterprise.pm
 # html/pfappserver/lib/pfappserver/Form/Config/Fingerbank/DHCP6_Fingerprint.pm
 # html/pfappserver/lib/pfappserver/Form/Config/Fingerbank/DHCP_Fingerprint.pm
@@ -3497,10 +3505,9 @@ msgstr "Si %1 de ces conditions sont rencontrées:"
 
 # conf/documentation.conf (network.dhcpoption82logger)
 msgid ""
-"If enabled A3 will monitor DHCP option82 location-based "
-"information. This feature is only available if the dhcpdetector is "
-"activated."
-msgstr "Si activé, A3 utilisera l’option DHCP 82 des informations de localisation. Cette fonction n’est disponible que si le détecteur de dhcp est activé."
+"If enabled, A3 will monitor DHCP option 82 location-based information. "
+"This feature is only available if the dhcpdetector is activated."
+msgstr "Si activé, A3 utilisera l’option DHCP 82 des informations de localisation. Cette fonction n’est disponible que si le détecteur de DHCP est activé."
 
 # conf/documentation.conf (network.dhcpdetector)
 msgid ""
@@ -3819,6 +3826,10 @@ msgid ""
 "Level of timing stats to keep - 0 is the lowest - 10 the highest amount to "
 "logDo not change unless you know what you are doing"
 msgstr "Niveau de synchronisation des stats à garder - 0 est le plus bas - 10 est le montant le plus élevé. Ne pas changer sauf si vous savez ce que vous faites"
+
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "License Options"
+msgstr "Options de licence"
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid "Limit the number of login attempts. A value of 0 disables the limit."
@@ -4304,6 +4315,10 @@ msgid ""
 "Modifying any of theses values requires to restart 'pfmon' service to be "
 "effective."
 msgstr "Une modification de ces valeurs requiert un redémarrage de pfmon."
+
+# html/pfappserver/root/configurator/services.tt
+msgid "More Details"
+msgstr "Plus de détails"
 
 # html/pfappserver/root/user/create.tt
 msgid "Multiple"
@@ -4849,6 +4864,10 @@ msgstr "Appareils hors ligne"
 msgid "On Node tab"
 msgstr "Sur l’onglet de l’appareil"
 
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "On this page, you can apply an entitlement key if you already have one. Otherwise, you can select a trial license to evaluate A3."
+msgstr "Sur cette page, vous pouvez appliquer une clé d‘activation si vous en avez déjà une. Sinon, vous pouvez sélectionner une licence d'évaluation pour évaluer A3."
+
 # html/pfappserver/root/configurator/fingerbank.tt
 msgid ""
 "On this page, you can configure Fingerbank which is used for device "
@@ -5224,9 +5243,7 @@ msgid ""
 msgstr "A3 est le serveur qui assigne le Role (ou l’ACL) à l’équipement. Ce mode est pour l’authentification web."
 
 # html/pfappserver/root/configurator/enforcement.tt
-msgid ""
-"A3 is the server that assigns the VLAN (or roles) to the devices. "
-"This is the prefered enforcement mechanism for manageable equipment."
+msgid "A3 is the server that assigns the VLAN (or roles) to the devices. This is the preferred enforcement mechanism for manageable equipment."
 msgstr "A3 est le serveur qui assigne le VLAN (ou rôles) à l’équipement. C’est le mode de fonctionnement conseillé pour les équipements manageables."
 
 # html/pfappserver/root/configurator/enforcement.tt
@@ -5812,6 +5829,10 @@ msgid ""
 "Present a different captive portal according to the SSID, the VLAN, or the "
 "device IP the client connects to."
 msgstr "Présenter un portail captif différent selon le SSID, le VLAN ou bien l’IP du équipement où le client est connecté."
+
+# html/pfappserver/root/configurator/services.tt
+msgid "Press Start A3 to start services."
+msgstr "Appuyez sur Démarrer A3 pour démarrer les services."
 
 # html/pfappserver/root/config/profile/edit.tt
 # html/pfappserver/root/config/profile/files.tt
@@ -7403,7 +7424,7 @@ msgstr "Démarrer MySQL"
 
 # html/pfappserver/root/configurator/services.tt
 msgid "Start A3"
-msgstr "Démarrez A3"
+msgstr "Démarrer A3"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/LDAP.pm
 msgid "Start TLS"
@@ -7509,6 +7530,10 @@ msgid ""
 "Subject prefix for email notifications of rogue DHCP servers, violations "
 "with an action of <i>email</i>, or any other A3-related message."
 msgstr "Sujet pour les notifications email des serveurs DHCP non autorisés, les violations avec une action <i>e-mail</i>, ou tout autre message lié A3."
+
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "Submit"
+msgstr "Soumettre"
 
 # html/pfappserver/root/config/fingerbank/header.tt
 msgid "Submit Unknown/Unmatched Fingerprints"
@@ -7662,10 +7687,8 @@ msgid "System state"
 msgstr "Etat du système"
 
 # conf/documentation.conf (general.timezone)
-msgid ""
-"System's time zone in string format. List generated from Perl library "
-"DataTime::TimeZone"
-msgstr "Fuseau horaire du système en temps que chaîne.Liste générée à partir de la librairie Perl DateTime::TimeZone"
+msgid "System's time zone in string format. List generated from Perl library DataTime::TimeZoneWhen left empty, it will use the time zone of the server."
+msgstr "Fuseau horaire du système en temps que chaîne. Liste générée à partir de la librairie Perl DateTime::TimeZone"
 
 # conf/documentation.conf
 # (radius_authentication_methods.eap_authentication_types options)
@@ -8608,11 +8631,11 @@ msgstr "Cette section couvre des éléments basiques de configuration permettant
 
 # conf/documentation.conf (network.force_listener_update_on_ack)
 msgid ""
-"This will only do the iplog update and other DHCP related task on a "
-"DHCPACK.You need to make sure the UDP reflector is in place so this works on"
-" the production network.This is implicitly activated on registration "
-"interfaces on which dhcpd runs."
-msgstr "Ne fera la mise à jour de l’iplog et autres tâches liées au DHCP que sur un DHCPACK. Vous devez vous assurer que le réflecteur UDP est en place pour que cela fonctionne sur les réseaux de production et sera implicitement activé sur les interfaces d’enregistrement sur lequel fonctionne Dhcpd."
+"This will only do the iplog update and other DHCP-related task on a "
+"DHCPACK. You need to make sure the UDP reflector is in place so this works on "
+"the production network. This is implicitly activated on registration interfaces "
+"on which the DHCP server listens."
+msgstr "Ne fera la mise à jour de l’iplog et autres tâches liées au DHCP que sur un DHCPACK. Vous devez vous assurer que le réflecteur UDP est en place pour que cela fonctionne sur les réseaux de production et sera implicitement activé sur les interfaces d’enregistrement sur lequel fonctionne serveur DHCP."
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/RADIUS.pm
 msgid "Timeout"
@@ -9526,11 +9549,11 @@ msgstr "Identifiera les changements de nom d’hôte et enverra un e-mail avec c
 # conf/documentation.conf (network.dhcp_rate_limiting)
 msgid ""
 "Will rate-limit DHCP packets that contain the same information. For example, "
-"a DHCPREQUEST for the same MAC/IP will only be processed once in the "
-"timeframe configured below. This is independant of the DHCP server/relay "
-"handling the packet and is only based on the IP, MAC Address and DHCP type "
-"inside the packet.A value of 0 will disable the rate limitation."
-msgstr "Limitera le traitement de paquets DHCP contenant la même information. Par exemple une requête DHCPREQUEST contenant la même MAC/IP ne sera traité qu’une seule fois dans la tranche de temps configuré plus bas.Une valeur de 0 désactive cette limite."
+"a DHCPREQUEST for the same MAC/IP will only be processed once in the timeframe "
+"configured above. This is independent of the DHCP server/relay handling the packet "
+"and is only based on the IP, MAC address and DHCP type inside the packet. A value "
+"of 0 will disable the rate limitation."
+msgstr "Limitera le traitement de paquets DHCP contenant la même information. Par exemple une requête DHCPREQUEST contenant la même MAC/IP ne sera traité qu’une seule fois dans la tranche de temps configuré plus bas. Une valeur de 0 désactive cette limite."
 
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
 msgid "Window"
@@ -9615,6 +9638,10 @@ msgstr "Vous n’avez pas les droits pour effectuer cette opération."
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Admin.pm
 msgid "You have been logged out."
 msgstr "Vous avez été déconnecté."
+
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "You have already made a selection. You will be brought to the next step."
+msgstr "Vous avez déjà fait une sélection. Vous serez amené à l'étape suivante."
 
 # html/pfappserver/root/configurator/services.tt
 msgid "You have successfully configured and launched A3."
@@ -11065,7 +11092,7 @@ msgstr "Détecteur DHCP"
 
 # conf/documentation.conf
 msgid "network.dhcpoption82logger"
-msgstr "Option DHCP n° 82"
+msgstr "Option DHCP 82"
 
 # conf/documentation.conf
 msgid "network.force_listener_update_on_ack"

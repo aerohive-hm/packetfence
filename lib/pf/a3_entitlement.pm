@@ -193,6 +193,12 @@ sub verify {
 
     $curl->setopt(CURLOPT_POST, 1);
     $curl->setopt(CURLOPT_URL, $acs_entitlement_url);
+
+    if ($Config{A3}->{license_username} && $Config{A3}->{license_password}) {
+        $curl->setopt(CURLOPT_USERNAME, $Config{A3}->{license_username});
+        $curl->setopt(CURLOPT_PASSWORD, $Config{A3}->{license_password});
+    }
+
     $curl->setopt(CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
         'Accept: application/json'

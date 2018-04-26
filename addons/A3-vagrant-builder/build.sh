@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 OVFTOOL=/usr/bin/ovftool
 VAGRANT=/usr/bin/vagrant

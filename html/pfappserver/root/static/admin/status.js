@@ -15,7 +15,7 @@ var refresh = {
 */
 function drawGraphs(options) {
     var default_href, pos,
-    links = $('.sidenav .nav-list a[href*="graph"]'),
+    links = $('.sidenav .nav-list a[href*="graph"]:not([href*="dashboard"])'),
     width = $('#section').width() - 40;
 
     links.each(function() {
@@ -33,8 +33,9 @@ function drawGraphs(options) {
     if (location.hash.length > 0) {
         default_href = location.hash;
         pos = default_href.indexOf('?');
-        if (pos >= 0)
-        default_href = default_href.substring(0, pos);
+        if (pos >= 0) {
+            default_href = default_href.substring(0, pos);
+        }
         default_href = default_href.replace(/^.*#/,"/") + '?width=' + width;
         $(window).unbind('hashchange');
     }
@@ -277,6 +278,16 @@ function init() {
         return false;
     });
 
+    /* Dashboard tabs navigation from the sidenav */
+    $('.sidenav a[data-tab]').click(function (event) {
+        var path = $(this).data('tab').split('/');
+        var el = $('#' + path[0] + ' [href="#' + path[1] + '"]');
+        if (el.get(0) && !el.get(0).parentNode.classList.contains('active')) {
+            el.tab('show');
+            event.preventDefault(); // don't follow link
+        }
+    });
+
     /* Hash change handler */
     var href =  $('.sidebar-nav .nav-list a').first().attr('href');
     if (href) {
@@ -294,17 +305,30 @@ function initDashboard() {
     var cluster = JSON.parse(clusterEl.textContent || clusterEl.innerHTML);
 
     /* Hide missing charts */
-    $('[data-hide-missing]').each(function (index) {
-        var $chartEl = $(this);
-        $.ajax({
-            url: $chartEl.data('host') + '/api/v1/chart?chart=' + $chartEl.data('netdata'),
-            method: 'GET',
-        }).fail(function (data) {
-            $chartEl.hide();
-        }).done(function (response) {
-            // No error, show the graph
-            $chartEl.show();
+    validateCharts();
+    function validateCharts() {
+        $('[data-hide-missing]').each(function (index) {
+            var $chartEl = $(this);
+            var chart = $chartEl.data('netdata');
+            $.ajax({
+                url: $chartEl.data('host') + '/api/v1/chart?chart=' + chart,
+                method: 'GET',
+            }).fail(function (data) {
+                // Unknown or missing chart; show warning
+                var alert = $('[data-template="missing-chart"]').first().clone();
+                alert.removeAttr('data-template');
+                $chartEl.parent().append(alert);
+                alert.find('[data-block="chart"]').html(chart);
+                alert.removeClass('hide');
+                $chartEl.remove();
+            });
         });
+    }
+
+    /* Update sidenav when changing tab */
+    $('#dashboard-tabs a[data-toggle]').on('shown', function (e) {
+        var tab = $(e.target).attr('href').substr(1);
+        $('.sidenav [data-tab="dashboard-tabs/' + tab + '"]').trigger('click');
     });
 
     /* Fetch alarms */
@@ -328,6 +352,7 @@ function initDashboard() {
                 method: 'GET'
             }).done(function (response) {
                 var alarms = response.alarms;
+                var newAlarms = false;
                 var ids = [];
                 var index = 0;
                 $.each(alarms, function (name, alarm) {
@@ -370,6 +395,7 @@ function initDashboard() {
                         fitty(labelEl[0], { minSize: 8, maxSize: 14 });
                         fitty(valueEl[0], { maxSize: 24 });
                         el.removeClass('hide');
+                        newAlarms = true;
                     }
                     index++;
                 });
@@ -379,7 +405,9 @@ function initDashboard() {
                         $(el).remove();
                     }
                 });
-                window.NETDATA.parseDom();
+                if (newAlarms) {
+                    window.NETDATA.parseDom();
+                }
             });
         });
     }

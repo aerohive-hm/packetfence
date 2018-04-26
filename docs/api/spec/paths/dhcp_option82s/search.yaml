@@ -1,0 +1,20 @@
+/dhcp_option82s/search:
+  description: pf::UnifiedApi::Controller::DhcpOption82s
+  post:
+    operationId: api.v1.DhcpOption82s.search
+    parameters: []
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Search'
+    responses:
+      '200':
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DhcpOption82sList'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '422':
+        $ref: '#/components/responses/UnprocessableEntity'

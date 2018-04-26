@@ -4,7 +4,7 @@
 
 msgid ""
 msgstr ""
-"Project-Id-Version: 7.4.9\n"
+"Project-Id-Version: 1.0.0\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: 2018-01-22 15:38-0400\n"
 "Last-Translator: Aerohive Networks, Inc.\n"
@@ -587,7 +587,6 @@ msgstr ""
 msgid "Administration Rules"
 msgstr ""
 
-# html/pfappserver/root/admin/index.tt
 # html/pfappserver/root/admin/v-index.tt
 # html/pfappserver/root/admin/wrapper.tt
 # html/pfappserver/root/configurator/admin.tt
@@ -852,6 +851,7 @@ msgid "Auth Token"
 msgstr ""
 
 # html/pfappserver/root/admin/reports.tt
+# html/pfappserver/root/admin/status.tt
 # html/pfappserver/root/graph/dashboard.tt
 msgid "Authentication"
 msgstr ""
@@ -1169,6 +1169,7 @@ msgstr "An error occurred while contacting the server. Please try again later."
 # html/pfappserver/root/config/profile/create.tt
 # html/pfappserver/root/config/profile/files.tt
 # html/pfappserver/root/config/profile/view.tt
+# html/pfappserver/root/graph/dashboard.tt
 msgid "Captive Portal"
 msgstr ""
 
@@ -1213,7 +1214,7 @@ msgid "Children"
 msgstr ""
 
 # conf/documentation.conf (network.interfaceSNAT)
-msgid "Choose interface(s) where you want to enable SNAT for passthrough (by default it's the management interface)"
+msgid "Choose interface(s) where you want to enable SNAT for passthrough (by default, it is the management interface)"
 msgstr ""
 
 # html/pfappserver/root/user/list_password.tt
@@ -1988,6 +1989,10 @@ msgstr ""
 msgid "Dashboard"
 msgstr ""
 
+# html/pfappserver/root/graph/dashboard.tt
+msgid "Database"
+msgstr ""
+
 # html/pfappserver/root/configurator/database.tt
 msgid "Database Configuration"
 msgstr ""
@@ -2713,6 +2718,7 @@ msgstr ""
 msgid "Ending IP Address"
 msgstr ""
 
+# html/pfappserver/root/admin/status.tt
 # html/pfappserver/root/graph/dashboard.tt
 msgid "Endpoints"
 msgstr ""
@@ -3155,6 +3161,14 @@ msgstr ""
 msgid "How many seconds the webservice should wait before deassociating or reassigning VLAN. If we don't wait, the device may switch VLAN before it has a chance to load the redirection page."
 msgstr ""
 
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "I have an entitlement key!"
+msgstr ""
+
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "I would like to try a 30 day trial!"
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/Config/Fingerbank/DHCP6_Enterprise.pm
 # html/pfappserver/lib/pfappserver/Form/Config/Fingerbank/DHCP6_Fingerprint.pm
 # html/pfappserver/lib/pfappserver/Form/Config/Fingerbank/DHCP_Fingerprint.pm
@@ -3283,7 +3297,7 @@ msgid "If %1 of the following conditions are met:"
 msgstr ""
 
 # conf/documentation.conf (network.dhcpoption82logger)
-msgid "If enabled, A3 will monitor DHCP option82 location-based information. This feature is only available if the dhcpdetector is activated."
+msgid "If enabled, A3 will monitor DHCP option 82 location-based information. This feature is only available if the dhcpdetector is activated."
 msgstr ""
 
 # conf/documentation.conf (network.dhcpdetector)
@@ -3514,10 +3528,6 @@ msgstr ""
 msgid "Last Seen"
 msgstr ""
 
-# html/pfappserver/lib/pfappserver/PacketFence/Controller/Pfqueue.pm
-msgid "Last hour queue counts"
-msgstr ""
-
 # html/pfappserver/lib/pfappserver/Form/User.pm
 # html/pfappserver/lib/pfappserver/Form/User/Create/Import.pm
 # html/pfappserver/lib/pfappserver/Form/User/Create/Multiple.pm
@@ -3553,6 +3563,10 @@ msgstr ""
 
 # conf/documentation.conf (advanced.timing_stats_level)
 msgid "Level of timing stats to keep - 0 is the lowest - 10 the highest amount to logDo not change unless you know what you are doing"
+msgstr ""
+
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "License Options"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
@@ -4014,6 +4028,10 @@ msgstr ""
 msgid "Monitor"
 msgstr ""
 
+# html/pfappserver/root/configurator/services.tt
+msgid "More Details"
+msgstr ""
+
 # html/pfappserver/root/user/create.tt
 msgid "Multiple"
 msgstr ""
@@ -4049,6 +4067,10 @@ msgstr "Nodes - Read"
 # pf::admin_roles (Actions)
 msgid "NODES_UPDATE"
 msgstr "Nodes - Update"
+
+# html/pfappserver/root/graph/dashboard.tt
+msgid "NTLM"
+msgstr ""
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Graph.pm
 msgid "NTLM authentication failures"
@@ -4551,6 +4573,10 @@ msgstr ""
 msgid "On Node tab"
 msgstr ""
 
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "On this page, you can apply an entitlement key if you already have one. Otherwise, you can select a trial license to evaluate A3."
+msgstr ""
+
 # html/pfappserver/root/configurator/fingerbank.tt
 msgid "On this page, you can configure Fingerbank which is used for device fingerprinting."
 msgstr ""
@@ -4581,10 +4607,6 @@ msgstr ""
 
 # html/pfappserver/root/admin/nodes.tt
 msgid "Online"
-msgstr ""
-
-# html/pfappserver/root/graph/dashboard.tt
-msgid "Online & Offline Devices"
 msgstr ""
 
 # html/pfappserver/root/admin/nodes.tt
@@ -4898,7 +4920,7 @@ msgid "A3 is the server that assigns the Role (or ACL) to the devices. This mode
 msgstr ""
 
 # html/pfappserver/root/configurator/enforcement.tt
-msgid "A3 is the server that assigns the VLAN (or roles) to the devices. This is the prefered enforcement mechanism for manageable equipment."
+msgid "A3 is the server that assigns the VLAN (or roles) to the devices. This is the preferred enforcement mechanism for manageable equipment."
 msgstr ""
 
 # html/pfappserver/root/configurator/enforcement.tt
@@ -5372,6 +5394,11 @@ msgstr ""
 msgid "Port the proxy is listening on"
 msgstr ""
 
+# html/pfappserver/root/admin/status.tt
+# html/pfappserver/root/graph/dashboard.tt
+msgid "Portal"
+msgstr ""
+
 # html/pfappserver/root/admin/configuration.tt
 # html/pfappserver/root/config/portal_module/view.tt
 msgid "Portal Modules"
@@ -5415,6 +5442,10 @@ msgstr ""
 
 # html/pfappserver/root/config/profile/index.tt
 msgid "Present a different captive portal according to the SSID, the VLAN, or the device IP the client connects to."
+msgstr ""
+
+# html/pfappserver/root/configurator/services.tt
+msgid "Press Start A3 to start services."
 msgstr ""
 
 # html/pfappserver/root/config/profile/edit.tt
@@ -5583,6 +5614,10 @@ msgstr ""
 msgid "Queue Counts"
 msgstr ""
 
+# html/pfappserver/root/pfqueue/stats.inc
+msgid "Queue stats"
+msgstr ""
+
 # html/pfappserver/root/admin/auditing.tt
 # html/pfappserver/root/auditing/radiuslog/view.tt
 # html/pfappserver/root/config/switch/view.tt
@@ -5616,6 +5651,14 @@ msgstr "RADIUS Audit Log"
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Graph.pm
 msgid "RADIUS Average Access-Request Latency"
+msgstr ""
+
+# html/pfappserver/root/graph/dashboard.tt
+msgid "RADIUS Latency"
+msgstr ""
+
+# html/pfappserver/root/graph/dashboard.tt
+msgid "RADIUS Requests"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Graph.pm
@@ -7135,6 +7178,10 @@ msgstr ""
 msgid "Subject prefix for email notifications of rogue DHCP servers, violations with an action of <i>email</i>, or any other A3-related message."
 msgstr ""
 
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "Submit"
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/Config/Source/LDAP.pm
 msgid "Subtree"
 msgstr ""
@@ -7284,7 +7331,7 @@ msgid "System state"
 msgstr ""
 
 # conf/documentation.conf (general.timezone)
-msgid "System's time zone in string format. List generated from Perl library DataTime::TimeZoneWhen left empty, it will use the timezone of the server"
+msgid "System's time zone in string format. List generated from Perl library DataTime::TimeZoneWhen left empty, it will use the time zone of the server."
 msgstr ""
 
 # conf/documentation.conf (radius_authentication_methods.eap_authentication_types options)
@@ -8035,7 +8082,7 @@ msgid "This will create a small network for each roles."
 msgstr ""
 
 # conf/documentation.conf (network.force_listener_update_on_ack)
-msgid "This will only do the iplog update and other DHCP related task on a DHCPACK.You need to make sure the UDP reflector is in place so this works on the production network.This is implicitly activated on registration interfaces on which dhcpd runs."
+msgid "This will only do the iplog update and other DHCP-related task on a DHCPACK. You need to make sure the UDP reflector is in place so this works on the production network. This is implicitly activated on registration interfaces on which the DHCP server listens."
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/RADIUS.pm
@@ -8928,7 +8975,7 @@ msgid "Will identify hostname changes and send an e-mail with these changes. Thi
 msgstr ""
 
 # conf/documentation.conf (network.dhcp_rate_limiting)
-msgid "Will rate-limit DHCP packets that contain the same information. For example, a DHCPREQUEST for the same MAC/IP will only be processed once in the timeframe configured below. This is independant of the DHCP server/relay handling the packet and is only based on the IP, MAC Address and DHCP type inside the packet. A value of 0 will disable the rate limitation."
+msgid "Will rate-limit DHCP packets that contain the same information. For example, a DHCPREQUEST for the same MAC/IP will only be processed once in the timeframe configured above. This is independent of the DHCP server/relay handling the packet and is only based on the IP, MAC address and DHCP type inside the packet. A value of 0 will disable the rate limitation."
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Violation.pm
@@ -9009,6 +9056,10 @@ msgstr ""
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Admin.pm
 msgid "You have been logged out."
+msgstr ""
+
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "You have already made a selection. You will be brought to the next step."
 msgstr ""
 
 # html/pfappserver/root/configurator/services.tt
@@ -10440,7 +10491,7 @@ msgstr "DHCP detector"
 
 # conf/documentation.conf
 msgid "network.dhcpoption82logger"
-msgstr "DHCP option82"
+msgstr "DHCP Option 82"
 
 # conf/documentation.conf
 msgid "network.force_listener_update_on_ack"
@@ -10948,7 +10999,7 @@ msgstr "Services"
 
 # conf/documentation.conf
 msgid "services.api-frontend"
-msgstr ""
+msgstr "api-frontend"
 
 # conf/documentation.conf
 msgid "services.arp_binary"
@@ -10960,7 +11011,7 @@ msgstr "dhcpd path"
 
 # conf/documentation.conf
 msgid "services.etcd"
-msgstr ""
+msgstr "etcd"
 
 # conf/documentation.conf
 msgid "services.etcd_binary"
@@ -10968,7 +11019,7 @@ msgstr ""
 
 # conf/documentation.conf
 msgid "services.fingerbank-collector"
-msgstr ""
+msgstr "fingerbank-collector"
 
 # conf/documentation.conf
 msgid "services.fingerbank-collector_binary"
@@ -10976,7 +11027,7 @@ msgstr ""
 
 # conf/documentation.conf
 msgid "services.haproxy-db"
-msgstr ""
+msgstr "haproxy-db"
 
 # conf/documentation.conf
 msgid "services.haproxy-db_binary"
@@ -10984,7 +11035,7 @@ msgstr ""
 
 # conf/documentation.conf
 msgid "services.haproxy-portal"
-msgstr ""
+msgstr "haproxy-portal"
 
 # conf/documentation.conf
 msgid "services.haproxy-portal_binary"
@@ -11044,7 +11095,7 @@ msgstr "Keepalived path"
 
 # conf/documentation.conf
 msgid "services.netdata"
-msgstr ""
+msgstr "netdata"
 
 # conf/documentation.conf
 msgid "services.netdata_binary"
@@ -11060,7 +11111,7 @@ msgstr "pfbandwidthd"
 
 # conf/documentation.conf
 msgid "services.pfdhcp"
-msgstr ""
+msgstr "pfdhcp"
 
 # conf/documentation.conf
 msgid "services.pfdhcp_binary"
@@ -11088,7 +11139,7 @@ msgstr "pffilter"
 
 # conf/documentation.conf
 msgid "services.pfipset"
-msgstr ""
+msgstr "pfipset"
 
 # conf/documentation.conf
 msgid "services.pfipset_binary"
@@ -11100,7 +11151,7 @@ msgstr "pfmon"
 
 # conf/documentation.conf
 msgid "services.pfperl-api"
-msgstr ""
+msgstr "pfperl-api"
 
 # conf/documentation.conf
 msgid "services.pfqueue"
@@ -11112,7 +11163,7 @@ msgstr "pfsso"
 
 # conf/documentation.conf
 msgid "services.pfstats"
-msgstr ""
+msgstr "pfstats"
 
 # conf/documentation.conf
 msgid "services.pfstats_binary"
@@ -11168,7 +11219,7 @@ msgstr "snmptrapd path"
 
 # conf/documentation.conf
 msgid "services.tc"
-msgstr ""
+msgstr "tc"
 
 # conf/documentation.conf
 msgid "services.tc_binary"
