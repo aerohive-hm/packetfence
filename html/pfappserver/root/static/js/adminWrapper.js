@@ -64,10 +64,15 @@ function timeLeft(){
          if (numberOfDaysLeft > 15 && numberOfDaysLeft < 29){
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
             $(timeBar).css('width', percentageWidth);
-         }else if(numberOfDaysLeft == 29 || numberOfDaysLeft == 30){
+         }else if(numberOfDaysLeft == 29){
             // numberOfDaysLeft = days + 1;
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
             $(timeBar).css('width', 180);
+
+         }else if(numberOfDaysLeft == 30){
+            $("#daysLeft").html(numberOfDaysLeft + " " + "days");
+            $(timeBar).css('width', 180);
+
          }else if(numberOfDaysLeft <= 15 && numberOfDaysLeft > 0 ){
             if ($.cookie('pop') == null) {
                console.log("show modal");
