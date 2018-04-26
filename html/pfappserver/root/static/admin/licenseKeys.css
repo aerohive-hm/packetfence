@@ -102,6 +102,10 @@ label{
     overflow-x: hidden;
 }
 
+.daysLeftofKey{
+   width: 100px;
+}
+
 .notValidExpired{
     color: grey;
     font-style: italic;
@@ -114,8 +118,25 @@ label{
     background-color: #eee;
 }
 
+.agree{
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  background-color: #5cb85c;
+  color: white;
+}
+
 .submitAgreement{
-    display: none;
+  display: none;
+}
+
+.modal-footer{
+  background-color: white;
+}
+
+.modal-footer .submitAgreement{
+  width: 100%;
+  display:none;
 }
 
 .expiringSoon{

@@ -25,6 +25,8 @@
       <div id="entire-form">
         <div class="head">
           <h1><b>LICENSE MANAGEMENT</b></h1>
+          <span>eula accepd? [% is_eula_accepted %]</span><span>eula needed? [% is_eula_needed %]</span>
+          <br>
           <span class="systemId"><b>System ID:</b> [% system_id %]</span>
         </div>
         <div class="capacity">
@@ -54,6 +56,7 @@
                 <th>Capacity</th>
                 <th>Valid From</th>
                 <th>Valid Until</th>
+                <th style="width: 75px;">Days Left</th>
               </tr>
             </thead>
             <tbody>
@@ -62,7 +65,8 @@
                 <td class="key">[% key.entitlement_key %]</td>
                 <td class="cap">[% key.endpoint_count %]</td>
                 <td class="validFrom">[% key.sub_start.split(' ').first %]</td>
-                <td class="validTo">[% key.sub_end.split(' ').first %]<span>[% now()-(key.sub_end.split(' ').first) %]</span></td>
+                <td class="validTo">[% key.sub_end.split(' ').first %]</td>
+                <td class="daysLeftofKey" style="width: 75px;"><span>[% key.expires_in %]</span></td>
               </tr>
              [% END -%]
             </tbody>
@@ -71,11 +75,20 @@
       </div><!--end of entire-form-->
     </div><!--end of card-block-->
 </div> <!--end of card-div -->
-[% IF is_eula_needed %]
-[% ELSE %]
+  [% FOREACH key IN entitlement_keys -%]
+     [% latestKey = key[-1] %]
+     [% IF key.expires_in < 15 %]
+       [% INCLUDE admin/almostExpiringModal.tt %]
+     [% END %]
+     [% IF key.expires_in < 0 %]
+       [% INCLUDE admin/expiredModal.tt %]
+     [% END %]
+  [% END -%]
 <!--EULA modal-->
   [% IF is_eula_accepted %]
   [% ELSE %]
+    [% IF is_eula_needed %]
+    [% ELSE %]
     <div class="modal fade" id="eulaModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -95,6 +108,6 @@
              </div>
         </div>
     </div>
+        <!--end of EULA modal-->
+    [% END %]
   [% END %]
-<!--end of EULA modal-->
-[% END %]

@@ -12,12 +12,7 @@ $(document).ready(function(){
   dateRangeChecker();
   updateCapacities();
 
-  $('.no-submitted-eula').click(function(){
-    openEulaModal();
-    console.log("nosubmit eula button  was pressed");
-    $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
-    $("#licenseCapa").load(window.location + " #licenseCapa");
-  });
+ document.getElementById('keyInput').value="";
 
   $('.agreeToEula').click(function() {
       //changes checkbox to submit button
@@ -94,7 +89,7 @@ function updateKeyTable(userKeyInput) {
                  $("#success-alert").slideUp(300);
                }, 2000);
            }
-
+           openEulaModal();
            //update capacity
            $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
            $("#licenseCapa").load(window.location + " #licenseCapa");
@@ -108,11 +103,10 @@ function updateKeyTable(userKeyInput) {
            }
            console.log("new license capa: " + document.getElementById('licenseCapa').innerHTML);
            console.log("updateKeyTable success");
-           document.getElementById("keyValue").value = "";
 
            //open modal if eula hasn't been accepted
-           openEulaModal();
-
+           // openEulaModal();
+           return true;
         }).fail(function(xhr, status, error){
           console.log("updateKeyTable error: ");
           console.log(error);
@@ -123,17 +117,17 @@ function updateKeyTable(userKeyInput) {
 
 function checkKeyInput(userKeyInput){
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
-    var errMsg = "<p class='errMsg' style='color:red;'>Sorry please reenter the license key again.</p>";
+    // var errMsg = "<p class='errMsg' style='color:red;'>Sorry please reenter the license key again.</p>";
     var applyKeyButton2 = $("#applyKey");
     //check regex with user input; there is check for duplicate already
     console.log(checkKeyRegex.test(userKeyInput)); //TRUE OR FALSE
       if (checkKeyRegex.test(userKeyInput)){
-          $(".errMsg").css('display', 'none');
+          // $(".errMsg").css('display', 'none');
           $("#keyInput").css('border','1px solid #dfdfdf');
           return true;
       } else {
-          $(".errMsg").css('display', 'none');
-          applyKeyButton2.after(errMsg);
+          // $(".errMsg").css('display', 'none');
+          // applyKeyButton2.after(errMsg);
           $("#keyInput").css('border','1px solid #d9534f');
           return false;
       }
@@ -145,41 +139,42 @@ function dateRangeChecker(){
    var table = $("#keyLicenseTable");
       table.find('tr').each(function(i) {
         var $tableColumns = $(this).find('td');
-        var validFromColumn = $tableColumns.eq(2).text();
-        var validToColumn = $tableColumns.eq(3).text();
+        // var validFromColumn = $tableColumns.eq(2).text();
+        var dayLeftofKey = $tableColumns.eq(4).text();
 
+        console.log(dayLeftofKey);
         // get todays date
-        var todayDate = new Date();
-        var dd = todayDate.getDate();
-        var mm = todayDate.getMonth() + 1;
-        var yyyy = todayDate.getFullYear();
-        if(dd < 10){
-            dd = '0' + dd;
-        }
-        if(mm < 10){
-            mm = '0' + mm;
-        }
-        var todaysDate = yyyy + '-' + mm + '-' + dd;
+        // var todayDate = new Date();
+        // var dd = todayDate.getDate();
+        // var mm = todayDate.getMonth() + 1;
+        // var yyyy = todayDate.getFullYear();
+        // if(dd < 10){
+        //     dd = '0' + dd;
+        // }
+        // if(mm < 10){
+        //     mm = '0' + mm;
+        // }
+        // var todaysDate = yyyy + '-' + mm + '-' + dd;
 
-        var formatValidFromColumn = new Date(validFromColumn);
-        var formatValidToColumn = new Date(validToColumn);
-        var formatTodaysDate = new Date(todaysDate);
+        // var formatValidFromColumn = new Date(validFromColumn);
+        // var formatValidToColumn = new Date(validToColumn);
+        // var formatTodaysDate = new Date(todaysDate);
 
-        var total_days = (formatValidToColumn - formatTodaysDate) / (1000 * 60 * 60 * 24);
+        // var total_days = (formatValidToColumn - formatTodaysDate) / (1000 * 60 * 60 * 24);
 
-        if (formatValidFromColumn > formatTodaysDate){
-            $tableColumns.eq(2).closest('tr').css('color', 'grey');
-            $tableColumns.eq(2).closest('tr').css('font-style','italic');
-            $tableColumns.eq(2).closest('tr').css('background-color','#eee');
-        } else if (formatValidToColumn < formatTodaysDate){
-            $tableColumns.eq(2).closest('tr').css('color', 'grey');
-            $tableColumns.eq(2).closest('tr').css('font-style','italic');
-            $tableColumns.eq(2).closest('tr').css('background-color','#eee');
-        }
-        if (total_days < 30 && total_days > 0){ //check how many days left till near expiration
-            $tableColumns.eq(2).closest('tr').css('color', '#FFC007');
-            $("#licenseCapaSpan").css('color','#FFC007');
-        }
+        // if (formatValidFromColumn > formatTodaysDate){
+        //     $tableColumns.eq(2).closest('tr').css('color', 'grey');
+        //     $tableColumns.eq(2).closest('tr').css('font-style','italic');
+        //     $tableColumns.eq(2).closest('tr').css('background-color','#eee');
+        // } else if (formatValidToColumn < formatTodaysDate){
+        //     $tableColumns.eq(2).closest('tr').css('color', 'grey');
+        //     $tableColumns.eq(2).closest('tr').css('font-style','italic');
+        //     $tableColumns.eq(2).closest('tr').css('background-color','#eee');
+        // }
+        // if (total_days < 30 && total_days > 0){ //check how many days left till near expiration
+        //     $tableColumns.eq(2).closest('tr').css('color', '#FFC007');
+        //     $("#licenseCapaSpan").css('color','#FFC007');
+        // }
       });
       console.log("checked date");
 }

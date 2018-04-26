@@ -144,13 +144,11 @@
     </div>
     [%- IF c.user_allowed_in_admin() %]
     <!-- use date here? -->
-      [% IF is_eula_accepted %]
-      [% ELSE %]
       <!-- for trial -->
         [% INCLUDE admin/almostExpiringModal.tt %]
         [% INCLUDE admin/expiredModal.tt %]
-      [% END %]
       <!-- need for when regular key expires -->
+
     [% END %]
 
 [% content | none %]
