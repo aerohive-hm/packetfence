@@ -113,7 +113,7 @@ function updateKeyTable(userKeyInput) {
              document.getElementById('errorMessage').innerHTML = errMsg;
              $("#success-alert").show(); // use slide down for animation
              setTimeout(function () {
-               $("#success-alert").slideUp(300);
+               $("#success-alert").slideUp(500);
              }, 2000);
          } else {
             openModal();

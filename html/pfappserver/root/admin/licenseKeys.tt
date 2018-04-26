@@ -76,11 +76,8 @@
     </div><!--end of card-block-->
 </div> <!--end of card-div -->
   [% FOREACH key IN entitlement_keys -%]
-     [% latestKey = key[-1] %]
-     [% IF key.expires_in < 15 %]
-       [% INCLUDE admin/almostExpiringModal.tt %]
-     [% END %]
-     [% IF key.expires_in < 0 %]
+     [% latestKey = key.sub_end %]
+     [% IF key.expires_in == 0 %]
        [% INCLUDE admin/expiredModal.tt %]
      [% END %]
   [% END -%]

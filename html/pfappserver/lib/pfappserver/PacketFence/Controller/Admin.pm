@@ -231,7 +231,7 @@ our @ROLES_TO_ACTIONS = (
         action => 'users',
     },
     {
-        roles => [qw()],
+        roles => [qw(LICENSE_KEY_LIST)],
         action => 'licenseKeys',
     }
 );
@@ -458,7 +458,7 @@ sub fixpermissions :Chained('object') :PathPart('fixpermissions') :Args(0) {
 
 =cut
 
-sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
+sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0) :AdminRole('LICENSE_KEY_LIST'){
     my( $self, $c ) = @_;
     my $logger = get_logger();
 

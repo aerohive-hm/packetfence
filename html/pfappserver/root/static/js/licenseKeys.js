@@ -9,7 +9,7 @@ $(document).ready(function(){
   console.log("license Cap right now: " + licenseCapacity.innerHTML);
 
   applyKeyButton();
-  dateRangeChecker();
+  dateExpirationChecker();
   updateCapacities();
 
  document.getElementById('keyInput').value="";
@@ -25,6 +25,12 @@ $(document).ready(function(){
     console.log("submitAgreement was pressed");
       userSubmitEula();
   })
+
+  if (dateExpirationChecker()){
+      // open expiredModal
+      openExpiredModal();
+      $("#expiredModal").modal("open");
+  }
 });
 
 function updateCapacities(){
@@ -135,48 +141,33 @@ function checkKeyInput(userKeyInput){
 }
 
 //check if valid from date is over todays date then turn row into grey
-function dateRangeChecker(){
-   var table = $("#keyLicenseTable");
-      table.find('tr').each(function(i) {
+function dateExpirationChecker(){
+    var table = $("#keyLicenseTable");
+    var myArray = [];
+    var tmp;
+    var lowest, highest = 0;
+    table.find('tr').each(function(i) {
         var $tableColumns = $(this).find('td');
-        // var validFromColumn = $tableColumns.eq(2).text();
-        var dayLeftofKey = $tableColumns.eq(4).text();
+        var dayLeftofKey = parseInt(($tableColumns.eq(4).text()));
+        myArray.push(dayLeftofKey);
+    });
+    console.log("myArray: " + myArray);
 
-        console.log(dayLeftofKey);
-        // get todays date
-        // var todayDate = new Date();
-        // var dd = todayDate.getDate();
-        // var mm = todayDate.getMonth() + 1;
-        // var yyyy = todayDate.getFullYear();
-        // if(dd < 10){
-        //     dd = '0' + dd;
-        // }
-        // if(mm < 10){
-        //     mm = '0' + mm;
-        // }
-        // var todaysDate = yyyy + '-' + mm + '-' + dd;
-
-        // var formatValidFromColumn = new Date(validFromColumn);
-        // var formatValidToColumn = new Date(validToColumn);
-        // var formatTodaysDate = new Date(todaysDate);
-
-        // var total_days = (formatValidToColumn - formatTodaysDate) / (1000 * 60 * 60 * 24);
-
-        // if (formatValidFromColumn > formatTodaysDate){
-        //     $tableColumns.eq(2).closest('tr').css('color', 'grey');
-        //     $tableColumns.eq(2).closest('tr').css('font-style','italic');
-        //     $tableColumns.eq(2).closest('tr').css('background-color','#eee');
-        // } else if (formatValidToColumn < formatTodaysDate){
-        //     $tableColumns.eq(2).closest('tr').css('color', 'grey');
-        //     $tableColumns.eq(2).closest('tr').css('font-style','italic');
-        //     $tableColumns.eq(2).closest('tr').css('background-color','#eee');
-        // }
-        // if (total_days < 30 && total_days > 0){ //check how many days left till near expiration
-        //     $tableColumns.eq(2).closest('tr').css('color', '#FFC007');
-        //     $("#licenseCapaSpan").css('color','#FFC007');
-        // }
-      });
-      console.log("checked date");
+    //get latest date by getting highest day left
+    for (i=0; i < myArray.length; i++){
+        tmp = myArray[i];
+        console.log(tmp);
+        if (tmp > highest) {
+            highest = tmp;
+        }
+    }
+    console.log(highest);
+    if (highest == 0){
+        return true;
+    } else {
+        return false;
+    }
+    console.log("checked date");
 }
 
 //open eula
@@ -184,6 +175,11 @@ function openEulaModal(){
    $('#eulaModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
    $('#eulaModal').modal('show');
    console.log("eula modal opening");
+}
+
+function openExpiredModal(){
+  $('#expiredModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
+  $('#expiredModal').modal('show');
 }
 
 //user submits eula with button press
