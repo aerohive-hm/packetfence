@@ -172,13 +172,13 @@ function userSubmitEula(){
      }); //checks which radio button is pressed
      $(".continueButton").on("click", function(){
          console.log("inside click continue func!");
-         if (radioValue = "trial" ){
-           console.log("Yes! trial");
-           userSubmitTrial();
-         } else if (radioValue = "validKey"){
-           console.log("No! trial");
+         if (radioValue = "validKey"){
+             console.log("No! trial");
+         } else if (radioValue = "trial"){
+             console.log("Yes! trial");
+             userSubmitTrial();
          } else{
-           console.log("fail to pick");
+             console.log("fail to pick");
          }
          console.log("continuing now");
      }); //if use press trial then after pressing continue call function to submit trial,

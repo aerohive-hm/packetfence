@@ -115,10 +115,10 @@
 	          </ul>
           </div>
 
-            [% IF is_eula_accepted %]
-            [% ELSE %]
-              [% IF is_eula_needed %]
+          [% IF is_eula_needed %]
               <!-- <trial indicator -->
+              [% IF is_eula_accepted %]
+              [% ELSE %]
               <div class="trialIndicator" id="trialIndicator">
                 <div class="trial-clock-indicator pull-right">
                     <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
@@ -128,10 +128,10 @@
                     <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
                 </div>
               </div>
-              [% ELSE %]
               [% END %]
+          [% ELSE %]
+          [% END %]
             <!--for trialindecator-->
-            [% END %]
 
         </div>
         [%- END %]
