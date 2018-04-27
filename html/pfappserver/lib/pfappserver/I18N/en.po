@@ -780,6 +780,10 @@ msgstr ""
 msgid "App URL"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Apply"
+msgstr ""
+
 # html/pfappserver/root/admin/bulk_actions.inc
 msgid "Apply Bypass Role"
 msgstr ""
@@ -1043,6 +1047,10 @@ msgstr ""
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 msgid "CA cert path"
+msgstr ""
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Capacity"
 msgstr ""
 
 # html/pfappserver/root/config/switch/view.tt
@@ -2723,6 +2731,10 @@ msgstr ""
 msgid "Endpoints"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "endpoints"
+msgstr ""
+
 # html/pfappserver/root/configurator/enforcement.tt
 msgid "Enforcement"
 msgstr ""
@@ -2743,6 +2755,10 @@ msgstr ""
 msgid "English Location Name"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Enter Entitlement Key:"
+msgstr ""
+
 # html/pfappserver/root/config/profile/tab-content.tt
 msgid "Enter SSID"
 msgstr ""
@@ -2753,6 +2769,10 @@ msgstr ""
 
 # html/pfappserver/root/violation/view.tt
 msgid "Enter the trigger ID"
+msgstr ""
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Entitlement Key"
 msgstr ""
 
 # html/pfappserver/root/node/tab_WMI_process.tt
@@ -3565,8 +3585,16 @@ msgstr ""
 msgid "Level of timing stats to keep - 0 is the lowest - 10 the highest amount to logDo not change unless you know what you are doing"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "LICENSE MANAGEMENT"
+msgstr ""
+
 # html/pfappserver/root/configurator/entitlement.tt
 msgid "License Options"
+msgstr ""
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Licensed Capacity:"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
@@ -7326,6 +7354,10 @@ msgstr ""
 msgid "System Configuration"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "System ID:"
+msgstr ""
+
 # html/pfappserver/root/admin/status.tt
 msgid "System state"
 msgstr ""
@@ -8237,6 +8269,10 @@ msgstr ""
 msgid "UID type"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Unlimited"
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/URL.pm
 msgid "URL"
 msgstr ""
@@ -8477,6 +8513,10 @@ msgstr ""
 msgid "Use time balance"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Used Capacity:"
+msgstr ""
+
 # html/pfappserver/root/user/view.tt
 msgid "User"
 msgstr ""
@@ -8569,6 +8609,14 @@ msgstr ""
 # html/pfappserver/root/admin/users.tt
 # html/pfappserver/root/admin/wrapper.tt
 msgid "Users"
+msgstr ""
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Valid From"
+msgstr ""
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Valid Until"
 msgstr ""
 
 # pf::admin_roles (Actions groups)

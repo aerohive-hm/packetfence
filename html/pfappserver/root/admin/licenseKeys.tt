@@ -24,39 +24,43 @@
   <div class="card-block">
       <div id="entire-form">
         <div class="head">
-          <h1><b>LICENSE MANAGEMENT</b></h1>
+          <h1><b>[% l('LICENSE MANAGEMENT') %]</b></h1>
+<!--
           <span>eula accepd? [% is_eula_accepted %]</span><span>eula needed? [% is_eula_needed %]</span>
           <br>
-          <span class="systemId"><b>System ID:</b> [% system_id %]</span>
+  -->
+          <span class="systemId"><b>[% l('System ID:') %]</b>&nbsp;[% system_id %]</span>
         </div>
         <div class="capacity">
           <div class="pad">
             <label class="lcLabel"><b>[% l('Licensed Capacity:') %]</b></label>
             <div id="licenseCapaSpan">
-              <span id="licenseCapa" data-capacity="[% max_capacity %]" >[% IF max_capacity > 100000 %]Unlimited[% ELSE %][% max_capacity %][% END %]</span><span> endpoints</span>[% IF is_eula_accepted %][% ELSE %][% IF max_capacity==100 %]<span class="licenseTrialText"> (trial only) </span>[% ELSE %][% END %][% END %]
+              <span id="licenseCapa" data-capacity="[% max_capacity %]" >[% IF max_capacity > 100000 %][% l('Unlimited') %][% ELSE %][% max_capacity %][% END %]</span><span>&nbsp;[% l('endpoints') %]</span>[% IF is_eula_accepted %][% ELSE %][% IF max_capacity==100 %]<span class="licenseTrialText">&nbsp;[% l('(trial only)') %]</span>[% ELSE %][% END %][% END %]
             </div>
           </div>
           <div class="pad2">
             <label class="ucLabel"><b>[% l('Used Capacity:') %]</b></label>
             <div id="usedCapacitySpan">
-              <span id="usedCapacity">[% used_capacity.item('nb') %]</span><span> endpoints</span>
+              <span id="usedCapacity">[% used_capacity.item('nb') %]</span><span>&nbsp;[% l('endpoints') %]</span>
             </div>
           </div>
         </div>
         <hr>
         <div class="entitlementLicenseKeyInput">
-            <label>[% l('Enter Entitlement Key: ') %]</label><input id="keyInput" max="36"/>[% IF is_eula_needed %] <button class="btn btn-primary submitted-eula" id="applyKey">Apply</button> [% ELSE %]<button class="btn btn-primary no-submitted-eula" id="applyKey">Apply</button>[% END %]
+            <label>[% l('Enter Entitlement Key:') %]:</label><input id="keyInput" max="36"/>[% IF is_eula_needed %] <button class="btn btn-primary submitted-eula" id="applyKey">[% l('Apply') %]</button> [% ELSE %]<button class="btn btn-primary no-submitted-eula" id="applyKey">[% l('Apply') %]</button>[% END %]
         </div>
         <!-- table -->
         <div class="keyTable" id="keyTable">
           <table id="keyLicenseTable" class="scroll">
             <thead>
               <tr>
-                <th>Entitlement Key</th>
-                <th>Capacity</th>
-                <th>Valid From</th>
-                <th>Valid Until</th>
+                <th>[% l('Entitlement Key') %]</th>
+                <th>[% l('Capacity') %]</th>
+                <th>[% l('Valid From') %]</th>
+                <th>[% l('Valid Until') %]</th>
+<!--
                 <th style="width: 75px;">Days Left</th>
+  -->
               </tr>
             </thead>
             <tbody>
@@ -66,7 +70,9 @@
                 <td class="cap">[% key.endpoint_count %]</td>
                 <td class="validFrom">[% key.sub_start.split(' ').first %]</td>
                 <td class="validTo">[% key.sub_end.split(' ').first %]</td>
+<!--
                 <td class="daysLeftofKey" style="width: 75px;"><span>[% key.expires_in %]</span></td>
+  -->
               </tr>
              [% END -%]
             </tbody>
@@ -75,15 +81,21 @@
       </div><!--end of entire-form-->
     </div><!--end of card-block-->
 </div> <!--end of card-div -->
+  [% SET latestKey = undef %]
+
   [% FOREACH key IN entitlement_keys -%]
-     [% latestKey = key[-1] %]
-     [% IF key.expires_in < 15 %]
-       [% INCLUDE admin/almostExpiringModal.tt %]
-     [% END %]
-     [% IF key.expires_in < 0 %]
-       [% INCLUDE admin/expiredModal.tt %]
-     [% END %]
-  [% END -%]
+    [% IF latestKey.expires_in < key.expires_in %]
+      [% SET latestKey = key %]
+    [% END %]
+  [% END %]
+
+  [% IF latestKey.defined %]
+    [% IF latestKey.expires_in < 15 %]
+      [% INCLUDE admin/almostExpiringModal.tt %]
+    [% ELSIF latestKey.expires_in < 0 %]
+      [% INCLUDE admin/expiredModal.tt %]
+    [% END %]
+  [% END %]
 <!--EULA modal-->
   [% IF is_eula_accepted %]
   [% ELSE %]

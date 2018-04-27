@@ -849,6 +849,10 @@ msgstr "Secret de l’application"
 msgid "App URL"
 msgstr "URL de l’application"
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Apply"
+msgstr "Appliquer"
+
 # html/pfappserver/root/admin/bulk_actions.inc
 msgid "Apply Bypass Role"
 msgstr "Appliquer le Role Bypass"
@@ -1120,6 +1124,10 @@ msgstr "Court-circuiter les systèmes de détection de portail captif par certai
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 msgid "CA cert path"
 msgstr "Emplacement du certificat de l’AC"
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Capacity"
+msgstr "Capacité"
 
 # html/pfappserver/root/config/switch/view.tt
 msgid "CLI"
@@ -2940,6 +2948,10 @@ msgstr "IP de fin"
 msgid "Endpoints"
 msgstr "Appareils"
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "endpoints"
+msgstr "appareils"
+
 # html/pfappserver/root/configurator/enforcement.tt
 msgid "Enforcement"
 msgstr "Fonctionnement"
@@ -2960,6 +2972,10 @@ msgstr "Nom de la ville en anglais"
 msgid "English Location Name"
 msgstr "Nom de l’endroit en anglais"
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Enter Entitlement Key:"
+msgstr "Entrer la clé d‘activation:"
+
 # html/pfappserver/root/config/profile/tab-content.tt
 msgid "Enter SSID"
 msgstr "Entrer un SSID"
@@ -2971,6 +2987,10 @@ msgstr "Entrez les informations du compte root de MySQL"
 # html/pfappserver/root/violation/view.tt
 msgid "Enter the trigger ID"
 msgstr "Entrez l’ID de déclenchement"
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Entitlement Key"
+msgstr "Clé d‘activation"
 
 # html/pfappserver/root/node/tab_WMI_process.tt
 msgid "Error while getting running process."
@@ -3878,9 +3898,17 @@ msgid ""
 "logDo not change unless you know what you are doing"
 msgstr "Niveau de synchronisation des stats à garder - 0 est le plus bas - 10 est le montant le plus élevé. Ne pas changer sauf si vous savez ce que vous faites"
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "LICENSE MANAGEMENT"
+msgstr "GESTION DE LICENCE"
+
 # html/pfappserver/root/configurator/entitlement.tt
 msgid "License Options"
 msgstr "Options de licence"
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Licensed Capacity:"
+msgstr "Capacité sous licence:"
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid "Limit the number of login attempts. A value of 0 disables the limit."
@@ -7856,6 +7884,10 @@ msgstr "Configuration du système"
 msgid "System Configuration"
 msgstr "Configuration du système"
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "System ID:"
+msgstr "ID du système:"
+
 # html/pfappserver/root/admin/status.tt
 msgid "System state"
 msgstr "Etat du système"
@@ -8953,6 +8985,10 @@ msgstr "Types"
 msgid "UID type"
 msgstr "Type de UID"
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Unlimited"
+msgstr "Illimité"
+
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/URL.pm
 msgid "URL"
 msgstr "URL"
@@ -9210,6 +9246,10 @@ msgstr "Utiliser les informations présentes dans la comptabilisation pour mettr
 msgid "Use time balance"
 msgstr "Utilisez le temps restant"
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Used Capacity:"
+msgstr "Capacité utilisée:"
+
 # html/pfappserver/root/user/view.tt
 msgid "User"
 msgstr "Utilisateur"
@@ -9305,6 +9345,14 @@ msgstr "Nom d’utilisateur pour se connecter au service de certificats SCEP"
 # html/pfappserver/root/admin/wrapper.tt
 msgid "Users"
 msgstr "Utilisateurs"
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Valid From"
+msgstr "Valable à partir"
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Valid Until"
+msgstr "Valable jusqu'en"
 
 # pf::admin_roles (Actions groups)
 msgid "VIOLATIONS"

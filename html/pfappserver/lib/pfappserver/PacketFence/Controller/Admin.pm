@@ -478,10 +478,7 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
 
-    $logger->info("is_eula_accepted = $c->stash->{is_eula_accepted}");
-    $logger->info("is_eula_needed = $c->stash->{is_eula_needed}");
-
-    $logger->info("stash contains: " . Dumper($c->stash));
+    $logger->debug("stash contains: " . Dumper($c->stash));
 
     if ($c->request->method eq 'POST') {
         $c->stash->{current_view} = 'JSON';
