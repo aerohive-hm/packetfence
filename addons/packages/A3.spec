@@ -554,7 +554,7 @@ curdir=`pwd`
 #pf-schema.sql symlinks to current schema
 if [ ! -h "$RPM_BUILD_ROOT/usr/local/pf/db/pf-schema.sql" ]; then
     cd $RPM_BUILD_ROOT/usr/local/pf/db
-    VERSIONSQL=$(ls pf-schema-* |sort -r | head -1)
+    VERSIONSQL=$(ls a3-schema-* |sort -r | head -1)
     ln -f -s $VERSIONSQL ./pf-schema.sql
 fi
 
@@ -1189,7 +1189,7 @@ fi
 %config(noreplace)      /usr/local/pf/conf/traffic_shaping.conf
                         /usr/local/pf/conf/traffic_shaping.conf.example
 %dir                    /usr/local/pf/db
-                        /usr/local/pf/db/pf-schema-X.Y.Z.sql
+                        /usr/local/pf/db/a3-schema-1.0.0.sql
                         /usr/local/pf/db/pf-schema.sql
 %dir                    /usr/local/pf/docs
 %doc                    /usr/local/pf/docs/pfcmd.help
