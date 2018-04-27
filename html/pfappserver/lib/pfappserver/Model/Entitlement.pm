@@ -36,7 +36,6 @@ Retrieve the list of entitlement keys currently installed on this system.
 sub list_entitlement_keys {
     # return pf::a3_entitlement::find_all();
     my $entitlements = pf::a3_entitlement::find_all();
-    my $time_left_of_key = 0;
 
     if($entitlements) {
         my $now = time();
@@ -54,8 +53,8 @@ sub list_entitlement_keys {
             } else {
                 $key->{lic_status} = "";
             }
-
             $key->{expires_in} = int((($end - $now) / 86400));
+
         }
     }
     return $entitlements;

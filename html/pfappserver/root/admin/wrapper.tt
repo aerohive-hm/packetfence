@@ -115,9 +115,10 @@
 	          </ul>
           </div>
 
-            [% IF is_eula_accepted %]
-            [% ELSE %]
+          [% IF is_eula_needed %]
               <!-- <trial indicator -->
+              [% IF is_eula_accepted %]
+              [% ELSE %]
               <div class="trialIndicator" id="trialIndicator">
                 <div class="trial-clock-indicator pull-right">
                     <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
@@ -127,8 +128,10 @@
                     <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
                 </div>
               </div>
+              [% END %]
+          [% ELSE %]
+          [% END %]
             <!--for trialindecator-->
-            [% END %]
 
         </div>
         [%- END %]
@@ -145,10 +148,18 @@
     [%- IF c.user_allowed_in_admin() %]
     <!-- use date here? -->
       <!-- for trial -->
+      [% FOREACH key IN entitlement_keys -%]
+         [% latestKey = key.sub_end %]
+         [% IF key.expires_in == 0 %]
+           [% INCLUDE admin/expiredModal.tt %]
+         [% END %]
+      [% END -%]
+      [% IF is_eula_accepted %]
         [% INCLUDE admin/almostExpiringModal.tt %]
         [% INCLUDE admin/expiredModal.tt %]
       <!-- need for when regular key expires -->
-
+      [% ELSE %]
+      [% END %]
     [% END %]
 
 [% content | none %]
@@ -169,6 +180,7 @@
     <script type="text/javascript" src="[% c.uri_for('/static/js/pfappserver.js') %]"></script>
 [%- IF c.user_allowed_in_admin() %]
     <script type="text/javascript" src="[% c.uri_for('/static/js/adminWrapper.js') %]"></script>
+    <script type="text/javascript" src="[% c.uri_for('/static/js/licenseKeys.js') %]"></script>
 [%- END %]
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.0/jquery.cookie.min.js"></script>
 [% FOREACH js = jsFiles -%]
