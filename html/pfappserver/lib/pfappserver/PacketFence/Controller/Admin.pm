@@ -25,10 +25,7 @@ use pf::cluster;
 use pf::authentication;
 use pf::Authentication::constants qw($LOGIN_CHALLENGE);
 use pf::util;
-use pf::config qw(
-    %Config
-    @listen_ints
-);
+use pf::config qw(%Config);
 use DateTime;
 use fingerbank::Constant;
 use fingerbank::Model::Device;
@@ -234,7 +231,7 @@ our @ROLES_TO_ACTIONS = (
         action => 'users',
     },
     {
-        roles => [qw(LICENSE_KEY_LIST)],
+        roles => [qw()],
         action => 'licenseKeys',
     }
 );
@@ -291,10 +288,7 @@ sub alt :Local :Args(0) {
 
 sub status :Chained('object') :PathPart('status') :Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash(
-        cluster_enabled => $cluster_enabled,
-        listen_ints    => \@listen_ints,
-    )
+    $c->stash->{cluster_enabled} = $cluster_enabled;
 }
 
 =head2 reports
@@ -464,7 +458,7 @@ sub fixpermissions :Chained('object') :PathPart('fixpermissions') :Args(0) {
 
 =cut
 
-sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0) :AdminRole('LICENSE_KEY_LIST'){
+sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     my( $self, $c ) = @_;
     my $logger = get_logger();
 
