@@ -12,7 +12,10 @@ fi
 
 $VAGRANT destroy -f
 
-$VAGRANT up
+if ! $VAGRANT up; then
+    echo "Failed to build VM. Exiting"
+    exit 1
+fi
 
 $VAGRANT halt
 

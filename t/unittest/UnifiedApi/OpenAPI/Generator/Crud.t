@@ -123,10 +123,19 @@ my @actions = (
         \%operators,
         {
             get => {
-                'parameters'  => [],
+                'parameters' => [
+                    {
+                        in     => 'path',
+                        name   => 'dhcp_option82_id',
+                        schema => {
+                            type => 'string'
+                        }
+                    }
+                ],
                 'operationId' => 'api.v1.DhcpOption82s.get',
                 'responses'   => {
                     "200" => {
+                        description => 'Get item',
                         content => {
                             "application/json" => {
                                 schema => {
@@ -182,7 +191,15 @@ my @actions = (
         \@operators,
         [
             delete => {
-                'parameters'  => [],
+                'parameters' => [
+                    {
+                        in     => 'path',
+                        name   => 'dhcp_option82_id',
+                        schema => {
+                            type => 'string'
+                        }
+                    }
+                ],
                 'operationId' => 'api.v1.DhcpOption82s.remove',
                 'description' => 'Remove an item',
                 responses => {
@@ -223,7 +240,15 @@ my @actions = (
         \%operators,
         {
             patch => {
-                'parameters'  => [],
+                'parameters' => [
+                    {
+                        in     => 'path',
+                        name   => 'dhcp_option82_id',
+                        schema => {
+                            type => 'string'
+                        }
+                    }
+                ],
                 'operationId' => 'api.v1.DhcpOption82s.update',
                 'description' => 'Update an item',
                 "requestBody" => {
@@ -280,7 +305,15 @@ my @actions = (
         \%operators,
         {
             put => {
-                'parameters'  => [],
+                'parameters' => [
+                    {
+                        in     => 'path',
+                        name   => 'dhcp_option82_id',
+                        schema => {
+                            type => 'string'
+                        }
+                    }
+                ],
                 'operationId' => 'api.v1.DhcpOption82s.replace',
                 'description' => 'Replace an item',
                 "requestBody" => {
@@ -338,11 +371,16 @@ my @actions = (
         \%operators,
         {
             post => {
-                'parameters'  => [],
+                'parameters'  => [ ],
                 'operationId' => 'api.v1.DhcpOption82s.search',
                 'requestBody' => {
-                    "application/json" => {
-                        "\$ref" => "#/components/schemas/Search",
+                    description => 'Search for items',
+                    content => {
+                        "application/json" => {
+                            schema => {
+                                "\$ref" => "#/components/schemas/Search",
+                            }
+                        }
                     }
                 },
                 'responses'  => {
@@ -414,6 +452,7 @@ my @actions = (
                 'operationId' => 'api.v1.DhcpOption82s.create',
                 'description' => 'Create an item',
                 requestBody => {
+                    description => 'Create item',
                     content => {
                         "application/json" => {
                             schema => {

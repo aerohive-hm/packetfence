@@ -780,6 +780,10 @@ msgstr ""
 msgid "App URL"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Apply"
+msgstr ""
+
 # html/pfappserver/root/admin/bulk_actions.inc
 msgid "Apply Bypass Role"
 msgstr ""
@@ -1043,6 +1047,10 @@ msgstr ""
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 msgid "CA cert path"
+msgstr ""
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Capacity"
 msgstr ""
 
 # html/pfappserver/root/config/switch/view.tt
@@ -1802,23 +1810,23 @@ msgstr ""
 
 # pf::admin_roles (Actions groups)
 msgid "DEVICE_REGISTRATION"
-msgstr ""
+msgstr "Device Registration"
 
 # pf::admin_roles (Actions)
 msgid "DEVICE_REGISTRATION_CREATE"
-msgstr ""
+msgstr "Device Registration - Create"
 
 # pf::admin_roles (Actions)
 msgid "DEVICE_REGISTRATION_DELETE"
-msgstr ""
+msgstr "Device Registration - Delete"
 
 # pf::admin_roles (Actions)
 msgid "DEVICE_REGISTRATION_READ"
-msgstr ""
+msgstr "Device Registration - Read"
 
 # pf::admin_roles (Actions)
 msgid "DEVICE_REGISTRATION_UPDATE"
-msgstr ""
+msgstr "Device Registration - Update"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Fingerbank/Combination.pm
 # html/pfappserver/root/config/fingerbank/dhcp_fingerprint/view.tt
@@ -2723,6 +2731,10 @@ msgstr ""
 msgid "Endpoints"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "endpoints"
+msgstr ""
+
 # html/pfappserver/root/configurator/enforcement.tt
 msgid "Enforcement"
 msgstr ""
@@ -2743,6 +2755,10 @@ msgstr ""
 msgid "English Location Name"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Enter Entitlement Key:"
+msgstr ""
+
 # html/pfappserver/root/config/profile/tab-content.tt
 msgid "Enter SSID"
 msgstr ""
@@ -2753,6 +2769,10 @@ msgstr ""
 
 # html/pfappserver/root/violation/view.tt
 msgid "Enter the trigger ID"
+msgstr ""
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Entitlement Key"
 msgstr ""
 
 # html/pfappserver/root/node/tab_WMI_process.tt
@@ -3565,8 +3585,16 @@ msgstr ""
 msgid "Level of timing stats to keep - 0 is the lowest - 10 the highest amount to logDo not change unless you know what you are doing"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "LICENSE MANAGEMENT"
+msgstr ""
+
 # html/pfappserver/root/configurator/entitlement.tt
 msgid "License Options"
+msgstr ""
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Licensed Capacity:"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
@@ -6335,43 +6363,43 @@ msgstr "Switches CLI - Write"
 
 # pf::admin_roles (Actions groups)
 msgid "SYSLOG"
-msgstr ""
+msgstr "Syslog"
 
 # pf::admin_roles (Actions)
 msgid "SYSLOG_CREATE"
-msgstr ""
+msgstr "Syslog - Create"
 
 # pf::admin_roles (Actions)
 msgid "SYSLOG_DELETE"
-msgstr ""
+msgstr "Syslog - Delete"
 
 # pf::admin_roles (Actions)
 msgid "SYSLOG_READ"
-msgstr ""
+msgstr "Syslog - Read"
 
 # pf::admin_roles (Actions)
 msgid "SYSLOG_UPDATE"
-msgstr ""
+msgstr "Syslog - Update"
 
 # pf::admin_roles (Actions groups)
 msgid "SYSTEM"
-msgstr ""
+msgstr "System"
 
 # pf::admin_roles (Actions)
 msgid "SYSTEM_CREATE"
-msgstr ""
+msgstr "System - Create"
 
 # pf::admin_roles (Actions)
 msgid "SYSTEM_DELETE"
-msgstr ""
+msgstr "System - Delete"
 
 # pf::admin_roles (Actions)
 msgid "SYSTEM_READ"
-msgstr ""
+msgstr "System - Read"
 
 # pf::admin_roles (Actions)
 msgid "SYSTEM_UPDATE"
-msgstr ""
+msgstr "System - Update"
 
 # html/pfappserver/root/admin/saved_search.inc
 # html/pfappserver/root/config/adminroles/view.tt
@@ -7326,6 +7354,10 @@ msgstr ""
 msgid "System Configuration"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "System ID:"
+msgstr ""
+
 # html/pfappserver/root/admin/status.tt
 msgid "System state"
 msgstr ""
@@ -7392,23 +7424,23 @@ msgstr ""
 
 # pf::admin_roles (Actions groups)
 msgid "TRAFFIC_SHAPING"
-msgstr ""
+msgstr "Traffic Shaping"
 
 # pf::admin_roles (Actions)
 msgid "TRAFFIC_SHAPING_CREATE"
-msgstr ""
+msgstr "Traffic Shaping - Create"
 
 # pf::admin_roles (Actions)
 msgid "TRAFFIC_SHAPING_DELETE"
-msgstr ""
+msgstr "Traffic Shaping - Delete"
 
 # pf::admin_roles (Actions)
 msgid "TRAFFIC_SHAPING_READ"
-msgstr ""
+msgstr "Traffic Shaping - Read"
 
 # pf::admin_roles (Actions)
 msgid "TRAFFIC_SHAPING_UPDATE"
-msgstr ""
+msgstr "Traffic Shaping - Update"
 
 # conf/documentation.conf (radius_authentication_methods.eap_authentication_types options)
 msgid "TTLS"
@@ -8237,6 +8269,10 @@ msgstr ""
 msgid "UID type"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Unlimited"
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/URL.pm
 msgid "URL"
 msgstr ""
@@ -8261,7 +8297,7 @@ msgstr "Users - Create Multiple"
 # pf::admin_roles (Actions groups)
 # pf::admin_roles (Actions)
 msgid "USERS_CREATE_OVERWRITE"
-msgstr ""
+msgstr "Users - Create Overwrite"
 
 # pf::admin_roles (Actions)
 msgid "USERS_DELETE"
@@ -8324,7 +8360,7 @@ msgstr "Users - Set Role"
 # pf::admin_roles (Actions groups)
 # pf::admin_roles (Actions)
 msgid "USERS_SET_TENANT_ID"
-msgstr ""
+msgstr "Users - Set Tenant ID"
 
 # pf::admin_roles (Actions groups)
 # pf::admin_roles (Actions)
@@ -8477,6 +8513,10 @@ msgstr ""
 msgid "Use time balance"
 msgstr ""
 
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Used Capacity:"
+msgstr ""
+
 # html/pfappserver/root/user/view.tt
 msgid "User"
 msgstr ""
@@ -8569,6 +8609,14 @@ msgstr ""
 # html/pfappserver/root/admin/users.tt
 # html/pfappserver/root/admin/wrapper.tt
 msgid "Users"
+msgstr ""
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Valid From"
+msgstr ""
+
+# html/pfappserver/root/admin/licenseKeys.tt
+msgid "Valid Until"
 msgstr ""
 
 # pf::admin_roles (Actions groups)
@@ -9274,7 +9322,7 @@ msgstr "Stats timing level"
 
 # conf/documentation.conf
 msgid "advanced.unreg_on_accounting_stop"
-msgstr ""
+msgstr "Unregister the device on accounting stop"
 
 # conf/documentation.conf
 msgid "advanced.update_iplog_with_accounting"
@@ -9466,7 +9514,7 @@ msgstr "Redirection delay"
 
 # conf/documentation.conf
 msgid "captive_portal.other_domain_names"
-msgstr ""
+msgstr "Other domain names"
 
 # conf/documentation.conf
 msgid "captive_portal.rate_limiting"
@@ -9520,7 +9568,7 @@ msgstr "ARP lookups by the collector"
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc
 msgid "collector.cluster_resync_interval"
-msgstr ""
+msgstr "Cluster resync interval"
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc
 msgid "collector.db_persistence_interval"
@@ -10652,19 +10700,19 @@ msgstr ""
 
 # conf/documentation.conf
 msgid "pfdhcp.connect_timeout_ms"
-msgstr ""
+msgstr "Connect timeout (ms)"
 
 # conf/documentation.conf
 msgid "pfdhcp.ip2mac_lookup"
-msgstr ""
+msgstr "MAC lookup"
 
 # conf/documentation.conf
 msgid "pfdhcp.mac2ip_lookup"
-msgstr ""
+msgstr "IP lookup"
 
 # conf/documentation.conf
 msgid "pfdhcp.timeout_ms"
-msgstr ""
+msgstr "Query timeout (ms)"
 
 # pf::Authentication::Source::SMSSource (available_attributes)
 # pf::Authentication::Source::TwilioSource (available_attributes)
@@ -10720,7 +10768,7 @@ msgstr "Soap"
 
 # conf/documentation.conf
 msgid "ports.unifiedapi"
-msgstr ""
+msgstr "Unified API"
 
 # pf::Authentication::Source::ADSource (available_attributes)
 # pf::Authentication::Source::LDAPSource (available_attributes)
@@ -11015,7 +11063,7 @@ msgstr "etcd"
 
 # conf/documentation.conf
 msgid "services.etcd_binary"
-msgstr ""
+msgstr "etcd path"
 
 # conf/documentation.conf
 msgid "services.fingerbank-collector"
@@ -11023,7 +11071,7 @@ msgstr "fingerbank-collector"
 
 # conf/documentation.conf
 msgid "services.fingerbank-collector_binary"
-msgstr ""
+msgstr "fingerbank-collector path"
 
 # conf/documentation.conf
 msgid "services.haproxy-db"
@@ -11031,7 +11079,7 @@ msgstr "haproxy-db"
 
 # conf/documentation.conf
 msgid "services.haproxy-db_binary"
-msgstr ""
+msgstr "haproxy-db path"
 
 # conf/documentation.conf
 msgid "services.haproxy-portal"
@@ -11039,7 +11087,7 @@ msgstr "haproxy-portal"
 
 # conf/documentation.conf
 msgid "services.haproxy-portal_binary"
-msgstr ""
+msgstr "haproxy-portal path"
 
 # conf/documentation.conf
 msgid "services.httpd_aaa"
@@ -11099,7 +11147,7 @@ msgstr "netdata"
 
 # conf/documentation.conf
 msgid "services.netdata_binary"
-msgstr ""
+msgstr "netdata path"
 
 # conf/documentation.conf
 msgid "services.openssl_binary"
@@ -11115,7 +11163,7 @@ msgstr "pfdhcp"
 
 # conf/documentation.conf
 msgid "services.pfdhcp_binary"
-msgstr ""
+msgstr "pfdhcp path"
 
 # conf/documentation.conf
 msgid "services.pfdhcplistener"
@@ -11131,7 +11179,7 @@ msgstr "pfdns"
 
 # conf/documentation.conf
 msgid "services.pfdns_binary"
-msgstr ""
+msgstr "pfdns path"
 
 # conf/documentation.conf
 msgid "services.pffilter"
@@ -11143,7 +11191,7 @@ msgstr "pfipset"
 
 # conf/documentation.conf
 msgid "services.pfipset_binary"
-msgstr ""
+msgstr "pfipset path"
 
 # conf/documentation.conf
 msgid "services.pfmon"
@@ -11167,7 +11215,7 @@ msgstr "pfstats"
 
 # conf/documentation.conf
 msgid "services.pfstats_binary"
-msgstr ""
+msgstr "pfstats path"
 
 # conf/documentation.conf
 msgid "services.radiusd"
@@ -11223,7 +11271,7 @@ msgstr "tc"
 
 # conf/documentation.conf
 msgid "services.tc_binary"
-msgstr ""
+msgstr "tc path"
 
 # conf/documentation.conf
 msgid "services.winbindd"
@@ -11418,7 +11466,7 @@ msgstr "Update ip6log by IP and MAC"
 
 # pf::api (Allowed actions)
 msgid "update_role_configuration"
-msgstr ""
+msgstr "Update role configuration"
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc
 msgid "upstream"
@@ -11536,7 +11584,7 @@ msgstr "Protocol"
 
 # conf/documentation.conf
 msgid "webservices.unifiedapi_port"
-msgstr ""
+msgstr "Unified API port"
 
 # conf/documentation.conf
 msgid "webservices.user"
