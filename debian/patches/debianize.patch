@@ -11,6 +11,19 @@ index 2ef5c25..7409c2a 100644
  skip-external-locking
  key_buffer_size = [% key_buffer_size %]M
  max_allowed_packet = [% max_allowed_packet %]M
+diff --git a/conf/monitoring/netdata.conf.example b/conf/monitoring/netdata.conf.example
+index d3a3cd9..fe284fc 100644
+--- a/conf/monitoring/netdata.conf.example
++++ b/conf/monitoring/netdata.conf.example
+@@ -8,7 +8,7 @@
+ [global]
+ 	run as user = netdata
+ 	web files owner = root
+-	web files group = netdata
++	web files group = root
+         config directory = /usr/local/pf/var/conf/monitoring
+         # Netdata is not designed to be exposed to potentially hostile networks
+         # See https://github.com/firehol/netdata/issues/164
 diff --git a/conf/pf.conf.defaults b/conf/pf.conf.defaults
 index b7840af..5d69d6c 100644
 --- a/conf/pf.conf.defaults
@@ -246,6 +259,21 @@ index e0e0c2c..880121b 100644
 -ExecStop=/bin/perl -I/usr/local/pf/lib '-Mpf::services::manager::routes' -e 'pf::services::manager::routes->new()->_stop()'
 +ExecStart=/usr/bin/perl -I/usr/local/pf/lib '-Mpf::services::manager::routes' -e 'pf::services::manager::routes->new()->_start()'
 +ExecStop=/usr/bin/perl -I/usr/local/pf/lib '-Mpf::services::manager::routes' -e 'pf::services::manager::routes->new()->_stop()'
+ Slice=packetfence-base.slice
+ 
+ [Install]
+diff --git a/conf/systemd/packetfence-tc.service b/conf/systemd/packetfence-tc.service
+index 88093fb..99dd13b 100644
+--- a/conf/systemd/packetfence-tc.service
++++ b/conf/systemd/packetfence-tc.service
+@@ -8,8 +8,8 @@ StartLimitBurst=3
+ StartLimitInterval=10
+ Type=oneshot
+ RemainAfterExit=yes
+-ExecStart=/bin/perl -I/usr/local/pf/lib '-Mpf::services::manager::tc' -e 'pf::services::manager::tc->new()->_start()'
+-ExecStop=/bin/perl -I/usr/local/pf/lib '-Mpf::services::manager::tc' -e 'pf::services::manager::tc->new()->_stop()'
++ExecStart=/usr/bin/perl -I/usr/local/pf/lib '-Mpf::services::manager::tc' -e 'pf::services::manager::tc->new()->_start()'
++ExecStop=/usr/bin/perl -I/usr/local/pf/lib '-Mpf::services::manager::tc' -e 'pf::services::manager::tc->new()->_stop()'
  Slice=packetfence-base.slice
  
  [Install]

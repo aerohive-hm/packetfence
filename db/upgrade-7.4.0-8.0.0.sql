@@ -1,14 +1,14 @@
 --
--- PacketFence SQL schema upgrade from X.X.X to X.Y.Z
+-- PacketFence SQL schema upgrade from 7.4.0 to 8.0.0
 --
 
 --
 -- Setting the major/minor/sub-minor version of the DB
 --
 
-SET @MAJOR_VERSION = 7;
-SET @MINOR_VERSION = 4;
-SET @SUBMINOR_VERSION = 9;
+SET @MAJOR_VERSION = 8;
+SET @MINOR_VERSION = 0;
+SET @SUBMINOR_VERSION = 0;
 
 SET @PREV_MAJOR_VERSION = 7;
 SET @PREV_MINOR_VERSION = 4;

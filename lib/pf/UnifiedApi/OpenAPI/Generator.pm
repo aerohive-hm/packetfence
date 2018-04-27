@@ -392,6 +392,16 @@ sub schemaListPath {
     return join('/', $prefix, join("", @paths, "${name}List"));
 }
 
+sub path_parameter {
+    my ($self, $name, $description) = @_;
+    return {
+        in     => 'path',
+        schema => { type => 'string' },
+        name   => $name,
+        (defined $description ? (description => $description) : ()),
+    };
+}
+
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>
