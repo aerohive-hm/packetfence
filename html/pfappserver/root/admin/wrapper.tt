@@ -102,6 +102,8 @@
                   <li id="fixpermissions_task"><a href="" id="fixpermissions_task_toggle">[% l('Fix permissions') %]</a></li>
                 </ul>
               </li>
+              <span>[% latestKey %]</span>
+              <!-- <span>eula acceptd? [% is_eula_accepted %]</span><span>eula needed? [% is_eula_needed %]</span> -->
               <li class="dropdown">
                 <a href="" class="dropdown-toggle" data-toggle="dropdown"><img src="[% c.uri_for('/static/img/icon-account.svg') %]"/></a>
                 <ul class="dropdown-menu">
@@ -115,23 +117,20 @@
 	          </ul>
           </div>
 
-          [% IF is_eula_needed %]
-              <!-- <trial indicator -->
-              [% IF is_eula_accepted %]
-              [% ELSE %]
-              <div class="trialIndicator" id="trialIndicator">
-                <div class="trial-clock-indicator pull-right">
-                    <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
-                </div>
-                <div id="clockTrialDiv">
-                    <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
-                    <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
-                </div>
-              </div>
-              [% END %]
+          [% IF is_eula_accepted %]
           [% ELSE %]
+            <!-- <trial indicator -->
+            <div class="trialIndicator" id="trialIndicator">
+              <div class="trial-clock-indicator pull-right">
+                  <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
+              </div>
+              <div id="clockTrialDiv">
+                  <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
+                  <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
+              </div>
+            </div>
+          <!--for trialindecator-->
           [% END %]
-            <!--for trialindecator-->
 
         </div>
         [%- END %]
@@ -146,19 +145,26 @@
       </div>
     </div>
     [%- IF c.user_allowed_in_admin() %]
-    <!-- use date here? -->
-      <!-- for trial -->
       [% FOREACH key IN entitlement_keys -%]
-         [% latestKey = key.sub_end %]
-         [% IF key.expires_in == 0 %]
-           [% INCLUDE admin/expiredModal.tt %]
-         [% END %]
-      [% END -%]
+        [% IF latestKey.expires_in < key.expires_in %]
+          [% SET latestKey = key %]
+        [% END %]
+      [% END %]
+
+      [% IF latestKey.defined %]
+        [% IF latestKey.expires_in <= 0 %]
+          [% INCLUDE admin/expiredModal.tt %]
+        [% ELSIF latestKey.expires_in < 15  %]
+          [% INCLUDE admin/almostExpiringModal.tt %]
+        [% END %]
+      [% END %]
+      <span>[% latestKey %]</span>
       [% IF is_eula_accepted %]
-        [% INCLUDE admin/almostExpiringModal.tt %]
-        [% INCLUDE admin/expiredModal.tt %]
       <!-- need for when regular key expires -->
       [% ELSE %]
+        <!--for trial-->
+        [% INCLUDE admin/almostExpiringModal.tt %]
+        [% INCLUDE admin/expiredModal.tt %]
       [% END %]
     [% END %]
 

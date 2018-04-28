@@ -9,10 +9,8 @@ $(document).ready(function(){
   console.log("license Cap right now: " + licenseCapacity.innerHTML);
 
   applyKeyButton();
-  dateExpirationChecker();
   updateCapacities();
 
- document.getElementById('keyInput').value="";
 
   $('.agreeToEula').click(function() {
       //changes checkbox to submit button
@@ -26,11 +24,6 @@ $(document).ready(function(){
       userSubmitEula();
   })
 
-  if (dateExpirationChecker()){
-      // open expiredModal
-      openExpiredModal();
-      $("#expiredModal").modal("open");
-  }
 });
 
 function updateCapacities(){
@@ -79,6 +72,7 @@ function applyKeyButton(){
 function updateKeyTable(userKeyInput) {
     var applyKeyButton2 = $("#applyKey");
     var base_url = window.location.origin;
+    var clearText = document.getElementById("keyValue");
     $.ajax({
         url : base_url + '/entitlement/key/' + userKeyInput,
         type : 'PUT',
@@ -95,7 +89,9 @@ function updateKeyTable(userKeyInput) {
                  $("#success-alert").slideUp(300);
                }, 2000);
            }
+
            openEulaModal();
+
            //update capacity
            $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
            $("#licenseCapa").load(window.location + " #licenseCapa");
@@ -109,9 +105,6 @@ function updateKeyTable(userKeyInput) {
            }
            console.log("new license capa: " + document.getElementById('licenseCapa').innerHTML);
            console.log("updateKeyTable success");
-
-           //open modal if eula hasn't been accepted
-           // openEulaModal();
            return true;
         }).fail(function(xhr, status, error){
           console.log("updateKeyTable error: ");
@@ -141,34 +134,34 @@ function checkKeyInput(userKeyInput){
 }
 
 //check if valid from date is over todays date then turn row into grey
-function dateExpirationChecker(){
-    var table = $("#keyLicenseTable");
-    var myArray = [];
-    var tmp;
-    var lowest, highest = 0;
-    table.find('tr').each(function(i) {
-        var $tableColumns = $(this).find('td');
-        var dayLeftofKey = parseInt(($tableColumns.eq(4).text()));
-        myArray.push(dayLeftofKey);
-    });
-    console.log("myArray: " + myArray);
-
-    //get latest date by getting highest day left
-    for (i=0; i < myArray.length; i++){
-        tmp = myArray[i];
-        console.log(tmp);
-        if (tmp > highest) {
-            highest = tmp;
-        }
-    }
-    console.log(highest);
-    if (highest == 0){
-        return true;
-    } else {
-        return false;
-    }
-    console.log("checked date");
-}
+// function dateExpirationChecker(){
+//     var table = $("#keyLicenseTable");
+//     var myArray = [];
+//     var tmp;
+//     var lowest, highest = 0;
+//     table.find('tr').each(function(i) {
+//         var $tableColumns = $(this).find('td');
+//         var dayLeftofKey = parseInt(($tableColumns.eq(4).text()));
+//         myArray.push(dayLeftofKey);
+//     });
+//     console.log("myArray: " + myArray);
+//
+//     //get latest date by getting highest day left
+//     for (i=0; i < myArray.length; i++){
+//         tmp = myArray[i];
+//         console.log(tmp);
+//         if (tmp > highest) {
+//             highest = tmp;
+//         }
+//     }
+//     console.log(highest);
+//     if (highest == 0){
+//         return true;
+//     } else {
+//         return false;
+//     }
+//     console.log("checked date");
+// }
 
 //open eula
 function openEulaModal(){
@@ -177,10 +170,6 @@ function openEulaModal(){
    console.log("eula modal opening");
 }
 
-function openExpiredModal(){
-  $('#expiredModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
-  $('#expiredModal').modal('show');
-}
 
 //user submits eula with button press
 function userSubmitEula(){

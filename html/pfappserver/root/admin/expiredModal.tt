@@ -4,10 +4,12 @@
 <!--BEGINNING ALERT TEXT-->
        <div class="modal-content licenseAlert">
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
-          <h3 class="modal-title"><b>[% l('Your license has expired') %] <span id="daysLeft"></span></b></h3>
+          <h3 class="modal-title">
+            <b>[% l('Your subscription has expired') %]</b>
+          </h3>
         </div>
         <div class="modal-body">
-          <p>Hello [% c.user | html %]. It looks like your subscription has ending. Please renew your license to continue using it. You can do this by calling this number: </p>
+          <p>Hello [% c.user | html %]. It looks like your subscription has ended. Please renew your license to continue using it. You can do this by calling this number: </p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
           <p>You can also send an email, by pressing the button below <b>"Send Email"</b> where you can prefill a form to send out an email. Thanks again for using our service. </p>
         </div>

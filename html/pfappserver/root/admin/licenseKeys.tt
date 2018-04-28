@@ -25,10 +25,8 @@
       <div id="entire-form">
         <div class="head">
           <h1><b>[% l('LICENSE MANAGEMENT') %]</b></h1>
-<!--
-          <span>eula accepd? [% is_eula_accepted %]</span><span>eula needed? [% is_eula_needed %]</span>
           <br>
-  -->
+
           <span class="systemId"><b>[% l('System ID:') %]</b>&nbsp;[% system_id %]</span>
         </div>
         <div class="capacity">
@@ -47,7 +45,7 @@
         </div>
         <hr>
         <div class="entitlementLicenseKeyInput">
-            <label>[% l('Enter Entitlement Key:') %]:</label><input id="keyInput" max="36"/>[% IF is_eula_needed %] <button class="btn btn-primary submitted-eula" id="applyKey">[% l('Apply') %]</button> [% ELSE %]<button class="btn btn-primary no-submitted-eula" id="applyKey">[% l('Apply') %]</button>[% END %]
+            <label>[% l('Enter Entitlement Key') %]:</label><input id="keyInput" max="36"/>[% IF is_eula_needed %] <button class="btn btn-primary submitted-eula" id="applyKey">[% l('Apply') %]</button> [% ELSE %]<button class="btn btn-primary no-submitted-eula" id="applyKey">[% l('Apply') %]</button>[% END %]
         </div>
         <!-- table -->
         <div class="keyTable" id="keyTable">
@@ -90,10 +88,10 @@
   [% END %]
 
   [% IF latestKey.defined %]
-    [% IF latestKey.expires_in < 15 %]
-      [% INCLUDE admin/almostExpiringModal.tt %]
-    [% ELSIF latestKey.expires_in < 0 %]
+    [% IF latestKey.expires_in <= 0 %]
       [% INCLUDE admin/expiredModal.tt %]
+    [% ELSIF latestKey.expires_in < 15  %]
+      [% INCLUDE admin/almostExpiringModal.tt %]
     [% END %]
   [% END %]
 <!--EULA modal-->

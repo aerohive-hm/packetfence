@@ -6,11 +6,14 @@ $(document).ready(function(){
       width: "toggle"
     });
   });
+  $("#trialIndicator").load(window.location + " #trialIndicator");
   $(".dismiss-modal").click(function(){
     console.log("closing modal");
     $("#myModal").css("display", "none");
   });
   timeLeft();
+
+  openExpiredModal();
 
   document.getElementById("licenseKey").onclick = function () {
     var base_url = window.location.origin;
@@ -100,6 +103,14 @@ function timeLeft(){
            // modal to show for actually expire
     }).fail(function(xhr, status, error){
         $('.trialIndicator').remove();
+        console.log("removing trial indicator");
+
     });
     return numOfDaysLeft;
+}
+
+
+function openExpiredModal(){
+    $('#expiredModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
+    $('#expiredModal').modal('show');
 }

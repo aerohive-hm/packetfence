@@ -25,7 +25,11 @@ use pf::cluster;
 use pf::authentication;
 use pf::Authentication::constants qw($LOGIN_CHALLENGE);
 use pf::util;
-use pf::config qw(%Config);
+use Data::Dumper;
+use pf::config qw(
+    %Config
+    @listen_ints
+);
 use DateTime;
 use fingerbank::Constant;
 use fingerbank::Model::Device;
@@ -244,6 +248,8 @@ sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
     my @roles = $c->user->roles();
     my $action;
+    my $logger=get_logger();
+
     for my $roles_to_action (@ROLES_TO_ACTIONS) {
         if (admin_can_do_any(\@roles, @{$roles_to_action->{roles}})) {
             $action = $roles_to_action->{action};
@@ -259,6 +265,10 @@ sub index :Path :Args(0) {
         }
     }
     $c->response->redirect($c->uri_for($c->controller->action_for($action)));
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
+    $logger->info("entitlement key: " . Dumper($entitlements));
 }
 
 =head2 object
@@ -288,7 +298,16 @@ sub alt :Local :Args(0) {
 
 sub status :Chained('object') :PathPart('status') :Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash->{cluster_enabled} = $cluster_enabled;
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
+
+    $c->stash(
+        cluster_enabled => $cluster_enabled,
+        listen_ints    => \@listen_ints,
+    )
+
+
 }
 
 =head2 reports
@@ -297,7 +316,9 @@ sub status :Chained('object') :PathPart('status') :Args(0) {
 
 sub reports :Chained('object') :PathPart('reports') :Args(0) :AdminRole('REPORTS') {
     my ( $self, $c ) = @_;
-
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
     $c->forward('Controller::Graph', 'reports');
 }
 
@@ -307,6 +328,10 @@ sub reports :Chained('object') :PathPart('reports') :Args(0) :AdminRole('REPORTS
 
 sub auditing :Chained('object') :PathPart('auditing') :Args(0) :AdminRole('AUDITING_READ') {
     my ( $self, $c ) = @_;
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
+
 }
 
 =head2 nodes
@@ -345,6 +370,9 @@ sub nodes :Chained('object') :PathPart('nodes') :Args(0) :AdminRole('NODES_READ'
         switches => $switches,
         mobile_oses => [ map { fingerbank::Model::Device->read($_)->name } values(%fingerbank::Constant::MOBILE_IDS) ],
     );
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
 }
 
 =head2 users
@@ -363,6 +391,10 @@ sub users :Chained('object') :PathPart('users') :Args(0) :AdminRoleAny('USERS_RE
     # Remove some CSP restrictions to accomodate Chosen (the select-on-steroid widget):
     #  - Allows use of inline source elements (eg style attribute)
     $c->stash->{csp_headers} = { style => "'unsafe-inline'" };
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
+
 }
 
 =head2 configuration
@@ -378,6 +410,10 @@ sub configuration :Chained('object') :PathPart('configuration') :Args(0) {
     #  - Allows loading resources via the data scheme (eg Base64 encoded images);
     #  - Allows use of inline source elements (eg style attribute)
     $c->stash->{csp_headers} = { img => 'data:', style => "'unsafe-inline'", script => 'blob:' };
+
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
 }
 
 =head2 time_offset
