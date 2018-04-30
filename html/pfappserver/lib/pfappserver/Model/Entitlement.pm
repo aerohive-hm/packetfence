@@ -22,6 +22,7 @@ use pf::error qw(is_success is_error);
 use pf::constants qw($TRUE $FALSE);
 use pf::a3_entitlement;
 use pf::accounting;
+use pf::dal::node;
 
 extends 'Catalyst::Model';
 
@@ -139,7 +140,25 @@ Get the current used endpoint capacity
 =cut
 
 sub get_used_capacity {
-    return pf::accounting::count_active();
+    my $count_sql = <<'END_SQL';
+SELECT COUNT(*)
+  FROM node,radacct
+ WHERE node.mac = radacct.callingstationid
+   AND node.status = 'reg'
+   AND radacct.acctstarttime IS NOT NULL
+   AND radacct.acctstoptime IS NULL;
+END_SQL
+
+    my ($status, $sth) = pf::dal::node->db_execute($count_sql);
+
+    if (is_success($status)) {
+        my ($count) = $sth->fetchrow_array();
+        $sth->finish;
+        return $count;
+    }
+    else {
+        return 0;
+    }
 }
 
 =head2 is_trial_eligible
