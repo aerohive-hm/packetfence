@@ -145,6 +145,8 @@
       </div>
     </div>
     [%- IF c.user_allowed_in_admin() %]
+
+      [% SET latestKey = undef %]
       [% FOREACH key IN entitlement_keys -%]
         [% IF latestKey.expires_in < key.expires_in %]
           [% SET latestKey = key %]

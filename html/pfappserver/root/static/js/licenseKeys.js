@@ -56,7 +56,7 @@ function applyKeyButton(){
         $(".errMsg").css('display', 'none');
         $("#keyInput").css('border','1px solid #dfdfdf');
         updateKeyTable(userKeyInput);
-        // dateRangeChecker();
+        document.getElementById('keyInput').value ='';
         console.log("updated table styling after ajax call ");
         return true;
     } else {
@@ -72,7 +72,7 @@ function applyKeyButton(){
 function updateKeyTable(userKeyInput) {
     var applyKeyButton2 = $("#applyKey");
     var base_url = window.location.origin;
-    var clearText = document.getElementById("keyValue");
+    // var clearText = document.getElementById("keyValue");
     $.ajax({
         url : base_url + '/entitlement/key/' + userKeyInput,
         type : 'PUT',
@@ -107,8 +107,9 @@ function updateKeyTable(userKeyInput) {
            console.log("updateKeyTable success");
            return true;
         }).fail(function(xhr, status, error){
-          console.log("updateKeyTable error: ");
-          console.log(error);
+           console.log("updateKeyTable error: ");
+           console.log(error);
+           return false;
         });
        console.log("updated key");
 }

@@ -56,9 +56,6 @@
                 <th>[% l('Capacity') %]</th>
                 <th>[% l('Valid From') %]</th>
                 <th>[% l('Valid Until') %]</th>
-<!--
-                <th style="width: 75px;">Days Left</th>
-  -->
               </tr>
             </thead>
             <tbody>
@@ -68,9 +65,6 @@
                 <td class="cap">[% key.endpoint_count %]</td>
                 <td class="validFrom">[% key.sub_start.split(' ').first %]</td>
                 <td class="validTo">[% key.sub_end.split(' ').first %]</td>
-<!--
-                <td class="daysLeftofKey" style="width: 75px;"><span>[% key.expires_in %]</span></td>
-  -->
               </tr>
              [% END -%]
             </tbody>

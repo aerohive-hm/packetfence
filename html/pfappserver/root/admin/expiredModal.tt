@@ -11,7 +11,7 @@
         <div class="modal-body">
           <p>Hello [% c.user | html %]. It looks like your subscription has ended. Please renew your license to continue using it. You can do this by calling this number: </p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
-          <p>You can also send an email, by pressing the button below <b>"Send Email"</b> where you can prefill a form to send out an email. Thanks again for using our service. </p>
+          <p>Thank you for using our service. </p>
         </div>
         <div class="modal-footer">
           <!-- <button type="button" class="btn btn-primary toggle-emailForm">[% l('Send Email') %]</button> -->

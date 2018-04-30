@@ -14,6 +14,7 @@ $(document).ready(function(){
   timeLeft();
 
   openExpiredModal();
+  openAlmostExpiredModal();
 
   document.getElementById("licenseKey").onclick = function () {
     var base_url = window.location.origin;
@@ -113,4 +114,9 @@ function timeLeft(){
 function openExpiredModal(){
     $('#expiredModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
     $('#expiredModal').modal('show');
+}
+
+function openAlmostExpiredModal(){
+    $('#myModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
+    $('#myModal').modal('show');
 }
