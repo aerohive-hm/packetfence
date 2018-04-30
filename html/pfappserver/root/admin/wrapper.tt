@@ -139,7 +139,7 @@
         [% IF SHOW_READONLY_ERROR %]
         <div class="row-error">
           <strong>[% l('Warning!') %]</strong>
-          <span>[% l('The database is in readonly mode. Not all functionality is available.') %] [% doc('_quorum_behavior', 'Clustering_Guide') | none %]</span>
+          <span>[% l('The database is in read-only mode. Not all functionality is available.') %] [% doc('_quorum_behavior', 'Clustering_Guide') | none %]</span>
         </div>
         [% END %]
       </div>
@@ -155,7 +155,7 @@
       [% END %]
     [% END %]
 
-[% content | none %]
+ [% content | none %]
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
