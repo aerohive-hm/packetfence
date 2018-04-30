@@ -146,21 +146,6 @@
     </div>
     [%- IF c.user_allowed_in_admin() %]
 
-      [% SET latestKey = undef %]
-      [% FOREACH key IN entitlement_keys -%]
-        [% IF latestKey.expires_in < key.expires_in %]
-          [% SET latestKey = key %]
-        [% END %]
-      [% END %]
-
-      [% IF latestKey.defined %]
-        [% IF latestKey.expires_in <= 0 %]
-          [% INCLUDE admin/expiredModal.tt %]
-        [% ELSIF latestKey.expires_in < 15  %]
-          [% INCLUDE admin/almostExpiringModal.tt %]
-        [% END %]
-      [% END %]
-      <span>[% latestKey %]</span>
       [% IF is_eula_accepted %]
       <!-- need for when regular key expires -->
       [% ELSE %]

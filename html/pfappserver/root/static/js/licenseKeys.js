@@ -51,7 +51,8 @@ function applyKeyButton(){
     console.log(userKeyInput);
     console.log("CHECKING KEY REGEX:");
     console.log(checkKeyInput(userKeyInput));
-    var errMsg = "<p class='errMsg' style='color:red;'>Key does not exist. Please reenter the key again.</p>";
+    checkKeyInput(userKeyInput);
+    // var errMsg = "<p class='errMsg' style='color:red;'>Key does not exist. Please reenter the key again.</p>";
     if (checkKeyInput(userKeyInput)){
         $(".errMsg").css('display', 'none');
         $("#keyInput").css('border','1px solid #dfdfdf');
@@ -60,9 +61,10 @@ function applyKeyButton(){
         console.log("updated table styling after ajax call ");
         return true;
     } else {
-        $(".errMsg").css('display', 'none');
-        applyKeyButton2.after(errMsg).slideDown();
-        $("#keyInput").css('border','1px solid #d9534f');
+        document.getElementById('keyInput').value = userKeyInput;
+        // $(".errMsg").css('display', 'none');
+        // applyKeyButton2.after(errMsg).slideDown();
+        // $("#keyInput").css('border','1px solid #d9534f');
     }
   });
   console.log("applied new button press");
@@ -72,7 +74,6 @@ function applyKeyButton(){
 function updateKeyTable(userKeyInput) {
     var applyKeyButton2 = $("#applyKey");
     var base_url = window.location.origin;
-    // var clearText = document.getElementById("keyValue");
     $.ajax({
         url : base_url + '/entitlement/key/' + userKeyInput,
         type : 'PUT',
@@ -86,16 +87,16 @@ function updateKeyTable(userKeyInput) {
                document.getElementById('errorMessage').innerHTML = errMsg;
                $("#success-alert").show(); // use slide down for animation
                setTimeout(function () {
-                 $("#success-alert").slideUp(300);
-               }, 2000);
+                 $("#success-alert").slideUp(500);
+               }, 3000);
            }
 
            openEulaModal();
-
-           //update capacity
            $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
            $("#licenseCapa").load(window.location + " #licenseCapa");
            $("#trialIndicator").load(window.location + " #trialIndicator");
+
+           //update capacity
            var capacity = $("#licenseCapa").attr("data-capacity");
            console.log("capacity: " + capacity);
            capacity = $("#licenseCapa").attr('data-capacity', document.getElementById('licenseCapa').innerHTML);
@@ -103,6 +104,7 @@ function updateKeyTable(userKeyInput) {
                console.log("changeing capacity to new data capacity2");
                document.getElementById('licenseCapa').innerHTML = "Unlimited";
            }
+
            console.log("new license capa: " + document.getElementById('licenseCapa').innerHTML);
            console.log("updateKeyTable success");
            return true;
@@ -121,16 +123,15 @@ function checkKeyInput(userKeyInput){
     var applyKeyButton2 = $("#applyKey");
     //check regex with user input; there is check for duplicate already
     console.log(checkKeyRegex.test(userKeyInput)); //TRUE OR FALSE
-      if (checkKeyRegex.test(userKeyInput)){
-          // $(".errMsg").css('display', 'none');
-          $("#keyInput").css('border','1px solid #dfdfdf');
-          return true;
-      } else {
-          // $(".errMsg").css('display', 'none');
-          // applyKeyButton2.after(errMsg);
-          $("#keyInput").css('border','1px solid #d9534f');
-          return false;
-      }
+    if (checkKeyRegex.test(userKeyInput)){
+        $("#keyInput").css('border','1px solid #dfdfdf');
+        return true;
+    } else {
+        // $(".errMsg").css('display', 'none');
+        // applyKeyButton2.after(errMsg);
+        $("#keyInput").css('border','1px solid #d9534f');
+        return false;
+    }
     console.log("done checking key");
 }
 
