@@ -610,6 +610,33 @@ msgstr "Accès Administrateur:"
 msgid "Admin Login"
 msgstr "Authentification"
 
+#html/pfappserver/root/admin/expiredModal.tt
+msgid "Hello"
+msgstr ""
+
+msgid "Your subscription has expired"
+msgstr ""
+
+msgid "Thank you for using our service."
+msgstr ""
+
+msgid "Enter License Key"
+msgstr ""
+
+msgid "It looks like your subscription has ended. Please renew your license to continue using it. You can do this by calling this number"
+msgstr ""
+
+#html/pfappserver/root/admin/almostExpiringModal.tt
+
+msgid "It looks like your subscription is almost ending. Please renew your license by"
+msgstr ""
+
+msgid "to continue using it. You can do this by calling this number:"
+msgstr ""
+
+msgid "If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service."
+msgstr ""
+
 # html/pfappserver/root/config/adminroles/view.tt
 msgid "Admin Role"
 msgstr "Rôle Admin"
