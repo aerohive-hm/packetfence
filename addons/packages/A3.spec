@@ -513,7 +513,7 @@ cp -r addons/AD/* $RPM_BUILD_ROOT/usr/local/pf/addons/AD/
 cp -r addons/monit/ $RPM_BUILD_ROOT/usr/local/pf/addons/
 cp addons/*.pl $RPM_BUILD_ROOT/usr/local/pf/addons/
 cp addons/*.sh $RPM_BUILD_ROOT/usr/local/pf/addons/
-%{__install} -D packetfence.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/packetfence
+%{__install} -D packetfence.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/A3
 %{__install} -D packetfence.rsyslog-drop-in.service $RPM_BUILD_ROOT/etc/systemd/system/rsyslog.service.d/packetfence.conf
 %{__install} -D packetfence.journald $RPM_BUILD_ROOT/usr/lib/systemd/journald.conf.d/01-packetfence.conf
 cp -r sbin $RPM_BUILD_ROOT/usr/local/pf/
@@ -905,9 +905,9 @@ fi
 %attr(0644, root, root) /etc/systemd/system/rsyslog.service.d/packetfence.conf
 
 %dir %attr(0750,root,root) %{_sysconfdir}/sudoers.d
-%config %attr(0440,root,root) %{_sysconfdir}/sudoers.d/packetfence
-%config %attr(0644,root,root) %{_sysconfdir}/logrotate.d/packetfence
-%config %attr(0600,root,root) %{_sysconfdir}/cron.d/packetfence
+%config %attr(0440,root,root) %{_sysconfdir}/sudoers.d/A3
+%config %attr(0644,root,root) %{_sysconfdir}/logrotate.d/A3
+%config %attr(0600,root,root) %{_sysconfdir}/cron.d/A3
 
 %dir                    /usr/local/pf
                         /usr/local/pf/Makefile
