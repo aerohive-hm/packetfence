@@ -8,8 +8,10 @@
 # - archive locationlog_archive entries older than a year the first day of each month
 #
 # Copyright (C) 2005-2018 Inverse inc.
+#           (C) 2018 Aerohive Networks, Inc.
 #
-# Author: Inverse inc. <info@inverse.ca>
+# Authors: Inverse inc. <info@inverse.ca>
+#          Aerohive Networks, Inc. <info365@aerohive.com>
 #
 # Installation: make sure you have locationlog_archive (based on locationlog) and edit DB_PWD to fit your password.
 
@@ -21,12 +23,12 @@ DB_NAME=$(perl -I/usr/local/pf/lib -Mpf::db -e 'print $pf::db::DB_Config->{db}')
 DB_HOST=$(perl -I/usr/local/pf/lib -Mpf::db -e 'print $pf::db::DB_Config->{host}');
 REP_USER=$(perl -I/usr/local/pf/lib -Mpf::config -e 'print $pf::config::Config{active_active}{galera_replication_username}');
 REP_PWD=$(perl -I/usr/local/pf/lib -Mpf::config -e 'print $pf::config::Config{active_active}{galera_replication_password}');
-PF_DIRECTORY='/usr/local/pf/'
+A3_DIRECTORY='/usr/local/pf/'
 BACKUP_DIRECTORY='/root/backup/'
-BACKUP_DB_FILENAME='packetfence-db-dump'
-BACKUP_PF_FILENAME='packetfence-files-dump'
+BACKUP_DB_FILENAME='A3-db-dump'
+BACKUP_A3_FILENAME='A3-files-dump'
 ARCHIVE_DIRECTORY=$BACKUP_DIRECTORY
-ARCHIVE_DB_FILENAME='packetfence-archive'
+ARCHIVE_DB_FILENAME='A3-archive'
 PERCONA_XTRABACKUP_INSTALLED=0
 BACKUPRC=1
 
@@ -46,26 +48,26 @@ else
     echo -e "$BACKUP_DIRECTORY , folder already created. \n"
 fi
 
-PF_USED_SPACE=`du -s $PF_DIRECTORY --exclude=logs --exclude=var | awk '{ print $1 }'`
+A3_USED_SPACE=`du -s $A3_DIRECTORY --exclude=logs --exclude=var | awk '{ print $1 }'`
 BACKUPS_AVAILABLE_SPACE=`df --output=avail $BACKUP_DIRECTORY | awk 'NR == 2 { print $1  }'`
 
-if ((  $BACKUPS_AVAILABLE_SPACE > (( $PF_USED_SPACE / 2 )) )); then 
-    # Backup complete PacketFence installation except logs
-    current_tgz=$BACKUP_DIRECTORY/$BACKUP_PF_FILENAME-`date +%F_%Hh%M`.tgz
-    if [ ! -f $BACKUP_DIRECTORY$BACKUP_PF_FILENAME ]; then
-        tar -czf $current_tgz $PF_DIRECTORY --exclude=$PF_DIRECTORY'logs/*' --exclude=$PF_DIRECTORY'var/*' --exclude=$PF_DIRECTORY'.git/*'
+if ((  $BACKUPS_AVAILABLE_SPACE > (( $A3_USED_SPACE / 2 )) )); then
+    # Backup complete A3 installation except logs
+    current_tgz=$BACKUP_DIRECTORY/$BACKUP_A3_FILENAME-`date +%F_%Hh%M`.tgz
+    if [ ! -f $BACKUP_DIRECTORY$BACKUP_A3_FILENAME ]; then
+        tar -czf $current_tgz $A3_DIRECTORY --exclude=$A3_DIRECTORY'logs/*' --exclude=$A3_DIRECTORY'var/*' --exclude=$A3_DIRECTORY'.git/*'
         BACKUPRC=$?
         if (( $BACKUPRC > 0 )); then
-            echo "ERROR: PacketFence files backup was not successful" >&2
-            echo "ERROR: PacketFence files backup was not successful" > /usr/local/pf/var/backup_files.status
+            echo "ERROR: A3 file backup was not successful" >&2
+            echo "ERROR: A3 file backup was not successful" > /usr/local/pf/var/backup_files.status
         else
-            echo -e $BACKUP_PF_FILENAME "have been created in  $BACKUP_DIRECTORY \n"
+            echo -e $BACKUP_A3_FILENAME "have been created in  $BACKUP_DIRECTORY \n"
             echo "OK" > /usr/local/pf/var/backup_files.status
-            find $BACKUP_DIRECTORY -name "packetfence-files-dump-*.tgz" -mtime +$NB_DAYS_TO_KEEP_FILES -print0 | xargs -0r rm -f
-            echo -e "$BACKUP_PF_FILENAME older than $NB_DAYS_TO_KEEP_FILES days have been removed. \n"
+            find $BACKUP_DIRECTORY -name "A3-files-dump-*.tgz" -mtime +$NB_DAYS_TO_KEEP_FILES -print0 | xargs -0r rm -f
+            echo -e "$BACKUP_A3_FILENAME older than $NB_DAYS_TO_KEEP_FILES days have been removed. \n"
         fi
     else
-        echo -e $BACKUP_DIRECTORY$BACKUP_PF_FILENAME ", file already created. \n"
+        echo -e $BACKUP_DIRECTORY$BACKUP_A3_FILENAME ", file already created. \n"
     fi
 else 
     echo "ERROR: There is not enough space in $BACKUP_DIRECTORY to safely backup files. Skipping the backup." >&2
@@ -112,7 +114,7 @@ if [ $SHOULD_BACKUP -eq 1 ] && { [ -f /var/run/mysqld/mysqld.pid ] || [ -f /var/
         if [ $PERCONA_XTRABACKUP_INSTALLED -eq 1 ]; then
             find $BACKUP_DIRECTORY -name "$BACKUP_DB_FILENAME-innobackup-*.xbstream.gz" -mtime +$NB_DAYS_TO_KEEP_DB -delete
             echo "----- Backup started on `date +%F_%Hh%M` -----" >> /usr/local/pf/logs/innobackup.log
-            INNO_TMP="/tmp/pf-innobackups"
+            INNO_TMP="/tmp/A3-innobackups"
             mkdir -p $INNO_TMP
             if [ $IS_CLUSTER -eq 1 ]; then
                 innobackupex --user=$REP_USER --password=$REP_PWD  --no-timestamp --stream=xbstream --tmpdir=$INNO_TMP $INNO_TMP 2>> /usr/local/pf/logs/innobackup.log | gzip - > $BACKUP_DIRECTORY/$BACKUP_DB_FILENAME-innobackup-`date +%F_%Hh%M`.xbstream.gz
