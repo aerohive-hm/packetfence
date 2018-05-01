@@ -520,8 +520,8 @@ cp -r sbin $RPM_BUILD_ROOT/usr/local/pf/
 cp -r conf $RPM_BUILD_ROOT/usr/local/pf/
 mv -f $RPM_BUILD_ROOT/usr/local/pf/conf/a3-release $RPM_BUILD_ROOT/usr/local/pf/conf/pf-release
 cp -r raddb $RPM_BUILD_ROOT/usr/local/pf/
-mv packetfence.sudoers $RPM_BUILD_ROOT/etc/sudoers.d/packetfence
-mv packetfence.cron.d $RPM_BUILD_ROOT/etc/cron.d/packetfence
+mv packetfence.sudoers $RPM_BUILD_ROOT/etc/sudoers.d/A3
+mv packetfence.cron.d $RPM_BUILD_ROOT/etc/cron.d/A3
 mv addons/pfarp_remote/sbin/pfarp_remote $RPM_BUILD_ROOT/usr/local/pf/sbin
 mv addons/pfarp_remote/conf/pfarp_remote.conf $RPM_BUILD_ROOT/usr/local/pf/conf
 rmdir addons/pfarp_remote/sbin

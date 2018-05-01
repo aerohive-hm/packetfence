@@ -1,4 +1,4 @@
-# /etc/cron.d/packetfence: crontab entries for the packetfence package
+# /etc/cron.d/packetfence: crontab entries for the A3 package
 
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
@@ -14,5 +14,6 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 #*/15 * * * *  pf [ ! -d /var/lib/mysql/pf ] && rsync -e 'ssh -i /usr/local/pf/.ssh/packetfence-sync' --delete -logDprtuv --exclude=logs/* $SYNC_SERVER_IP:/usr/local/fingerbank /usr/local
 
 # Periodic Entitlement Checks
-# TODO: Randomize the date and time on install
-0   0   1   *   *   pf  /usr/local/pf/bin/a3ec
+# TODO: Randomize the date and time for a3ec on install
+0     0  1   *   *   pf  /usr/local/pf/bin/a3ec
+*/30  *  *   *   *   pf  /usr/local/pf/bin/a3us

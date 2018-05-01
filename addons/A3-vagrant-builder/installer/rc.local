@@ -6,6 +6,7 @@
 
 # Ensure we delete the vagrant user if it exists
 userdel vagrant
+/usr/bin/rm -f /etc/sudoers.d/vagrant
 
 # Set up some VMware-related environment variables
 # vmblock is block filesystem driver to provide drag-and-drop functionality from the remote console.

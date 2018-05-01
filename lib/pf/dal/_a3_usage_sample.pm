@@ -1,16 +1,16 @@
-package pf::dal::_a3_eula_acceptance;
+package pf::dal::_a3_usage_sample;
 
 =head1 NAME
 
-pf::dal::_a3_eula_acceptance - pf::dal implementation for the table a3_eula_acceptance
+pf::dal::_a3_usage_sample - pf::dal implementation for the table a3_usage_sample
 
 =cut
 
 =head1 DESCRIPTION
 
-pf::dal::_a3_eula_acceptance
+pf::dal::_a3_usage_sample
 
-pf::dal implementation for the table a3_eula_acceptance
+pf::dal implementation for the table a3_usage_sample
 
 =cut
 
@@ -18,8 +18,8 @@ use strict;
 use warnings;
 
 ###
-### pf::dal::_a3_eula_acceptance is auto generated any change to this file will be lost
-### Instead change in the pf::dal::a3_eula_acceptance module
+### pf::dal::_a3_usage_sample is auto generated any change to this file will be lost
+### Instead change in the pf::dal::a3_usage_sample module
 ###
 
 use base qw(pf::dal);
@@ -34,17 +34,17 @@ our @COLUMN_NAMES;
 BEGIN {
     @FIELD_NAMES = qw(
         timestamp
-        is_synced
+        count
     );
 
     %DEFAULTS = (
         timestamp => '',
-        is_synced => '',
+        count => '',
     );
 
     @INSERTABLE_FIELDS = qw(
         timestamp
-        is_synced
+        count
     );
 
     %FIELDS_META = (
@@ -54,8 +54,8 @@ BEGIN {
             is_primary_key => 1,
             is_nullable => 0,
         },
-        is_synced => {
-            type => 'TINYINT',
+        count => {
+            type => 'INT',
             is_auto_increment => 0,
             is_primary_key => 0,
             is_nullable => 0,
@@ -67,8 +67,8 @@ BEGIN {
     );
 
     @COLUMN_NAMES = qw(
-        a3_eula_acceptance.timestamp
-        a3_eula_acceptance.is_synced
+        a3_usage_sample.timestamp
+        a3_usage_sample.count
     );
 
 }
@@ -79,7 +79,7 @@ use Class::XSAccessor {
 
 =head2 _defaults
 
-The default values of a3_eula_acceptance
+The default values of a3_usage_sample
 
 =cut
 
@@ -87,19 +87,19 @@ sub _defaults {
     return {%DEFAULTS};
 }
 
-=head2 field_names
+=head2 table_field_names
 
-Field names of a3_eula_acceptance
+Field names of a3_usage_sample
 
 =cut
 
-sub field_names {
+sub table_field_names {
     return [@FIELD_NAMES];
 }
 
 =head2 primary_keys
 
-The primary keys of a3_eula_acceptance
+The primary keys of a3_usage_sample
 
 =cut
 
@@ -113,11 +113,11 @@ The table name
 
 =cut
 
-sub table { "a3_eula_acceptance" }
+sub table { "a3_usage_sample" }
 
 our $FIND_SQL = do {
     my $where = join(", ", map { "$_ = ?" } @PRIMARY_KEYS);
-    "SELECT * FROM `a3_eula_acceptance` WHERE $where;";
+    "SELECT * FROM `a3_usage_sample` WHERE $where;";
 };
 
 =head2 find_columns
@@ -132,7 +132,7 @@ sub find_columns {
 
 =head2 _find_one_sql
 
-The precalculated sql to find a single row a3_eula_acceptance
+The precalculated sql to find a single row a3_usage_sample
 
 =cut
 
@@ -142,7 +142,7 @@ sub _find_one_sql {
 
 =head2 _updateable_fields
 
-The updateable fields for a3_eula_acceptance
+The updateable fields for a3_usage_sample
 
 =cut
 
@@ -152,7 +152,7 @@ sub _updateable_fields {
 
 =head2 _insertable_fields
 
-The insertable fields for a3_eula_acceptance
+The insertable fields for a3_usage_sample
 
 =cut
 
@@ -162,14 +162,14 @@ sub _insertable_fields {
 
 =head2 get_meta
 
-Get the meta data for a3_eula_acceptance
+Get the meta data for a3_usage_sample
 
 =cut
 
 sub get_meta {
     return \%FIELDS_META;
 }
-
+ 
 =head1 AUTHOR
 
 Aerohive Networks, Inc. <info365@aerohive.com>

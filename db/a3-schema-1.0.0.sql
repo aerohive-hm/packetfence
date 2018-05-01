@@ -1283,3 +1283,9 @@ CREATE TABLE a3_eula_acceptance (
     is_synced tinyint  NOT NULL,
     PRIMARY KEY (timestamp)
 ) ENGINE=InnoDB;
+
+CREATE TABLE a3_usage_sample (
+    timestamp datetime NOT NULL,
+    count     int      NOT NULL,
+    PRIMARY KEY (timestamp)
+) ENGINE=InnoDB;

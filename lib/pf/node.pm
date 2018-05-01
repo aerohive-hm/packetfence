@@ -76,6 +76,7 @@ BEGIN {
         node_defaults
         node_update_last_seen
         node_last_reg_non_inline_on_category
+        node_count_active
     );
 }
 
@@ -1273,6 +1274,34 @@ sub node_last_reg_non_inline_on_category {
         return;
     }
     return @{ $iter->all() // [] };
+}
+
+=item node_count_active
+
+Returns the number of currently registered, online nodes
+
+=cut
+
+sub node_count_active {
+    my $count_sql = <<'END_SQL';
+SELECT COUNT(*)
+  FROM node,radacct
+ WHERE node.mac = radacct.callingstationid
+   AND node.status = 'reg'
+   AND radacct.acctstarttime IS NOT NULL
+   AND radacct.acctstoptime IS NULL;
+END_SQL
+
+    my ($status, $sth) = pf::dal::node->db_execute($count_sql);
+
+    if (is_success($status)) {
+        my ($count) = $sth->fetchrow_array();
+        $sth->finish;
+        return $count;
+    }
+    else {
+        return 0;
+    }
 }
 
 =back

@@ -232,11 +232,11 @@ sub get_meta {
 
 =head1 AUTHOR
 
-Inverse inc. <info@inverse.ca>
+Aerohive Networks, Inc. <info365@aerohive.com>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005-2018 Inverse inc.
+Copyright (C) 2018 Aerohive Networks, Inc.
 
 =cut
 
