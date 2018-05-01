@@ -153,10 +153,9 @@
         [% END %]
       [% END %]
 
-      <span>latest defined: [% latestKey.defined %]</span>
       [% IF latestKey.defined %]
-        <span>latest defined2: [% latestKey.defined %]</span>
-        <span>latest expired: [% latest_key_expires_in %]</span>
+        <!-- <span>latest defined2: [% latestKey.defined %]</span>
+        <span>latest expired: [% latest_key_expires_in %]</span> -->
         [% IF latest_key_expires_in.defined %]
           [% IF latest_key_expires_in <= 0 %]
               [% INCLUDE admin/expiredModal.tt %]
