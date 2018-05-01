@@ -118,12 +118,12 @@ function openExpiredModal(){
 }
 
 function openAlmostExpiredModal(){
-    if ($.cookie('almostExpired') == null) {
-       console.log("show almost expired modal");
-       $('#myModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
-       $('#myModal').modal('show');
-       $.cookie('almostExpired', '1');
-    }
-    // $('#myModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
-    // $('#myModal').modal('show');
+    // if ($.cookie('almostExpired') == null) {
+    //    console.log("show almost expired modal");
+    //    $('#myModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
+    //    $('#myModal').modal('show');
+    //    $.cookie('almostExpired', '1');
+    // }
+    $('#myModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
+    $('#myModal').modal('show');
 }

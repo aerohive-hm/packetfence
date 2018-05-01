@@ -143,7 +143,6 @@
       </div>
     </div>
     [%- IF c.user_allowed_in_admin() %]
-      <!-- [% SET latestKey = undef %] -->
       [% FOREACH key IN entitlement_keys -%]
         [% IF latestKey.defined %]
           [% IF latestKey.expires_in < key.expires_in %]
@@ -154,11 +153,16 @@
         [% END %]
       [% END %]
 
+      <span>latest defined: [% latestKey.defined %]</span>
       [% IF latestKey.defined %]
-        [% IF latest_key_expires_in == 0 %]
-          [% INCLUDE admin/expiredModal.tt %]
-        [% ELSIF latest_key_expires_in < 15  %]
-          [% INCLUDE admin/almostExpiringModal.tt %]
+        <span>latest defined2: [% latestKey.defined %]</span>
+        <span>latest expired: [% latest_key_expires_in %]</span>
+        [% IF latest_key_expires_in.defined %]
+          [% IF latest_key_expires_in <= 0 %]
+              [% INCLUDE admin/expiredModal.tt %]
+          [% ELSIF latest_key_expires_in < 15  %]
+            [% INCLUDE admin/almostExpiringModal.tt %]
+          [% END %]
         [% END %]
       [% END %]
 

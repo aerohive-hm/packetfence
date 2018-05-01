@@ -291,11 +291,6 @@ sub object :Chained('/') :PathPart('admin') :CaptureArgs(0) {
       # $logger->info("latest key: " . Dumper($c->stash->{latest_key}));
       # $logger->info("expired latest key: " . $c->stash->{latest_key_expires_in});
     }
-
-    $c->stash->{'licenseKeysPage'} = 'admin/licenseKeys.tt';
-    if ($c->stash->{'licenseKeysPage'} = 'admin/licenseKeys.tt'){
-       $c->stash->{latest_key_expires_in} = undef;
-    }
 }
 
 
@@ -521,7 +516,7 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
-
+    delete $c->stash->{lastest_key_expires_in};
     $logger->info("stash contains: " . Dumper($c->stash));
 
     if ($c->request->method eq 'POST') {
@@ -531,6 +526,7 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 
         # TODO: Get the userinput key and find data in table
     }
+
 }
 
 
