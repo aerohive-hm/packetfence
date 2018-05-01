@@ -15,8 +15,7 @@
           <p>If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service. </p>
         </div>
         <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-primary emailSentSuccess">[% l('Send Email') %]</button> -->
-          <button type="button" class="btn btn-success licenseKey" id="licenseKey">[% l('Enter Key') %]</button>
+          <button type="button" class="btn btn-success licenseKey" id="licenseKey" href="">[% l('Enter Key') %]</button>
           <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">[% l('Close') %]</button>
         </div>
       </div>

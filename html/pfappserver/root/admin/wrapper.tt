@@ -127,7 +127,7 @@
                   <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
               </div>
             </div>
-          <!--for trialindecator-->
+          <!--end trialindecator-->
           [% END %]
 
         </div>
@@ -142,6 +142,7 @@
         [% END %]
       </div>
     </div>
+
     [%- IF c.user_allowed_in_admin() %]
       [% FOREACH key IN entitlement_keys -%]
         [% IF latestKey.defined %]
@@ -152,10 +153,8 @@
           [% SET latestKey = key %]
         [% END %]
       [% END %]
-
+      <!--for reg keys-->
       [% IF latestKey.defined %]
-        <!-- <span>latest defined2: [% latestKey.defined %]</span>
-        <span>latest expired: [% latest_key_expires_in %]</span> -->
         [% IF latest_key_expires_in.defined %]
           [% IF latest_key_expires_in <= 0 %]
               [% INCLUDE admin/expiredModal.tt %]
@@ -165,10 +164,9 @@
         [% END %]
       [% END %]
 
+      <!--for trial-->
       [% IF is_eula_accepted %]
-      <!-- need for when regular key expires -->
       [% ELSE %]
-        <!--for trial-->
         [% INCLUDE admin/almostExpiringModal.tt %]
         [% INCLUDE admin/expiredModal.tt %]
       [% END %]

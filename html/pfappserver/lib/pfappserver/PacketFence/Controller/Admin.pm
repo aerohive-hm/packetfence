@@ -282,14 +282,11 @@ sub object :Chained('/') :PathPart('admin') :CaptureArgs(0) {
 
     my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
     $c->stash->{entitlement_keys}   = $entitlements;
-    # $logger->info("keys in  /admin  " . Dumper($entitlements));
 
     #grab the first key after sorted
     if (@$entitlements > 0){
       $c->stash->{latest_key}            = $entitlements->[0];
       $c->stash->{latest_key_expires_in} = $entitlements->[0]->{expires_in};
-      # $logger->info("latest key: " . Dumper($c->stash->{latest_key}));
-      # $logger->info("expired latest key: " . $c->stash->{latest_key_expires_in});
     }
 }
 
@@ -519,8 +516,6 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 
     delete $c->stash->{lastest_key_expires_in};
     $c->stash->{latest_key_expires_in} = undef;
-    $logger->info("expired latest key 2: " . $c->stash->{latest_key_expires_in});
-    $logger->info("stash contains: " . Dumper($c->stash));
 
     if ($c->request->method eq 'POST') {
         $c->stash->{current_view} = 'JSON';

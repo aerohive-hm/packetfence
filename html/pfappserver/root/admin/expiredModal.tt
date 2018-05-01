@@ -14,7 +14,6 @@
           <p>Thank you for using our service. </p>
         </div>
         <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-primary toggle-emailForm">[% l('Send Email') %]</button> -->
           <button type="button" class="btn btn-success licenseKey">[% l('Enter License Key') %]</button>
           <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">[% l('Close') %]</button>
         </div>
