@@ -102,8 +102,6 @@
                   <li id="fixpermissions_task"><a href="" id="fixpermissions_task_toggle">[% l('Fix permissions') %]</a></li>
                 </ul>
               </li>
-              <span>[% latestKey %]</span>
-              <!-- <span>eula acceptd? [% is_eula_accepted %]</span><span>eula needed? [% is_eula_needed %]</span> -->
               <li class="dropdown">
                 <a href="" class="dropdown-toggle" data-toggle="dropdown"><img src="[% c.uri_for('/static/img/icon-account.svg') %]"/></a>
                 <ul class="dropdown-menu">
@@ -130,6 +128,28 @@
               </div>
             </div>
           <!--for trialindecator-->
+          [% END %]
+
+          [% SET latestKey = undef %]
+
+          [% FOREACH key IN entitlement_keys -%]
+            [% IF latestKey.defined %]
+              [% IF latestKey.expires_in < key.expires_in %]
+                [% SET latestKey = key %]
+              [% END %]
+            [% ELSE %]
+              [% SET latestKey = key %]
+            [% END %]
+          [% END %]
+
+          [% IF latestKey.defined %]
+            <span style="color:white;">latest Key = [% latestKey.entitlement_key %]</span>
+            <span style="color:white;">expire = [% latestKey.expires_in %]</span>
+            [% IF latestKey.expires_in <= 0 %]
+              [% INCLUDE admin/expiredModal.tt %]
+            [% ELSIF latestKey.expires_in < 15  %]
+              [% INCLUDE admin/almostExpiringModal.tt %]
+            [% END %]
           [% END %]
 
         </div>

@@ -54,7 +54,6 @@ sub list_entitlement_keys {
                 $key->{lic_status} = "";
             }
             $key->{expires_in} = int((($end - $now) / 86400));
-
         }
     }
     return $entitlements;

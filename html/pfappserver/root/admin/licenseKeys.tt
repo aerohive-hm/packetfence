@@ -19,7 +19,6 @@
 <div class="alert alert-danger" id='success-alert' role="alert" style="display:none; position:fixed; z-index:25; left: 40%;">
     <span id="errorMessage"></span>
 </div>
-
 <div class="card-div">
   <div class="card-block">
       <div id="entire-form">
@@ -73,21 +72,7 @@
       </div><!--end of entire-form-->
     </div><!--end of card-block-->
 </div> <!--end of card-div -->
-  [% SET latestKey = undef %]
 
-  [% FOREACH key IN entitlement_keys -%]
-    [% IF latestKey.expires_in < key.expires_in %]
-      [% SET latestKey = key %]
-    [% END %]
-  [% END %]
-
-  [% IF latestKey.defined %]
-    [% IF latestKey.expires_in <= 0 %]
-      [% INCLUDE admin/expiredModal.tt %]
-    [% ELSIF latestKey.expires_in < 15  %]
-      [% INCLUDE admin/almostExpiringModal.tt %]
-    [% END %]
-  [% END %]
 <!--EULA modal-->
   [% IF is_eula_accepted %]
   [% ELSE %]

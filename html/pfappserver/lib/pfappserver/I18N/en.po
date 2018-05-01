@@ -7628,7 +7628,7 @@ msgid "The cost factor to apply to the password hashing if applicable.Currently 
 msgstr ""
 
 # html/pfappserver/root/admin/wrapper.tt
-msgid "The database is in readonly mode. Not all functionality is available."
+msgid "The database is in read-only mode. Not all functionality is available."
 msgstr ""
 
 # html/pfappserver/root/configuration/system_config.tt
@@ -11615,6 +11615,3 @@ msgstr ""
 # html/pfappserver/root/config/profile/files.tt
 msgid "{percent}% of {total_size}"
 msgstr ""
-
-
-

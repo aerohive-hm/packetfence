@@ -248,7 +248,6 @@ sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
     my @roles = $c->user->roles();
     my $action;
-    my $logger=get_logger();
 
     for my $roles_to_action (@ROLES_TO_ACTIONS) {
         if (admin_can_do_any(\@roles, @{$roles_to_action->{roles}})) {
@@ -265,10 +264,7 @@ sub index :Path :Args(0) {
         }
     }
     $c->response->redirect($c->uri_for($c->controller->action_for($action)));
-    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
-    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
-    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
-    $logger->info("entitlement key: " . Dumper($entitlements));
+
 }
 
 =head2 object
@@ -279,9 +275,19 @@ Administrator controller dispatcher
 
 sub object :Chained('/') :PathPart('admin') :CaptureArgs(0) {
     my ( $self, $c ) = @_;
-
+    my $logger=get_logger();
     $c->stash->{'pf_release'}       = $c->model('Admin')->pf_release();
     $c->stash->{'server_hostname'}  = $c->model('Admin')->server_hostname();
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $logger->info("latest key: in  /admin  " . Dumper($entitlements));
+    $c->stash->{entitlement_keys} = $entitlements;
+    
+    if (@$entitlements > 0){
+      $c->stash->{latest_key} = $entitlements->[0];
+      $logger->info("latest key: " . Dumper($c->stash->{latest_key}));
+    }
+
+
 }
 
 
@@ -508,7 +514,7 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
 
-    $logger->debug("stash contains: " . Dumper($c->stash));
+    $logger->info("stash contains: " . Dumper($c->stash));
 
     if ($c->request->method eq 'POST') {
         $c->stash->{current_view} = 'JSON';
