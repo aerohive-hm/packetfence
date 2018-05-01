@@ -276,18 +276,26 @@ Administrator controller dispatcher
 sub object :Chained('/') :PathPart('admin') :CaptureArgs(0) {
     my ( $self, $c ) = @_;
     my $logger=get_logger();
+
     $c->stash->{'pf_release'}       = $c->model('Admin')->pf_release();
     $c->stash->{'server_hostname'}  = $c->model('Admin')->server_hostname();
+
     my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
-    $logger->info("latest key: in  /admin  " . Dumper($entitlements));
-    $c->stash->{entitlement_keys} = $entitlements;
-    
+    $c->stash->{entitlement_keys}   = $entitlements;
+    # $logger->info("keys in  /admin  " . Dumper($entitlements));
+
+    #grab the first key after sorted
     if (@$entitlements > 0){
-      $c->stash->{latest_key} = $entitlements->[0];
-      $logger->info("latest key: " . Dumper($c->stash->{latest_key}));
+      $c->stash->{latest_key}            = $entitlements->[0];
+      $c->stash->{latest_key_expires_in} = $entitlements->[0]->{expires_in};
+      # $logger->info("latest key: " . Dumper($c->stash->{latest_key}));
+      # $logger->info("expired latest key: " . $c->stash->{latest_key_expires_in});
     }
 
-
+    $c->stash->{'licenseKeysPage'} = 'admin/licenseKeys.tt';
+    if ($c->stash->{'licenseKeysPage'} = 'admin/licenseKeys.tt'){
+       $c->stash->{latest_key_expires_in} = undef;
+    }
 }
 
 

@@ -8176,7 +8176,7 @@ msgid ""
 msgstr "Le facteur coût à appliquer au hachage de mot de passe le cas échéant. Actuellement cela s’applique uniquement aux bcrypt."
 
 # html/pfappserver/root/admin/wrapper.tt
-msgid "The database is in readonly mode. Not all functionality is available."
+msgid "The database is in read-only mode. Not all functionality is available."
 msgstr "La base de donnée est en mode lecture seule. Toutes les fonctionnalités ne sont pas disponibles."
 
 # html/pfappserver/root/configuration/system_config.tt

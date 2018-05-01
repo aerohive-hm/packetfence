@@ -16,6 +16,10 @@
                 <a href="#[% action %]">[% l(description) %]</a>
               </li>
 [% END -%]
+
+[% IF latest_key.defined %]
+  [% SET latest_key_expires_in = undef %]
+[% END %]
 <div class="alert alert-danger" id='success-alert' role="alert" style="display:none; position:fixed; z-index:25; left: 40%;">
     <span id="errorMessage"></span>
 </div>

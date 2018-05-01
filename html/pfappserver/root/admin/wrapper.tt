@@ -130,28 +130,6 @@
           <!--for trialindecator-->
           [% END %]
 
-          [% SET latestKey = undef %]
-
-          [% FOREACH key IN entitlement_keys -%]
-            [% IF latestKey.defined %]
-              [% IF latestKey.expires_in < key.expires_in %]
-                [% SET latestKey = key %]
-              [% END %]
-            [% ELSE %]
-              [% SET latestKey = key %]
-            [% END %]
-          [% END %]
-
-          [% IF latestKey.defined %]
-            <span style="color:white;">latest Key = [% latestKey.entitlement_key %]</span>
-            <span style="color:white;">expire = [% latestKey.expires_in %]</span>
-            [% IF latestKey.expires_in <= 0 %]
-              [% INCLUDE admin/expiredModal.tt %]
-            [% ELSIF latestKey.expires_in < 15  %]
-              [% INCLUDE admin/almostExpiringModal.tt %]
-            [% END %]
-          [% END %]
-
         </div>
         [%- END %]
         <!-- end of if user allowed in admin-->
@@ -165,6 +143,24 @@
       </div>
     </div>
     [%- IF c.user_allowed_in_admin() %]
+      <!-- [% SET latestKey = undef %] -->
+      [% FOREACH key IN entitlement_keys -%]
+        [% IF latestKey.defined %]
+          [% IF latestKey.expires_in < key.expires_in %]
+            [% SET latestKey = key %]
+          [% END %]
+        [% ELSE %]
+          [% SET latestKey = key %]
+        [% END %]
+      [% END %]
+
+      [% IF latestKey.defined %]
+        [% IF latest_key_expires_in == 0 %]
+          [% INCLUDE admin/expiredModal.tt %]
+        [% ELSIF latest_key_expires_in < 15  %]
+          [% INCLUDE admin/almostExpiringModal.tt %]
+        [% END %]
+      [% END %]
 
       [% IF is_eula_accepted %]
       <!-- need for when regular key expires -->
