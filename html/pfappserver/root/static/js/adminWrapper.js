@@ -62,15 +62,12 @@ function timeLeft(){
          var percentageWidth = Math.round((numberOfDaysLeft) * (100/30)) + '%';
          if (numberOfDaysLeft > 15 && numberOfDaysLeft < 29){
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
-            // document.getElementById("daysLeft").innerHTML = numberOfDaysLeft + " " + "days";
             $(timeBar).css('width', percentageWidth);
          }else if(numberOfDaysLeft == 29){
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
-            // document.getElementById("daysLeft").innerHTML = numberOfDaysLeft + " " + "days";
             $(timeBar).css('width', 180);
          }else if(numberOfDaysLeft == 30){
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
-            // document.getElementById("daysLeft").innerHTML = numberOfDaysLeft + " " + "days";
             $(timeBar).css('width', 180);
 
          }else if(numberOfDaysLeft <= 15 && numberOfDaysLeft > 0 ){
