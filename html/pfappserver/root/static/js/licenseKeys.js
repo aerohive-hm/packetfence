@@ -7,7 +7,6 @@ $(document).ready(function(){
   var licenseCapacity3 = $("#licenseCapaSpan");
 
   applyKeyButton();
-  updateCapacities();
 
   $('.agreeToEula').click(function() {
       //changes checkbox to submit button
@@ -20,20 +19,6 @@ $(document).ready(function(){
   })
 
 });
-
-function updateCapacities(){
-  var licenseCapacity = document.getElementById("licenseCapa");
-  var usedCapacity = document.getElementById("usedCapacity");
-  var usedCapacity2 = $("#usedCapacity");
-  if(licenseCapacity.innerHTML >= 100000 || licenseCapacity.innerHTML === "Unlimited"){
-     licenseCapacity.innerHTML = "Unlimited";
-  }
-  if(usedCapacity.innerHTML > licenseCapacity.innerHTML){
-     usedCapacity2.css('color', 'red');
-     $("#usedCapacitySpan").css('color', 'red');
-     $("#usedCapacitySpan").after("<span class='glyphicon glyphicon-warning-sign' style='color: red;'></span>");
-  }
-}
 
 // apply button press
 function applyKeyButton(){
@@ -96,6 +81,7 @@ function updateKeyTable(userKeyInput) {
 function checkKeyInput(userKeyInput){
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
     var applyKeyButton2 = $("#applyKey");
+    console.log(" checking: ");
     console.log(checkKeyRegex.test(userKeyInput)); //TRUE OR FALSE
     if (checkKeyRegex.test(userKeyInput)){
         $("#keyInput").css('border','1px solid #dfdfdf');

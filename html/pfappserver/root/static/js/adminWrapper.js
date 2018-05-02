@@ -5,20 +5,18 @@ $(document).ready(function(){
       width: "toggle"
     });
   });
-  $("#trialIndicator").load(window.location + " #trialIndicator");
+  // $("#trialIndicator").load(window.location + " #trialIndicator");
   $(".dismiss-modal").click(function(){
     $("#myModal").css("display", "none");
   });
-  timeLeft();
-
-  openExpiredModal();
-  openAlmostExpiredModal();
 
   document.getElementById("licenseKey").onclick = function () {
     var base_url = window.location.origin;
     console.log("going to license management page");
     location.href = base_url+"/admin/licenseKeys";
   };
+
+  timeLeft();
 
   var emailForm = $('.emailForm');
   var emailFormButton = $('.toggle-emailForm');
@@ -27,21 +25,21 @@ $(document).ready(function(){
   var sentEmailButton = $('.emailSentSuccess');
   var successEmailMessage = $('.successEmailMessage');
   $(document).ready(function() {
-    emailForm.hide();
-    successEmailMessage.hide();
-    emailFormButton.click(function() {
-      licenseAlert.slideUp(1000);
-      emailForm.slideDown(1000);
+      emailForm.hide();
+      successEmailMessage.hide();
+      emailFormButton.click(function() {
+        licenseAlert.slideUp(1000);
+        emailForm.slideDown(1000);
+      });
+      licenseAlertButton.click(function() {
+        emailForm.slideUp(1000);
+        licenseAlert.slideDown(1000);
+      });
+      sentEmailButton.click(function(){
+        emailForm.slideUp(1000);
+        successEmailMessage.slideDown(1000);
+      });
     });
-    licenseAlertButton.click(function() {
-      emailForm.slideUp(1000);
-      licenseAlert.slideDown(1000);
-    });
-    sentEmailButton.click(function(){
-      emailForm.slideUp(1000);
-      successEmailMessage.slideDown(1000);
-    });
-  });
 });
 
 function timeLeft(){
@@ -64,12 +62,15 @@ function timeLeft(){
          var percentageWidth = Math.round((numberOfDaysLeft) * (100/30)) + '%';
          if (numberOfDaysLeft > 15 && numberOfDaysLeft < 29){
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
+            // document.getElementById("daysLeft").innerHTML = numberOfDaysLeft + " " + "days";
             $(timeBar).css('width', percentageWidth);
          }else if(numberOfDaysLeft == 29){
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
+            // document.getElementById("daysLeft").innerHTML = numberOfDaysLeft + " " + "days";
             $(timeBar).css('width', 180);
          }else if(numberOfDaysLeft == 30){
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
+            // document.getElementById("daysLeft").innerHTML = numberOfDaysLeft + " " + "days";
             $(timeBar).css('width', 180);
 
          }else if(numberOfDaysLeft <= 15 && numberOfDaysLeft > 0 ){
