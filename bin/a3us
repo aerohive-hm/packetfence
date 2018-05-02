@@ -19,6 +19,7 @@ use POSIX qw(strftime);
 
 use pf::error qw(is_success);
 use pf::log;
+use pf::cluster;
 use pf::node;
 use pf::dal::a3_usage_sample;
 
@@ -31,6 +32,11 @@ BEGIN {
 our $PROGRAM_NAME = $0 = 'a3us';
 
 my $logger = get_logger( $PROGRAM_NAME );
+
+if ($pf::cluster::cluster_enabled && ! pf::cluster::is_management()) {
+    $logger->info("Not taking samples on non-management node.");
+    exit 0;
+}
 
 my $now   = strftime( "%Y-%m-%d %H:%M:%S", gmtime(time()) );
 my $count = pf::node::node_count_active();
