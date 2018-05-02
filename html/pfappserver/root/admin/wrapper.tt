@@ -115,23 +115,20 @@
 	          </ul>
           </div>
 
-          [% IF is_eula_needed %]
-              <!-- <trial indicator -->
-              [% IF is_eula_accepted %]
-              [% ELSE %]
-              <div class="trialIndicator" id="trialIndicator">
-                <div class="trial-clock-indicator pull-right">
-                    <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
-                </div>
-                <div id="clockTrialDiv">
-                    <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
-                    <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
-                </div>
-              </div>
-              [% END %]
+          [% IF is_eula_accepted %]
           [% ELSE %]
+            <!-- <trial indicator -->
+            <div class="trialIndicator" id="trialIndicator">
+              <div class="trial-clock-indicator pull-right">
+                  <img id="clock-icon" src="[% c.uri_for('/static/img/clock.svg') %]"/>
+              </div>
+              <div id="clockTrialDiv">
+                  <p>[% l("Time left of trial: ") %] <span id="daysLeft"></span></p>
+                  <div><div id="time-indicator"><div id="time-indicator-bar"></div></div></div>
+              </div>
+            </div>
+          <!--end trialindecator-->
           [% END %]
-            <!--for trialindecator-->
 
         </div>
         [%- END %]
@@ -140,29 +137,42 @@
         [% IF SHOW_READONLY_ERROR %]
         <div class="row-error">
           <strong>[% l('Warning!') %]</strong>
-          <span>[% l('The database is in readonly mode. Not all functionality is available.') %] [% doc('_quorum_behavior', 'Clustering_Guide') | none %]</span>
+          <span>[% l('The database is in read-only mode. Not all functionality is available.') %] [% doc('_quorum_behavior', 'Clustering_Guide') | none %]</span>
         </div>
         [% END %]
       </div>
     </div>
+
     [%- IF c.user_allowed_in_admin() %]
-    <!-- use date here? -->
-      <!-- for trial -->
       [% FOREACH key IN entitlement_keys -%]
-         [% latestKey = key.sub_end %]
-         [% IF key.expires_in == 0 %]
-           [% INCLUDE admin/expiredModal.tt %]
-         [% END %]
-      [% END -%]
+        [% IF latestKey.defined %]
+          [% IF latestKey.expires_in < key.expires_in %]
+            [% SET latestKey = key %]
+          [% END %]
+        [% ELSE %]
+          [% SET latestKey = key %]
+        [% END %]
+      [% END %]
+      <!--for reg keys-->
+      [% IF latestKey.defined %]
+        [% IF latest_key_expires_in.defined %]
+          [% IF latest_key_expires_in <= 0 %]
+              [% INCLUDE admin/expiredModal.tt %]
+          [% ELSIF latest_key_expires_in < 15  %]
+            [% INCLUDE admin/almostExpiringModal.tt %]
+          [% END %]
+        [% END %]
+      [% END %]
+
+      <!--for trial-->
       [% IF is_eula_accepted %]
+      [% ELSE %]
         [% INCLUDE admin/almostExpiringModal.tt %]
         [% INCLUDE admin/expiredModal.tt %]
-      <!-- need for when regular key expires -->
-      [% ELSE %]
       [% END %]
     [% END %]
 
-[% content | none %]
+ [% content | none %]
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

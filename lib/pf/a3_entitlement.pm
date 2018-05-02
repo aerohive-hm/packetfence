@@ -58,8 +58,9 @@ sub find_all {
 
     my ($status, $iter) = pf::dal::a3_entitlement->search(
         -where => {
-            type => { "!=" => $TRIAL_TYPE }
+            type => { "!=" => $TRIAL_TYPE },
         },
+        -order_by => {-desc => 'sub_end'},
     );
 
     # Find all entitlement keys on this system

@@ -1,16 +1,18 @@
 
 $(document).ready(function(){
   $(".trial-clock-indicator").click(function(){
-    // console.log("clickclick");
     $("#clockTrialDiv").animate({
       width: "toggle"
     });
   });
+  $("#trialIndicator").load(window.location + " #trialIndicator");
   $(".dismiss-modal").click(function(){
-    console.log("closing modal");
     $("#myModal").css("display", "none");
   });
   timeLeft();
+
+  openExpiredModal();
+  openAlmostExpiredModal();
 
   document.getElementById("licenseKey").onclick = function () {
     var base_url = window.location.origin;
@@ -59,16 +61,13 @@ function timeLeft(){
          hours = Math.floor(parseSeconds / 3600);
          console.log("Days: " + days);
          numberOfDaysLeft = days;
-         // numberOfDaysLeft = 10;
          var percentageWidth = Math.round((numberOfDaysLeft) * (100/30)) + '%';
          if (numberOfDaysLeft > 15 && numberOfDaysLeft < 29){
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
             $(timeBar).css('width', percentageWidth);
          }else if(numberOfDaysLeft == 29){
-            // numberOfDaysLeft = days + 1;
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
             $(timeBar).css('width', 180);
-
          }else if(numberOfDaysLeft == 30){
             $("#daysLeft").html(numberOfDaysLeft + " " + "days");
             $(timeBar).css('width', 180);
@@ -100,6 +99,20 @@ function timeLeft(){
            // modal to show for actually expire
     }).fail(function(xhr, status, error){
         $('.trialIndicator').remove();
+        console.log("removing trial indicator");
+
     });
     return numOfDaysLeft;
+}
+
+
+function openExpiredModal(){
+    console.log("show expired modal");
+    $('#expiredModal').modal({backdrop:'static', keyboard: false });
+    $('#expiredModal').modal('show');
+}
+
+function openAlmostExpiredModal(){
+    $('#myModal').modal({backdrop:'static', keyboard: false });
+    $('#myModal').modal('show');
 }

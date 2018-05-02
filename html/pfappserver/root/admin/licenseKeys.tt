@@ -16,19 +16,17 @@
                 <a href="#[% action %]">[% l(description) %]</a>
               </li>
 [% END -%]
+
 <div class="alert alert-danger" id='success-alert' role="alert" style="display:none; position:fixed; z-index:25; left: 40%;">
     <span id="errorMessage"></span>
 </div>
-
 <div class="card-div">
   <div class="card-block">
       <div id="entire-form">
         <div class="head">
           <h1><b>[% l('LICENSE MANAGEMENT') %]</b></h1>
-<!--
-          <span>eula accepd? [% is_eula_accepted %]</span><span>eula needed? [% is_eula_needed %]</span>
           <br>
-  -->
+
           <span class="systemId"><b>[% l('System ID:') %]</b>&nbsp;[% system_id %]</span>
         </div>
         <div class="capacity">
@@ -58,9 +56,6 @@
                 <th>[% l('Capacity') %]</th>
                 <th>[% l('Valid From') %]</th>
                 <th>[% l('Valid Until') %]</th>
-<!--
-                <th style="width: 75px;">Days Left</th>
-  -->
               </tr>
             </thead>
             <tbody>
@@ -70,9 +65,6 @@
                 <td class="cap">[% key.endpoint_count %]</td>
                 <td class="validFrom">[% key.sub_start.split(' ').first %]</td>
                 <td class="validTo">[% key.sub_end.split(' ').first %]</td>
-<!--
-                <td class="daysLeftofKey" style="width: 75px;"><span>[% key.expires_in %]</span></td>
-  -->
               </tr>
              [% END -%]
             </tbody>
@@ -81,21 +73,7 @@
       </div><!--end of entire-form-->
     </div><!--end of card-block-->
 </div> <!--end of card-div -->
-  [% SET latestKey = undef %]
 
-  [% FOREACH key IN entitlement_keys -%]
-    [% IF latestKey.expires_in < key.expires_in %]
-      [% SET latestKey = key %]
-    [% END %]
-  [% END %]
-
-  [% IF latestKey.defined %]
-    [% IF latestKey.expires_in < 15 %]
-      [% INCLUDE admin/almostExpiringModal.tt %]
-    [% ELSIF latestKey.expires_in < 0 %]
-      [% INCLUDE admin/expiredModal.tt %]
-    [% END %]
-  [% END %]
 <!--EULA modal-->
   [% IF is_eula_accepted %]
   [% ELSE %]

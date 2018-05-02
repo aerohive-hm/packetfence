@@ -4,16 +4,18 @@
 <!--BEGINNING ALERT TEXT-->
        <div class="modal-content licenseAlert">
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
-          <h3 class="modal-title"><b>[% l('Subscription ending in') %] <span id="daysLeft2"></span></b></h3>
+          <h3 class="modal-title"><b>[% l('Subscription ending in') %]
+            <span id="daysLeft2"></span>
+            [% IF latestKey.defined %]<span>[% latest_key_expires_in %] [% IF latest_key_expires_in == 1 %]day[% ELSE %]days[% END %]</span>[% END %]</b>
+          </h3>
         </div>
         <div class="modal-body">
-          <p>Hello [% c.user | html %]. It looks like your subscription is almost ending. Please renew your license by <span id="daysLeft"></span> days to continue using it. You can do this by calling this number: </p>
+          <p>[% l('Hello') %] [% c.user | html %]. [% l('It looks like your subscription is almost ending. Please renew your license by') %] [% IF latestKey.defined %]<span>[% latest_key_expires_in %] [% IF latest_key_expires_in == 1 %]day[% ELSE %]days[% END %]</span>[% ELSE %]<span id="daysLeft"></span>[% END %]</b> [% l('to continue using it. You can do this by calling this number:') %] </p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
-          <p>If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service. </p>
+          <p>[% l('If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service.') %] </p>
         </div>
         <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-primary emailSentSuccess">[% l('Send Email') %]</button> -->
-          <button type="button" class="btn btn-success licenseKey" id="licenseKey">[% l('Enter Key') %]</button>
+          <button type="button" class="btn btn-success licenseKey" id="licenseKey" href="">[% l('Enter Key') %]</button>
           <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">[% l('Close') %]</button>
         </div>
       </div>

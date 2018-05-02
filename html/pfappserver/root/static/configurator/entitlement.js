@@ -172,9 +172,9 @@ function userSubmitEula(){
      }); //checks which radio button is pressed
      $(".continueButton").on("click", function(){
          console.log("inside click continue func!");
-         if (radioValue = "validKey"){
-             console.log("No! trial");
-         } else if (radioValue = "trial"){
+         if (radioValue == "validKey"){
+             console.log("Not trial");
+         } else if (radioValue == "trial"){
              console.log("Yes! trial");
              userSubmitTrial();
          } else{
