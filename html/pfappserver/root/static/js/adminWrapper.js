@@ -55,8 +55,8 @@ function timeLeft(){
     }).done(function(data){
          seconds = data.trial[0].expires_in;
          var parseSeconds = parseInt(seconds, 10);
-         days  = Math.floor(parseSeconds / (3600*24));
-         hours = Math.floor(parseSeconds / 3600);
+         days  = Math.ceil(parseSeconds / (3600*24));
+         hours = Math.ceil(parseSeconds / 3600);
          console.log("Days: " + days);
          numberOfDaysLeft = days;
          var percentageWidth = Math.round((numberOfDaysLeft) * (100/30)) + '%';
@@ -91,8 +91,8 @@ function timeLeft(){
                $("#daysLeft").html(numberOfDaysLeft + " " + "day");
                $(timeBar).css('width', percentageWidth);
          }else{
-               $("#daysLeft").html(numberOfDaysLeft + " " + "day");
-               $(timeBar).css('width', percentageWidth);
+               $("#daysLeft").html(0 + " " + "day");
+               $(timeBar).css('width', 0);
          }
            // modal to show for actually expire
     }).fail(function(xhr, status, error){
