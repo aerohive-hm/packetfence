@@ -109,7 +109,7 @@ END
     <!-- missing chart template -->
     <div class="alert hide" data-template="missing-chart">
         <h4 class="alert-heading">[% l("What's going on?") %]</h4>
-        <p>[% l("There's not enough data to generate this graph. Is PacketFence in production?") %]</p>
+        <p>[% l("There's not enough data to generate this graph. Is A3 in production?") %]</p>
         <p><small class="muted">chart: <span data-block="chart"></span></small></p>
     </div>
 

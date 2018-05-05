@@ -20,7 +20,7 @@
       [% IF block_edit %]
         <div class="alert alert-danger">
           <h3>External configuration detected.</h3>
-          <p>Domain configuration external to PacketFence was detected. In order to manage your domain(s) using PacketFence, please run the migration script : /usr/local/pf/addons/AD/migrate.pl
+          <p>Domain configuration external to A3 was detected. In order to manage your domain(s) using A3, please run the migration script : /usr/local/pf/addons/AD/migrate.pl
           <p>Once this step is completed, you will be able to access this page.</p>
         </div>
       [% ELSE %]
