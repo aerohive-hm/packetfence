@@ -613,22 +613,6 @@ pfstats_binary=/usr/local/pf/bin/pfstats
 
 [snmp_traps]
 #
-# snmp_traps.nbtraphandlerthreads
-#
-# Number of trap handler threads pfsetvlan should start
-nbtraphandlerthreads = 5
-#
-# snmp_traps.nbtrapparserthreads
-#
-# Number of trap parser threads pfsetvlan should start
-nbtrapparserthreads = 3
-#
-# snmp_traps.closelocationlogonstop
-#
-# Should open locationlog entries be closed when pfsetvlan is
-# stopped
-closelocationlogonstop=disabled
-#
 # snmp_traps.bounce_duration
 #
 # Delay to wait between the shut / no-shut on a port. Some OS need a higher value than others.
