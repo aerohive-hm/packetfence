@@ -46,5 +46,5 @@ cd work/
 if [ "$BUILD_TYPE" != "RELEASE" ]; then
 	$OVFTOOL --lax box.ovf ../A3-unsigned.ova
 else
-	$OVFTOOL -o --privateKey=$PK_FILE --privateKeyPassword=$PK_PASSWORD box.ovf ../A3.ova
+	$OVFTOOL -o --privateKey=$PK_FILE --privateKeyPassword=$PK_PASSWORD --shaAlgorithm=SHA1 box.ovf ../A3.ova
 fi
