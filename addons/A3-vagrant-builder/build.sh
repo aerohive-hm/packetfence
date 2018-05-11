@@ -3,6 +3,8 @@
 OVFTOOL=/usr/bin/ovftool
 VAGRANT=/usr/bin/vagrant
 VBOXMANAGE=/usr/bin/VBoxManage
+PK_FILE=/root/.ssh/private_key/all_certs.pem
+PK_PASSWORD=$1
 
 /usr/bin/rm -rf work/ devel A3.ova
 
@@ -33,3 +35,6 @@ cd work/
 
 # TODO: sign OVA
 $OVFTOOL --lax box.ovf ../A3.ova
+if [ ! -z $PK_PASSWORD ]; then
+	$OVFTOOL --lax --privateKey=$PK_FILE --privateKeyPassword=$PK_PASSWORD box.ovf ../A3-signed.ova
+fi
