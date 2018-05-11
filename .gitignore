@@ -25,6 +25,7 @@ conf/nessus/
 conf/currently-at
 conf/caddy-services/*.conf
 conf/pfdns.conf
+conf/pfdhcp.conf
 conf/etcd.conf.yml
 bin/pfcmd
 bin/ntlm_auth_wrapper
@@ -211,6 +212,9 @@ var/
 raddb/sites-enabled/
 html/captive-portal/content/node_modules/
 html/common/node_modules/
+
+# dynamic template for admin
+html/pfappserver/root/admin/v-index.tt
 
 # ignore python config files
 *.pyc
