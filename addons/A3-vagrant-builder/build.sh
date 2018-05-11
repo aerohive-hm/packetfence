@@ -13,7 +13,7 @@ if [ "$BUILD_TYPE" != "RELEASE" ]; then
 fi
 
 # release buidls need to be signed
-if [ "$BUILD_TYPE" = "RELEASE" ] && [ ! -z $PK_PASSWORD ]; then
+if [ "$BUILD_TYPE" = "RELEASE" ] && [ ! -z "$PK_PASSWORD" ]; then
 	    echo "PK PASSWORD missing. Its required for release builds. Exiting"
 	    exit 1
 	fi
@@ -44,7 +44,7 @@ cd work/
 # To sign or not to sign OVA
 
 if [ "$BUILD_TYPE" != "RELEASE" ]; then
-	$OVFTOOL --lax box.ovf ../A3.ova
+	$OVFTOOL --lax box.ovf ../A3-unsigned.ova
 else
-	$OVFTOOL --lax --privateKey=$PK_FILE --privateKeyPassword=$PK_PASSWORD box.ovf ../A3-signed.ova
+	$OVFTOOL --lax --privateKey=$PK_FILE --privateKeyPassword=$PK_PASSWORD box.ovf ../A3.ova
 fi
