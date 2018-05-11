@@ -54,7 +54,7 @@ Source: http://10.16.134.140/src/%{real_name}-%{version}-%{rev}.tar.gz
 %endif
 
 # Log related globals
-%global logfiles packetfence.log snmptrapd.log pfdetect pfmon violation.log
+%global logfiles packetfence.log snmptrapd.log pfdetect pfmon violation.log httpd.admin.audit.log
 %global logdir /usr/local/pf/logs
 
 BuildRequires: gettext, httpd, ipset-devel, pkgconfig
@@ -645,7 +645,7 @@ else
 fi
 
 #Check if log files exist and create them with the correct owner
-for fic_log in packetfence.log redis_cache.log violation.log
+for fic_log in packetfence.log redis_cache.log violation.log httpd.admin.audit.log
 do
 if [ ! -e /usr/local/pf/logs/$fic_log ]; then
   touch /usr/local/pf/logs/$fic_log
@@ -1303,6 +1303,7 @@ fi
 %ghost                  %logdir/packetfence.log
 %ghost                  %logdir/snmptrapd.log
 %ghost                  %logdir/violation.log
+%ghost                  %logdir/httpd.admin.audit.log
 %ghost                  %logdir/pfdetect
 %ghost                  %logdir/pfmon
 %dir                    /usr/local/pf/sbin
