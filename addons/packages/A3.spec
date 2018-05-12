@@ -1190,7 +1190,7 @@ fi
 %config(noreplace)      /usr/local/pf/conf/traffic_shaping.conf
                         /usr/local/pf/conf/traffic_shaping.conf.example
 %dir                    /usr/local/pf/db
-                        /usr/local/pf/db/a3-schema-1.0.0.sql
+                        /usr/local/pf/db/a3-schema-*.sql
                         /usr/local/pf/db/pf-schema.sql
 %dir                    /usr/local/pf/docs
 %doc                    /usr/local/pf/docs/pfcmd.help
