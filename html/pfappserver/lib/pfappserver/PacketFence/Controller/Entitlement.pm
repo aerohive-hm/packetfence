@@ -60,7 +60,11 @@ sub key :Path('key') :Args(1) {
             }
         }
         else {
-            $c->stash->{entitlement} = make_ek_hash($ek);
+            if ($ek->{err_status} == undef){
+                $c->stash->{status_msg} = $c->loc("Entitlement key does not exist or is not valid.");
+            } else {
+                $c->stash->{entitlement} = make_ek_hash($ek);
+            }
         }
     }
     elsif ($c->request->method eq 'GET') {
