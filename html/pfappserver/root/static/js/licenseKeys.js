@@ -1,10 +1,5 @@
 
 $(document).ready(function(){
-  // var licenseCapacity = document.getElementById("licenseCapa");
-  // var usedCapacity = document.getElementById("usedCapacity");
-  // var usedCapacity2 = $("#usedCapacity");
-  // var usedCapacity3 = $("#usedCapacitySpan");
-  // var licenseCapacity3 = $("#licenseCapaSpan");
 
   applyKeyButton();
 

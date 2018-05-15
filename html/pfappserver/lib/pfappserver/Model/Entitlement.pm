@@ -79,7 +79,6 @@ sub apply_entitlement_key {
     if ($responseHash) {
         if ($responseHash->{err_status}) {
             $logger->warn("Got error response ($responseHash->{err_status}) for $key");
-            $logger->("I'm in apply_entitlement_key");
             return $responseHash;
         }
         else {
