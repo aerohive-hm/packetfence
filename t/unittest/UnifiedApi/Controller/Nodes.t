@@ -30,7 +30,7 @@ BEGIN {
 
 #insert known data
 #run tests
-use Test::More tests => 5;
+use Test::More tests => 20;
 use Test::Mojo;
 use Test::NoWarnings;
 my $t = Test::Mojo->new('pf::UnifiedApi');
@@ -40,6 +40,29 @@ $t->get_ok('/api/v1/nodes')
 
 $t->post_ok('/api/v1/nodes/search' => json => { fields => [qw(mac ip4log.ip)]  })
   ->status_is(200);
+
+$t->delete_ok('/api/v1/node/00:02:34:23:22:11');
+
+$t->post_ok('/api/v1/nodes' => json => { mac => '00:02:34:23:22:11'  })
+  ->status_is(201);
+
+$t->post_ok('/api/v1/node/00:02:34:23:22:11/register' => json => {   })
+  ->status_is(422);
+
+$t->post_ok('/api/v1/node/00:02:34:23:22:11/register' => json => { pid => 'default'  })
+  ->status_is(204);
+
+$t->post_ok('/api/v1/node/00:02:34:23:22:11/deregister' => json => { })
+  ->status_is(204);
+
+$t->post_ok('/api/v1/nodes/bulk_register' => json => { items => [qw(00:02:34:23:22:11)] })
+  ->status_is(200)
+  ->json_is('/count', 0);
+
+$t->post_ok('/api/v1/nodes/bulk_deregister' => json => { items => [qw(00:02:34:23:22:11)] })
+  ->status_is(200)
+  ->json_is('/count', 0);
+
 
 =head1 AUTHOR
 
