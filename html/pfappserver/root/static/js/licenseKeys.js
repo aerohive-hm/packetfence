@@ -20,7 +20,6 @@ function applyKeyButton(){
   var applyKeyButton2 = $("#applyKey");
   applyKeyButton2.click(function(){
     var userKeyInput = document.getElementById('keyInput').value;
-    console.log("applykeybutton:" + checkKeyInput(userKeyInput));
     checkKeyInput(userKeyInput);
     if (checkKeyInput(userKeyInput)){
         $(".errMsg").css('display', 'none');
@@ -43,11 +42,7 @@ function updateKeyTable(userKeyInput) {
         type : 'PUT',
         dataType : 'json'
         }).done(function(data){
-           // var checkFirstCharOfInput = userKeyInput.charAt(0);
-           console.log(data);
            var errMsg = data.status_msg;
-           console.log("errMsg");
-           console.log(data.status_msg);
            if (errMsg != null ) {
                document.getElementById('errorMessage').innerHTML = errMsg;
                $("#success-alert").show(); // use slide down for animation
@@ -62,7 +57,6 @@ function updateKeyTable(userKeyInput) {
            }
            return true;
         }).fail(function(xhr, status, error){
-           console.log("updateKeyTable error: ");
            console.log(error);
            return false;
         });
@@ -72,13 +66,11 @@ function updateKeyTable(userKeyInput) {
 function checkKeyInput(userKeyInput){
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
     var applyKeyButton2 = $("#applyKey");
-    console.log("checkKeyInput: " + checkKeyRegex.test(userKeyInput)); //TRUE OR FALSE
+    //TRUE OR FALSE
     if (checkKeyRegex.test(userKeyInput)){
-      console.log("TRUE, key return true");
         $("#keyInput").css('border','1px solid #dfdfdf');
         return true;
     } else {
-        console.log("FALSE: key return false");
         $("#keyInput").css('border','1px solid #d9534f');
         return false;
     }

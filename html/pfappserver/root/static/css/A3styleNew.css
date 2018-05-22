@@ -1,7 +1,8 @@
-@import url('https://fonts.googleapis.com/css?family=Quicksand:300,400');
+/* @import url('https://fonts.googleapis.com/css?family=Quicksand:300,400'); */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400');
 
 body {
-  font-family: "Quicksand", Helvetica, Arial, sans-serif !important;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif !important;
   font-size: 12px;
 }
 
@@ -31,7 +32,7 @@ li.user_info {
 }
 
 button, input, select, textarea {
-  font-family: "Quicksand", Helvetica, Ariel, sans-serif;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
 }
 
 .nav-header {
@@ -64,7 +65,7 @@ button, input, select, textarea {
 }
 
 .navbar-search .search-query {
-  font-family: "Quicksand", Helvetica, Ariel, sans-serif;
+  font-family: "Open Sans", Helvetica, Ariel, sans-serif;
 }
 
 .navbar .nav > li > a {
@@ -177,15 +178,6 @@ button, input, select, textarea {
 .card .navbar-inner, .card-title {
   border-bottom: none;
 }
-
-/* for modal popup reminder */
-/* #popup{
-    height : 50px;
-    background-color:blue;
-    position: fixed;
-    z-index: 20;
-} */
-
 
 @media (min-width: 979px) and (max-width: 1199px) {
   img {
