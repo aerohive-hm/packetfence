@@ -1,4 +1,3 @@
-/* @import url('https://fonts.googleapis.com/css?family=Quicksand:300,400'); */
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400');
 
 body {
@@ -65,7 +64,7 @@ button, input, select, textarea {
 }
 
 .navbar-search .search-query {
-  font-family: "Open Sans", Helvetica, Ariel, sans-serif;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
 }
 
 .navbar .nav > li > a {
