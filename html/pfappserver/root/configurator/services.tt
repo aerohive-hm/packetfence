@@ -78,7 +78,7 @@
             </div>
           </div>
           <div class="card-block">
-        	  <div class="btn btn-primary" id="details"> More Details</div>
+        	  <div class="btn btn-primary" id="details">More Details</div>
         	  <div id="daemonTable">
                   <table class="table">
                     <thead>

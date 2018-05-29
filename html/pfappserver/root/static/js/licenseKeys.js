@@ -11,8 +11,7 @@ $(document).ready(function(){
   });
   $('.submitAgreement').click(function(){
       userSubmitEula();
-  })
-
+  });
 });
 
 // apply button press

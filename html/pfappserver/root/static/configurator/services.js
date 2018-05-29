@@ -13,6 +13,14 @@ $(document).ready(function(){
      $("#details").click(function(){
          $("#daemonTable").toggle();
      });
+
+     $("#details").click(function() {
+        if ($(this).text() === "More Details") {
+            $(this).text("Less Details");
+        } else {
+            $(this).text("More Details");
+        };
+     });
 });
 
 function saveStep(href) {
