@@ -237,6 +237,10 @@ our @ROLES_TO_ACTIONS = (
     {
         roles => [qw()],
         action => 'licenseKeys',
+    },
+    {
+        roles => [qw()],
+        action => 'upgrades',
     }
 );
 
@@ -526,6 +530,13 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 
 }
 
+=head2 upgrades
+
+=cut
+
+sub licenseKeys :Chained('object') :PathPart('upgrades') :Args(0){
+    my( $self, $c ) = @_;
+}
 
 =head1 COPYRIGHT
 

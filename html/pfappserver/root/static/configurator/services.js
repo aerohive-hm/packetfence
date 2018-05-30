@@ -20,6 +20,11 @@ $(document).ready(function(){
         } else {
             $(this).text("More Details");
         };
+        if ($(this).text() === "Plus de détails"){
+            $(this).text("Moins de détails");
+        } else {
+            $(this).text("Plus de détails");
+        };
      });
 });
 
