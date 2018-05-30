@@ -2,6 +2,9 @@ import apiCall from '@/utils/api'
 
 export default {
   all: params => {
+    if (params.sort) {
+      params.sort = params.sort.join(',')
+    }
     return apiCall.get('nodes', { params }).then(response => {
       return response.data
     })
@@ -55,5 +58,18 @@ export default {
     return apiCall.post('violations/search', search).then(response => {
       return response.data.items
     })
+  },
+  createNode: body => {
+    return apiCall.post('nodes', body).then(response => {
+      return response.data
+    })
+  },
+  updateNode: body => {
+    return apiCall.patch(`node/${body.mac}`, body).then(response => {
+      return response.data
+    })
+  },
+  deleteNode: mac => {
+    return apiCall.delete(`node/${mac}`)
   }
 }

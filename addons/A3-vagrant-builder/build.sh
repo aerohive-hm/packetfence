@@ -3,6 +3,8 @@
 OVFTOOL=/usr/bin/ovftool
 VAGRANT=/usr/bin/vagrant
 VBOXMANAGE=/usr/bin/VBoxManage
+PK_FILE=/root/.ssh/private_key/all_certs.pem
+PK_PASSWORD=$1
 
 /usr/bin/rm -rf work/ devel A3.ova
 
@@ -10,12 +12,20 @@ if [ "$BUILD_TYPE" != "RELEASE" ]; then
     /usr/bin/touch devel
 fi
 
+# release buidls need to be signed
+if [ "$BUILD_TYPE" = "RELEASE" ] && [ -z "$PK_PASSWORD" ]; then
+	    echo "PK PASSWORD missing. Its required for release builds. Exiting"
+	    exit 1
+	fi
+
+
 $VAGRANT destroy -f
 
 if ! $VAGRANT up; then
     echo "Failed to build VM. Exiting"
     exit 1
 fi
+
 
 $VAGRANT halt
 
@@ -31,5 +41,10 @@ $VAGRANT package
 
 cd work/
 
-# TODO: sign OVA
-$OVFTOOL --lax box.ovf ../A3.ova
+# To sign or not to sign OVA
+
+if [ "$BUILD_TYPE" != "RELEASE" ]; then
+	$OVFTOOL --lax box.ovf ../A3-unsigned.ova
+else
+	$OVFTOOL -o --privateKey=$PK_FILE --privateKeyPassword=$PK_PASSWORD --shaAlgorithm=SHA1 box.ovf ../A3.ova
+fi
