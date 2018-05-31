@@ -50,10 +50,10 @@
           </a>
 
           <a class="brand visible-phone" href="#">
-            <img src="[% c.uri_for('/static/img/aerohive-logo.svg') %]"/>
+            <img src="[% c.uri_for('/static/img/a3LogoHorizontalFullColor.svg') %]"/>
           </a>
           <a class="brand span3 hidden-phone" href="#">
-            <img src="[% c.uri_for('/static/img/aerohive-logo.svg') %]"/>
+            <img src="[% c.uri_for('/static/img/a3LogoHorizontalFullColor.svg') %]"/>
           </a>
           [%- IF c.user_allowed_in_admin() %]
           <div class="nav-collapse">
@@ -100,6 +100,7 @@
                   <li class="disabled"><a href="#" disabled><b>[% l('Click a task to run/re-run') %]</b></a></li>
                   <li id="checkup_task"><a href="" id="checkup_task_toggle">[% l('Perform checkup') %]</a></li>
                   <li id="fixpermissions_task"><a href="" id="fixpermissions_task_toggle">[% l('Fix permissions') %]</a></li>
+                  <li id="upgrade_task"><a href="[% c.uri_for(c.controller('Admin').action_for('upgrades')) %]" id="upgrade_task_toggle">[% l('Upgrades') %]</a></li>
                 </ul>
               </li>
               <li class="dropdown">

@@ -1,0 +1,71 @@
+.spacing{
+    padding-left:50px;
+    padding-right: 50px;
+}
+.upgrade-header{
+    display:table;
+    margin:0 auto;
+    text-align: center;
+}
+
+.upgrade-body{
+    display:table;
+    margin:0 auto;
+}
+
+.version-number{
+    text-align: center;
+}
+
+.upgrade-button{
+  margin-bottom: 25px !important;
+  padding: 15px 60px !important;
+  background: #FFC007 !important;
+  border: 1px #FFC007 solid !important;
+  color: #000 !important;
+  text-transform: uppercase;
+  font-size: 15px !important;
+}
+
+.upgrade-button:hover{
+  background: #fff !important;
+  color: #333 !important;
+}
+
+/* .upgrade-button in progress bar state*/
+
+
+.detail-box{
+  width: 500px;
+  height: 250px;
+  overflow-y: scroll;
+  padding: 15px;
+  border: 1px #ddd solid;
+  margin-bottom:15px;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0,0,0,.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+/* progressbar */
+.progress-bar-content{
+    display: none;
+}
+
+#progress-bar {
+  width: 100%;
+  background-color: #ddd;
+}
+
+#progress {
+  width: 1%;
+  height: 30px;
+  background-color: #FFC007;
+}
