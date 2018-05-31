@@ -238,10 +238,6 @@ our @ROLES_TO_ACTIONS = (
     {
         roles => [qw()],
         action => 'licenseKeys',
-    },
-    {
-        roles => [qw()],
-        action => 'upgrades',
     }
 );
 
@@ -531,12 +527,16 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 
 }
 
+
 =head2 upgrades
 
 =cut
 
-sub licenseKeys :Chained('object') :PathPart('upgrades') :Args(0){
+sub upgrades :Chained('object') :PathPart('upgrades') :Args(0){
     my( $self, $c ) = @_;
+    if ($c->request->method eq 'POST') {
+        $c->stash->{current_view} = 'JSON';
+    }
 }
 
 =head1 COPYRIGHT
