@@ -103,10 +103,10 @@ display:none;
       <div class="navbar-inner">
         <div class="row-fluid">
           <a class="brand visible-phone" href="#">
-            <img src="[% c.uri_for('/static/img/aerohive-logo.svg') %]"/>
+            <img src="[% c.uri_for('/static/img/a3Logo.svg') %]"/>
           </a>
           <a class="brand span3 hidden-phone" href="#">
-            <img src="[% c.uri_for('/static/img/aerohive-logo.svg') %]"/>
+            <img src="[% c.uri_for('/static/img/a3Logo.svg') %]"/>
           </a>
           <ul class="nav nav-header pull-right">
             <li><a>[% l('Configuration Wizard') %]</a></li>
