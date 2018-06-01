@@ -17,13 +17,15 @@ $(document).ready(function(){
      $("#details").click(function() {
         if ($(this).text() === "More Details") {
             $(this).text("Less Details");
-        } else {
+        } else if ($(this).text() === "Less Details"){
             $(this).text("More Details");
-        };
-        if ($(this).text() === "Plus de détails"){
+            //french ver
+        } else if ($(this).text() === "Plus de détails"){
             $(this).text("Moins de détails");
-        } else {
+        } else if ($(this).text() === "Moins de détails"){
             $(this).text("Plus de détails");
+        } else{
+
         };
      });
 });

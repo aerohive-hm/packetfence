@@ -50,10 +50,10 @@
           </a>
 
           <a class="brand visible-phone" href="#">
-            <img src="[% c.uri_for('/static/img/a3LogoHorizontalFullColor.svg') %]"/>
+            <img src="[% c.uri_for('/static/img/a3Logo.svg') %]"/>
           </a>
           <a class="brand span3 hidden-phone" href="#">
-            <img src="[% c.uri_for('/static/img/a3LogoHorizontalFullColor.svg') %]"/>
+            <img src="[% c.uri_for('/static/img/a3Logo.svg') %]"/>
           </a>
           [%- IF c.user_allowed_in_admin() %]
           <div class="nav-collapse">

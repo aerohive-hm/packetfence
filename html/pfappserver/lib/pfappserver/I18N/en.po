@@ -811,6 +811,20 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
+# html/pfappserver/root/admin/status.tt
+msgid "Upgrade"
+msgstr ""
+
+# html/pfappserver/root/admin/status.tt
+msgid "Upgrades finished"
+msgstr ""
+
+# need to add to fr po
+# html/pfappserver/root/admin/status.tt
+msgid "More details about version 1.0.1"
+msgstr ""
+
+
 # html/pfappserver/root/admin/bulk_actions.inc
 msgid "Apply Bypass Role"
 msgstr ""
