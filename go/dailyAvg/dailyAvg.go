@@ -6,10 +6,11 @@ import ("fmt"
 "log"
 "strconv"
 "strings"
-"os")
+"os"
+"sort")
 
 const business_hour = 8 //8 business hours per day
-
+const daysInWeek = 7 //num of days in a week
 /*
  * read in the file of containing only integers and return them in an array
  */
@@ -53,7 +54,6 @@ func findMaxInterval(nums []int, interval int) ([]int) {
 		sum += nums[i];
 	}
 	maxSum := sum
-	fmt.Println("sum is:",sum)
 	/* one pass iterate through each element of the array, find the max sum of the interval and start index*/
 	for i := 0; i < len(nums) - interval; i++ {
 
@@ -77,12 +77,33 @@ func findMaxInterval(nums []int, interval int) ([]int) {
 /*
  * calculate the avg of the array
  */
-func avgOfDay(nums []int) (avg int) {
+func avgOfList(nums []int) (avg int) {
 	sum := 0
-	for i := 0; i < len(nums); i++ {
-		sum += nums[i];
+	for _, value := range nums {
+		sum += value;
 	}
 	return sum/len(nums)
+}
+/*
+ * calculate the moving avg of the last 7 daily avg
+ */
+func findMovingAvg (dailyAvgArray []int) (movingAvg int) {
+
+	sum := 0
+	if len(dailyAvgArray) < daysInWeek {
+		return avgOfList(dailyAvgArray)
+	} else {
+		/* store the last 7 days of data*/
+		sevenDay := dailyAvgArray[len(dailyAvgArray) - daysInWeek : len(dailyAvgArray)]
+
+		sort.Ints(sevenDay)
+		dropLowHigh := sevenDay[1:daysInWeek - 1]
+		for _, value := range dropLowHigh{
+			sum += value
+		}
+		return sum / len(dropLowHigh)
+	}
+
 }
 
 func main() {
@@ -96,12 +117,9 @@ func main() {
 
 	maxInterval := findMaxInterval(nums, business_hour)
 
-	fmt.Println(maxInterval)
+	avg := avgOfList(maxInterval)
 
-	avg := avgOfDay(maxInterval)
-
-	fmt.Println(avg)
-
+	/*TODO change txt file to read from db*/
 	f, err := os.OpenFile("dayAvg.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {
 		panic(err)
@@ -112,4 +130,15 @@ func main() {
 	if _, err = f.WriteString(dayString); err != nil {
 		panic(err)
 	}
+
+	dailyAvgArray, err := readFile("dayAvg.txt")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	movingAvg := findMovingAvg(dailyAvgArray)
+
+	/*TODO output to the database*/
+	fmt.Println("moving avg:", movingAvg)
 }
