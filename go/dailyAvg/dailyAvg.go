@@ -9,7 +9,7 @@ import ("fmt"
 "os"
 "sort")
 
-const business_hour = 8 //8 business hours per day
+const businessHour = 8 //8 business hours per day
 const daysInWeek = 7 //num of days in a week
 /*
  * read in the file of containing only integers and return them in an array
@@ -115,7 +115,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	maxInterval := findMaxInterval(nums, business_hour)
+	maxInterval := findMaxInterval(nums, businessHour)
 
 	avg := avgOfList(maxInterval)
 
