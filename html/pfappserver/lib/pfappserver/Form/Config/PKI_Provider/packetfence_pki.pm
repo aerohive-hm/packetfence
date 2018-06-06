@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use HTML::FormHandler::Moose;
+use HTML::FormHandler::Field::Upload;
 
 extends 'pfappserver::Base::Form';
 with 'pfappserver::Base::Form::Role::Help';
@@ -118,7 +119,7 @@ has_field 'organization' => (
 );
 
 has_field 'ca_cert_path' => (
-    type        => 'Path',
+    type        => 'Upload',
     label       => 'CA cert path',
     required    => 1,
     tags        => {
@@ -149,7 +150,7 @@ has_field 'cn_format' => (
 );
 
 has_field 'server_cert_path' => (
-    type        => 'Path',
+    type        => 'Upload',
     label       => 'Server cert path',
     required    => 1,
     tags        => {
