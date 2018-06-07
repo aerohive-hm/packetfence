@@ -42,11 +42,11 @@ ahpwgen-bin:
 	cd - && \
 	mv ahpwgen/ahpwgen ahpwgen-bin
 
-ahusavg:
-    cd ahusavg && \
-    go build && \
-    cd - && \
-    mv ahusavg/ahusavg ahusavg-bin
+ahusavg-bin:
+	cd ahusavg && \
+	go build && \
+	cd - && \
+	mv ahusavg/ahusavg ahusavg-bin
 
 .PHONY: clean-caddy-src
 
