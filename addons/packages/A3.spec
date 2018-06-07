@@ -538,6 +538,8 @@ cp docs/pfcmd.help $RPM_BUILD_ROOT/usr/local/pf/docs
 
 mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen
 
+mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahusavg-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahusavg
+
 # Exclude new Vue.js content for now
 rm -rf $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static.alt/
 
@@ -946,6 +948,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/maintenance
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/node
 %attr(0700, root, root) /usr/local/pf/bin/ahpwgen
+%attr(0755, pf, pf)     /usr/local/pf/bin/ahusavg
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdhcp
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdns
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfstats
