@@ -337,6 +337,7 @@ sub verify_query {
         }
 
         push @{$s->{found_fields}}, $field;
+        $query = $self->rewrite_query($s, $query);
         if ($self->is_table_field($s, $field)) {
             $query->{field} = $s->{dal}->table . "." . $field;
         }
@@ -344,6 +345,39 @@ sub verify_query {
 
     return (200, $query);
 }
+
+=head2 rewrite_query
+
+rewrite_query
+
+=cut
+
+sub rewrite_query {
+    my ($self, $s, $query) = @_;
+    my $f = $query->{field};
+    if ($self->is_table_field($s, $f)) {
+        $query->{field} = $s->{dal}->table . "." . $f;
+    } elsif ($self->is_field_rewritable($s, $f)) {
+        my $allowed = $self->allowed_join_fields;
+        my $cb = $allowed->{$f}{rewrite_query};
+        $query = $self->$cb($s, $query);
+    }
+
+    return $query;
+}
+
+
+=head2 is_field_rewritable
+
+is_field_rewritable
+
+=cut
+
+sub is_field_rewritable {
+    my ($self, $s, $f) = @_;
+    return exists $self->allowed_join_fields->{$f}{rewrite_query};
+}
+
 
 =head2 $self->is_valid_query($search_info, $query)
 
