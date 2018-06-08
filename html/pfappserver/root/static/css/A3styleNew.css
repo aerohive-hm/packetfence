@@ -178,6 +178,112 @@ button, input, select, textarea {
   border-bottom: none;
 }
 
+/* for upload button on PKI providers */
+/* input[type="file"] {
+    display: none;
+}
+
+.certificateFileUpload {
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    display: inline-block;
+    padding: 5px 60px;
+    cursor: pointer;
+}
+
+.certificateFileUpload:hover{
+    background-color: #ccc;
+} */
+
+/* .pki-group input[type="file"] {
+    display: none;
+} */
+
+/* .pki-group .client_cert_path, .pki-group .client_key_path, .pki-group .ca_cert_path, .pki-group .server_cert_path{
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    display: inline-block;
+    padding: 5px 60px;
+    cursor: pointer;
+}
+
+.pki-group .client_cert_path:hover, .pki-group .client_key_path:hover, .pki-group .ca_cert_path:hover, .pki-group .server_cert_path:hover{
+    background-color: #ccc;
+} */
+
+/* .custom-file-input::-webkit-file-upload-button {
+  visibility: hidden;
+} */
+
+/* #client_cert_path::-webkit-file-upload-button {
+   opacity:0
+}
+
+#client_cert_path::before{
+  content: 'Select some files';
+  display: inline-block;
+  border: 1px solid #999;
+  border-radius: 3px;
+  padding: 5px 8px;
+  outline: none;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  cursor: pointer;
+  text-shadow: 1px 1px #fff;
+  font-weight: 700;
+  font-size: 10pt;
+} */
+
+
+#client_cert_path, #client_key_path, #ca_cert_path, #server_cert_path {
+  border: 2px dashed #D5D5D5;
+  border-radius: 5px;
+  box-sizing: border-box;
+  display: inline-block;
+  font-size: 14px;
+  margin: 0;
+  padding-left: 8px;
+  position: relative;
+  overflow: hidden;
+  -webkit-appearance: none;
+  z-index: 1;
+}
+#client_cert_path:after, #client_key_path:after, #ca_cert_path:after, #server_cert_path:after {
+  /* hide the no file chosen text */
+  background-color: #FFF;
+  content: '';
+  display: block;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+#client_cert_path::-webkit-file-upload-button,
+#client_key_path::-webkit-file-upload-button,
+#ca_cert_path::-webkit-file-upload-button,
+#server_cert_path::-webkit-file-upload-button { /* Style the button */
+  background: #FFF;
+  color: #333;
+  font: inherit;
+  padding: 0;
+  position: relative;
+  border: none;
+  text-align: left;
+  position: relative;
+  z-index: 100;
+  -webkit-appearance: none;
+}
+
+#client_cert_path:hover:after,
+#client_key_path:hover:after,
+#ca_cert_path:hover:after,
+#server_cert_path:hover:after{
+   background: #D5D5D5;
+}
+
 @media (min-width: 979px) and (max-width: 1199px) {
   img {
     margin-left: 20px;

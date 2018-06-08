@@ -40,6 +40,8 @@ $(document).ready(function(){
         successEmailMessage.slideDown(1000);
       });
     });
+
+    uploadPKIFunction();
 });
 
 function timeLeft(){
@@ -113,4 +115,20 @@ function openExpiredModal(){
 function openAlmostExpiredModal(){
     $('#myModal').modal({backdrop:'static', keyboard: false });
     $('#myModal').modal('show');
+}
+
+//for pki provider upload
+function uploadPKIFunction(){
+    // var filename = $('input[type=file]').val();
+    // $('#certificateFileUpload').after(filename);
+
+    $('.certificateFileUpload').click(function() {
+    var fileName = $("#fileUpload").val();
+    if (fileName) {
+        alert(fileName + " can be uploaded.");
+    }
+    else {
+        alert("Please select a file to upload");
+    }
+});
 }

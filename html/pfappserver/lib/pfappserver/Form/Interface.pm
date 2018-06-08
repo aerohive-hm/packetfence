@@ -68,7 +68,7 @@ has_field 'dns' =>
              help => 'The primary DNS server of your network.' },
   );
 
-has_field 'dhcpd_enabled' => 
+has_field 'dhcpd_enabled' =>
    (
     type => 'Toggle',
     checkbox_value => 1,
@@ -76,7 +76,7 @@ has_field 'dhcpd_enabled' =>
     label => 'Enable DHCP Server',
    );
 
-has_field 'high_availability' => 
+has_field 'high_availability' =>
    (
     type => 'Toggle',
     checkbox_value => 1,
@@ -158,9 +158,9 @@ Force DNS to be defined when the 'inline' type is selected
 sub validate {
     my $self = shift;
 
-    if (defined $self->value->{type} &&  
-        ( $self->value->{type} eq 'inlinel2' or 
-          $self->value->{type} eq 'inline' ) 
+    if (defined $self->value->{type} &&
+        ( $self->value->{type} eq 'inlinel2' or
+          $self->value->{type} eq 'inline' )
         ) {
         unless ($self->value->{dns}) {
             $self->field('dns')->add_error('Please specify your DNS server.');

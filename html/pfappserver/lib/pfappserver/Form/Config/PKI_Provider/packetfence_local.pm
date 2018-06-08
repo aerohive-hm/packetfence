@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use HTML::FormHandler::Moose;
+use HTML::FormHandler::Field::Upload;
 
 extends 'pfappserver::Base::Form';
 with 'pfappserver::Base::Form::Role::Help';
@@ -19,7 +20,7 @@ has_field 'id' => (
     label    => 'PKI Provider Name',
     required => 1,
     messages => { required => 'Please specify the name of the PKI provider' },
-    tags     => { 
+    tags     => {
         after_element   => \&help,
         help            => 'The unique ID of the PKI provider',
     },
@@ -33,17 +34,18 @@ has_field 'type' => (
 );
 
 has_field 'client_cert_path' => (
-    type        => 'Path',
+    type        => 'Upload',
+    max_size    => '1000000', #1mb
     label       => 'Client cert path',
     required    => 1,
-    tags        => { 
+    tags        => {
         after_element   => \&help,
         help            => 'Path of the client cert that will be used to generate the p12',
     },
 );
 
 has_field 'client_key_path' => (
-    type        => 'Path',
+    type        => 'Upload',
     label       => 'Client key path',
     required    => 1,
     tags        => {
@@ -53,20 +55,20 @@ has_field 'client_key_path' => (
 );
 
 has_field 'ca_cert_path' => (
-    type        => 'Path',
+    type        => 'Upload',
     label       => 'CA cert path',
     required    => 1,
-    tags        => { 
+    tags        => {
         after_element   => \&help,
         help            => 'Path of the CA certificate used to generate client certificate/key combination',
     },
 );
 
 has_field 'server_cert_path' => (
-    type        => 'Path',
+    type        => 'Upload',
     label       => 'Server cert path',
     required    => 1,
-    tags        => { 
+    tags        => {
         after_element   => \&help,
         help            => 'Path of the RADIUS server authentication certificate',
     },
