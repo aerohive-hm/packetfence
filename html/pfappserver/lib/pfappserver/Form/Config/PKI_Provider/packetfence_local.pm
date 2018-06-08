@@ -35,6 +35,7 @@ has_field 'type' => (
 
 has_field 'client_cert_path' => (
     type        => 'Upload',
+    max_size    => '1000000', #1mb
     label       => 'Client cert path',
     required    => 1,
     tags        => {

@@ -24,7 +24,7 @@
           <!--add upload mechanism here-->
           <label class="certificateFileUpload" id="certificateFileUpload">
               <input type="file" accept="" />
-              <i class="fa fa-cloud-upload"></i> Upload Certificate Path
+              Upload Certificate Path
           </label>
         </div>
 
