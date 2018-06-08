@@ -51,5 +51,22 @@ sub dump_app {
 
 }
 
+sub stop_services {
+  my @service_stop_cmd = ('/usr/local/pf/bin/pfcmd service pf stop', 'service packetfence-config stop');
+  # We need to make sure config service is running, otherwise pfcmd will not able to do the stop job
+  unless (!system 'systemctl status packetfence-config|grep Active|grep running') {
+    commit_upgrade_log("Packetfence config service is not running");
+    die "Packetfence config service is not running\n";
+  }
+  foreach (@service_stop_cmd) {
+    unless(!system $_) {
+      commit_upgrade_log("Unable to stop service $_");
+      warn "Unable to stop services\n";
+    }
+  }
+  commit_upgrade_log("Services stop done");
+}
+
 dump_db();
 dump_app();
+stop_services();
