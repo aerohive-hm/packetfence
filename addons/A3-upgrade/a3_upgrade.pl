@@ -25,8 +25,6 @@ open my $log_fh, '>>', $upgrade_log;
 sub read_passwd {
   die "Unable to find the db information file!" unless -e $db_info ;
   `cat $db_info|grep pass|awk -F= '{print \$2}'`;
-  
-
 }
 
 sub A3_Die {
@@ -110,9 +108,7 @@ sub get_current_version {
     $current_version = (split / /, $_)[1];
   }
   close $fh;
-  
   my $ret = `system "yum list $a3_pkg"`;
-
 }
 
 sub get_to_version {
@@ -124,9 +120,9 @@ sub get_to_version {
     }
     #this will be 1.1.1-0.20180611.el7 string value
     $ava_version = (split /(\s)+/, $_)[1];
- }
- $to_version = (split /-/, $ava_version)[0];
- commit_upgrade_log("A3 current version is $current_version and to be upgraded version is $to_version");
+  }
+  $to_version = (split /-/, $ava_version)[0];
+  commit_upgrade_log("A3 current version is $current_version and to be upgraded version is $to_version");
 }
 
 sub execute_upgrade {
