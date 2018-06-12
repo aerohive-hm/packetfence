@@ -57,6 +57,19 @@ our @IP4LOG_JOIN = (
     'ip4log',
 );
 
+our @IP6LOG_JOIN = (
+    {
+        operator  => '=>',
+        condition => {
+            'ip6log.ip' => {
+                "=" => \
+"( SELECT `ip` FROM `ip6log` WHERE `mac` = `node`.`mac` AND `tenant_id` = `node`.`tenant_id`  ORDER BY `start_time` DESC LIMIT 1 )",
+            }
+        }
+    },
+    'ip6log',
+);
+
 our @RADACCT_JOIN = (
     '=>{node.mac=radacct.callingstationid,node.tenant_id=radacct.tenant_id}',
     'radacct|radacct',
@@ -94,22 +107,44 @@ our %LOCATION_LOG_WHERE = (
     'locationlog2.id' => undef,
 );
 
+our @NODE_CATEGORY_JOIN = (
+    '=>{node.category_id=node_category.category_id}', 'node_category',
+);
+
+our @NODE_CATEGORY_ROLE_JOIN = (
+    '=>{node.bypass_role_id=node_category_bypass_role.category_id}', 'node_category|node_category_bypass_role',
+);
+
 our %ALLOWED_JOIN_FIELDS = (
     'ip4log.ip' => {
-        join_spec => \@IP4LOG_JOIN,
-        'column_spec' => make_join_column_spec('ip4log', 'ip'),
-        namespace => 'ip4log',
+        join_spec     => \@IP4LOG_JOIN,
+        column_spec   => make_join_column_spec( 'ip4log', 'ip' ),
+        namespace     => 'ip4log',
+    },
+    'ip6log.ip' => {
+        join_spec     => \@IP6LOG_JOIN,
+        column_spec   => make_join_column_spec( 'ip6log', 'ip' ),
+        namespace     => 'ip6log',
     },
     'online' => {
-        join_spec  => \@RADACCT_JOIN,
-        where_spec => \%RADACCT_WHERE,
-        namespace => 'radacct',
+        join_spec     => \@RADACCT_JOIN,
+        where_spec    => \%RADACCT_WHERE,
+        namespace     => 'radacct',
         rewrite_query => \&rewrite_online_query,
-        column_spec => "IF(radacct.acctstarttime IS NULL,'unknown',IF(radacct.acctstoptime IS NULL, 'on', 'off'))|online",
+        column_spec   => "IF(radacct.acctstarttime IS NULL,'unknown',IF(radacct.acctstoptime IS NULL, 'on', 'off'))|online",
+    },
+    'node_category.name' => {
+        join_spec   => \@NODE_CATEGORY_JOIN,
+        namespace   => 'node_category',
+        column_spec => \"IFNULL(node_category.name, '') as `node_category.name`",
+    },
+    'node_category_bypass_role.name' => {
+        join_spec   => \@NODE_CATEGORY_ROLE_JOIN,
+        namespace   => 'node_category_bypass_role',
+        column_spec => \"IFNULL(node_category_bypass_role.name, '') as `node_category_bypass_role.name`",
     },
     map_dal_fields_to_join_spec("pf::dal::radacct", \@RADACCT_JOIN, \%RADACCT_WHERE),
     map_dal_fields_to_join_spec("pf::dal::locationlog", \@LOCATION_LOG_JOIN, \%LOCATION_LOG_WHERE),
-
 );
 
 sub rewrite_online_query {
@@ -120,8 +155,33 @@ sub rewrite_online_query {
         if ($value eq 'unknown') {
             $q->{field} = 'radacct.acctstarttime';
         } else {
-            $q->{field} = 'radacct.acctstoptime';
-            $q->{op} = $value eq 'on' ? 'equals' : 'not_equals';
+            if ($value eq 'on') {
+                delete @{$q}{'field' ,'value'};
+                $q->{op} = 'and';
+                $q->{'values'} = [
+                    { op => 'not_equals', value => undef, field => 'radacct.acctstarttime' },
+                    { op => 'equals', value => undef, field => 'radacct.acctstoptime' },
+                ];
+            } else {
+                $q->{field} = 'radacct.acctstoptime';
+                $q->{op} = 'not_equals';
+            }
+        }
+    } elsif ($q->{op} eq 'not_equals') {
+        my $value = $q->{value};
+        $q->{value} = undef;
+        if ($value eq 'unknown') {
+            $q->{field} = 'radacct.acctstarttime';
+        } else {
+            delete @{$q}{'field' ,'value'};
+            $q->{op} = 'or';
+            $q->{'values'} = [
+                { op => 'equals', value => undef, field => 'radacct.acctstarttime' },
+                { op => 'equals', value => undef, field => 'radacct.acctstoptime' },
+            ];
+            if ($value eq 'on') {
+                $q->{'values'}[-1]{op} = 'not_equals';
+            }
         }
     }
     return $q;
@@ -138,6 +198,7 @@ sub map_dal_field_to_join_spec {
     my ($table, $field, $join_spec, $where_spec) = @_;
     return "${table}.${field}" => {
         join_spec => $join_spec,
+        namespace => $table,
         (defined $where_spec ? (where_spec => $where_spec) : () ),
         column_spec => make_join_column_spec($table, $field),
    } 

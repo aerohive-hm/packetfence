@@ -24,7 +24,7 @@ BEGIN {
     use setup_test_config;
 }
 
-use Test::More tests => 14;
+use Test::More tests => 20;
 
 #This test will running last
 use Test::NoWarnings;
@@ -45,7 +45,7 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
     my @f = qw(mac ip4log.ip locationlog.ssid locationlog.port); 
 
     my %search_info = (
-        dal => $dal, 
+        dal => $dal,
         fields => \@f,
     );
 
@@ -72,10 +72,10 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
 }
 
 {
-    my @f = qw(mac locationlog.ssid locationlog.port radacct.acctsessionid);
+    my @f = qw(mac locationlog.ssid locationlog.port radacct.acctsessionid online);
 
     my %search_info = (
-        dal => $dal, 
+        dal => $dal,
         fields => \@f,
         query => {
             op => 'equals',
@@ -86,7 +86,16 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
 
     is_deeply(
         [ $sb->make_columns( \%search_info ) ],
-        [ 200, [ 'node.mac', \'`locationlog`.`ssid` AS `locationlog.ssid`', \'`locationlog`.`port` AS `locationlog.port`', \'`radacct`.`acctsessionid` AS `radacct.acctsessionid`'] ],
+        [
+            200,
+            [
+                'node.mac',
+                \'`locationlog`.`ssid` AS `locationlog.ssid`',
+                \'`locationlog`.`port` AS `locationlog.port`',
+                \'`radacct`.`acctsessionid` AS `radacct.acctsessionid`',
+                "IF(radacct.acctstarttime IS NULL,'unknown',IF(radacct.acctstoptime IS NULL, 'on', 'off'))|online"
+            ],
+        ],
         'Return the columns'
     );
     is_deeply(
@@ -123,7 +132,7 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
 }
 
 {
-    my @f = qw(mac online);
+    my @f = qw(mac online radacct.acctsessionid);
 
     my %search_info = (
         dal    => $dal,
@@ -136,7 +145,8 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
             200,
             [
                 'node.mac',
-                "IF(radacct.acctstarttime IS NULL,'unknown',IF(radacct.acctstoptime IS NULL, 'on', 'off'))|online"
+                "IF(radacct.acctstarttime IS NULL,'unknown',IF(radacct.acctstoptime IS NULL, 'on', 'off'))|online",
+                \'`radacct`.`acctsessionid` AS `radacct.acctsessionid`'
             ]
         ],
         'Return the columns with column spec'
@@ -176,25 +186,69 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
     is_deeply(
         $sb->rewrite_query( $s, $q ),
         { op => 'equals', value => undef, field => 'radacct.acctstarttime' },
-        "Rewrite online unknown query radacct.acctstarttime"
+        "Rewrite online='unknown'",
     );
+
     is_deeply(
         $sb->rewrite_query(
             $s, { op => 'equals', value => 'on', field => 'online' }
         ),
-        { op => 'equals', value => undef, field => 'radacct.acctstoptime' },
-        "Rewrite online on query radacct.acctstoptime"
+        {
+            'op' => 'and',
+            'values' => [
+                { op => 'not_equals', value => undef, field => 'radacct.acctstarttime' },
+                { op => 'equals', value => undef, field => 'radacct.acctstoptime' },
+            ],
+        },
+        "Rewrite online='on'",
     );
+
     is_deeply(
         $sb->rewrite_query(
             $s, { op => 'equals', value => 'off', field => 'online' }
         ),
         { op => 'not_equals', value => undef, field => 'radacct.acctstoptime' },
-        "Rewrite online on query radacct.acctstoptime"
+        "Rewrite online='off'",
+    );
+
+    is_deeply(
+        $sb->rewrite_query(
+            $s, { op => 'not_equals', value => 'off', field => 'online' }
+        ),
+        {
+            op => 'or',
+            values => [
+                { op => 'equals', value => undef, field => 'radacct.acctstarttime' },
+                { op => 'equals', value => undef, field => 'radacct.acctstoptime' },
+            ],
+        },
+        "Rewrite online!='off'",
+    );
+
+    is_deeply(
+        $sb->rewrite_query(
+            $s, { op => 'not_equals', value => 'on', field => 'online' }
+        ),
+        {
+            op => 'or',
+            values => [
+                { op => 'equals', value => undef, field => 'radacct.acctstarttime' },
+                { op => 'not_equals', value => undef, field => 'radacct.acctstoptime' },
+            ],
+        },
+        "Rewrite online!='on'",
+    );
+
+    is_deeply(
+        $sb->rewrite_query(
+            $s, { op => 'not_equals', value => 'unknown', field => 'online' }
+        ),
+        {
+            op => 'not_equals', value => undef, field => 'radacct.acctstarttime',
+        },
+        "Rewrite online!='unknown'",
     );
 }
-
-
 
 {
     my @f = qw(mac online);
@@ -210,6 +264,60 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
     my ($status, $results) = $sb->search(\%search_info);
     is($status, 200, "Query remap for online");
 }
+
+{
+    my @f = qw(status online mac pid ip4log.ip bypass_role_id);
+
+    my %search_info = (
+        dal => $dal, 
+        fields => \@f,
+    );
+
+    is_deeply(
+        [ $sb->make_columns( \%search_info ) ],
+        [
+            200,
+            [
+                'node.status',
+                "IF(radacct.acctstarttime IS NULL,'unknown',IF(radacct.acctstoptime IS NULL, 'on', 'off'))|online",
+                'node.mac',
+                'node.pid',
+                \'`ip4log`.`ip` AS `ip4log.ip`',
+                'node.bypass_role_id',
+            ],
+        ],
+        'Return the columns'
+    );
+    is_deeply(
+        [ 
+            $sb->make_where(\%search_info)
+        ],
+        [
+            200,
+            {
+                'r2.radacctid' => undef,
+            },
+        ],
+        'Return the joined tables'
+    );
+
+    $sb->make_where(\%search_info);
+
+    my @a = $sb->make_from(\%search_info);
+    is_deeply(
+        \@a,
+        [
+            200,
+            [
+                -join => 'node',
+                @pf::UnifiedApi::SearchBuilder::Nodes::RADACCT_JOIN,
+                @pf::UnifiedApi::SearchBuilder::Nodes::IP4LOG_JOIN,
+            ]
+        ],
+        'Return the joined tables'
+    );
+}
+
 
 =head1 AUTHOR
 
