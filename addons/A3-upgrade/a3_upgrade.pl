@@ -192,6 +192,11 @@ sub apply_db_upgrade_schema {
 
 }
 
+sub clean_up {
+  # clean yum cache
+  system "yum clean all";
+}
+
 
 check_yum_connectivity();
 
@@ -202,6 +207,7 @@ if (check_up_to_date()) {
 
 }
 
+clean_up();
 get_current_version();
 get_to_version();
 dump_db();
