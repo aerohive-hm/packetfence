@@ -184,12 +184,12 @@ sub apply_db_upgrade_schema {
   my $passwd = &read_passwd;
   chomp $passwd;
   foreach my $db_file (@db_schema_files) {
-    my $cmd = "/usr/bin/mysql -u root -p$passwd A3 < $a3_db_dir/$db_file";
-    if (!system($cmd) {
-      A3_Die("DB schema apply failed!");
+    my $ret = `/usr/bin/mysql -u root -p$passwd A3 < $a3_db_dir/$db_file 2>&1`;
+    if ($ret =~ /ERROR/i) {
+      A3_Die("DB schema apply failed with error message: $ret!");
     }
   }
-
+  commit_upgrade_log("All DB schema applied!"); 
 }
 
 sub clean_up {
