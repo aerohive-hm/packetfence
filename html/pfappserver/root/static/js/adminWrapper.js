@@ -40,8 +40,45 @@ $(document).ready(function(){
         successEmailMessage.slideDown(1000);
       });
     });
+    //
+    $("#client_cert_path").after("<span id='val'></span>");
+    $("#client_key_path").after("<span id='val2'></span>");
+    $("#ca_cert_path").after("<span id='val3'></span>");
+    $("#server_cert_path").after("<span id='val4'></span>");
 
-    uploadPKIFunction();
+    // $("input[type='file']").after("<span id='val'></span>");
+
+    $("#client_cert_path").click(function () {
+        $("#client_cert_path").trigger('click');
+    });
+
+    $("#client_key_path").click(function () {
+        $("#client_key_path").trigger('click');
+    });
+
+    $("#ca_cert_path").click(function () {
+        $("#ca_cert_path").trigger('click');
+    });
+
+    $("#server_cert_path").click(function () {
+        $("#server_cert_path").trigger('click');
+    });
+
+    $("input[type='file']").change(function () {
+        $('#val').text(this.value.replace(/C:\\fakepath\\/i, ''))
+    });
+
+    $('#client_cert_path').onchange = function(){
+      console.log("calling validate file size");
+      validateFileSize();
+    };
+
+    $("input[type='file']").after("<span id='val'></span>");
+    $("input[type='file']").click(function() {
+    $("input[type='file']").trigger('click');
+    });
+
+
 });
 
 function timeLeft(){
@@ -117,18 +154,19 @@ function openAlmostExpiredModal(){
     $('#myModal').modal('show');
 }
 
-//for pki provider upload
-function uploadPKIFunction(){
-    // var filename = $('input[type=file]').val();
-    // $('#certificateFileUpload').after(filename);
+function validateFileSize(file) {
+  // $('#client_cert_path').onchange = function(){
+    var FileSize = file.files[0].size / 1024 / 1024; // in MB
+    if (FileSize > 1) {
+        alert('File size exceeds 1 MB. Please try again.');
+    } else {
 
-    $('.certificateFileUpload').click(function() {
-    var fileName = $("#fileUpload").val();
-    if (fileName) {
-        alert(fileName + " can be uploaded.");
     }
-    else {
-        alert("Please select a file to upload");
-    }
-});
+  // };
+  // var FileSize = file.files[0].size / 1024 / 1024; // in MB
+  // if (FileSize > 1) {
+  //     alert('File size exceeds 1 MB. Please try again.');
+  // } else {
+  //
+  // }
 }

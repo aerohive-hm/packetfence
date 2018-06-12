@@ -264,7 +264,8 @@ button, input, select, textarea {
 #client_cert_path::-webkit-file-upload-button,
 #client_key_path::-webkit-file-upload-button,
 #ca_cert_path::-webkit-file-upload-button,
-#server_cert_path::-webkit-file-upload-button { /* Style the button */
+#server_cert_path::-webkit-file-upload-button {
+  /* Style the button */
   background: #FFF;
   color: #333;
   font: inherit;
@@ -282,6 +283,19 @@ button, input, select, textarea {
 #ca_cert_path:hover:after,
 #server_cert_path:hover:after{
    background: #D5D5D5;
+}
+
+#val, #val2, #val3, #val4 {
+    width: 400px;
+    height:25px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-left: 15px;
+    font-size:13px;
+    line-height: 25px;
+    text-indent: 10px;
+    pointer-events: none;
 }
 
 @media (min-width: 979px) and (max-width: 1199px) {

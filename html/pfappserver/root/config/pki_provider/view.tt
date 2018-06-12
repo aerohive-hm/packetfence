@@ -1,4 +1,3 @@
-[% jsFiles = ['admin/pkiForm'] -%]
 
 [% IF c.action.name == "view"  %]
 [% SET action_uri = c.uri_for(c.controller.action_for('update'), [ item.id ]) %]
