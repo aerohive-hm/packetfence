@@ -1,3 +1,4 @@
+
       <div class="modal modal-large fade hide" id="modalItem">
       </div>
 
@@ -18,14 +19,6 @@
       <div class="card">
         <div class="card-title">
           <h2>[% l('PKI Providers') %]</h2>
-        </div>
-
-        <div class="card-block upload-pki">
-          <!--add upload mechanism here-->
-          <label class="certificateFileUpload" id="certificateFileUpload">
-              <input type="file" accept="" />
-              Upload Certificate Path
-          </label>
         </div>
 
         <div class="card-block">

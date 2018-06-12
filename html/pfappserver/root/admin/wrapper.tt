@@ -192,6 +192,9 @@
 [%- IF c.user_allowed_in_admin() %]
     <script type="text/javascript" src="[% c.uri_for('/static/js/adminWrapper.js') %]"></script>
     <script type="text/javascript" src="[% c.uri_for('/static/js/licenseKeys.js') %]"></script>
+  [%- IF can_access_group_any("CONFIGURATION_GROUP_READ") %]
+    <script type="" ></script>
+  [%- END %]
     [% IF is_eula_accepted %]
       [% IF latestKey.defined %]
         [% IF latest_key_expires_in.defined %]
