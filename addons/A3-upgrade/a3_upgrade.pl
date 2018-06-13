@@ -14,7 +14,7 @@ my $a3_db_dir = '/usr/local/pf/db';
 my $a3_upgrade_path = "$a3_db_dir/upgrade_path";
 my $a3_pkg = 'A3';
 my $a3_db = 'A3';
-my $a3_and_dep_pkg = qw(A3 A3-config A3-pfcmd-suid);
+my @a3_and_dep_pkg = qw(A3 A3-config A3-pfcmd-suid);
 my $current_version;
 my $to_version;
 my @upgrade_path_list;
@@ -32,6 +32,13 @@ sub A3_Die {
   print "$msg";
   commit_upgrade_log($msg);
   die "$msg\n";
+}
+
+sub A3_Warn {
+  my $msg = shift;
+  print "$msg";
+  commit_upgrade_log($msg);
+  warn "$msg\n";
 }
 
 sub commit_upgrade_log {
@@ -106,9 +113,9 @@ sub get_current_version {
   open my $fh, '<', $a3_release or die "Unable to find the A3 release file, $!";
   while (<$fh>) {
     $current_version = (split / /, $_)[1];
+    chomp $current_version;
   }
   close $fh;
-  my $ret = `system "yum list $a3_pkg"`;
 }
 
 sub get_to_version {
@@ -119,7 +126,7 @@ sub get_to_version {
       next;
     }
     #this will be 1.1.1-0.20180611.el7 string value
-    $ava_version = (split /(\s)+/, $_)[1];
+    $ava_version = (split /(\s)+/, $_)[2];
   }
   $to_version = (split /-/, $ava_version)[0];
   commit_upgrade_log("A3 current version is $current_version and to be upgraded version is $to_version");
@@ -128,13 +135,13 @@ sub get_to_version {
 sub execute_upgrade {
   my @all_pkgs;
   my $cmd = "yum update ";
-  open CMD '-|', "yum list A3*|sed '1,/Available/d'|awk '{print $1}'" or die $@;
+  open CMD, '-|', "yum list A3*|sed '1,/Available/d'|awk '{print $1}'" or die $@;
   while (<CMD>) {
     chomp($_);
     push @all_pkgs, $_;
   }
   foreach (@all_pkgs) {
-       $cmd =. $_." "; 
+       $cmd .= $_." "; 
   }
   print "The cmd is $cmd";
   if (system($cmd)) {
@@ -145,22 +152,22 @@ sub execute_upgrade {
 
 
 
-check_db_schema_file {
+sub check_db_schema_file {
   open my $fh, '<', "$a3_upgrade_path" or die "Unable to locate upgrade path file, $!";
   my $count = 0;
   # get the upgrade list from upgrade path file (From to To only)
   while (<$fh>) {
     chomp $_;
-    if ($from eq $_) {
+    if ($current_version eq $_) {
       $count++;
       push @upgrade_path_list, $_;
       next;
-    }elsif ($to eq $_) {
+    }elsif ($to_version eq $_) {
       push @upgrade_path_list, $_;
       last;
     }
 
-    if ($i == 0) {
+    if ($count == 0) {
       next;
     } else {
       push @upgrade_path_list, $_;
@@ -184,9 +191,9 @@ sub apply_db_upgrade_schema {
   my $passwd = &read_passwd;
   chomp $passwd;
   foreach my $db_file (@db_schema_files) {
-    my $ret = `/usr/bin/mysql -u root -p$passwd A3 < $a3_db_dir/$db_file 2>&1`;
+    my $ret = `/usr/bin/mysql -u root -p$passwd $a3_db < $a3_db_dir/$db_file 2>&1`;
     if ($ret =~ /ERROR/i) {
-      A3_Die("DB schema apply failed with error message: $ret!");
+      A3_Warn("DB schema apply failed with error message: $ret!");
     }
   }
   commit_upgrade_log("All DB schema applied!"); 
