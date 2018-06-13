@@ -6,7 +6,7 @@ VBOXMANAGE=/usr/bin/VBoxManage
 PK_FILE=/root/.ssh/private_key/all_certs.pem
 PK_PASSWORD=$1
 
-/usr/bin/rm -rf work/ devel A3.ova
+/usr/bin/rm -rf work/ devel A3*.ova
 
 if [ "$BUILD_TYPE" != "RELEASE" ]; then
     /usr/bin/touch devel
