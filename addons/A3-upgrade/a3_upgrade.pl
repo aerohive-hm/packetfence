@@ -135,7 +135,7 @@ sub get_to_version {
 sub execute_upgrade {
   my @all_pkgs;
   my $cmd = "yum update ";
-  open CMD, '-|', "yum list A3*|sed '1,/Available/d'|awk '{print $1}'" or die $@;
+  open CMD, '-|', "yum list $a3_pkg*|sed '1,/Available/d'|awk '{print \$1}'" or die $@;
   while (<CMD>) {
     chomp($_);
     push @all_pkgs, $_;
@@ -144,6 +144,8 @@ sub execute_upgrade {
        $cmd .= $_." "; 
   }
   print "The cmd is $cmd";
+  $cmd .= " -y";
+  commit_upgrade_log("Update pkg cmd is $cmd");
   if (system($cmd)) {
     commit_upgrade_log("Unable to update A3 pkgs, please check!!");
     print "Failed to upgrade A3 pkg\n";
@@ -180,7 +182,7 @@ sub check_db_schema_file {
   }
   commit_upgrade_log("The db schema files need to be applied are @db_schema_files");
   foreach (@db_schema_files) {
-    if (! -e $a3_db_dir/$_) {
+    if (! -e $a3_db_dir."/".$_) {
 	A3_Die("The DB Delta script for $_ is not exist, fatal!!");
     }
   }
