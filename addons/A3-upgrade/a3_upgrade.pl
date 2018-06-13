@@ -3,14 +3,16 @@ use strict;
 use warnings;
 
 use POSIX ();
+use use File::Find;
 
 my $db_info = '/usr/local/pf/conf/dbinfo.A3';
 my $debug = 1;
 my $db_dump = '/tmp/packetfence_db.sql.gz';
 my $app_dump = '/tmp/packetfence_app.tar.gz';
 my $upgrade_log = '/tmp/a3_upgrade.log';
-my $a3_release = '/usr/local/pf/conf/pf-release';
-my $a3_db_dir = '/usr/local/pf/db';
+my $a3_dir = '/usr/local/pf';
+my $a3_release = "$a3_dir/conf/pf-release";
+my $a3_db_dir = "$a3_dir/db";
 my $a3_upgrade_path = "$a3_db_dir/upgrade_path";
 my $a3_pkg = 'A3';
 my $a3_db = 'A3';
@@ -206,6 +208,21 @@ sub clean_up {
   system "yum clean all";
 }
 
+sub find_rpmnew {
+  my @rpmnew_list;
+  find sub { if ($File::Find::name =~ /\.txt/) {  push @rpmnew_list, $File::Find::name; } }, ($a3_dir);
+  commit_upgrade_log ("The rpmnew list files are @rpmnew_list, please seeking a manual merge if there were!!");
+}
+
+sub post_upgrade {
+  my @post_cmd_list = ('/usr/local/pf/bin/pfcmd fixpermissions, '/usr/local/pf/bin/pfcmd pfconfig clear_backend', 'service packetfence-config restart', '/usr/local/pf/bin/pfcmd service pf restart', 'cat /usr/local/pf/conf/pf-release > /usr/local/pf/conf/currently-at');
+  foreach my $cmd (@post_cmd_list) {
+    unless (! system $cmd) {
+      A3_Die("Post upgrade calling failed, please investigate!");
+    }
+  }
+}
+
 
 check_yum_connectivity();
 
@@ -225,3 +242,5 @@ stop_services();
 execute_upgrade();
 check_db_schema_file();
 apply_db_upgrade_schema();
+find_rpmnew();
+post_upgrade();
