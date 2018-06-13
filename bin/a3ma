@@ -115,6 +115,8 @@ my $status = pf::dal::a3_daily_avg->create({
     moving_avg =>  $ahusavg_result[1]
 });
 
+#remove the temp files
+unlink(@temp_files);
 if (! is_success($status)) {
     $logger->error("Failed to record moving daily avg usage: $ahusavg_result[0], moving avg: $ahusavg_result[1] on $today");
 }
