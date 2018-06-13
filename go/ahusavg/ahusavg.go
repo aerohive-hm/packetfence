@@ -6,11 +6,10 @@ import ("fmt"
 "log"
 "strconv"
 "strings"
-"os"
 "sort"
 _ "github.com/go-sql-driver/mysql"
-"database/sql"
 "regexp"
+	"errors"
 )
 
 const businessHour = 8 //8 business hours per day
@@ -64,7 +63,11 @@ func readPW (fname string) (pw string, err error) {
 /*
  * This function takes a int array and interval to finds the max segment with interval length
  */
-func findMaxInterval(nums []int, interval int) ([]int) {
+func findMaxInterval(nums []int, interval int) ([]int, error) {
+
+	if len(nums) < interval {
+		return nums, errors.New("data not more than 8 hours")
+	}
 	var sum, maxIndex = 0, 0
 
 	maxInterval := make([]int, 0, interval)
@@ -90,13 +93,16 @@ func findMaxInterval(nums []int, interval int) ([]int) {
 
 	}
 
-	return maxInterval
+	return maxInterval, nil
 }
 
 /*
  * calculate the avg of the array
  */
 func avgOfList(nums []int) (avg int) {
+	if len(nums) == 0 {
+		return 0
+	}
 	sum := 0
 	for _, value := range nums {
 		sum += value;
@@ -111,6 +117,8 @@ func findMovingAvg (dailyAvgArray []int) (movingAvg int) {
 	sum := 0
 	if len(dailyAvgArray) < daysInWeek {
 		return avgOfList(dailyAvgArray)
+	} else if len(dailyAvgArray) == 0 {
+		return sum
 	} else {
 		/* store the last 7 days of data*/
 		sevenDay := dailyAvgArray[len(dailyAvgArray) - daysInWeek : len(dailyAvgArray)]
@@ -127,41 +135,24 @@ func findMovingAvg (dailyAvgArray []int) (movingAvg int) {
 
 func main() {
 
-	pw, err := readPW("/usr/local/pf/conf/pf.conf")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	db, err := sql.Open("mysql", "A3:"+pw+"@unix(/var/lib/mysql/mysql.sock)/A3?loc=Local")
 
 	/*read in 24hr data*/
-	//nums, err := readFile("data.txt")
+	nums, err := readFile("/tmp/temp_daily_us.txt")
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer db.Close()
+	maxInterval, err := findMaxInterval(nums, businessHour)
 
-	nums := make([]int, 0, 0)
-	maxInterval := findMaxInterval(nums, businessHour)
-
-	avg := avgOfList(maxInterval)
-
-	/*TODO change txt file to read from db*/
-	f, err := os.OpenFile("dayAvg.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	defer f.Close()
-	dayString := strconv.Itoa(avg) + "\n"
-	if _, err = f.WriteString(dayString); err != nil {
-		panic(err)
-	}
+	todayAvg := avgOfList(maxInterval)
+	fmt.Println(todayAvg)
 
-	dailyAvgArray, err := readFile("dayAvg.txt")
+	dailyAvgArray, err := readFile("/tmp/moving_avg.txt")
 
 	if err != nil {
 		log.Fatal(err)
@@ -169,6 +160,5 @@ func main() {
 
 	movingAvg := findMovingAvg(dailyAvgArray)
 
-	/*TODO output to the database*/
-	fmt.Println("moving avg:", movingAvg)
+	fmt.Println(movingAvg)
 }
