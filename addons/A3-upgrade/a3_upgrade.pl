@@ -3,9 +3,11 @@ use strict;
 use warnings;
 
 use POSIX ();
-use use File::Find;
+use File::Find;
+use Net::Ping;
 
 my $db_info = '/usr/local/pf/conf/dbinfo.A3';
+my $centos_base = 'mirrorlist.centos.org';
 my $debug = 1;
 my $db_dump = '/tmp/packetfence_db.sql.gz';
 my $app_dump = '/tmp/packetfence_app.tar.gz';
@@ -31,7 +33,6 @@ sub read_passwd {
 
 sub A3_Die {
   my $msg = shift;
-  print "$msg";
   commit_upgrade_log($msg);
   die "$msg\n";
 }
@@ -102,6 +103,9 @@ sub check_up_to_date {
 }
 
 sub check_yum_connectivity {
+  if (! Net::Ping->new()->ping($centos_base)) {
+    A3_Die("Unable to connect Centos base yum repoistory!");
+  }
   my $repo_ip = `yum repolist -v|grep Repo-baseurl|grep aerohive|awk -F: '{print \$3}'|awk -F/ '{print \$3}'`;
   my $code = `/usr/bin/curl -s -I -m 60 -w %{http_code} -o /dev/null http://$repo_ip`;
   if ($code != 200){
@@ -215,7 +219,7 @@ sub find_rpmnew {
 }
 
 sub post_upgrade {
-  my @post_cmd_list = ('/usr/local/pf/bin/pfcmd fixpermissions, '/usr/local/pf/bin/pfcmd pfconfig clear_backend', 'service packetfence-config restart', '/usr/local/pf/bin/pfcmd service pf restart', 'cat /usr/local/pf/conf/pf-release > /usr/local/pf/conf/currently-at');
+  my @post_cmd_list = ('/usr/local/pf/bin/pfcmd fixpermissions', '/usr/local/pf/bin/pfcmd pfconfig clear_backend', 'service packetfence-config restart', '/usr/local/pf/bin/pfcmd service pf restart', 'cat /usr/local/pf/conf/pf-release > /usr/local/pf/conf/currently-at');
   foreach my $cmd (@post_cmd_list) {
     unless (! system $cmd) {
       A3_Die("Post upgrade calling failed, please investigate!");
