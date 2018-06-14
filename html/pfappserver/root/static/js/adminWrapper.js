@@ -68,14 +68,14 @@ $(document).ready(function(){
         $('#val').text(this.value.replace(/C:\\fakepath\\/i, ''))
     });
 
-    $('#client_cert_path').onchange = function(){
+    document.getElementById("#client_cert_path").onchange = function(){
       console.log("calling validate file size");
       validateFileSize();
     };
 
     $("input[type='file']").after("<span id='val'></span>");
     $("input[type='file']").click(function() {
-    $("input[type='file']").trigger('click');
+      $("input[type='file']").trigger('click');
     });
 
 
@@ -154,19 +154,27 @@ function openAlmostExpiredModal(){
     $('#myModal').modal('show');
 }
 
-function validateFileSize(file) {
-  // $('#client_cert_path').onchange = function(){
-    var FileSize = file.files[0].size / 1024 / 1024; // in MB
-    if (FileSize > 1) {
-        alert('File size exceeds 1 MB. Please try again.');
-    } else {
+function validateFile(file) {
+    var certFileSize = file.files[0].size / 1024 / 1024;
+  //IF the file a pem file
+    if (certFile)
+      //if size <= 1mb
+        if (certFile <= 1){
+        // call api call
+        //call function
+        }
+        else{
+            alert("The file size exceeds 1 MB. Please try again.");
+        }
+      //else
+          //send user message file size is too big in an alert text after the button
+  //ELSE
+    //send user message wrong file type in an alert text after the button
+    console.log("inside validate file size function");
 
-    }
-  // };
-  // var FileSize = file.files[0].size / 1024 / 1024; // in MB
-  // if (FileSize > 1) {
-  //     alert('File size exceeds 1 MB. Please try again.');
-  // } else {
-  //
-  // }
+}
+
+//api call function
+function apiValidateCert(){
+
 }
