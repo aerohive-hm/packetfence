@@ -1292,7 +1292,7 @@ CREATE TABLE a3_usage_sample (
 
 CREATE TABLE a3_daily_avg (
     daily_date   date NOT NULL,
-    daily_avg  int  NOT NULL,
+    daily_avg    int  NOT NULL,
     moving_avg   int  NOT NULL,
     PRIMARY KEY (daily_date)
 ) ENGINE=InnoDB;
