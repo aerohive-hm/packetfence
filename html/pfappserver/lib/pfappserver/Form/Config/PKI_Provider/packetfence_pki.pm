@@ -31,6 +31,7 @@ has_field 'type' => (
     type        => 'Hidden',
     label       => 'PKI Provider type',
     required    => 1,
+
 );
 
 has_field 'host' => (
