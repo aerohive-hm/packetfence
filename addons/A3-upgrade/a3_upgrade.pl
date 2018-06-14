@@ -4,7 +4,6 @@ use warnings;
 
 use POSIX ();
 use File::Find;
-use Net::Ping;
 
 my $db_info = '/usr/local/pf/conf/dbinfo.A3';
 my $centos_base = 'mirrorlist.centos.org';
@@ -93,6 +92,7 @@ sub stop_services {
 }
 
 sub check_up_to_date {
+  system "yum clean all >/dev/null;yum makecache fast >/dev/null";
   open CMD, '-|', "yum list $a3_pkg" or die $@;
   local $/=undef;
   my $line = <CMD>;
@@ -103,7 +103,8 @@ sub check_up_to_date {
 }
 
 sub check_yum_connectivity {
-  if (! Net::Ping->new()->ping($centos_base)) {
+  my $ret = system "ping -c 3 $centos_base > /dev/null 2>&1";
+  if ($ret){
     A3_Die("Unable to connect Centos base yum repoistory!");
   }
   my $repo_ip = `yum repolist -v|grep Repo-baseurl|grep aerohive|awk -F: '{print \$3}'|awk -F/ '{print \$3}'`;
@@ -214,14 +215,14 @@ sub clean_up {
 
 sub find_rpmnew {
   my @rpmnew_list;
-  find sub { if ($File::Find::name =~ /\.txt/) {  push @rpmnew_list, $File::Find::name; } }, ($a3_dir);
+  find sub { if ($File::Find::name =~ /\.rpmnew/) {  push @rpmnew_list, $File::Find::name; } }, ($a3_dir);
   commit_upgrade_log ("The rpmnew list files are @rpmnew_list, please seeking a manual merge if there were!!");
 }
 
 sub post_upgrade {
   my @post_cmd_list = ('/usr/local/pf/bin/pfcmd fixpermissions', '/usr/local/pf/bin/pfcmd pfconfig clear_backend', 'service packetfence-config restart', '/usr/local/pf/bin/pfcmd service pf restart', 'cat /usr/local/pf/conf/pf-release > /usr/local/pf/conf/currently-at');
   foreach my $cmd (@post_cmd_list) {
-    unless (! system $cmd) {
+    unless (! system "$cmd | tee -a $upgrade_log") {
       A3_Die("Post upgrade calling failed, please investigate!");
     }
   }
@@ -237,7 +238,7 @@ if (check_up_to_date()) {
 
 }
 
-clean_up();
+#clean_up();
 get_current_version();
 get_to_version();
 dump_db();
