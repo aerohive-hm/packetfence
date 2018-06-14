@@ -40,44 +40,6 @@ $(document).ready(function(){
         successEmailMessage.slideDown(1000);
       });
     });
-    //
-    $("#client_cert_path").after("<span id='val'></span>");
-    $("#client_key_path").after("<span id='val2'></span>");
-    $("#ca_cert_path").after("<span id='val3'></span>");
-    $("#server_cert_path").after("<span id='val4'></span>");
-
-    // $("input[type='file']").after("<span id='val'></span>");
-
-    $("#client_cert_path").click(function () {
-        $("#client_cert_path").trigger('click');
-    });
-
-    $("#client_key_path").click(function () {
-        $("#client_key_path").trigger('click');
-    });
-
-    $("#ca_cert_path").click(function () {
-        $("#ca_cert_path").trigger('click');
-    });
-
-    $("#server_cert_path").click(function () {
-        $("#server_cert_path").trigger('click');
-    });
-
-    $("input[type='file']").change(function () {
-        $('#val').text(this.value.replace(/C:\\fakepath\\/i, ''))
-    });
-
-    document.getElementById("#client_cert_path").onchange = function(){
-      console.log("calling validate file size");
-      validateFileSize();
-    };
-
-    $("input[type='file']").after("<span id='val'></span>");
-    $("input[type='file']").click(function() {
-      $("input[type='file']").trigger('click');
-    });
-
 
 });
 
@@ -154,27 +116,45 @@ function openAlmostExpiredModal(){
     $('#myModal').modal('show');
 }
 
-function validateFile(file) {
-    var certFileSize = file.files[0].size / 1024 / 1024;
-  //IF the file a pem file
-    if (certFile)
-      //if size <= 1mb
-        if (certFile <= 1){
-        // call api call
-        //call function
-        }
-        else{
-            alert("The file size exceeds 1 MB. Please try again.");
-        }
-      //else
-          //send user message file size is too big in an alert text after the button
-  //ELSE
-    //send user message wrong file type in an alert text after the button
-    console.log("inside validate file size function");
+function updateModaljs(){
+  //
+      $("#client_cert_path").after("<span id='val'></span>");
+      $("#client_key_path").after("<span id='val2'></span>");
+      $("#ca_cert_path").after("<span id='val3'></span>");
+      $("#server_cert_path").after("<span id='val4'></span>");
 
+  // $("input[type='file']").after("<span id='val'></span>");
+
+      $("#client_cert_path").click(function () {
+          $("#client_cert_path").trigger('click');
+      });
+
+      $("#client_key_path").click(function () {
+          $("#client_key_path").trigger('click');
+      });
+
+      $("#ca_cert_path").click(function () {
+          $("#ca_cert_path").trigger('click');
+      });
+
+      $("#server_cert_path").click(function () {
+          $("#server_cert_path").trigger('click');
+      });
+
+      $("#client_cert_path").change(function () {
+          $('#val').text(this.value.replace(/C:\\fakepath\\/i, ''))
+      });
+
+      $("#client_cert_path").click(function() {
+        $("input[type='file']").trigger('click');
+      });
 }
 
+
+function validateFile(file) {
 //api call function
+}
+
 function apiValidateCert(){
 
 }
