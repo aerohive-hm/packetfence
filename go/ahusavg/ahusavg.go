@@ -1,4 +1,4 @@
-//dailyAvg.go
+//ahusavg.go
 package main
 
 import ("fmt"
@@ -10,10 +10,11 @@ import ("fmt"
 _ "github.com/go-sql-driver/mysql"
 "regexp"
 	"errors"
+	"os"
 )
 
 const businessHour = 8 //8 business hours per day
-const daysInWeek = 7 //num of days in a week
+const pastSixDays = 6 //num of days in a week
 /*
  * read in the file of containing only integers and return them in an array
  */
@@ -100,10 +101,10 @@ func findMaxInterval(nums []int, interval int) ([]int, error) {
  * calculate the avg of the array
  */
 func avgOfList(nums []int) (avg int) {
-	if len(nums) == 0 {
-		return 0
-	}
 	sum := 0
+	if len(nums) == 0 {
+		return sum
+	}
 	for _, value := range nums {
 		sum += value;
 	}
@@ -112,19 +113,19 @@ func avgOfList(nums []int) (avg int) {
 /*
  * calculate the moving avg of the last 7 daily avg
  */
-func findMovingAvg (dailyAvgArray []int) (movingAvg int) {
+func findMovingAvg (dailyAvgArray []int, todayAvg int) (movingAvg int) {
 
 	sum := 0
-	if len(dailyAvgArray) < daysInWeek {
+	dailyAvgArray = append(dailyAvgArray, todayAvg)
+	if len(dailyAvgArray) == 0 {
+		return todayAvg
+	} else if len(dailyAvgArray) < pastSixDays {
 		return avgOfList(dailyAvgArray)
-	} else if len(dailyAvgArray) == 0 {
-		return sum
 	} else {
-		/* store the last 7 days of data*/
-		sevenDay := dailyAvgArray[len(dailyAvgArray) - daysInWeek : len(dailyAvgArray)]
+		/* store the last 6 days of data*/
 
-		sort.Ints(sevenDay)
-		dropLowHigh := sevenDay[1:daysInWeek - 1]
+		sort.Ints(dailyAvgArray)
+		dropLowHigh := dailyAvgArray[1:pastSixDays]
 		for _, value := range dropLowHigh{
 			sum += value
 		}
@@ -135,30 +136,43 @@ func findMovingAvg (dailyAvgArray []int) (movingAvg int) {
 
 func main() {
 
+	var dailySampleFile string
+	var previousSixDaySampleFile string
+
+	if len(os.Args) > 2 {
+		/*using command line inputs to find the templ files*/
+		dailySampleFile = os.Args[1] //first arg is where today's usage sample file is
+		previousSixDaySampleFile = os.Args[2] //second arg stores the past 6 days of data
+
+	} else {
+		fmt.Fprintf(os.Stderr, "error: not enough input data from a3ma\n")
+		os.Exit(1)
+	}
 
 	/*read in 24hr data*/
-	nums, err := readFile("/tmp/temp_daily_us.txt")
+	nums, err := readFile(dailySampleFile)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	/*find max interval from previous 24 hours*/
 	maxInterval, err := findMaxInterval(nums, businessHour)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	/*today's avg usage*/
 	todayAvg := avgOfList(maxInterval)
 	fmt.Println(todayAvg)
 
-	dailyAvgArray, err := readFile("/tmp/moving_avg.txt")
+	dailyAvgArray, err := readFile(previousSixDaySampleFile)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	movingAvg := findMovingAvg(dailyAvgArray)
+	movingAvg := findMovingAvg(dailyAvgArray, todayAvg)
 
 	fmt.Println(movingAvg)
 }

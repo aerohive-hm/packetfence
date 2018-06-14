@@ -23,6 +23,7 @@ use pf::cluster;
 use pf::node;
 use pf::dal::a3_daily_avg;
 use pf::dal::a3_usage_sample;
+use File::Temp qw(tempfile);
 
 BEGIN {
     #Ensure that the file permissions of the log file is correct 0660
@@ -39,22 +40,10 @@ if ($pf::cluster::cluster_enabled && ! pf::cluster::is_management()) {
     exit 0;
 }
 
-my $temp_daily_us_file = "/tmp/temp_daily_us.txt";
-my $temp_daily_avg = "/tmp/moving_avg.txt";
-my @temp_files = ($temp_daily_avg, $temp_daily_us_file);
+#create temp files to store query data
+(my $temp_daily_us_fh, my $temp_daily_us_file) = tempfile(UNLINK => 1);
+(my $temp_daily_avg_fh, my $temp_daily_avg_file) = tempfile(UNLINK => 1);
 
-# Use the open() function to create daily 24hr usage sample file.
-unless(open TEMP_DAILY_FILE, '>'.$temp_daily_us_file) {
-    # Die with error message
-    # if we can't open it.
-    $logger->error("Failed to create and open /tmp/temp_daily_us.txt");
-    die "\nUnable to create $temp_daily_us_file\n";
-}
-
-unless (open (DAILYAVG, $temp_daily_avg)){
-    $logger->error("Failed to open $temp_daily_avg");
-    die "\nUnable to read $temp_daily_avg\n";
-}
 
 my $today   = strftime( "%Y-%m-%d", gmtime(time()) );
 # we sample at each 30min, so 24hr = 48 timestamps
@@ -69,17 +58,15 @@ my ($status, $iter) = pf::dal::a3_usage_sample->search(
 # output the data to a temp txt file for ahusavg to calculate daily and moving avg
 if (is_success($status)) {
     foreach(@$iter->all) {
-        print TEMP_DAIL_FILE $_->{count}."\n";
+        print $temp_daily_us_fh $_->{count}."\n";
     }
 
 }
 else {
     $logger->error("Failed to get usage sample data: $status");
-    unlink(@temp_files);
     die "\nUnable to read usage sample data for $today\n";
 }
 
-close TEMP_DAILY_FILE;
 
 # only want the last 6 days of data
 my $daily_avg_limit = 6;
@@ -91,32 +78,30 @@ my ($status, $iter) = pf::dal::a3_daily_avg->search(
 
 if (is_success($status)) {
     foreach(@$iter->all) {
-        print DAILYAVG $_->{daily_avg}."\n";
+        print $temp_daily_avg_fh $_->{daily_avg}."\n";
     }
 
 }
 else {
     $logger->error("Failed to get usage sample data: $status");
-    unlink(@temp_files);
-    die "\nUnable to read usage sample data for $today\n";
+    die "\nUnable to read previous daily avg data on $today\n";
 }
 
-close DAILYAVG;
-
 #save the result of ahusavg, first one is today's avg, second is new moving avg
-my @ahusavg_result = `/usr/local/pf/ahusavg`;
+my @ahusavg_result = `/usr/local/pf/ahusavg $temp_daily_us_file $temp_daily_avg_file`;
 
-
+#handle error from ahusavg
+if ($? != 0) {
+    $logger->error("Failed to calculate $today usage moving avg, err: @ahusavg_result");
+}
 $logger->info("Daily avg: $ahusavg_result[0] moving avg: $ahusavg_result[1] on $today.");
 
 my $status = pf::dal::a3_daily_avg->create({
     daily_date => $today,
     daily_avg  => $ahusavg_result[0],
-    moving_avg =>  $ahusavg_result[1]
+    moving_avg => $ahusavg_result[1]
 });
 
-#remove the temp files
-unlink(@temp_files);
 if (! is_success($status)) {
     $logger->error("Failed to record moving daily avg usage: $ahusavg_result[0], moving avg: $ahusavg_result[1] on $today");
 }
