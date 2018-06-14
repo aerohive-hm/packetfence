@@ -93,6 +93,7 @@ my @ahusavg_result = `/usr/local/pf/ahusavg $temp_daily_us_file $temp_daily_avg_
 #handle error from ahusavg
 if ($? != 0) {
     $logger->error("Failed to calculate $today usage moving avg, err: @ahusavg_result");
+    die "\nUnable to calculate moving avg\n"
 }
 $logger->info("Daily avg: $ahusavg_result[0] moving avg: $ahusavg_result[1] on $today.");
 
