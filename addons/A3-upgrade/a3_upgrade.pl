@@ -76,7 +76,9 @@ sub dump_app {
 }
 
 sub stop_services {
-  my @service_stop_cmd = ('/usr/local/pf/bin/pfcmd service pf stop', 'service packetfence-config stop');
+  #my @service_stop_cmd = ('/usr/local/pf/bin/pfcmd service pf stop', 'service packetfence-config stop');
+  # stop packetfence-config will conflict with some %post step in spec scriptlet -- updatesystemd
+  my @service_stop_cmd = ('/usr/local/pf/bin/pfcmd service pf stop');
   # We need to make sure config service is running, otherwise pfcmd will not able to do the stop job
   unless (!system 'systemctl status packetfence-config|grep Active|grep running') {
     commit_upgrade_log("Packetfence config service is not running");
