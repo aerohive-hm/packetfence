@@ -65,38 +65,10 @@ our @API_V1_ROUTES = (
             ]
         },
     },
-    {
-        controller => 'Nodes',
-        resource   => {
-            subroutes => {
-                map { $_ => { post => $_ } } qw(register deregister)
-            }
-        },
-        collection => {
-            subroutes => {
-                map { $_ => { post => $_ } } qw(bulk_register bulk_deregister search)
-            }
-        }
-    },
+    { controller => 'Nodes' },
     { controller => 'Tenants' },
     { controller => 'ApiUsers' },
     { controller => 'Locationlogs' },
-    {
-        controller => 'NodeCategories',
-        collection => {
-            http_methods => {
-                'get'    => 'list',
-            },
-            subroutes => {
-                map { $_ => { post => $_ } } qw(search)
-            }
-        },
-        resource => {
-            http_methods => {
-                'get'    => 'get',
-            },
-        },
-    },
     { 
         controller => 'Violations',
         collection => {

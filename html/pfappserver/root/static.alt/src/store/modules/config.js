@@ -19,47 +19,19 @@ const state = {
 }
 
 const getters = {
-  rolesList: state => {
-    // Remap for b-form-select component
-    return state.roles.map((item) => {
-      return { value: item.id, text: `${item.id} - ${item.notes}` }
-    })
-  },
-  sortedViolations: state => {
-    let sortedIds = Object.keys(state.violations).sort((a, b) => {
-      if (a === 'default') {
-        return a
-      } else if (!state.violations[a].desc && !state.violations[b].desc) {
-        return a.localeCompare(b)
-      } else if (!state.violations[b].desc) {
-        return a
-      } else if (!state.violations[a].desc) {
-        return b
-      } else {
-        return state.violations[a].desc.localeCompare(state.violations[b].desc)
-      }
-    })
-    let sortedViolations = []
-    for (let id of sortedIds) {
-      sortedViolations.push(state.violations[id])
-    }
-    return sortedViolations
-  }
 }
 
 const actions = {
-  getRoles: ({state, commit}) => {
-    if (state.roles.length === 0) {
-      return api.getRoles().then(response => {
-        commit('ROLES_UPDATED', response.data.items)
-        return state.roles
-      })
-    }
+  getRoles: ({commit, dispatch}) => {
+    return api.getRoles().then(response => {
+      commit('ROLES_UPDATED', response.data.items)
+      return response.data.items
+    })
   },
-  getViolations: ({commit, state}) => {
+  getViolations: ({commit, dispatch}) => {
     return api.getViolations().then(response => {
       commit('VIOLATIONS_UPDATED', response.data.items)
-      return state.violations
+      return response.data.items
     })
   }
 }

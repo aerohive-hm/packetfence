@@ -97,12 +97,6 @@ export default {
        */
       columns: [
         {
-          key: 'status',
-          label: this.$i18n.t('Status'),
-          sortable: true,
-          visible: true
-        },
-        {
           key: 'mac',
           label: this.$i18n.t('MAC Address'),
           sortable: true,
@@ -129,7 +123,7 @@ export default {
   },
   computed: {
     isLoading () {
-      return this.$store.getters['$_nodes/isLoadingResults']
+      return this.$store.getters['$_nodes/isLoading']
     },
     sortBy () {
       return this.$store.state.$_nodes.searchSortBy

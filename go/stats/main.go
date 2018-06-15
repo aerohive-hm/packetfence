@@ -233,7 +233,6 @@ var ctx context.Context
 
 func main() {
 	ctx := context.Background()
-	log.SetProcessName("pfstats")
 	ctx = log.LoggerNewContext(ctx)
 
 	go func() {
