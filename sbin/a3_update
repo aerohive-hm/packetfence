@@ -8,7 +8,7 @@ use File::Find;
 my $db_info = '/usr/local/pf/conf/dbinfo.A3';
 my $centos_base = 'mirrorlist.centos.org';
 my $debug = 1;
-my $db_dump = '/tmp/packetfence_db.sql.gz';
+my $db_dump = '/tmp/packetfence_db.sql';
 my $app_dump = '/tmp/packetfence_app.tar.gz';
 my $upgrade_log = '/tmp/a3_upgrade.log';
 my $a3_dir = '/usr/local/pf';
@@ -58,7 +58,7 @@ sub dump_db {
     print "We have password $passwd\n";
   }
   commit_upgrade_log("Starting DB dump");
-  my $ret = `mysqldump --opt -u root -p$passwd $a3_db | gzip > $db_dump ; echo  \${PIPESTATUS[0]}`;
+  my $ret = `mysqldump --opt -u root -p$passwd $a3_db ; echo $?`;
   if ($ret != 0) {
     commit_upgrade_log('DB dump failed!!');
     die "DB dump failed!!\n";
@@ -143,7 +143,7 @@ sub get_to_version {
   commit_upgrade_log("A3 current version is $current_version and to be upgraded version is $to_version");
 }
 
-sub execute_upgrade {
+sub execute_app_upgrade {
   my @all_pkgs;
   my $cmd = "yum update ";
   open CMD, '-|', "yum list $a3_pkg*|sed '1,/Available/d'|awk '{print \$1}'" or die $@;
@@ -158,8 +158,8 @@ sub execute_upgrade {
   $cmd .= " -y";
   commit_upgrade_log("Update pkg cmd is $cmd");
   if (system($cmd)) {
-    commit_upgrade_log("Unable to update A3 pkgs, please check!!");
-    print "Failed to upgrade A3 pkg\n";
+    A3_Warn("Unable to update A3 pkgs, please check and rolling back!!");
+    roll_back("app");
   } 
 }
 
@@ -212,8 +212,74 @@ sub check_conf_migration_file {
         A3_Die("The conf migration script for $_ is not exist, fatal!!");
     }
   }
+}
 
+sub unpack_app_back {
+  if (! system "tar xfz $app_dum") {
+    A3_Die("Unable to unpack the app dump file!");
+  }
+}
 
+sub restore_conf_file {
+  commit_upgrade_log("Restoring conf files");
+  system "rm -rf $a3_dir/conf/*;cp -rf $app_dump_copy/conf/* $a3_dir/conf/";
+}
+
+sub roll_back_db {
+  if (! -e $db_dump) {
+    A3_Die("DB dump file not exist, failing to restore!!");
+  }
+  if(! system "mysql -u root -p$passwd $a3_db < $db_dump") {
+    A3_Die("DB restore failing, please investigate!!");
+  } 
+}
+
+sub roll_back_app {
+  unpack_app_back();
+  my $app_dump_copy = $app_dump;
+  #remove suffix
+  $app_dump_copy =~ s/\..*$//;
+  my $rpm_version = `rpm -qa $a3_pkg|awk -F- '{print \$2}'`;
+  #There are possible 3 situations after failure of yum update A3
+  #1)old rpm is removed, and new rpm is not installed
+  #2)old rpm is partially removed, and new rpm is not installed(probabyl we will get there per rpm update mechanism)
+  #3)new rpm is partially installed
+  if (! $rpm_version) {
+    unless(! system "yum install $a3_pkg."-".$current_version -y|tee -a $upgrade_log") {
+      A3_Die("Failed to rollback application, realy Die!!");
+    }
+    #restore conf 
+    restore_conf_file();
+    
+    
+  }elsif ($rpm_version eq $current_version) {
+    commit_upgrade_log("To be done");
+  }elsif ($rpm_version eq $to_verstion) {
+    my $history_id = `yum history 2>/dev/null|egrep '[[:digit:]]{4}-'|awk -F'|' '{print \$1}'|head -1`
+    commit_upgrade_log("Start undo yum last upgrade");
+    system "yum history undo $history_id -y|tee -a $upgade_log";
+    commit_upgrade_log("Finised undo yum last upgrade");
+    restore_conf_file();   
+  }
+}
+
+sub roll_back {
+  my $stage = shift;
+  if ($stage eq "db") {
+    roll_back_db();
+  } elsif ($stage eq "app") {
+    roll_back_app();
+  } elsis ($stage eq "all") {
+    roll_back_db();
+    roll_back_app();
+  }
+  #start pf service
+  my @service_start_cmd = ('service packetfence-config start', '/usr/local/pf/bin/pfcmd service pf start');
+  foreach (@service_start_cmd) {
+    system $_;
+  }
+  #special return code for rollback
+  exit 99;
 }
 
 sub apply_db_upgrade_schema {
@@ -223,6 +289,7 @@ sub apply_db_upgrade_schema {
     my $ret = `/usr/bin/mysql -u root -p$passwd $a3_db < $a3_db_dir/$db_file 2>&1`;
     if ($ret =~ /ERROR/i) {
       A3_Warn("DB schema apply failed with error message: $ret!");
+      roll_back("db");
     }
   }
   commit_upgrade_log("All DB schema applied!"); 
@@ -273,8 +340,8 @@ check_conf_migration_file();
 dump_db();
 dump_app();
 stop_services();
-execute_upgrade();
 apply_db_upgrade_schema();
+execute_app_upgrade();
 apply_conf_migration();
 find_rpmnew();
 post_upgrade();
