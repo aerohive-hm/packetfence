@@ -96,6 +96,8 @@ if build_mode; then
   mv pfstats $BINDST/
   make ahpwgen-bin
   mv ahpwgen-bin $BINDST/
+  make ahusavg-bin
+  mv ahusavg-bin $BINDST/
 
 elif test_mode; then
   make test
