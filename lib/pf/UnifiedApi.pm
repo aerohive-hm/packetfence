@@ -69,14 +69,7 @@ our @API_V1_ROUTES = (
         controller => 'Nodes',
         resource   => {
             subroutes => {
-                (
-                map { $_ => { post => $_ } }
-                    qw(
-                        register deregister restart_switchport
-                        reevaluate_access apply_violation
-                        close_violation
-                    )
-                ),
+                (map { $_ => { post => $_ } } qw(register deregister)),
                 fingerbank_info => {
                     get => 'fingerbank_info',
                 }
@@ -85,19 +78,29 @@ our @API_V1_ROUTES = (
         collection => {
             subroutes => {
                 map { $_ => { post => $_ } }
-                  qw(
-                    search bulk_register bulk_deregister bulk_close_violations
-                    bulk_reevaluate_access bulk_restart_switchport bulk_apply_violation
-                    bulk_apply_role bulk_apply_bypass_role
-                  )
+                  qw(bulk_register bulk_deregister search bulk_close_violations bulk_reevaluate_access)
             }
         }
     },
     { controller => 'Tenants' },
     { controller => 'ApiUsers' },
     { controller => 'Locationlogs' },
-    ReadonlyEndpoint('NodeCategories'),
-    ReadonlyEndpoint('Classes'),
+    {
+        controller => 'NodeCategories',
+        collection => {
+            http_methods => {
+                'get'    => 'list',
+            },
+            subroutes => {
+                map { $_ => { post => $_ } } qw(search)
+            }
+        },
+        resource => {
+            http_methods => {
+                'get'    => 'get',
+            },
+        },
+    },
     { 
         controller => 'Violations',
         collection => {
@@ -262,11 +265,6 @@ sub setup_api_v1_routes {
     my ($self) = @_;
     my $r = $self->routes;
     my $api_v1_route = $r->any("/api/v1")->name("api.v1");
-    $api_v1_route->options('/*', sub {
-        my ($c) = @_;
-        $c->res->headers->header('Access-Control-Allow-Methods' => 'GET, OPTIONS, POST, DELETE, PUT, PATCH');
-        $c->respond_to(any => { data => '', status => 200 });
-    });
     foreach my $route ($self->api_v1_routes) {
         $api_v1_route->rest_routes($route);
     }
@@ -305,32 +303,6 @@ sub set_tenant_id {
     } else {
         pf::dal->reset_tenant();
     }
-}
-
-=head2 ReadonlyEndpoint
-
-ReadonlyEndpoint
-
-=cut
-
-sub ReadonlyEndpoint {
-    my ($model) = @_;
-    return {
-        controller => $model,
-        collection => {
-            http_methods => {
-                'get'    => 'list',
-            },
-            subroutes => {
-                map { $_ => { post => $_ } } qw(search)
-            }
-        },
-        resource => {
-            http_methods => {
-                'get'    => 'get',
-            },
-        },
-    },
 }
 
 =head1 AUTHOR

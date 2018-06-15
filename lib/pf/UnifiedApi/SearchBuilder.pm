@@ -193,7 +193,7 @@ sub make_join_specs {
     foreach my $f (@{$s->{found_fields} // []}) {
         if (exists $allow_joins->{$f}) {
             my $jf = $allow_joins->{$f};
-            my $namespace = $jf->{namespace};
+            my ($namespace, undef) = split(/\./, $f, 2);
             next if exists $found{$namespace};
             $found{$namespace} = 1;
             push @join_specs, @{$jf->{join_spec} // []};
@@ -338,6 +338,9 @@ sub verify_query {
 
         push @{$s->{found_fields}}, $field;
         $query = $self->rewrite_query($s, $query);
+        if ($self->is_table_field($s, $field)) {
+            $query->{field} = $s->{dal}->table . "." . $field;
+        }
     }
 
     return (200, $query);
@@ -413,18 +416,18 @@ Makes the SQL::Abstract::More where clause from the search_info
 sub make_where {
     my ($self, $s) = @_;
     my $query = $s->{query};
-    my @where;
-    if (defined $query) {
-        (my $status, $query) = $self->verify_query($s, $query);
-        if (is_error($status)) {
-            return $status, $query;
-        }
-        my $where = pf::UnifiedApi::Search::searchQueryToSqlAbstract($query);
-        push @where, $where;
+    if (!defined $query) {
+        return 200, {};
     }
 
+    (my $status, $query) = $self->verify_query($s, $query);
+    if (is_error($status)) {
+        return $status, $query;
+    }
+
+    my $where = pf::UnifiedApi::Search::searchQueryToSqlAbstract($query);
     my $sqla = pf::dal->get_sql_abstract;
-    my $where = $sqla->merge_conditions(@where, $self->additional_where_clause($s));
+    $where = $sqla->merge_conditions($where, $self->additional_where_clause($s));
     return 200, $where;
 }
 
@@ -438,13 +441,10 @@ sub additional_where_clause {
     my ($self, $s) = @_;
     my $allowed_join_fields = $self->allowed_join_fields;
     my @clauses;
-    my %found;
     foreach my $f (@{$s->{found_fields} // []}) {
         next if !exists $allowed_join_fields->{$f};
         my $jf = $allowed_join_fields->{$f};
-        my $namespace = $jf->{namespace};
         next if !exists $jf->{where_spec};
-        $found{$namespace} = 1;
         push @clauses, $jf->{where_spec};
     }
     return @clauses;

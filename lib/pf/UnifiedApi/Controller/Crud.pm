@@ -222,14 +222,10 @@ sub create {
     );
 }
 
-sub create_error_msg {
-    "Unable to create resource"
-}
-
 sub render_create {
     my ($self, $status, $obj) = @_;
     if (is_error($status)) {
-        return $self->render_error($status, $self->create_error_msg($obj));
+        return $self->render_error($status, "Unable to create resource");
     }
     $self->res->headers->location($self->make_location_url($obj));
     return $self->render(text => '', status => $status);

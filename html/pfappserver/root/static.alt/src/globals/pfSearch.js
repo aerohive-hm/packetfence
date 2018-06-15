@@ -43,14 +43,6 @@ pfConditionOperators[pfSearchConditionType.CONNECTION_TYPE] = {
   'equals':                    pfSearchConditionValue.SELECT,
   'not_equals':                pfSearchConditionValue.SELECT
 }
-pfConditionOperators[pfSearchConditionType.ONLINE] = {
-  'equals':                    pfSearchConditionValue.SELECT,
-  'not_equals':                pfSearchConditionValue.SELECT
-}
-pfConditionOperators[pfSearchConditionType.VOIP] = {
-  'equals':                    pfSearchConditionValue.SELECT,
-  'not_equals':                pfSearchConditionValue.SELECT
-}
 
 /**
  * Values of some condition types
@@ -73,51 +65,15 @@ pfSearchConditionValues[pfSearchConditionType.NODE_STATUS] = [
 pfSearchConditionValues[pfSearchConditionType.ROLE] = (store) => {
   return store.getters['config/rolesList']
 }
-// See lib/pf/config.pm#L344-L350
+// See lib/pf/config.pm#L318
 pfSearchConditionValues[pfSearchConditionType.CONNECTION_TYPE] = [
   {
-    value: 'Wireless-802.11-EAP',
-    text: 'WiFi 802.1X'
+    value: 'WIRELESS_802_1X',
+    text: 'Wireless 802.1x'
   },
   {
-    value: 'Wireless-802.11-NoEAP',
-    text: 'WiFi MAC Auth'
-  },
-  {
-    value: 'Ethernet-EAP',
-    text: 'Wired 802.1x'
-  },
-  {
-    value: 'WIRED_MAC_AUTH',
-    text: 'Wired MAC Auth'
-  },
-  {
-    value: 'SNMP-Traps',
-    text: 'Wired SNMP'
-  },
-  {
-    value: 'Inline',
-    text: 'Inline'
-  }
-]
-pfSearchConditionValues[pfSearchConditionType.ONLINE] = [
-  {
-    value: 'on',
-    text: 'Online'
-  },
-  {
-    value: 'off',
-    text: 'Offline'
-  }
-]
-pfSearchConditionValues[pfSearchConditionType.VOIP] = [
-  {
-    value: 'yes',
-    text: 'Yes'
-  },
-  {
-    value: 'no',
-    text: 'No'
+    value: 'WIRELESS_MAC_AUTH',
+    text: 'Wireless MAC Auth'
   }
 ]
 
