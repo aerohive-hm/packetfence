@@ -10,7 +10,6 @@ use strict;
 use warnings;
 
 use HTML::FormHandler::Moose;
-use HTML::FormHandler::Field::Upload;
 
 extends 'pfappserver::Base::Form';
 with 'pfappserver::Base::Form::Role::Help';
@@ -31,7 +30,6 @@ has_field 'type' => (
     type        => 'Hidden',
     label       => 'PKI Provider type',
     required    => 1,
-
 );
 
 has_field 'host' => (
@@ -40,7 +38,7 @@ has_field 'host' => (
     default => "127.0.0.1",
     tags    => {
         after_element   => \&help,
-        help            => 'Host which hosts the A3 PKI',
+        help            => 'Host which hosts the PacketFence PKI',
     },
 );
 
@@ -50,7 +48,7 @@ has_field 'port' => (
     default => '9393',
     tags    => {
         after_element   => \&help,
-        help            => 'Port on which to contact the A3 PKI API',
+        help            => 'Port on which to contact the PacketFence PKI API',
     },
 );
 
@@ -61,7 +59,7 @@ has_field 'proto' => (
     options => [ { label => 'https', value => 'https' }, { label => 'http', value => 'http' } ],
     tags    => {
         after_element   => \&help,
-        help            => 'Protocol to use to contact the A3 PKI API',
+        help            => 'Protocol to use to contact the PacketFence PKI API',
     },
 );
 
@@ -120,7 +118,7 @@ has_field 'organization' => (
 );
 
 has_field 'ca_cert_path' => (
-    type        => 'Upload',
+    type        => 'Path',
     label       => 'CA cert path',
     required    => 1,
     tags        => {
@@ -146,12 +144,12 @@ has_field 'cn_format' => (
     default => '%s',
     tags    => {
         after_element   => \&help,
-        help            => 'Defines how the common name will be formatted. %s will expand to the defined Common Name Attribute value',
+        help            => 'Defines how the common name will be formated. %s will expand to the defined Common Name Attribute value',
     },
 );
 
 has_field 'server_cert_path' => (
-    type        => 'Upload',
+    type        => 'Path',
     label       => 'Server cert path',
     required    => 1,
     tags        => {
@@ -181,6 +179,23 @@ Inverse inc. <info@inverse.ca>
 =head1 COPYRIGHT
 
 Copyright (C) 2005-2018 Inverse inc.
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+USA.
 
 =cut
 

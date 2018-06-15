@@ -1,6 +1,6 @@
-# English translations for PacketFence package.
+# English translations for A3 package.
 # Copyright (C) 2005-2018 Inverse inc.
-# This file is distributed under the same license as the PacketFence package.
+# This file is distributed under the same license as the A3 package.
 #
 msgid ""
 msgstr ""
@@ -584,7 +584,7 @@ msgid "PIN"
 msgstr ""
 
 # html/captive-portal/templates/layout.html
-msgid "PacketFence Registration system"
+msgid "A3 Registration system"
 msgstr ""
 
 # html/captive-portal/lib/captiveportal/PacketFence/Form/Authentication.pm
@@ -836,7 +836,7 @@ msgid "To extend your network access, please visit"
 msgstr ""
 
 # html/captive-portal/templates/provisioner/accept.html
-msgid "To the administrator : you should probably file a bug report on the PacketFence website"
+msgid "To the administrator : you should probably file a bug report on the A3 website"
 msgstr ""
 
 # html/captive-portal/templates/provisioner/accept.html
@@ -1003,7 +1003,7 @@ msgstr "Maximum re-enables reached!"
 
 # lib/pf/web/release.pm
 msgid "error: not found in the database"
-msgstr "Your computer was not found in the PacketFence database. Please reboot to solve this issue."
+msgstr "Your computer was not found in the A3 database. Please reboot to solve this issue."
 
 # pf::web::constants (Locales)
 msgid "es_ES"
@@ -1076,4 +1076,3 @@ msgstr "Your system is being scanned - this process will take approximately %s s
 # html/captive-portal/lib/captiveportal/PacketFence/Controller/Violation.pm
 msgid "violation: quarantine established"
 msgstr ""
-
