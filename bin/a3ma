@@ -72,7 +72,7 @@ else {
 # only want the last 6 days of data
 my $daily_avg_limit = 6;
 
-my ($status, $iter) = pf::dal::a3_daily_avg->search(
+($status, $iter) = pf::dal::a3_daily_avg->search(
     -limit => $daily_avg_limit,
     -order_by => {-desc => 'daily_date'},
 );
@@ -99,7 +99,7 @@ if ($? != 0) {
 }
 $logger->info("Daily avg: $ahusavg_result[0] moving avg: $ahusavg_result[1] on $today.");
 
-my $status = pf::dal::a3_daily_avg->create({
+$status = pf::dal::a3_daily_avg->create({
     daily_date => $today,
     daily_avg  => $ahusavg_result[0],
     moving_avg => $ahusavg_result[1]
