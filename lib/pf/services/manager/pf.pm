@@ -19,7 +19,6 @@ use warnings;
 use Moo;
 use pf::constants qw($TRUE);
 use pf::log;
-use pf::cluster;
 extends 'pf::services::manager';
 
 has '+name' => ( default => sub {'pf'} );
@@ -28,11 +27,6 @@ has isvirtual    => ( is => 'rw', default => sub {1} );
 has forceManaged => ( is => 'rw', default => sub {1} );
 
 sub _buildpidFile { 0; }
-
-sub isManaged {
-    my ($self) = @_;
-    return 1;
-}
 
 sub start {
     my ( $self, $quick ) = @_;
@@ -56,11 +50,7 @@ Build the command to lauch the service.
 
 sub _build_launcher {
     my ($self) = @_;
-    if($cluster_enabled) {
-        return "sudo systemctl isolate packetfence-cluster.target";
-    } else {
-        return "sudo systemctl isolate packetfence.target";
-    }
+    return "sudo systemctl isolate packetfence.target";
 }
 
 sub print_status {
@@ -75,12 +65,7 @@ sub print_status {
 
 sub pid {
     my ($self) = @_;
-    my @status;
-    if($cluster_enabled) {
-        @status = `sudo systemctl status packetfence-cluster.target`;
-    } else {
-        @status = `sudo systemctl status packetfence.target`;
-    }
+    my @status = `sudo systemctl status  packetfence.target`;
     my $pid = grep {/Active: active/} @status;
     return $pid;
 }
@@ -105,7 +90,7 @@ sub stopService {
     my ($self) = @_;
     my $logger = get_logger();
     $logger->info("Stopping packetfence.target");
-    `sudo systemctl isolate packetfence-base.target`;
+    `sudo systemctl isolate packetfence-base`;
     if ( $? == -1 ) {
         $logger->error("failed to execute: $!\n");
     }
@@ -114,16 +99,6 @@ sub stopService {
     }
 }
 
-=head2 systemdTarget
-
-systemdTarget
-
-=cut
-
-sub systemdTarget {
-    my ($self) = @_;
-    return "packetfence.target";
-}
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>

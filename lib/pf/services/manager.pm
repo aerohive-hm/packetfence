@@ -447,17 +447,6 @@ sub isEnabled {
     }
 }
 
-=head2 systemdTarget
-
-systemdTarget
-
-=cut
-
-sub systemdTarget {
-    my ($self) = @_;
-    return "packetfence-" . $self->name;
-}
-
 =head2 sysdEnable 
 
 Enable the service in systemd.
@@ -466,7 +455,9 @@ Enable the service in systemd.
 
 sub sysdEnable {
     my $self = shift;
-    return system( "sudo systemctl enable " . $self->systemdTarget) == 0;
+    my $rc   = 1;
+    $rc = system( "sudo systemctl enable packetfence-" . $self->name );
+    return $rc == 0;
 }
 
 =head2 sysdDisable
@@ -477,7 +468,9 @@ Disable the service in systemd.
 
 sub sysdDisable {
     my $self = shift;
-    return system( "sudo systemctl disable " . $self->systemdTarget) == 0;
+    my $rc   = 1;
+    $rc = system( "sudo systemctl disable packetfence-" . $self->name );
+    return $rc == 0;
 }
 
 =head1 AUTHOR

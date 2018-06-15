@@ -49,8 +49,6 @@ our $failed_counts = {};
 
 our $MYSQL_CONNECT_TIMEOUT = 5;
 
-our $GALERA_ENABLED = ($cluster_enabled && isenabled($Config{active_active}{galera_replication}));
-
 # init signal handlers
 my $old_child_sigaction = POSIX::SigAction->new;
 POSIX::sigaction(
@@ -266,7 +264,7 @@ Refer to the clustering guide for details on how this works.
 
 sub attempt_start {
     # Just start it without anything special if we're in standalone mode or if we're a single cluster node
-    if(!$GALERA_ENABLED || scalar(pf::cluster::enabled_servers()) == 1) {
+    if(!$cluster_enabled || scalar(pf::cluster::enabled_servers()) == 1) {
         fork_launch_mysql("standalone");
     }
     elsif(!_check_pid($MYSQLD_SPAWNER_PID) && -f "/var/lib/mysql/gvwstate.dat") {
@@ -315,7 +313,7 @@ while($RUNNING){
         print "MariaDB is not alive \n";
         attempt_start();
     }
-    elsif($GALERA_ENABLED) {
+    elsif($cluster_enabled) {
         if(test_db(pf::cluster::current_server()->{management_ip})) {
             # We're coming from a previous failure, so we log it 
             if($failed) {

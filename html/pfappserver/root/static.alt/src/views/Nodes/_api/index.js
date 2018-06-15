@@ -5,9 +5,6 @@ export default {
     if (params.sort) {
       params.sort = params.sort.join(',')
     }
-    if (params.fields) {
-      params.fields = params.fields.join(',')
-    }
     return apiCall.get('nodes', { params }).then(response => {
       return response.data
     })
@@ -19,11 +16,6 @@ export default {
   },
   node: mac => {
     return apiCall.get(`node/${mac}`).then(response => {
-      return response.data.item
-    })
-  },
-  fingerbankInfo: mac => {
-    return apiCall.get(`node/${mac}/fingerbank_info`).then(response => {
       return response.data.item
     })
   },
@@ -79,21 +71,5 @@ export default {
   },
   deleteNode: mac => {
     return apiCall.delete(`node/${mac}`)
-  },
-  registerNode: mac => {
-    return apiCall.post(`node/${mac}/register`).then(response => {
-      return response.data
-    })
-  },
-  deregisterBulkNodes: macs => {
-    const body = { items: macs }
-    return apiCall.post('nodes/bulk_deregister', body).then(response => {
-      return response.data
-    })
-  },
-  clearViolationNode: mac => {
-    return apiCall.post(`node/${mac}/closeviolations`).then(response => {
-      return response.data
-    })
   }
 }

@@ -187,19 +187,7 @@ sub get_lookup_info {
 sub render_get {
     my ($self) = @_;
     my $stash = $self->stash;
-    return $self->render(json => { item => $self->item, status => $stash->{status}});
-}
-
-=head2 item
-
-item
-
-=cut
-
-sub item {
-    my ($self) = @_;
-    my $stash = $self->stash;
-    return ${$stash->{item}}[-1];
+    return $self->render(json => { item => ${$stash->{item}}[-1], status => $stash->{status}});
 }
 
 sub do_get {

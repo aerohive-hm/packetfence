@@ -23,7 +23,6 @@ use pf::log;
 use captiveportal::Form::Authentication;
 use pf::locationlog;
 use captiveportal::Base::Actions;
-use pf::constants::realm;
 
 has 'source' => (is => 'rw', isa => 'pf::Authentication::Source|Undef');
 
@@ -219,7 +218,6 @@ sub auth_source_params {
         connection_type => $locationlog_entry->{'connection_type'},
         SSID => $locationlog_entry->{'ssid'},
         realm => $locationlog_entry->{'realm'},
-        context => $pf::constants::realm::PORTAL_CONTEXT,
         %{$self->auth_source_params_child()},
     }
 }

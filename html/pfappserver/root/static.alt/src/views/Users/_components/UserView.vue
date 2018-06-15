@@ -12,20 +12,20 @@
         <b-tab :title="$t('Profile')" active>
           <b-row>
             <b-col>
-              <pf-form-input v-model="userContent.email" label="Email"
-                :validation="$v.userContent.email" invalid-feedback="Must be a valid email address"/>
-              <pf-form-input v-model="userContent.firstname" label="Firstname"/>
-              <pf-form-input v-model="userContent.lastname" label="Lastname"/>
-              <pf-form-input v-model="userContent.company" label="Company"/>
-              <pf-form-input v-model="userContent.telephone" label="Telephone"/>
+              <pf-form-input v-model="user.email" label="Email"
+                :validation="$v.user.email" invalid-feedback="Must be a valid email address"/>
+              <pf-form-input v-model="user.firstname" label="Firstname"/>
+              <pf-form-input v-model="user.lastname" label="Lastname"/>
+              <pf-form-input v-model="user.company" label="Company"/>
+              <pf-form-input v-model="user.telephone" label="Telephone"/>
               <b-form-group horizontal label-cols="3" :label="$t('Notes')">
-                <b-form-textarea v-model="userContent.notes" rows="4" max-rows="6"></b-form-textarea>
+                <b-form-textarea v-model="user.notes" rows="4" max-rows="6"></b-form-textarea>
               </b-form-group>
             </b-col>
             <b-col>
-              <pf-form-input v-model="userContent.anniversary" label="Anniversary" type="date"/>
-              <pf-form-input v-model="userContent.birthday" label="Birthday" type="date"/>
-              <pf-form-input v-model="userContent.gender" label="Gender"/>
+              <pf-form-input v-model="user.anniversary" label="Anniversary" type="date"/>
+              <pf-form-input v-model="user.birthday" label="Birthday" type="date"/>
+              <pf-form-input v-model="user.gender" label="Gender"/>
             </b-col>
           </b-row>
         </b-tab>
@@ -33,14 +33,14 @@
         <b-tab :title="$t('Custom Fields')">
           <b-form-row>
             <b-col cols="6">
-              <pf-form-input v-for="i in 9" v-model="userContent['custom_field_' + i]" :label="'custom_field_' + i" :key="i"/>
+              <pf-form-input v-for="i in 9" v-model="user['custom_field_' + i]" :label="'custom_field_' + i" :key="i"/>
             </b-col>
           </b-form-row>
         </b-tab>
 
       </b-tabs>
 
-      <b-card-footer align="right" @mouseenter="$v.userContent.$touch()">
+      <b-card-footer align="right" @mouseenter="$v.user.$touch()">
         <b-button variant="outline-danger" class="mr-1" :disabled="isLoading" @click="deleteUser()" v-t="'Delete'"></b-button>
         <b-button type="submit" variant="primary" :disabled="invalidForm"><icon name="circle-notch" spin v-show="isLoading"></icon> {{ $t('Save') }}</b-button>
       </b-card-footer>
@@ -69,7 +69,7 @@
     },
     data () {
       return {
-        userContent: {
+        user: {
           // Must at least define all fields that require validation
           email: '',
           notes: ''
@@ -77,19 +77,17 @@
       }
     },
     validations: {
-      userContent: {
+      user: {
         email: { email, required }
       }
     },
     computed: {
-      node () {
-        return this.$store.state.$_users.users[this.pid]
-      },
-      isLoading () {
-        return this.$store.getters['$_users/isLoading']
-      },
       invalidForm () {
-        return this.$v.userContent.$invalid || this.$store.getters['$_users/isLoading']
+        if (this.modeIndex === 0) {
+          return this.$v.user.$invalid
+        } else {
+          return false
+        }
       }
     },
     methods: {
@@ -97,9 +95,7 @@
         this.$router.push({ name: 'users' })
       },
       save () {
-        this.$store.dispatch('$_users/updateUser', this.userContent).then(response => {
-          this.close()
-        })
+        this.$store.dispatch('$_users/updateUser', this.user)
       },
       deleteUser () {
         this.$store.dispatch('$_users/deleteUser', this.pid).then(response => {
@@ -115,7 +111,7 @@
     },
     mounted () {
       this.$store.dispatch('$_users/getUser', this.pid).then(data => {
-        this.userContent = Object.assign({}, data)
+        this.user = Object.assign({}, data)
       })
       document.addEventListener('keyup', this.onKeyup)
     },

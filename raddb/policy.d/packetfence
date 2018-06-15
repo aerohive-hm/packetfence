@@ -86,10 +86,7 @@ packetfence-eap-mac-policy {
 }
 
 packetfence-audit-log-accept {
-    if (&User-Name && (&User-Name == "dummy")) {
-        noop
-    }
-    else {
+    if(&User-Name != "dummy") {
         request-timing
         -sql {
             fail = 1
@@ -98,10 +95,7 @@ packetfence-audit-log-accept {
 }
 
 packetfence-audit-log-reject {
-    if (&User-Name && (&User-Name == "dummy")) {
-            noop
-    }
-    else {
+    if(&User-Name != "dummy") {
         request-timing
         -sql_reject {
             fail = 1

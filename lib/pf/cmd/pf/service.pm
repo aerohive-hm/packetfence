@@ -91,15 +91,11 @@ sub parseArgs {
     return 0 unless $service eq 'pf' || any { $_ eq $service} @pf::services::ALL_SERVICES;
 
     my ( @services, @managers );
-    if (($action eq 'status' || $action eq 'updatesystemd' || $action eq 'generateconfig') && $service eq 'pf') {
-        @services = grep {$_ ne 'pf'} @pf::services::ALL_SERVICES;
-    } else {
-        if($cluster_enabled && $service eq 'pf') {
-            @services = ('haproxy-db','pf');
-        }
-        else {
-            @services = ($service);
-        }
+    if ($service eq 'pf' ) {
+        @services = @pf::services::ALL_SERVICES;
+    }
+    else {
+        @services = ($service);
     }
     $self->{service}  = $service;
     $self->{services} = \@services;
@@ -125,11 +121,6 @@ sub _run {
     $actionHandler = $ACTION_MAP{$action};
     $service =~ /^(.*)$/;
     $service = $1;
-    # On pfcmd pf status we don't want to run updatesystemd
-    # On pfcmd pf updatesystemd we don't want to run it twice
-    if ($service eq 'pf' && ($action ne 'status' && $action ne 'updatesystemd')) {
-        updateSystemd->($service, grep {$_ ne 'pf'} @pf::services::ALL_SERVICES);
-    }
     return $actionHandler->($service,@$services);
 }
 

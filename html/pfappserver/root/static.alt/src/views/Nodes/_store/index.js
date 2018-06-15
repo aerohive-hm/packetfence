@@ -1,11 +1,10 @@
 /**
-* "$_nodes" store module
-*/
+ * "$_nodes" store module
+ */
 import Vue from 'vue'
 import api from '../_api'
 
 const STORAGE_SEARCH_LIMIT_KEY = 'nodes-search-limit'
-const STORAGE_VISIBLE_COLUMNS_KEY = 'nodes-visible-columns'
 
 // Default values
 const state = {
@@ -14,13 +13,11 @@ const state = {
   message: '',
   nodeStatus: '',
   searchStatus: '',
-  searchFields: [],
   searchQuery: null,
   searchSortBy: 'mac',
   searchSortDesc: false,
   searchMaxPageNumber: 1,
-  searchPageSize: localStorage.getItem(STORAGE_SEARCH_LIMIT_KEY) || 10,
-  visibleColumns: JSON.parse(localStorage.getItem(STORAGE_VISIBLE_COLUMNS_KEY)) || false
+  searchPageSize: localStorage.getItem(STORAGE_SEARCH_LIMIT_KEY) || 10
 }
 
 const getters = {
@@ -29,9 +26,6 @@ const getters = {
 }
 
 const actions = {
-  setSearchFields: ({commit}, fields) => {
-    commit('SEARCH_FIELDS_UPDATED', fields)
-  },
   setSearchQuery: ({commit}, query) => {
     commit('SEARCH_QUERY_UPDATED', query)
     commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
@@ -46,66 +40,28 @@ const actions = {
     commit('SEARCH_SORT_DESC_UPDATED', params.sortDesc)
     commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
   },
-  setVisibleColumns: ({commit}, columns) => {
-    localStorage.setItem(STORAGE_VISIBLE_COLUMNS_KEY, JSON.stringify(columns))
-    commit('VISIBLE_COLUMNS_UPDATED', columns)
-  },
   search: ({state, getters, commit, dispatch}, page) => {
     let sort = [state.searchSortDesc ? `${state.searchSortBy} DESC` : state.searchSortBy]
     let body = {
       cursor: state.searchPageSize * (page - 1),
       limit: state.searchPageSize,
-      fields: state.searchFields,
       sort
     }
     let apiPromise = state.searchQuery ? api.search(Object.assign(body, {query: state.searchQuery})) : api.all(body)
-    if (state.searchStatus !== 'loading') {
-      return new Promise((resolve, reject) => {
-        commit('SEARCH_REQUEST')
-        apiPromise.then(response => {
-          commit('SEARCH_SUCCESS', response)
-          resolve(response)
-        }).catch(err => {
-          commit('SEARCH_ERROR', err.response)
-          reject(err)
-        })
-      })
-    }
-  },
-  exists: ({commit}, mac) => {
-    let body = {
-      fields: ['mac'],
-      limit: 1,
-      query: {
-        op: 'and',
-        values: [{
-          field: 'mac', op: 'equals', value: mac
-        }]
-      }
-    }
     return new Promise((resolve, reject) => {
       commit('SEARCH_REQUEST')
-      api.search(body).then(response => {
-        commit('SEARCH_SUCCESS')
-        if (response.items.length > 0) {
-          resolve(true)
-        } else {
-          reject(new Error('Unknown MAC'))
-        }
+      apiPromise.then(response => {
+        commit('SEARCH_SUCCESS', response)
+        resolve(response)
       }).catch(err => {
         commit('SEARCH_ERROR', err.response)
         reject(err)
       })
     })
   },
-  getNode: ({state, commit}, mac) => {
-    let node = { fingerbank: {} } // ip4: { history: [] }, ip6: { history: [] } }
+  getNode: ({commit}, mac) => {
+    let node = {} // ip4: { history: [] }, ip6: { history: [] } }
 
-    if (state.nodes[mac]) {
-      return Promise.resolve(state.nodes[mac])
-    }
-
-    commit('NODE_REQUEST')
     return api.node(mac).then(item => {
       Object.assign(node, item)
       if (node.category_id === null) {
@@ -167,16 +123,6 @@ const actions = {
         commit('NODE_UPDATED', { mac, prop: 'violations', data: items })
       })
 
-      // Fetch fingerbank
-      let fingerbank = {}
-      api.fingerbankInfo(mac).then(item => {
-        Object.assign(fingerbank, item)
-      }).catch(() => {
-        // noop
-      }).finally(() => {
-        commit('NODE_UPDATED', { mac, prop: 'fingerbank', data: fingerbank })
-      })
-
       return node
     })
   },
@@ -218,62 +164,10 @@ const actions = {
         reject(err)
       })
     })
-  },
-  registerNode: ({commit}, mac) => {
-    commit('NODE_REQUEST')
-    return new Promise((resolve, reject) => {
-      api.registerNode(mac).then(response => {
-        commit('NODE_REPLACED', mac)
-        resolve(response)
-      }).catch(err => {
-        commit('NODE_ERROR', err.response)
-        reject(err)
-      })
-    })
-  },
-  deregisterNode: ({commit}, mac) => {
-    commit('NODE_REQUEST')
-    return new Promise((resolve, reject) => {
-      api.deregisterNode(mac).then(response => {
-        commit('NODE_REPLACED', mac)
-        resolve(response)
-      }).catch(err => {
-        commit('NODE_ERROR', err.response)
-        reject(err)
-      })
-    })
-  },
-  deregisterBulkNodes: ({commit}, macs) => {
-    commit('NODE_REQUEST')
-    return new Promise((resolve, reject) => {
-      api.deregisterBulkNodes(macs).then(response => {
-        // commit('NODE_REPLACED', mac)
-        console.log(['api.deregisterBulkNodes(macs).then', response])
-        resolve(response)
-      }).catch(err => {
-        commit('NODE_ERROR', err.response)
-        reject(err)
-      })
-    })
-  },
-  clearViolationNode: ({commit}, mac) => {
-    commit('NODE_REQUEST')
-    return new Promise((resolve, reject) => {
-      api.clearViolationNode(mac).then(response => {
-        commit('NODE_REPLACED', mac)
-        resolve(response)
-      }).catch(err => {
-        commit('NODE_ERROR', err.response)
-        reject(err)
-      })
-    })
   }
 }
 
 const mutations = {
-  SEARCH_FIELDS_UPDATED: (state, fields) => {
-    state.searchFields = fields
-  },
   SEARCH_QUERY_UPDATED: (state, query) => {
     state.searchQuery = query
   },
@@ -294,12 +188,10 @@ const mutations = {
   },
   SEARCH_SUCCESS: (state, response) => {
     state.searchStatus = 'success'
-    if (response) {
-      state.items = response.items
-      let nextPage = Math.floor(response.nextCursor / state.searchPageSize) + 1
-      if (nextPage > state.searchMaxPageNumber) {
-        state.searchMaxPageNumber = nextPage
-      }
+    state.items = response.items
+    let nextPage = Math.floor(response.nextCursor / state.searchPageSize) + 1
+    if (nextPage > state.searchMaxPageNumber) {
+      state.searchMaxPageNumber = nextPage
     }
   },
   SEARCH_ERROR: (state, response) => {
@@ -307,9 +199,6 @@ const mutations = {
     if (response && response.data) {
       state.message = response.data.message
     }
-  },
-  VISIBLE_COLUMNS_UPDATED: (state, columns) => {
-    state.visibleColumns = columns
   },
   NODE_REQUEST: (state) => {
     state.nodeStatus = 'loading'
@@ -332,11 +221,6 @@ const mutations = {
     if (response && response.data) {
       state.message = response.data.message
     }
-  },
-  NODE_VARIANT: (state, params) => {
-    state.nodeStatus = 'success'
-    let index = state.items.findIndex(item => item.mac === params.mac)
-    Vue.set(state.items[index], '_rowVariant', params.variant)
   }
 }
 

@@ -1,11 +1,10 @@
 /**
-* "$_users" store module
-*/
+ * "$_users" store module
+ */
 import Vue from 'vue'
 import api from '../_api'
 
 const STORAGE_SEARCH_LIMIT_KEY = 'users-search-limit'
-const STORAGE_VISIBLE_COLUMNS_KEY = 'users-visible-columns'
 
 // Default values
 const state = {
@@ -14,13 +13,11 @@ const state = {
   message: '',
   userStatus: '',
   searchStatus: '',
-  searchFields: [],
   searchQuery: null,
   searchSortBy: 'pid',
   searchSortDesc: false,
   searchMaxPageNumber: 1,
-  searchPageSize: localStorage.getItem(STORAGE_SEARCH_LIMIT_KEY) || 10,
-  visibleColumns: JSON.parse(localStorage.getItem(STORAGE_VISIBLE_COLUMNS_KEY)) || false
+  searchPageSize: localStorage.getItem(STORAGE_SEARCH_LIMIT_KEY) || 10
 }
 
 const getters = {
@@ -29,9 +26,6 @@ const getters = {
 }
 
 const actions = {
-  setSearchFields: ({commit}, fields) => {
-    commit('SEARCH_FIELDS_UPDATED', fields)
-  },
   setSearchQuery: ({commit}, query) => {
     commit('SEARCH_QUERY_UPDATED', query)
     commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
@@ -46,43 +40,30 @@ const actions = {
     commit('SEARCH_SORT_DESC_UPDATED', params.sortDesc)
     commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
   },
-  setVisibleColumns: ({commit}, columns) => {
-    localStorage.setItem(STORAGE_VISIBLE_COLUMNS_KEY, JSON.stringify(columns))
-    commit('VISIBLE_COLUMNS_UPDATED', columns)
-  },
   search: ({state, getters, commit, dispatch}, page) => {
     let sort = [state.searchSortDesc ? `${state.searchSortBy} DESC` : state.searchSortBy]
     let body = {
       cursor: state.searchPageSize * (page - 1),
       limit: state.searchPageSize,
-      fields: state.searchFields,
       sort
     }
     let apiPromise = state.searchQuery ? api.search(Object.assign(body, {query: state.searchQuery})) : api.all(body)
-    if (state.searchStatus !== 'loading') {
-      return new Promise((resolve, reject) => {
-        commit('SEARCH_REQUEST')
-        apiPromise.then(response => {
-          commit('SEARCH_SUCCESS', response)
-          resolve(response)
-        }).catch(err => {
-          commit('SEARCH_ERROR', err.response)
-          reject(err)
-        })
+    return new Promise((resolve, reject) => {
+      commit('SEARCH_REQUEST')
+      apiPromise.then(response => {
+        commit('SEARCH_SUCCESS', response)
+        resolve(response)
+      }).catch(err => {
+        commit('SEARCH_ERROR', err.response)
+        reject(err)
       })
-    }
+    })
   },
   getUser: ({commit, state}, pid) => {
-    if (state.users[pid]) {
-      return Promise.resolve(state.users[pid])
-    }
     commit('USER_REQUEST')
     return api.user(pid).then(data => {
       commit('USER_REPLACED', data)
       return state.users[pid]
-    }).catch(err => {
-      commit('USER_ERROR', err.response)
-      return err
     })
   },
   createUser: ({commit}, data) => {
@@ -123,9 +104,6 @@ const actions = {
 }
 
 const mutations = {
-  SEARCH_FIELDS_UPDATED: (state, fields) => {
-    state.searchFields = fields
-  },
   SEARCH_QUERY_UPDATED: (state, query) => {
     state.searchQuery = query
   },
@@ -157,9 +135,6 @@ const mutations = {
     if (response && response.data) {
       state.message = response.data.message
     }
-  },
-  VISIBLE_COLUMNS_UPDATED: (state, columns) => {
-    state.visibleColumns = columns
   },
   USER_REQUEST: (state) => {
     state.userStatus = 'loading'
