@@ -57,7 +57,8 @@ my ($status, $iter) = pf::dal::a3_usage_sample->search(
 
 # output the data to a temp txt file for ahusavg to calculate daily and moving avg
 if (is_success($status)) {
-    foreach(@$iter->all) {
+    my $today_us = $iter->all;
+    foreach(@$today_us) {
         print $temp_daily_us_fh $_->{count}."\n";
     }
 
@@ -77,7 +78,8 @@ my ($status, $iter) = pf::dal::a3_daily_avg->search(
 );
 
 if (is_success($status)) {
-    foreach(@$iter->all) {
+    my $previous_six_days = $iter->all;
+    foreach(@$previous_six_days) {
         print $temp_daily_avg_fh $_->{daily_avg}."\n";
     }
 
@@ -88,7 +90,7 @@ else {
 }
 
 #save the result of ahusavg, first one is today's avg, second is new moving avg
-my @ahusavg_result = `/usr/local/pf/ahusavg $temp_daily_us_file $temp_daily_avg_file`;
+my @ahusavg_result = `/usr/local/pf/bin/ahusavg $temp_daily_us_file $temp_daily_avg_file`;
 
 #handle error from ahusavg
 if ($? != 0) {
