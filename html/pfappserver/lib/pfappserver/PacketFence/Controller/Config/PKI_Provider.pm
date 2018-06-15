@@ -80,16 +80,16 @@ sub create_type : Path('create') : Args(1) {
     $c->forward('create');
 }
 
-sub acceptCertificate : Path('create') : Args(1) {
-    my ($self, $c, $tempfile) = @_;
-    my $checkCertificate = system "/usr/bin/oppenssl x509 - noout -text -in $tempfile";
-    if ($checkCertificate == 0) {
-
-    }
-    else{
-       return $c->stash->{$tempfile};
-    }
-}
+# sub acceptCertificate : Path('create') : Args(1) {
+#     my ($self, $c, $tempfile) = @_;
+#     my $checkCertificate = system "/usr/bin/openssl x509 - noout -text -in $tempfile";
+#     if ($checkCertificate == 0) {
+#
+#     }
+#     else{
+#        return $c->stash->{$tempfile};
+#     }
+# }
 
 =head1 COPYRIGHT
 
