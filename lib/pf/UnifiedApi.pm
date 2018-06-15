@@ -69,10 +69,7 @@ our @API_V1_ROUTES = (
         controller => 'Nodes',
         resource   => {
             subroutes => {
-                (map { $_ => { post => $_ } } qw(register deregister)),
-                fingerbank_info => {
-                    get => 'fingerbank_info',
-                }
+                map { $_ => { post => $_ } } qw(register deregister)
             }
         },
         collection => {
