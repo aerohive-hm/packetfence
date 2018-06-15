@@ -18,6 +18,7 @@ my $a3_conf_migration_dir = "$a3_dir/conf_migration";
 my $a3_upgrade_path = "$a3_db_dir/upgrade_path";
 my $a3_pkg = 'A3';
 my $a3_db = 'A3';
+my $db_passwd;
 my @a3_and_dep_pkg = qw(A3 A3-config A3-pfcmd-suid);
 my $current_version;
 my $to_version;
@@ -52,13 +53,13 @@ sub commit_upgrade_log {
 }
 
 sub dump_db {
-  my $passwd = &read_passwd;
-  chomp $passwd;
+  $db_passwd = &read_passwd;
+  chomp $db_passwd;
   if ($debug) {
-    print "We have password $passwd\n";
+    print "We have password $db_passwd\n";
   }
   commit_upgrade_log("Starting DB dump");
-  my $ret = `mysqldump --opt -u root -p$passwd $a3_db ; echo $?`;
+  my $ret = `mysqldump --opt -u root -p$db_passwd $a3_db ; echo $?`;
   if ($ret != 0) {
     commit_upgrade_log('DB dump failed!!');
     die "DB dump failed!!\n";
@@ -215,12 +216,15 @@ sub check_conf_migration_file {
 }
 
 sub unpack_app_back {
-  if (! system "tar xfz $app_dum") {
+  if (! system "tar xfz $app_dump") {
     A3_Die("Unable to unpack the app dump file!");
   }
 }
 
 sub restore_conf_file {
+  my $app_dump_copy = $app_dump;
+  #remove suffix
+  $app_dump_copy =~ s/\..*$//;
   commit_upgrade_log("Restoring conf files");
   system "rm -rf $a3_dir/conf/*;cp -rf $app_dump_copy/conf/* $a3_dir/conf/";
 }
@@ -229,16 +233,13 @@ sub roll_back_db {
   if (! -e $db_dump) {
     A3_Die("DB dump file not exist, failing to restore!!");
   }
-  if(! system "mysql -u root -p$passwd $a3_db < $db_dump") {
+  if(! system "mysql -u root -p$db_passwd $a3_db < $db_dump") {
     A3_Die("DB restore failing, please investigate!!");
   } 
 }
 
 sub roll_back_app {
   unpack_app_back();
-  my $app_dump_copy = $app_dump;
-  #remove suffix
-  $app_dump_copy =~ s/\..*$//;
   my $rpm_version = `rpm -qa $a3_pkg|awk -F- '{print \$2}'`;
   #There are possible 3 situations after failure of yum update A3
   #1)old rpm is removed, and new rpm is not installed
@@ -254,10 +255,10 @@ sub roll_back_app {
     
   }elsif ($rpm_version eq $current_version) {
     commit_upgrade_log("To be done");
-  }elsif ($rpm_version eq $to_verstion) {
-    my $history_id = `yum history 2>/dev/null|egrep '[[:digit:]]{4}-'|awk -F'|' '{print \$1}'|head -1`
+  }elsif ($rpm_version eq $to_version) {
+    my $history_id = `yum history 2>/dev/null|egrep '[[:digit:]]{4}-'|awk -F'|' '{print \$1}'|head -1`;
     commit_upgrade_log("Start undo yum last upgrade");
-    system "yum history undo $history_id -y|tee -a $upgade_log";
+    system "yum history undo $history_id -y|tee -a $upgrade_log";
     commit_upgrade_log("Finised undo yum last upgrade");
     restore_conf_file();   
   }
@@ -269,7 +270,7 @@ sub roll_back {
     roll_back_db();
   } elsif ($stage eq "app") {
     roll_back_app();
-  } elsis ($stage eq "all") {
+  } elsif ($stage eq "all") {
     roll_back_db();
     roll_back_app();
   }
@@ -334,14 +335,14 @@ if (check_up_to_date()) {
 #clean_up();
 get_current_version();
 get_to_version();
-generate_upgrade_patch_list();
-check_db_schema_file();
-check_conf_migration_file();
 dump_db();
 dump_app();
 stop_services();
-apply_db_upgrade_schema();
 execute_app_upgrade();
+generate_upgrade_patch_list();
+check_db_schema_file();
+check_conf_migration_file();
+apply_db_upgrade_schema();
 apply_conf_migration();
 find_rpmnew();
 post_upgrade();
