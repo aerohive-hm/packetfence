@@ -1,3 +1,4 @@
+
 [% IF c.action.name == "view"  %]
 [% SET action_uri = c.uri_for(c.controller.action_for('update'), [ item.id ]) %]
 [%ELSE%]
@@ -10,9 +11,11 @@
     <h3>[% IF item %]<i>[% l('PKI Provider') %]</i> [% item.id | html %][% ELSE %][% l('New PKI Provider') %][% END %]</h3>
   </div>
 
-  <div class="modal-body">
+  <div class="modal-body pki-group">
         [% form.field('id').render | none UNLESS item && item.id.defined %]
+        <div class="pki-group">
         [% form.block('definition').render | none %]
+        </div>
   </div><!--modal-body-->
 
   <div class="modal-footer">

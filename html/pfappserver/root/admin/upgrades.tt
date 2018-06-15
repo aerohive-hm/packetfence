@@ -1,0 +1,60 @@
+<!-- Where upgrade page starts  -->
+[%  jsFiles = [
+        'js/vendor/raphael.min',
+        'admin/config/items',
+        'js/node',
+        'js/user',
+        'js/upgrades'
+        ]
+    cssFiles = [
+       'admin/upgrades'
+       ]
+-%]
+[% MACRO list_entry(action,description) BLOCK %]
+              <li[% IF section == action %] class="active"[% END %]>
+                <a href="#[% action %]">[% l(description) %]</a>
+              </li>
+[% END -%]
+<div>
+  <div class="spacing">
+    <section class="card">
+      <div class="card-block">
+        <div class="upgrade-header">
+          <h1 class="center-title">Upgrade</h1>
+          <p>[% l('This is where you can upgrade to the version you need. There is no downgrading.') %]
+            <br>[% l('Press the upgrade button below to begin the upgrade.') %]
+          </p>
+        </div>
+        <div class="upgrade-body">
+          <div class="version-number">
+             <h2><b>1.0.1</b></h2>
+             <div class="upgrade-area">
+                 <button class="btn btn-primary upgrade-button" id="upgrade-button">
+                   <span class="content">[% l('Upgrade') %]</span>
+                 </button>
+                 <div class="progress-bar-content">
+                     <div id="progress-bar">
+                       <div id="progress">
+  2                    </div>
+                     </div>
+                     <div class="progressText">
+                       <p>[% l('Upgrades finished') %]: <span class="upgrade-detail-loading"></span> <span id="finished-upgrade-part"></span> / 100%</p>
+                     </div>
+                </div>
+              </div>
+            <div><b><a href="https://docs.aerohive.com/a3/v1.0/release-notes.htm">[% l('More details about version 1.0.1') %]</a></b></div>
+          </div>
+          <div class="upgrade-details">
+             <div class="detail-box">
+               <p>(1) Some upgrade detail.
+                 <br>(2) Some upgrade detail.Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail.
+                 <br>(3) Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail.
+                 <br>(4) Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail. Some upgrade detail.
+               </p>
+            </div>
+          </div>
+        </div>
+      </div><!--end of card block-->
+    </section>
+  </div>
+</div>

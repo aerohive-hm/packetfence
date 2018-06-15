@@ -60,7 +60,11 @@ sub key :Path('key') :Args(1) {
             }
         }
         else {
-            $c->stash->{entitlement} = make_ek_hash($ek);
+            if ($ek->{err_status} == undef){
+                $c->stash->{status_msg} = $c->loc("Unable to validate entitlement key at this time. Try again later.");
+            } else {
+                $c->stash->{entitlement} = make_ek_hash($ek);
+            }
         }
     }
     elsif ($c->request->method eq 'GET') {
@@ -112,7 +116,6 @@ sub licenseKeys :Path('licenseKeys') :Args(0) {
 =head2 trial
 
 Initiate trial / get trial status
-
 Usage: /entitlement/trial
 
 =cut

@@ -1,10 +1,5 @@
 
 $(document).ready(function(){
-  var licenseCapacity = document.getElementById("licenseCapa");
-  var usedCapacity = document.getElementById("usedCapacity");
-  var usedCapacity2 = $("#usedCapacity");
-  var usedCapacity3 = $("#usedCapacitySpan");
-  var licenseCapacity3 = $("#licenseCapaSpan");
 
   applyKeyButton();
 
@@ -16,8 +11,7 @@ $(document).ready(function(){
   });
   $('.submitAgreement').click(function(){
       userSubmitEula();
-  })
-
+  });
 });
 
 // apply button press
@@ -25,7 +19,6 @@ function applyKeyButton(){
   var applyKeyButton2 = $("#applyKey");
   applyKeyButton2.click(function(){
     var userKeyInput = document.getElementById('keyInput').value;
-    console.log(checkKeyInput(userKeyInput));
     checkKeyInput(userKeyInput);
     if (checkKeyInput(userKeyInput)){
         $(".errMsg").css('display', 'none');
@@ -48,7 +41,6 @@ function updateKeyTable(userKeyInput) {
         type : 'PUT',
         dataType : 'json'
         }).done(function(data){
-           var checkFirstCharOfInput = userKeyInput.charAt(0);
            var errMsg = data.status_msg;
            if (errMsg != null ) {
                document.getElementById('errorMessage').innerHTML = errMsg;
@@ -56,22 +48,14 @@ function updateKeyTable(userKeyInput) {
                setTimeout(function () {
                  $("#success-alert").slideUp(500);
                }, 3000);
-           }
-
-           openEulaModal();
-           $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
-           $("#licenseCapa").load(window.location + " #licenseCapa");
-           $("#trialIndicator").load(window.location + " #trialIndicator");
-
-           //update capacity
-           var capacity = $("#licenseCapa").attr("data-capacity");
-           capacity = $("#licenseCapa").attr('data-capacity', document.getElementById('licenseCapa').innerHTML);
-           if (capacity >= 100000){
-               document.getElementById('licenseCapa').innerHTML = "Unlimited";
+           } else {
+               openEulaModal();
+               $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
+               $("#licenseCapa").load(window.location + " #licenseCapa");
+               $("#trialIndicator").load(window.location + " #trialIndicator");
            }
            return true;
         }).fail(function(xhr, status, error){
-           console.log("updateKeyTable error: ");
            console.log(error);
            return false;
         });
@@ -81,8 +65,7 @@ function updateKeyTable(userKeyInput) {
 function checkKeyInput(userKeyInput){
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
     var applyKeyButton2 = $("#applyKey");
-    console.log(" checking: ");
-    console.log(checkKeyRegex.test(userKeyInput)); //TRUE OR FALSE
+    //TRUE OR FALSE
     if (checkKeyRegex.test(userKeyInput)){
         $("#keyInput").css('border','1px solid #dfdfdf');
         return true;

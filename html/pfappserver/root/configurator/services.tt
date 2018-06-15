@@ -46,7 +46,6 @@
     <div class="card">
 	    <div style="padding:25px 25px;">
         <div id="movingLogo">
-          <!-- <img class="aerohiveLogo" src="[% c.uri_for('/static/configurator/loadingicon.svg') %]"  width="175" height="200"></img> -->
           <!--hexagon-->
           <svg width="300px" height="178px" version="1.1">
               <path fill="transparent" stroke-dasharray="15, 10, 5, 10" stroke="#dddddd" stroke-width="1" d="M148.9,6 51.1,6 2.2,90.7 51.1,175.4 148.9,175.4 197.8,90.7 z" class="path"></path>
@@ -60,7 +59,7 @@
           </div>
         </div>
         <div class="progressText">
-          <p>Daemons started: <span id="daemons"></span> / [% services.size %]</p>
+          <p>[% l('Daemons started') %]: <span id="daemons"></span> / [% services.size %]</p>
         </div>
 	    </div>
     </div><!--end of card-->
@@ -70,7 +69,7 @@
           <div class="card-block">
             <div class="start-button">
               <form class="form-horizontal">
-                <h3 style="margin:0 auto; display: table;">Press Start A3 to start services.</h3>
+                <h3 style="margin:0 auto; display: table;">[% l('Press Start A3 to start services') %].</h3>
                 <div class="form-actions" style="padding-left: 15px !important;">
                   <button id="startA3button" type="submit" style="width: 100%;float:left;" class="btn btn-primary [% UNLESS completed %] disabled[% END %]" href="[% next_step %]">[% l('Start A3') %]</button>
                 </div>
@@ -78,7 +77,7 @@
             </div>
           </div>
           <div class="card-block">
-        	  <div class="btn btn-primary" id="details"> More Details</div>
+        	  <div class="btn btn-primary" id="details">[% l('More Details') %]</div>
         	  <div id="daemonTable">
                   <table class="table">
                     <thead>

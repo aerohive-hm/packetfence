@@ -90,7 +90,7 @@
                     <div class="agree">
                         <label class="agreeToEula">
                             <input type="checkbox" id="agreeToEula" value="agree">
-                            <span id="checkmark"></span>
+                            <span id="checkmark" style="margin-left: 190px;"></span>
                         </label><span class="agreeText">[% l('Agree') %]</span>
                     </div>
                     <button type="button" class="btn btn-success submitAgreement">[% l('Submit') %]</button>

@@ -24,3 +24,5 @@ sources=
 provisioners=
 access_registration_when_registered=disabled
 device_registration=
+dpsk=disabled
+status=enabled

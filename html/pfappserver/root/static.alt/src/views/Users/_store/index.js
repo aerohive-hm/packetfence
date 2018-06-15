@@ -1,69 +1,32 @@
 /**
- * "$_users" store module
- */
+* "$_users" store module
+*/
 import Vue from 'vue'
 import api from '../_api'
 
-const STORAGE_SEARCH_LIMIT_KEY = 'users-search-limit'
-
 // Default values
 const state = {
-  items: [], // search results
-  users: {}, // users details
+  items: {}, // users details
   message: '',
-  userStatus: '',
-  searchStatus: '',
-  searchQuery: null,
-  searchSortBy: 'pid',
-  searchSortDesc: false,
-  searchMaxPageNumber: 1,
-  searchPageSize: localStorage.getItem(STORAGE_SEARCH_LIMIT_KEY) || 10
+  userStatus: ''
 }
 
 const getters = {
-  isLoading: state => state.userStatus === 'loading',
-  isLoadingResults: state => state.searchStatus === 'loading'
+  isLoading: state => state.userStatus === 'loading'
 }
 
 const actions = {
-  setSearchQuery: ({commit}, query) => {
-    commit('SEARCH_QUERY_UPDATED', query)
-    commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
-  },
-  setSearchPageSize: ({commit}, limit) => {
-    localStorage.setItem(STORAGE_SEARCH_LIMIT_KEY, limit)
-    commit('SEARCH_LIMIT_UPDATED', limit)
-    commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
-  },
-  setSearchSorting: ({commit}, params) => {
-    commit('SEARCH_SORT_BY_UPDATED', params.sortBy)
-    commit('SEARCH_SORT_DESC_UPDATED', params.sortDesc)
-    commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
-  },
-  search: ({state, getters, commit, dispatch}, page) => {
-    let sort = [state.searchSortDesc ? `${state.searchSortBy} DESC` : state.searchSortBy]
-    let body = {
-      cursor: state.searchPageSize * (page - 1),
-      limit: state.searchPageSize,
-      sort
-    }
-    let apiPromise = state.searchQuery ? api.search(Object.assign(body, {query: state.searchQuery})) : api.all(body)
-    return new Promise((resolve, reject) => {
-      commit('SEARCH_REQUEST')
-      apiPromise.then(response => {
-        commit('SEARCH_SUCCESS', response)
-        resolve(response)
-      }).catch(err => {
-        commit('SEARCH_ERROR', err.response)
-        reject(err)
-      })
-    })
-  },
   getUser: ({commit, state}, pid) => {
+    if (state.items[pid]) {
+      return Promise.resolve(state.items[pid])
+    }
     commit('USER_REQUEST')
     return api.user(pid).then(data => {
       commit('USER_REPLACED', data)
-      return state.users[pid]
+      return state.items[pid]
+    }).catch(err => {
+      commit('USER_ERROR', err.response)
+      return err
     })
   },
   createUser: ({commit}, data) => {
@@ -104,49 +67,17 @@ const actions = {
 }
 
 const mutations = {
-  SEARCH_QUERY_UPDATED: (state, query) => {
-    state.searchQuery = query
-  },
-  SEARCH_SORT_BY_UPDATED: (state, field) => {
-    state.searchSortBy = field
-  },
-  SEARCH_SORT_DESC_UPDATED: (state, desc) => {
-    state.searchSortDesc = desc
-  },
-  SEARCH_MAX_PAGE_NUMBER_UPDATED: (state, page) => {
-    state.searchMaxPageNumber = page
-  },
-  SEARCH_LIMIT_UPDATED: (state, limit) => {
-    state.searchPageSize = limit
-  },
-  SEARCH_REQUEST: (state) => {
-    state.searchStatus = 'loading'
-  },
-  SEARCH_SUCCESS: (state, response) => {
-    state.searchStatus = 'success'
-    state.items = response.items
-    let nextPage = Math.floor(response.nextCursor / state.searchPageSize) + 1
-    if (nextPage > state.searchMaxPageNumber) {
-      state.searchMaxPageNumber = nextPage
-    }
-  },
-  SEARCH_ERROR: (state, response) => {
-    state.searchStatus = 'error'
-    if (response && response.data) {
-      state.message = response.data.message
-    }
-  },
   USER_REQUEST: (state) => {
     state.userStatus = 'loading'
   },
   USER_REPLACED: (state, data) => {
-    Vue.set(state.users, data.pid, data)
+    Vue.set(state.items, data.pid, data)
     // TODO: update items if found in it
     state.userStatus = 'success'
   },
   USER_DESTROYED: (state, pid) => {
     state.userStatus = 'success'
-    Vue.set(state.users, pid, null)
+    Vue.set(state.items, pid, null)
   },
   USER_ERROR: (state, response) => {
     state.userStatus = 'error'

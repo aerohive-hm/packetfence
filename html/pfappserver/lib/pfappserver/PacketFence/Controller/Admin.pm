@@ -528,6 +528,17 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 }
 
 
+=head2 upgrades
+
+=cut
+
+sub upgrades :Chained('object') :PathPart('upgrades') :Args(0){
+    my( $self, $c ) = @_;
+    if ($c->request->method eq 'POST') {
+        $c->stash->{current_view} = 'JSON';
+    }
+}
+
 =head1 COPYRIGHT
 
 Copyright (C) 2005-2018 Inverse inc.

@@ -7919,6 +7919,15 @@ msgstr "ID du système:"
 msgid "System state"
 msgstr "Etat du système"
 
+# html/pfappserver/root/admin/status.tt
+msgid "Upgrade"
+msgstr "Mettre à Niveau"
+
+
+# html/pfappserver/root/admin/status.tt
+msgid "Upgrades finished"
+msgstr "Mises à niveau terminées"
+
 # conf/documentation.conf (general.timezone)
 msgid "System's time zone in string format. List generated from Perl library DataTime::TimeZoneWhen left empty, it will use the time zone of the server."
 msgstr "Fuseau horaire du système en temps que chaîne. Liste générée à partir de la librairie Perl DateTime::TimeZone"

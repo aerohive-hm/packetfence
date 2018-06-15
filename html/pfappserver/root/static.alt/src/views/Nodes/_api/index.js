@@ -5,6 +5,9 @@ export default {
     if (params.sort) {
       params.sort = params.sort.join(',')
     }
+    if (params.fields) {
+      params.fields = params.fields.join(',')
+    }
     return apiCall.get('nodes', { params }).then(response => {
       return response.data
     })
@@ -16,6 +19,11 @@ export default {
   },
   node: mac => {
     return apiCall.get(`node/${mac}`).then(response => {
+      return response.data.item
+    })
+  },
+  fingerbankInfo: mac => {
+    return apiCall.get(`node/${mac}/fingerbank_info`).then(response => {
       return response.data.item
     })
   },
@@ -71,5 +79,40 @@ export default {
   },
   deleteNode: mac => {
     return apiCall.delete(`node/${mac}`)
+  },
+  registerBulkNodes: macs => {
+    const body = { items: macs }
+    return apiCall.post('nodes/bulk_register', body).then(response => {
+      return response.data
+    })
+  },
+  deregisterBulkNodes: macs => {
+    const body = { items: macs }
+    return apiCall.post('nodes/bulk_deregister', body).then(response => {
+      return response.data
+    })
+  },
+  clearViolationNode: mac => {
+    return apiCall.post(`node/${mac}/closeviolations`).then(response => {
+      return response.data
+    })
+  },
+  clearViolationBulkNodes: macs => {
+    const body = { items: macs }
+    return apiCall.post('nodes/bulk_close_violations', body).then(response => {
+      return response.data
+    })
+  },
+  reevaluateAccessBulkNodes: macs => {
+    const body = { items: macs }
+    return apiCall.post('nodes/bulk_reevaluate_access', body).then(response => {
+      return response.data
+    })
+  },
+  restartSwitchportBulkNodes: macs => {
+    const body = { items: macs }
+    return apiCall.post('nodes/bulk_restart_switchport', body).then(response => {
+      return response.data
+    })
   }
 }
