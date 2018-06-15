@@ -17,4 +17,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # TODO: Randomize the date and time for a3ec on install
 0     0  1   *   *   pf  /usr/local/pf/bin/a3ec
 */30  *  *   *   *   pf  /usr/local/pf/bin/a3us
-10    0  *   *   *   pf  /usr/local/pf/bin/ahusavg
+10    0  *   *   *   pf  /usr/local/pf/bin/a3ma
