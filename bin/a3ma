@@ -45,9 +45,10 @@ if ($pf::cluster::cluster_enabled && ! pf::cluster::is_management()) {
 (my $temp_daily_avg_fh, my $temp_daily_avg_file) = tempfile(UNLINK => 1);
 
 
-my $today   = strftime( "%Y-%m-%d", gmtime(time()) );
-# we sample at each 30min, so 24hr = 48 timestamps
-my $num_sample = 48;
+#we run this at 00:45, so an hour ago would be yesterday's date
+my $today   = strftime( "%Y-%m-%d", gmtime(time() - 60 * 60) );
+# we sample usage hourly, so today's avg is the previous 24 hours of samples
+my $num_sample = 24;
 
 #query for last inserted 48 hours of data
 my ($status, $iter) = pf::dal::a3_usage_sample->search(
