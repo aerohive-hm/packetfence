@@ -14,6 +14,7 @@ my $upgrade_log = '/tmp/a3_upgrade.log';
 my $a3_dir = '/usr/local/pf';
 my $a3_release = "$a3_dir/conf/pf-release";
 my $a3_db_dir = "$a3_dir/db";
+my $a3_conf_migration_dir = "$a3_dir/conf_migration";
 my $a3_upgrade_path = "$a3_db_dir/upgrade_path";
 my $a3_pkg = 'A3';
 my $a3_db = 'A3';
@@ -22,6 +23,7 @@ my $current_version;
 my $to_version;
 my @upgrade_path_list;
 my @db_schema_files;
+my @conf_migration_files;
 
 open my $log_fh, '>>', $upgrade_log;
 
@@ -161,10 +163,8 @@ sub execute_upgrade {
   } 
 }
 
-
-
-sub check_db_schema_file {
-  open my $fh, '<', "$a3_upgrade_path" or die "Unable to locate upgrade path file, $!";
+sub generate_upgrade_patch_list {
+ open my $fh, '<', "$a3_upgrade_path" or die "Unable to locate upgrade path file, $!";
   my $count = 0;
   # get the upgrade list from upgrade path file (From to To only)
   while (<$fh>) {
@@ -186,6 +186,10 @@ sub check_db_schema_file {
   }
   print "Here the upgrade path list is @upgrade_path_list";
   commit_upgrade_log("The upgrade path is @upgrade_path_list");
+}
+
+
+sub check_db_schema_file {
   for (0..$#upgrade_path_list-1) {
     push @db_schema_files, "upgrade-".$upgrade_path_list[$_]."-".$upgrade_path_list[$_+1].".sql";
   }
@@ -195,6 +199,20 @@ sub check_db_schema_file {
 	A3_Die("The DB Delta script for $_ is not exist, fatal!!");
     }
   }
+
+}
+
+sub check_conf_migration_file {
+  for (0..$#upgrade_path_list-1) {
+    push @conf_migration_files, "conf_migration-".$upgrade_path_list[$_]."-".$upgrade_path_list[$_+1].".sh";
+  }
+  commit_upgrade_log("The conf migration files need to be applied are @conf_migration_files");
+  foreach (@conf_migration_files) {
+    if (! -e $a3_conf_migration_dir."/".$_) {
+        A3_Die("The conf migration script for $_ is not exist, fatal!!");
+    }
+  }
+
 
 }
 
@@ -208,6 +226,12 @@ sub apply_db_upgrade_schema {
     }
   }
   commit_upgrade_log("All DB schema applied!"); 
+}
+
+sub apply_conf_migration {
+  foreach (@conf_migration_files) {
+    system "$a3_conf_migration_dir/$_";
+  }
 }
 
 sub clean_up {
@@ -243,11 +267,14 @@ if (check_up_to_date()) {
 #clean_up();
 get_current_version();
 get_to_version();
+generate_upgrade_patch_list();
+check_db_schema_file();
+check_conf_migration_file();
 dump_db();
 dump_app();
 stop_services();
 execute_upgrade();
-check_db_schema_file();
 apply_db_upgrade_schema();
+apply_conf_migration();
 find_rpmnew();
 post_upgrade();
