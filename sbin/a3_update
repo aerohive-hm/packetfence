@@ -7,7 +7,7 @@ use File::Find;
 
 my $db_info = '/usr/local/pf/conf/dbinfo.A3';
 my $centos_base = 'mirrorlist.centos.org';
-my $debug = 1;
+my $debug = 0;
 my $db_dump = '/tmp/packetfence_db.sql';
 my $app_dump = '/tmp/packetfence_app.tar.gz';
 my $upgrade_log = '/tmp/a3_upgrade.log';
@@ -59,7 +59,7 @@ sub dump_db {
     print "We have password $db_passwd\n";
   }
   commit_upgrade_log("Starting DB dump");
-  my $ret = `mysqldump --opt -u root -p$db_passwd $a3_db ; echo $?`;
+  my $ret = system ("mysqldump --opt -u root -p$db_passwd $a3_db > $db_dump");
   if ($ret != 0) {
     commit_upgrade_log('DB dump failed!!');
     die "DB dump failed!!\n";
@@ -87,6 +87,7 @@ sub stop_services {
     commit_upgrade_log("Packetfence config service is not running");
     die "Packetfence config service is not running\n";
   }
+  commit_upgrade_log("Services stop starting");
   foreach (@service_stop_cmd) {
     unless(!system $_) {
       commit_upgrade_log("Unable to stop service $_");
@@ -147,7 +148,7 @@ sub get_to_version {
 sub execute_app_upgrade {
   my @all_pkgs;
   my $cmd = "yum update ";
-  open CMD, '-|', "yum list $a3_pkg*|sed '1,/Available/d'|awk '{print \$1}'" or die $@;
+  open CMD, '-|', "yum list $a3_pkg*|sed '1,/Available/d'|awk '{print \$1}'|tee -a $upgrade_log" or die $@;
   while (<CMD>) {
     chomp($_);
     push @all_pkgs, $_;
@@ -158,7 +159,7 @@ sub execute_app_upgrade {
   print "The cmd is $cmd";
   $cmd .= " -y";
   commit_upgrade_log("Update pkg cmd is $cmd");
-  if (system($cmd)) {
+  if (system($cmd|tee -a $upgrade_log)) {
     A3_Warn("Unable to update A3 pkgs, please check and rolling back!!");
     roll_back("app");
   } 
