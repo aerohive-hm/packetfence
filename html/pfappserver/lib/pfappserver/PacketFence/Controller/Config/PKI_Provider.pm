@@ -96,8 +96,8 @@ sub acceptCertificate :Args(1) {
     my $logger = get_logger();
 
     #make and get file name
-    $template = "mytempfileXXXXXX";
-    ($fh, $filename) = tempfile($template, SUFFIX => ".pem");
+    my $template = "mytempfileXXXXXX";
+    (my $fh, my $filename) = tempfile($template, SUFFIX => ".pem");
     # print "filename: $filename";
 
     # get file type
