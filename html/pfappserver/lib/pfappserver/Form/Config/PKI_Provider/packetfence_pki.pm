@@ -13,6 +13,7 @@ use HTML::FormHandler::Moose;
 
 extends 'pfappserver::Base::Form';
 with 'pfappserver::Base::Form::Role::Help';
+use HTML::FormHandler::Field::Upload;
 
 has_field 'id' => (
     type        => 'Text',

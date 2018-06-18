@@ -116,45 +116,73 @@ function openAlmostExpiredModal(){
     $('#myModal').modal('show');
 }
 
-// function updateModaljs(){
-//   //
-//       $("#client_cert_path").after("<span id='val'></span>");
-//       $("#client_key_path").after("<span id='val2'></span>");
-//       $("#ca_cert_path").after("<span id='val3'></span>");
-//       $("#server_cert_path").after("<span id='val4'></span>");
+function updatePkiCertModal(){
+  //
+  console.log("inside update Pki Cert function");
+  if ($("element").data('bs.modal') && $("element").data('bs.modal').isShown){
+    console.log("checking if visible");
+      $("#client_cert_path").after("<span id='val'></span>");
+      $("#client_key_path").after("<span id='val2'></span>");
+      $("#ca_cert_path").after("<span id='val3'></span>");
+      $("#server_cert_path").after("<span id='val4'></span>");
+
+  // $("input[type='file']").after("<span id='val'></span>");
+
+      $("#client_cert_path").click(function () {
+          $("#client_cert_path").trigger('click');
+      });
+
+      $("#client_key_path").click(function () {
+          $("#client_key_path").trigger('click');
+      });
+
+      $("#ca_cert_path").click(function () {
+          $("#ca_cert_path").trigger('click');
+      });
+
+      $("#server_cert_path").click(function () {
+          $("#server_cert_path").trigger('click');
+      });
+
+      $("#client_cert_path").change(function () {
+          $('#val').text(this.value.replace(/C:\\fakepath\\/i, ''))
+      });
+
+      $("#client_cert_path").click(function() {
+        $("input[type='file']").trigger('click');
+      });
+    }
+}
+
+// function showFileSize() {
+//     console.log(" in show file size");
+//     var input, file;
 //
-//   // $("input[type='file']").after("<span id='val'></span>");
+//     if (!window.FileReader) {
+//         alert("The file API isn't supported on this browser yet.");
+//         return;
+//     }
 //
-//       $("#client_cert_path").click(function () {
-//           $("#client_cert_path").trigger('click');
-//       });
-//
-//       $("#client_key_path").click(function () {
-//           $("#client_key_path").trigger('click');
-//       });
-//
-//       $("#ca_cert_path").click(function () {
-//           $("#ca_cert_path").trigger('click');
-//       });
-//
-//       $("#server_cert_path").click(function () {
-//           $("#server_cert_path").trigger('click');
-//       });
-//
-//       $("#client_cert_path").change(function () {
-//           $('#val').text(this.value.replace(/C:\\fakepath\\/i, ''))
-//       });
-//
-//       $("#client_cert_path").click(function() {
-//         $("input[type='file']").trigger('click');
-//       });
+//     input = document.getElementById('client_cert_path');
+//     if (!input) {
+//         bodyAppend("p", "Um, couldn't find the fileinput element.");
+//     }
+//     else if (!input.files) {
+//         bodyAppend("p", "This browser doesn't seem to support the `files` property of file inputs.");
+//     }
+//     else if (!input.files[0]) {
+//         bodyAppend("p", "Please select a file before clicking 'Load'");
+//     }
+//     else {
+//         file = input.files[0]; console.log(file);
+//         bodyAppend("p", "File " + file.name + " is " + file.size + " bytes in size");
+//     }
 // }
+// function bodyAppend(tagName, innerHTML) {
+//    console.log("in body append");
+//     var elm;
 //
-//
-// function validateFile(file) {
-// //api call function
-// }
-//
-// function apiValidateCert(){
-//
+//     elm = document.createElement(tagName);
+//     elm.innerHTML = innerHTML;
+//     $("#client_cert_path").append(elm);
 // }
