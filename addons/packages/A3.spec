@@ -1189,6 +1189,8 @@ fi
                         /usr/local/pf/conf/report.conf.example
 %config(noreplace)      /usr/local/pf/conf/traffic_shaping.conf
                         /usr/local/pf/conf/traffic_shaping.conf.example
+%dir                    /usr/local/pf/conf_migration
+%attr(0755, pf, pf)     /usr/local/pf/conf_migration/*
 %dir                    /usr/local/pf/db
                         /usr/local/pf/db/a3-schema-*.sql
                         /usr/local/pf/db/pf-schema.sql
@@ -1320,6 +1322,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/sbin/system-id
 %attr(0755, pf, pf)     /usr/local/pf/sbin/winbindd-wrapper
 %attr(0755, pf, pf)     /usr/local/pf/sbin/radsniff-wrapper
+%attr(0755, pf, pf)     /usr/local/pf/sbin/a3-update
 %dir                    /usr/local/pf/var
 %dir                    /usr/local/pf/var/conf
 %dir                    /usr/local/pf/raddb

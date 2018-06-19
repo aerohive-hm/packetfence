@@ -206,7 +206,7 @@ sub check_db_schema_file {
 
 sub check_conf_migration_file {
   for (0..$#upgrade_path_list-1) {
-    push @conf_migration_files, "conf_migration-".$upgrade_path_list[$_]."-".$upgrade_path_list[$_+1].".sh";
+    push @conf_migration_files, "conf_migration-".$upgrade_path_list[$_]."-".$upgrade_path_list[$_+1];
   }
   commit_upgrade_log("The conf migration files need to be applied are @conf_migration_files");
   foreach (@conf_migration_files) {
