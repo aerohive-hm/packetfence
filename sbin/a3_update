@@ -159,7 +159,7 @@ sub execute_app_upgrade {
   print "The cmd is $cmd";
   $cmd .= " -y";
   commit_upgrade_log("Update pkg cmd is $cmd");
-  if (system($cmd|tee -a $upgrade_log)) {
+  if (system("$cmd|tee -a $upgrade_log")) {
     A3_Warn("Unable to update A3 pkgs, please check and rolling back!!");
     roll_back("app");
   } 
@@ -217,7 +217,7 @@ sub check_conf_migration_file {
 }
 
 sub unpack_app_back {
-  if (! system "tar xfz $app_dump") {
+  unless (! system "tar xfz $app_dump -C /tmp") {
     A3_Die("Unable to unpack the app dump file!");
   }
 }
@@ -227,7 +227,7 @@ sub restore_conf_file {
   #remove suffix
   $app_dump_copy =~ s/\..*$//;
   commit_upgrade_log("Restoring conf files");
-  system "rm -rf $a3_dir/conf/*;cp -rf $app_dump_copy/conf/* $a3_dir/conf/";
+  system "rm -rf /tmp/pf/conf/*;cp -rf $app_dump_copy/conf/* $a3_dir/conf/";
 }
 
 sub roll_back_db {
@@ -242,10 +242,12 @@ sub roll_back_db {
 sub roll_back_app {
   unpack_app_back();
   my $rpm_version = `rpm -qa $a3_pkg|awk -F- '{print \$2}'`;
+  chomp $rpm_version;
   #There are possible 3 situations after failure of yum update A3
   #1)old rpm is removed, and new rpm is not installed
-  #2)old rpm is partially removed, and new rpm is not installed(probabyl we will get there per rpm update mechanism)
+  #2)old rpm is partially removed, and new rpm is not installed(probabyl we will not get there per rpm update mechanism)
   #3)new rpm is partially installed
+  commit_upgrade_log("rpm version is $rpm_version and current_version is $current_version");
   if (! $rpm_version) {
     unless(! system "yum install $a3_pkg."-".$current_version -y|tee -a $upgrade_log") {
       A3_Die("Failed to rollback application, realy Die!!");
