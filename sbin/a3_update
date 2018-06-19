@@ -5,12 +5,14 @@ use warnings;
 use POSIX ();
 use File::Find;
 
+`mkdir -p /tmp/a3_update_$$`;
 my $db_info = '/usr/local/pf/conf/dbinfo.A3';
 my $centos_base = 'mirrorlist.centos.org';
 my $debug = 0;
-my $db_dump = '/tmp/packetfence_db.sql';
-my $app_dump = '/tmp/packetfence_app.tar.gz';
-my $upgrade_log = '/tmp/a3_upgrade.log';
+my $tmp_dir = "/tmp/a3_update_$$";;
+my $db_dump = "$tmp_dir/packetfence_db.sql";
+my $app_dump = "$tmp_dir/packetfence_app.tar.gz";
+my $upgrade_log = "$tmp_dir/a3_upgrade.log";
 my $a3_dir = '/usr/local/pf';
 my $a3_release = "$a3_dir/conf/pf-release";
 my $a3_db_dir = "$a3_dir/db";
@@ -217,7 +219,7 @@ sub check_conf_migration_file {
 }
 
 sub unpack_app_back {
-  unless (! system "tar xfz $app_dump -C /tmp") {
+  unless (! system "tar xfz $app_dump -C $tmp_dir") {
     A3_Die("Unable to unpack the app dump file!");
   }
 }
@@ -227,7 +229,7 @@ sub restore_conf_file {
   #remove suffix
   $app_dump_copy =~ s/\..*$//;
   commit_upgrade_log("Restoring conf files");
-  system "rm -rf /tmp/pf/conf/*;cp -rf $app_dump_copy/conf/* $a3_dir/conf/";
+  system "rm -rf /$a3_dir/conf/*;cp -rf $tmp_dir/pf/conf/* $a3_dir/conf/";
 }
 
 sub roll_back_db {
@@ -254,10 +256,9 @@ sub roll_back_app {
     }
     #restore conf 
     restore_conf_file();
-    
-    
   }elsif ($rpm_version eq $current_version) {
-    commit_upgrade_log("To be done");
+    commit_upgrade_log("To be done more");
+    restore_conf_file();   
   }elsif ($rpm_version eq $to_version) {
     my $history_id = `yum history 2>/dev/null|egrep '[[:digit:]]{4}-'|awk -F'|' '{print \$1}'|head -1`;
     commit_upgrade_log("Start undo yum last upgrade");
