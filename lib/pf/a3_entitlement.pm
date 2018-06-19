@@ -61,12 +61,12 @@ sub get_current_moving_avg {
     );
     my $current_avg = $iter->all;
     if (is_success($status)) {
-        return $current_avg->{moving_avg};
+        return $STATUS::OK, $current_avg->{moving_avg};
 
     }
     else {
         $logger->error("Failed to get current moving avg");
-        return $FALSE;
+        return $STATUS::NOT_FOUND, undef;
     }
 
 }

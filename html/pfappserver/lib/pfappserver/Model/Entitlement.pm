@@ -148,13 +148,13 @@ Compares the entitlement endpoint limit with daily moving usage avg
 
 =cut
 
-sub is_current_entitlement_under_limit {
-    my $current_moving_avg = pf::a3_entitlement::get_current_moving_avg();
-    if ($current_moving_avg <= get_licensed_capacity()) {
-        return $TRUE;
+sub is_current_usage_under_limit {
+    my ($status, $current_moving_avg) = pf::a3_entitlement::get_current_moving_avg();
+    if (is_success($status)) {
+        return $STATUS::OK, $current_moving_avg <= get_licensed_capacity();
     }
     else {
-        return $FALSE;
+        return $STATUS::NOT_FOUND;
     }
 }
 
