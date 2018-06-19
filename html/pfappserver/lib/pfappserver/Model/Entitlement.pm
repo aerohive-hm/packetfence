@@ -142,6 +142,22 @@ sub get_used_capacity {
     return pf::node::node_count_active();
 }
 
+=head2 is_current_entitlement_under_limit
+
+Compares the entitlement endpoint limit with daily moving usage avg
+
+=cut
+
+sub is_current_entitlement_under_limit {
+    my $current_moving_avg = pf::a3_entitlement::get_current_moving_avg();
+    if ($current_moving_avg <= get_licensed_capacity()) {
+        return $TRUE;
+    }
+    else {
+        return $FALSE;
+    }
+}
+
 =head2 is_trial_eligible
 
 Return whether this A3 system is eligible for a trial
