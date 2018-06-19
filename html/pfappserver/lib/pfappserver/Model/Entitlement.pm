@@ -142,7 +142,7 @@ sub get_used_capacity {
     return pf::node::node_count_active();
 }
 
-=head2 is_current_entitlement_under_limit
+=head2 is_current_usage_under_limit
 
 Compares the entitlement endpoint limit with daily moving usage avg
 
@@ -155,6 +155,23 @@ sub is_current_usage_under_limit {
     }
     else {
         return $STATUS::NOT_FOUND;
+    }
+}
+
+=head2 is_current_entitlement_expired
+
+Checks whether the entitlement is expired
+
+=cut
+
+sub is_current_entitlement_expired {
+    my $entitlements = pf::a3_entitlement::find_all();
+    my ($trial_status, $trial_info) = get_trial_info();
+    if (is_success($trial_status)) {
+        return $trial_info->{is_expired} && @$entitlements == 0;
+    }
+    else {
+        return @$entitlements == 0;
     }
 }
 
