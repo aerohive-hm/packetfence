@@ -165,13 +165,13 @@ Checks whether the entitlement is expired
 =cut
 
 sub is_current_entitlement_expired {
-    my $entitlements = pf::a3_entitlement::find_all();
+    my $active_entitlements = pf::a3_entitlement::find_active();
     my ($trial_status, $trial_info) = get_trial_info();
     if (is_success($trial_status)) {
-        return $trial_info->{is_expired} && @$entitlements == 0;
+        return $trial_info->{is_expired} && @$active_entitlements == 0;
     }
     else {
-        return @$entitlements == 0;
+        return @$active_entitlements == 0;
     }
 }
 
