@@ -482,6 +482,7 @@ done
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons/AD
 %{__install} -d -m2770 $RPM_BUILD_ROOT/usr/local/pf/conf
+%{__install} -d -m2770 $RPM_BUILD_ROOT/usr/local/pf/conf_migration
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/conf/radiusd
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/conf/ssl
 %{__install} -d -m2775 $RPM_BUILD_ROOT%logdir
@@ -532,6 +533,7 @@ rmdir addons/pfarp_remote
 cp -r db $RPM_BUILD_ROOT/usr/local/pf/
 cp -r html $RPM_BUILD_ROOT/usr/local/pf/
 cp -r lib $RPM_BUILD_ROOT/usr/local/pf/
+cp conf_migration/* $RPM_BUILD_ROOT/usr/local/pf/conf_migration/
 
 mkdir $RPM_BUILD_ROOT/usr/local/pf/docs
 cp docs/pfcmd.help $RPM_BUILD_ROOT/usr/local/pf/docs
