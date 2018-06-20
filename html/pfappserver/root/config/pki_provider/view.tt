@@ -4,6 +4,32 @@
 [%ELSE%]
 [% SET action_uri = c.req.uri %]
 [% END %]
+<style>
+.pki_alert {
+    padding: 10px;
+    background-color: #f44336;
+    color: white;
+    display: table;
+    margin: 0 auto;
+    z-index: 15;
+    display:none;
+}
+
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.closebtn:hover {
+    color: black;
+}
+</style>
 <form name="modalItem" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
   [%- IF item.id %]<input type="hidden" name="id" value="[% item.id | html %]">[% END %]
   <div class="modal-header">
@@ -11,12 +37,17 @@
     <h3>[% IF item %]<i>[% l('PKI Provider') %]</i> [% item.id | html %][% ELSE %][% l('New PKI Provider') %][% END %]</h3>
   </div>
 
+  <div class="alert pki_alert">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    <span id="pki_alert_error_text"></span>
+  </div>
+
   <div class="modal-body pki-group">
-        <p style="padding-left: 27px; padding-bottom: 5px;">Please make sure your certificate file is within 1MB (1 megabyte or 1000000 bytes).</p>
-        [% form.field('id').render | none UNLESS item && item.id.defined %]
-        <div class="pki-group">
-        [% form.block('definition').render | none %]
-        </div>
+    <p style="padding-left: 27px; padding-bottom: 5px;">Please make sure your certificate file is within 1MB (1 megabyte or 1000000 bytes).</p>
+    [% form.field('id').render | none UNLESS item && item.id.defined %]
+    <div class="pki-group">
+    [% form.block('definition').render | none %]
+    </div>
   </div><!--modal-body-->
 
   <div class="modal-footer">
@@ -32,9 +63,11 @@ $(document).ready(function(){
   };
 });
 
-function showFileSize() {
+function showFileInfo() {
     console.log(" in show file size");
-    var input, file;
+    var input, input2, input3, input4;
+    var file, file2, file3, file4;
+    var filePath, fileSize;
 
     if (!window.FileReader) {
         alert("The File API isn't supported on this browser please change to Google Chrome.");
@@ -42,29 +75,64 @@ function showFileSize() {
     }
 
     input = document.getElementById('client_cert_path');
-    // console.log("input: " + input );
-    // console.log("file: " + file );
+    input2 = document.getElementById('client_key_path');
+    input2 = document.getElementById('ca_cert_path');
+    input2 = document.getElementById('server_cert_path');
+
+    console.log("client_cert_path: " + input);
+    console.log("client_key_path: " + input2);
+    console.log("ca_cert_path: " + input3);
+    console.log("server_cert_path: " + input4);
+
+    console.log("client_cert_path: " + file);
+    console.log("client_key_path: " + file2);
+    console.log("ca_cert_path: " + file3);
+    console.log("server_cert_path: " + file4);
+
+
     if (!input) {
-        bodyAppend("p", "Um, couldn't find the fileinput element.");
+        alertFile("p", "Couldn't find the file input element.");
     }
     else if (!input.files) {
-        bodyAppend("p", "This browser doesn't seem to support the `files` property of file inputs.");
+        alertFile("p", "This browser doesn't support the `files` property of file inputs.");
     }
     else if (!input.files[0]) {
-        bodyAppend("p", "Please select a file before clicking 'Load'");
+        alertFile("p", "Please select a file before clicking 'Load'");
     }
     else {
-        file = input.files[0]; console.log(file);
-        bodyAppend("p", "File " + file.name + " is " + file.size + " bytes in size");
+        file = input.files[0];
+        filePath = file.value;
+        fileSize = file.size/1024/1024;
+        console.log(file);
+        console.log(filePath);
+        if (file.size < 1){
+            if (file.value == ".pem"){
+                //call post request
+                processFiles();
+            }
+        }
+        alertFile("p", "File " + file.name + " is " + file.size + " bytes in size");
     }
 }
-function bodyAppend(tagName, innerHTML) {
-   console.log("in body append");
-    var elm;
 
+//shows alert balloon when there is an error.
+function alertFile(tagName, innerHTML) {
+    console.log("in body append");
+    var elm;
+    // $("#pki_alert_error_text").css("display",);
+    // $("#pki_alert_error_text").append = elm;
     elm = document.createElement(tagName);
     elm.innerHTML = innerHTML;
     console.log(elm);
     $(".controls").append(elm);
+}
+
+function processFiles(){
+  // $.ajax({
+  //     type: 'POST',
+  //     url: base_url + ''
+  //   }).success({
+  //
+  //   });
 }
 </script>

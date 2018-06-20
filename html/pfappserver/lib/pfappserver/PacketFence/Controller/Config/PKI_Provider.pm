@@ -94,50 +94,51 @@ sub create_type : Path('create') : Args(1) {
 sub acceptCertificate :Args(1) {
     my ($self, $c, $tempfile) = @_;
     my $logger = get_logger();
+    $logger->info("inside acceptCertificate!!!");
 
     #make and get file name
     my $template = "mytempfileXXXXXX";
     (my $fh, my $filename) = tempfile($template, SUFFIX => ".pem");
     # print "filename: $filename";
+    # $logger->info("$template");
 
     # get file type
     my $ft = File::Type->new();
     my $type_from_file = $ft->checktype_filename($tempfile);
     my $type_1 = $ft->mime_type($tempfile);
-    # print "type_1 $type_1";
-    # print "type from file $type_from_file"
 
     #get file size
     my $filesize = -s "$tempfile";
-    # print "Size: $filesize\n";
 
-    $logger->info("filesize: $filesize\n filename: $filename\n type from file: $type_from_file");
+    # $logger->info("filesize: $filesize\n filename: $filename\n type from file: $type_from_file");
     # post request, process
-    # if ($c->request->method eq 'POST'){
+    if ($c->request->method eq 'POST'){
         #check if tempfile is valid file
-        # my $checkCertificate = system "/usr/bin/openssl x509 -noout -text -in $tempfile";
+        my $checkCertificate = system "/usr/bin/openssl x509 -noout -text -in $tempfile";
         # print "checkCertificate:  $checkCertificate";
-        # if ($checkCertificate == 0){
+        if ($checkCertificate == 0){
         #check if type is .pem
-            # if ($type_1 == ".pem"){
+            if ($type_1 == ".pem"){
               #check if size is <1000000 bytes
-                # if ($filesize < 1000000){
+                if ($filesize < 1000000){
                      #take file name and change it
-
+                     #import rand library
+                     # $filename = mytempfile + rand;
                      #move to that location
+                     # file directory = /usr/local/pf/html/pfappserver
         #
-        #         }
-        #         else{
-        #             $c->stash->{error_msg} = $c->loc("Certificate size is too big. Try again.");
-        #         }
-        #     }
-        #     else{
-        #         $c->stash->{error_msg} = $c->loc("Certificate file is not correct. Try again.");
-        #     }
+                }
+                else{
+                    $c->stash->{error_msg} = $c->loc("Certificate size is too big. Try again.");
+                }
+            }
+            else{
+                $c->stash->{error_msg} = $c->loc("Certificate file is not correct. Try again.");
+            }
         #
-        # }
+        }
 
-    # }
+    }
 #     if ($checkCertificate == 0) {
 #         1. Tempfile save
 #         2. Check file size
