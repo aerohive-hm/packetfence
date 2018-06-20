@@ -66,7 +66,7 @@ sub get_current_moving_avg {
     }
     else {
         $logger->error("Failed to get current moving avg");
-        return $STATUS::NOT_FOUND, undef;
+        return $STATUS::NOT_FOUND;
     }
 
 }
@@ -85,7 +85,7 @@ sub get_current_moving_avg_count {
     }
     else {
         $logger->error("Failed to get the count of moving avg");
-        return $STATUS::NOT_FOUND, undef;
+        return $STATUS::NOT_FOUND;
     }
 
 }
