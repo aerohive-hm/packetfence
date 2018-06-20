@@ -55,7 +55,7 @@ Returns the current moving avg of daily usage samples
 
 sub get_current_moving_avg {
     my $logger = get_logger();
-    ($status, $iter) = pf::dal::a3_daily_avg->search(
+    my ($status, $iter) = pf::dal::a3_daily_avg->search(
         -limit => 1,
         -order_by => {-desc => 'daily_date'},
     );
@@ -70,6 +70,26 @@ sub get_current_moving_avg {
     }
 
 }
+
+=head2 get_current_moving_avg_count
+
+Returns the number of daily moving avg samples
+
+=cut
+
+sub get_current_moving_avg_count {
+    my $logger = get_logger();
+    my ($status, $count) = pf::dal::a3_daily_avg->count();
+    if (is_success($status)) {
+        return $STATUS::OK, $count;
+    }
+    else {
+        $logger->error("Failed to get the count of moving avg");
+        return $STATUS::NOT_FOUND, undef;
+    }
+
+}
+
 =head2 find_all
 
 Returns all of the entitlement keys applied to the current system
