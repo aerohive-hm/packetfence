@@ -2,12 +2,12 @@
 
 yum install open-vm-tools -y
 
-echo "==========="
-mkdir /vagrant_data
+echo "====here is ======="
+ls /vagrant
 
-# copy RPM GPG key
-cp /vagrant_data/RPM* /etc/pki/rpm-gpg/
+cp /vagrant/data/RPM* /etc/pki/rpm-gpg/
 
+echo "====here is don======="
 # Set up local yum repository
 cat <<EOF >/etc/yum.repos.d/aerohive.repo
 [packetfence]
