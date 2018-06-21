@@ -152,7 +152,7 @@ sub is_current_usage_under_limit {
     my ($count_status, $count) = pf::a3_entitlement::get_current_moving_avg_count();
     if (is_success($count_status)) {
         #return true if we only have less than 7 days of moving avg
-        return $STATUS::OK, $TRUE if $count < 7;
+        return $TRUE if $count < 7;
     }
     else {
         return $STATUS::NOT_FOUND;

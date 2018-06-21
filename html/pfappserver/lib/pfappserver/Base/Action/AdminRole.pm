@@ -41,37 +41,14 @@ before execute => sub {
         $can_access = admin_can_do_any($roles, @$actions);
     }
     unless($can_access) {
-        if($c->user_exists) {
-            $c->log->debug( sub { sprintf('Access to action(s) %s was refused to user %s with admin roles %s',
-                                   join(", ",@$actions), $c->user->id, join(',', @$roles))} );
+        if ($c->user_exists) {
+            $c->log->debug(sub {sprintf('Access to action(s) %s was refused to user %s with admin roles %s',
+                join(", ", @$actions), $c->user->id, join(',', @$roles))});
         }
         $c->response->status(HTTP_UNAUTHORIZED);
         $c->stash->{status_msg} = "You don't have the rights to perform this action.";
         $c->stash->{current_view} = 'JSON';
         $c->detach();
-    }
-    #check usage and entitlement status
-
-    if ($c->model('Entitlement')->is_current_entitlement_expired()) {
-        $c->log->debug("Current entitlement or trial license has expired!");
-        $c->response->redirect('/admin/licenseKeys');
-        $c->stash->{status_msg} = "No active entitlement key found or trial has ended, please renew your license!";
-        $c->stash->{current_view} = 'JSON';
-        $c->detach();
-    }
-    my ($status, $bool_under_limit) = $c->model('Entitlement')->is_current_usage_under_limit();
-    if (is_success($status)) {
-        unless ($bool_under_limit) {
-            $c->log->debug( sub { sprintf('Current average daily usage has exceeded allowed number of endpoints: %d!',
-                $c->model('Entitlement')->get_licensed_capacity()) } );
-            $c->response->redirect('/admin/licenseKeys');
-            $c->stash->{status_msg} = $c->loc("Your current daily average number of active endpoints has exceeded your entitlement limits, please increase your subscription!");
-            $c->stash->{current_view} = 'JSON';
-            $c->detach();
-        }
-    }
-    else {
-        #what should happen here if the usage check fails?
     }
 };
 
