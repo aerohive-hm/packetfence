@@ -58,6 +58,7 @@
 </form>
 <script>
 $(document).ready(function(){
+
   document.getElementById("ca_cert_path").onchange = function(){
     showCaCertFileInfo();
   };
@@ -69,9 +70,6 @@ $(document).ready(function(){
   // check if showCaCertFileSize ans showServerFileSize are TRUE
   //then call process files
   document.getElementById("savePKI").onclick = function(){
-      var caCertPathCheck, serverCertPathCheck;
-      // caCertPathCheck = showCaCertFileInfo();
-      // serverCertPathCheck = showServerFileInfo();
       if (showCaCertFileInfo() && showServerFileInfo()){
          processFiles();
       }
@@ -96,13 +94,13 @@ function showServerFileInfo(){
   console.log("server_cert_path: " + file2);
 
   if (!input2) {
-      alertFile("p", "Couldn't find the file input element.");
+      alert("Couldn't find the file input element.");
   }
   else if (!input2.files) {
-      alertFile("p", "This browser doesn't support the `files` property of file inputs.");
+      alert("This browser doesn't support the `files` property of file inputs.");
   }
   else if (!input2.files[0]) {
-      alertFile("p", "Please select a file before clicking 'Save'");
+      alert("Please select a file before clicking 'Save'");
   }
   else {
       file2 = input2.files[0];
@@ -142,13 +140,13 @@ function showCaCertFileInfo() {
     console.log("ca_cert_path: " + input);
     console.log("ca_cert_path: " + file);
     if (!input) {
-        alertFile("p", "Couldn't find the file input element.");
+        alert("Couldn't find the file input element.");
     }
     else if (!input.files) {
-        alertFile("p", "This browser doesn't support the `files` property of file inputs.");
+        alert("This browser doesn't support the `files` property of file inputs.");
     }
     else if (!input.files[0]) {
-        alertFile("p", "Please select a file before clicking 'Save'");
+        alert("Please select a file before clicking 'Save'");
     }
     else {
         file = input.files[0];
