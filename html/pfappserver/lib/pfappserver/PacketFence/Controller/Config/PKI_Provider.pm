@@ -96,7 +96,7 @@ sub processCertificate :Path('processCertificate') :Args(1) {
     my ($self, $c, $type) = @_;
     my $logger = get_logger();
     $logger->info("inside acceptCertificate!!!");
-    $logger->info("$type");
+    $logger->info("\ntype: $type");
     my $filesize;
 
     #make and get file name
