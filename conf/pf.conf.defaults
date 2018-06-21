@@ -1168,3 +1168,7 @@ verify_path=/a3/entitlement/verify
 # A3.eula_path
 #
 eula_path=/a3/eula
+#
+# A3.release_info_path
+#
+release_info_path=/a3/update/latest
