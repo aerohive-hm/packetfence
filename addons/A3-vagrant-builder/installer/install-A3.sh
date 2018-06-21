@@ -2,6 +2,9 @@
 
 yum install open-vm-tools -y
 
+echo "==========="
+mkdir /vagrant_data
+
 # copy RPM GPG key
 cp /vagrant_data/RPM* /etc/pki/rpm-gpg/
 
