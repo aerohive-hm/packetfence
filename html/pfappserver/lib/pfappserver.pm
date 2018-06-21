@@ -4,6 +4,8 @@ package pfappserver;
 
 =cut
 
+use POSIX;
+
 use Moose;
 use namespace::autoclean;
 
@@ -101,7 +103,7 @@ __PACKAGE__->config(
 
     'View::JSON' => {
        # TODO to discuss: always add to exposed stash or use a standard 'resultset' instead?
-       expose_stash    => [ qw(status status_msg error interfaces networks switches config services success items time_offset trial entitlement) ], # defaults to everything
+       expose_stash    => [ qw(status status_msg error interfaces networks switches config services success items time_offset trial entitlement update_info) ], # defaults to everything
     },
 
     'View::HTML' => {
@@ -377,6 +379,9 @@ __PACKAGE__->log(Log::Log4perl::Catalyst->new(INSTALL_DIR . '/conf/log.conf.d/ht
 
 # Handle warnings from Perl as error log messages
 $SIG{__WARN__} = sub { __PACKAGE__->log->error(@_); };
+
+# Automatically reap children
+$SIG{CHLD} = 'IGNORE';
 
 # Start the application
 __PACKAGE__->setup();

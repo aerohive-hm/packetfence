@@ -2,13 +2,13 @@
     padding-left: 50px;
     padding-right: 50px;
 }
-.upgrade-header{
+.update-header{
     display: table;
     margin: 0 auto;
     text-align: center;
 }
 
-.upgrade-body{
+.update-body{
     display: table;
     margin: 0 auto;
 }
@@ -17,7 +17,7 @@
     text-align: center;
 }
 
-.upgrade-button{
+.update-button{
     margin-bottom: 25px !important;
     padding: 15px 60px !important;
     background: #FFC007 !important;
@@ -27,13 +27,13 @@
     font-size: 15px !important;
 }
 
-.upgrade-button:hover{
+.update-button:hover{
     background: #FFF !important;
     color: #333 !important;
 }
 
-/* .upgrade-button in progress bar state*/
-.upgrade-area{
+/* .update-button in progress bar state*/
+.update-area{
    height: 90px;
    width:100%;
 }
@@ -41,8 +41,6 @@
 .detail-box{
     width: 500px;
     height: 250px;
-    overflow-y: scroll;
-    padding: 15px;
     border: 1px #DDD solid;
     margin-bottom:15px;
 }

@@ -2,6 +2,9 @@
 
 yum install open-vm-tools -y
 
+# Copy GPG public key
+cp /vagrant/data/RPM* /etc/pki/rpm-gpg/
+
 # Set up local yum repository
 cat <<EOF >/etc/yum.repos.d/aerohive.repo
 [packetfence]
@@ -79,3 +82,20 @@ cd /etc && patch -p0 <<EOF
  # The authpriv file has restricted access.
  authpriv.*                                              /var/log/secure
 EOF
+
+# add aerohive yum repository for update
+cat <<EOF >/etc/yum.repos.d/aerohive.repo
+[packetfence]
+name=Clone of Inverse\'s PacketFence Repository
+baseurl=http://{PLACE_HOLDER_IP}/yum/packetfence/\$basearch
+gpgcheck=0
+enabled=1
+
+[aerohive]
+name=Aerohive Build Repository
+baseurl=http://{PLACE_HOLDER_IP}/yum/aerohive/\$basearch
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Aerohive
+enabled=1
+EOF
+
