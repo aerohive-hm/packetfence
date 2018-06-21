@@ -127,16 +127,9 @@ sub processCertificate :Path('processCertificate') :Args(1) {
         }
       }
 }
-#take file name and change it
-#import rand library
-# $filename = mytempfile + rand;
-#move to that location
-# file directory = /tmp under root
 
-
-#function for names to change and add to the name of the file.
 #find rand function
-# function for checking names
+# function for checking names, later?
 
 =head1 COPYRIGHT
 
