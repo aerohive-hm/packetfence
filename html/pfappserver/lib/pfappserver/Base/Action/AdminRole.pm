@@ -17,6 +17,7 @@ use Moose::Role;
 use namespace::autoclean;
 
 use pf::admin_roles;
+use pf::error qw(is_success is_error);
 
 =head1 METHODS
 
@@ -50,21 +51,27 @@ before execute => sub {
         $c->detach();
     }
     #check usage and entitlement status
+
     if ($c->model('Entitlement')->is_current_entitlement_expired()) {
-        $c->log->debug( sub { sprintf('Current entitlement or trial license has expired!')});
-        $c->response->status(HTTP_UNAUTHORIZED);
+        $c->log->debug("Current entitlement or trial license has expired!");
+        $c->response->redirect('/admin/licenseKeys');
         $c->stash->{status_msg} = "No active entitlement key found or trial has ended, please renew your license!";
         $c->stash->{current_view} = 'JSON';
         $c->detach();
     }
-    unless ($c->model('Entitlement')->is_current_usage_under_limit() ) {
-        $c->log->debug( sub { sprintf('Current average daily usage has exceeded allowed number of endpoints: %d!',
-            $c->model('Entitlement')->get_licensed_capacity()) } );
-        $c->response->status(HTTP_UNAUTHORIZED);
-        $c->stash->{status_msg} = "Your current daily average number of active endpoints has exceeded "
-                                   ,"your entitlement limits, please increase your subscription!";
-        $c->stash->{current_view} = 'JSON';
-        $c->detach();
+    my ($status, $bool_under_limit) = $c->model('Entitlement')->is_current_usage_under_limit();
+    if (is_success($status)) {
+        unless ($bool_under_limit) {
+            $c->log->debug( sub { sprintf('Current average daily usage has exceeded allowed number of endpoints: %d!',
+                $c->model('Entitlement')->get_licensed_capacity()) } );
+            $c->response->redirect('/admin/licenseKeys');
+            $c->stash->{status_msg} = $c->loc("Your current daily average number of active endpoints has exceeded your entitlement limits, please increase your subscription!");
+            $c->stash->{current_view} = 'JSON';
+            $c->detach();
+        }
+    }
+    else {
+        #what should happen here if the usage check fails?
     }
 };
 

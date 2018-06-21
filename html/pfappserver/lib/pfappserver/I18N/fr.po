@@ -9983,6 +9983,10 @@ msgstr "Vous allez maintenant être redirigé vers l’interface d’administrat
 msgid "Your Tier Description"
 msgstr "Description de votre niveau"
 
+# /html/pfappserver/lib/pfappserver/Base/Action/AdminRole.pm
+msgid "Your current daily average number of active endpoints has exceeded your entitlement limits, please increase your subscription!"
+msgstr "Votre nombre quotidien moyen actuel de points de terminaison actifs a dépassé vos limites de droits, veuillez augmenter votre abonnement!"
+
 # html/pfappserver/root/configurator/networks.tt
 msgid "Your gateway IP address to access Internet."
 msgstr "Adresse IP de la passerelle pour accéder à Internet."
