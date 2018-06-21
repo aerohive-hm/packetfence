@@ -11,6 +11,7 @@
 
 DATE="`date +%Y%m%d`"
 BRANCH=$1
+PASSPHRASE=$2
 
 BUILD_DIR=~/rpmbuild
 CURRENT_DIR=`pwd`
@@ -24,6 +25,7 @@ if [[ "z$BRANCH" != "z" ]]; then
 	echo "Starting rpm build process for branch $BRANCH"
 
 else
+PASSPHRASE=$2
 	echo "You must specify a branch for build!"
 	echo "$0: Performs the code checkout, tarball and rpm build of a PacketFence branch"
 	echo
@@ -76,7 +78,7 @@ echo -e "\n\n\n"
 echo "Building the RPMs"
 echo "*****************"
 #/usr/bin/rpmbuild -ba --sign --define "ver $VERSION" --define 'snapshot 1' --define "dist $DIST" --define "rev 0.$DATE" $BUILD_DIR/SPECS/A3.spec 1>/dev/null
-$CURRENT_DIR/a3-rpm-build-expect.sh $VERSION $DIST $DATE $BUILD_DIR
+$CURRENT_DIR/a3-rpm-build-expect.sh $VERSION $DIST $DATE $BUILD_DIR $PASSPHRASE
 
 if [[ "$?" != "0" ]]; then
 	echo "Problem building the RPM. Aborting build process..." && exit 3
