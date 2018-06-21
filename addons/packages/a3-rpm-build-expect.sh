@@ -1,6 +1,6 @@
 #!/usr/bin/expect -f
 set timeout 600
-set password "12345678"
+set password "a3r0hiv3"
 #set signfile [lindex $argv 0]
 #set outfile  [lindex $argv 1]
 set VERSION [lindex $argv 0]
