@@ -85,9 +85,6 @@ Usage: /update/progress/<token>
 A GET request will retrieve status of the update operation
 identified by the given token.
 
-TODO: A DELETE request will attempt to abort the update operation
-identified by the given token, if possible.
-
 =cut
 
 sub progress :Local :Args(1) {
