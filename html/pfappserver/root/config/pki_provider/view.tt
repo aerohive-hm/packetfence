@@ -43,7 +43,7 @@
   </div>
 
   <div class="modal-body pki-group">
-    <p style="padding-left: 27px; padding-bottom: 5px;">Please make sure your certificate file is within 1MB (1 megabyte or 1000000 bytes).</p>
+    <p style="padding-left: 27px; padding-bottom: 5px;">When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.</p>
     [% form.field('id').render | none UNLESS item && item.id.defined %]
     <div class="pki-group">
     [% form.block('definition').render | none %]
@@ -52,7 +52,7 @@
 
   <div class="modal-footer">
     <a href="#" class="btn" data-dismiss="modal">[% l('Close') %]</a>
-    [% IF can_access("PKI_PROVIDER_UPDATE") %]<button class="btn btn-primary" data-loading-text="[% l('Saving') %]">[% l('Save') %]</button>[% END %]
+    [% IF can_access("PKI_PROVIDER_UPDATE") %]<button class="btn btn-primary" id="savePKI" data-loading-text="[% l('Saving') %]">[% l('Save') %]</button>[% END %]
   </div>
 
 </form>
@@ -60,13 +60,22 @@
 $(document).ready(function(){
   document.getElementById("client_cert_path").onchange = function(){
     showFileSize();
+    processFiles();
+  };
+  document.getElementById("client_cert_path").onchange = function(){
+    showFileSize();
+    processFiles();
+  };
+  document.getElementById("client_cert_path").onchange = function(){
+    showFileSize();
+    processFiles();
   };
 });
 
-function showFileInfo() {
+function showFileSize() {
     console.log(" in show file size");
-    var input, input2, input3, input4;
-    var file, file2, file3, file4;
+    var input3, input4;
+    var file3, file4;
     var filePath, fileSize;
 
     if (!window.FileReader) {
@@ -74,65 +83,94 @@ function showFileInfo() {
         return;
     }
 
-    input = document.getElementById('client_cert_path');
-    input2 = document.getElementById('client_key_path');
-    input2 = document.getElementById('ca_cert_path');
-    input2 = document.getElementById('server_cert_path');
+    input3 = document.getElementById('ca_cert_path');
+    input4 = document.getElementById('server_cert_path');
 
-    console.log("client_cert_path: " + input);
-    console.log("client_key_path: " + input2);
+
     console.log("ca_cert_path: " + input3);
     console.log("server_cert_path: " + input4);
 
-    console.log("client_cert_path: " + file);
-    console.log("client_key_path: " + file2);
     console.log("ca_cert_path: " + file3);
     console.log("server_cert_path: " + file4);
 
 
-    if (!input) {
+    if (!input3 || !input4) {
         alertFile("p", "Couldn't find the file input element.");
     }
-    else if (!input.files) {
+    else if (!input3.files || !input4.files) {
         alertFile("p", "This browser doesn't support the `files` property of file inputs.");
     }
-    else if (!input.files[0]) {
-        alertFile("p", "Please select a file before clicking 'Load'");
+    else if (!input3.files[0] || !input4.files[0]) {
+        alertFile("p", "Please select a file before clicking 'Save'");
     }
     else {
-        file = input.files[0];
-        filePath = file.value;
-        fileSize = file.size/1024/1024;
-        console.log(file);
-        console.log(filePath);
-        if (file.size < 1){
-            if (file.value == ".pem"){
-                //call post request
+        file3 = input3.files[0];
+        file4 = input4.files[0];
+
+        fileType3 = file3.type;
+        fileType4 = file4.type;
+
+        fileSize3 = file3.size/1024/1024;
+        fileSize4 = file4.size/1024/1024;
+
+        console.log(" \nca_cert: " + file3 + " \nserver_cert: " + file4);
+        console.log(" \nca_cert type: " + fileType3 + " \nserver_cert type: " + fileType4);
+
+        // console.log(fileTypeValidation(input4));
+        console.log(fileTypeValidation(input3));
+
+        if (fileTypeValidation(input3) == TRUE){
+            if (file.size < 1){
                 processFiles();
             }
+            else{
+                alert("File size is greater than 1MB. Upload again.");
+            }
+        } else {
+            alert("Incorrect file type. Upload again. Make sure the file type is .pem.");
         }
-        alertFile("p", "File " + file.name + " is " + file.size + " bytes in size");
     }
 }
+
+//test file types
+function fileTypeValidation(file){
+    var filePath = file.value;
+    var allowedExtensions = /(\.pem)$/i;
+    if(!allowedExtensions.exec(filePath)){
+        alert('Upload file having extensions .pem only.');
+        fileInput.value = '';
+        return false;
+    }else{
+        return true;
+    }
+}
+
 
 //shows alert balloon when there is an error.
 function alertFile(tagName, innerHTML) {
     console.log("in body append");
     var elm;
-    // $("#pki_alert_error_text").css("display",);
-    // $("#pki_alert_error_text").append = elm;
     elm = document.createElement(tagName);
     elm.innerHTML = innerHTML;
     console.log(elm);
     $(".controls").append(elm);
+
+    $("#pki_alert_error_text").append = elm;
+    $("#pki_alert_error_text").slideDown();
 }
 
+//call only when save button is pressed
 function processFiles(){
-  // $.ajax({
-  //     type: 'POST',
-  //     url: base_url + ''
-  //   }).success({
-  //
-  //   });
+  console.log("in process files function");
+  var base_url = window.location.origin;
+  //check if the scep modal is open or the a3 PKI modal
+    $.ajax({
+        type: 'POST',
+        url: base_url + 'admin/configuration/pki_provider/processCertificate/' + "scep",
+        success: function(){
+        },
+        error: function(XMLHttpRequest){
+
+        }
 }
 </script>

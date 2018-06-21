@@ -15,12 +15,14 @@ use Moose;  # automatically turns on strict and warnings
 use namespace::autoclean;
 
 use pf::factory::pki_provider;
-
+use strict;
+use warnings;
 #for file processing
-use File::Temp qw/ tempdir /;
+use File::Temp qw/ tempfile /;
 use File::Basename;
 use File::Path;
 use File::Spec::Functions;
+use File::Copy; #to move files over and change name
 
 use pf::log;
 use Data::Dumper;
@@ -84,73 +86,53 @@ before [qw(clone view _processCreatePost update)] => sub {
 sub create_type : Path('create') : Args(1) {
     my ($self, $c, $type) = @_;
 
-    # do log prints to trace
     my $model = $self->getModel($c);
     my $itemKey = $model->itemKey;
     $c->stash->{$itemKey}{type} = $type;
     $c->forward('create');
 }
 
-sub acceptCertificate :Args(1) {
-    my ($self, $c, $tempfile) = @_;
+sub processCertificate :Path('processCertificate') :Args(1) {
+    my ($self, $c, $type) = @_;
     my $logger = get_logger();
     $logger->info("inside acceptCertificate!!!");
+    $logger->info("$type");
+    my $filesize;
 
     #make and get file name
+    my ($fh, $filename) = @_;
+    my $dir = "/tmp";
     my $template = "mytempfileXXXXXX";
-    (my $fh, my $filename) = tempfile($template, SUFFIX => ".pem");
-    # print "filename: $filename";
-    # $logger->info("$template");
+    ($fh, $filename) = tempfile($template, DIR => $dir, SUFFIX => ".pem");
+    $filesize = -s "$filename";
 
-    # get file type
-    my $ft = File::Type->new();
-    my $type_from_file = $ft->checktype_filename($tempfile);
-    my $type_1 = $ft->mime_type($tempfile);
-
-    #get file size
-    my $filesize = -s "$tempfile";
-
-    # $logger->info("filesize: $filesize\n filename: $filename\n type from file: $type_from_file");
+    $logger->info("filesize: $filesize \nfilename: $filename");
     # post request, process
     if ($c->request->method eq 'POST'){
-        #check if tempfile is valid file
-        my $checkCertificate = system "/usr/bin/openssl x509 -noout -text -in $tempfile";
-        # print "checkCertificate:  $checkCertificate";
+        #check if tempfile is valid file and if it's a pem type
+        my $checkCertificate = system "/usr/bin/openssl x509 -noout -text -in $filename";
+        $logger->info("checkCertificate: $checkCertificate");
+
         if ($checkCertificate == 0){
-        #check if type is .pem
-            if ($type_1 == ".pem"){
-              #check if size is <1000000 bytes
-                if ($filesize < 1000000){
-                     #take file name and change it
-                     #import rand library
-                     # $filename = mytempfile + rand;
-                     #move to that location
-                     # file directory = /usr/local/pf/html/pfappserver
-        #
-                }
-                else{
-                    $c->stash->{error_msg} = $c->loc("Certificate size is too big. Try again.");
-                }
+            #check if size is <1000000 bytes
+            if ($filesize < 1000000){
+                move("/tmp/$filename","/usr/local/pf/conf/$filename");
             }
             else{
-                $c->stash->{error_msg} = $c->loc("Certificate file is not correct. Try again.");
+                $c->stash->{error_msg} = $c->loc("Certificate size is too big. Try again.");
             }
-        #
         }
-
-    }
-#     if ($checkCertificate == 0) {
-#         1. Tempfile save
-#         2. Check file size
-        # 3. Check file type
-        # 4. Take name and make unique identifier
-        # 5. Put into folder
-#     }
-#     else{
-#        return status 500 - > message to client
-          # Select a valid certificate
-#     }
+        else{
+            $c->stash->{error_msg} = $c->loc("File is invalid. Try again.");
+        }
+      }
 }
+#take file name and change it
+#import rand library
+# $filename = mytempfile + rand;
+#move to that location
+# file directory = /tmp under root
+
 
 #function for names to change and add to the name of the file.
 #find rand function
