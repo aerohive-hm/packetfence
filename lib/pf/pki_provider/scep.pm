@@ -109,6 +109,7 @@ sub get_bundle {
         read_file ($cert_path)
     };
     return Crypt::OpenSSL::PKCS12->create_as_string($cert, $request->{key}, $args->{certificate_pwd});
+    #there's an error here and I'm not sure what to make
 }
 
 =head2 get_ca
