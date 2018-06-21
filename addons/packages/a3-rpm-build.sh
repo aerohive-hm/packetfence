@@ -25,7 +25,6 @@ if [[ "z$BRANCH" != "z" ]]; then
 	echo "Starting rpm build process for branch $BRANCH"
 
 else
-PASSPHRASE=$2
 	echo "You must specify a branch for build!"
 	echo "$0: Performs the code checkout, tarball and rpm build of a PacketFence branch"
 	echo
