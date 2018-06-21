@@ -528,14 +528,27 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 }
 
 
-=head2 upgrades
+=head2 update
 
 =cut
 
-sub upgrades :Chained('object') :PathPart('upgrades') :Args(0){
+sub update :Chained('object') :PathPart('update') :Args(0){
     my( $self, $c ) = @_;
-    if ($c->request->method eq 'POST') {
-        $c->stash->{current_view} = 'JSON';
+
+    if ($c->request->method eq 'GET') {
+        my ($status, $latest) = $c->model('Update')->fetch_latest_release();
+
+        if ($status == $STATUS::OK) {
+            $c->stash->{update_available} = $TRUE;
+            $c->stash->{version}          = $latest->{version};
+            $c->stash->{releaseNotesUri}  = $latest->{releaseNotesUri};
+        }
+        elsif ($status == $STATUS::NO_CONTENT) {
+            $c->stash->{update_available} = $FALSE;
+        }
+        else {
+            # TODO: Error
+        }
     }
 }
 
