@@ -550,9 +550,6 @@ sub update :Chained('object') :PathPart('update') :Args(0){
             # TODO: Error
         }
     }
-    elsif ($c->request->method eq 'POST') {
-        $c->stash->{current_view} = 'JSON';
-    }
 }
 
 =head1 COPYRIGHT
