@@ -98,7 +98,7 @@ enabled=1
 name=Aerohive Build Repository
 baseurl=http://{PLACE_HOLDER_IP}/yum/aerohive/\$basearch
 gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-thomas
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Aerohive
 enabled=1
 EOF
 
