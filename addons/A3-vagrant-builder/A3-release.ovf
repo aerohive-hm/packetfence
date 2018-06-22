@@ -1,29 +1,29 @@
-<?xml version="1.0"?>
-<Envelope ovf:version="1.0" xml:lang="en-US" xmlns="http://schemas.dmtf.org/ovf/envelope/1" xmlns:ovf="http://schemas.dmtf.org/ovf/envelope/1" xmlns:rasd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_ResourceAllocationSettingData" xmlns:vssd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_VirtualSystemSettingData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:vbox="http://www.virtualbox.org/ovf/machine">
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope xmlns="http://schemas.dmtf.org/ovf/envelope/1" xmlns:cim="http://schemas.dmtf.org/wbem/wscim/1/common" xmlns:ovf="http://schemas.dmtf.org/ovf/envelope/1" xmlns:rasd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_ResourceAllocationSettingData" xmlns:vmw="http://www.vmware.com/schema/ovf" xmlns:vssd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_VirtualSystemSettingData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <References>
-    <File ovf:id="file1" ovf:href="box-disk001.vmdk"/>
-    <File ovf:id="file2" ovf:href="box-disk002.vmdk"/>
+    <File ovf:href="box-disk001.vmdk" ovf:id="file1" />
+    <File ovf:href="box-disk002.vmdk" ovf:id="file2" />
   </References>
   <DiskSection>
-    <Info>List of the virtual disks used in the package</Info>
-    <Disk ovf:capacity="42949672960" ovf:diskId="vmdisk1" ovf:fileRef="file1" ovf:format="http://www.vmware.com/interfaces/specifications/vmdk.html#streamOptimized" vbox:uuid="f7f99fd5-5044-48b7-95e7-be4b74f27668"/>
-    <Disk ovf:capacity="214748364800" ovf:diskId="vmdisk2" ovf:fileRef="file2" ovf:format="http://www.vmware.com/interfaces/specifications/vmdk.html#streamOptimized" vbox:uuid="d0e17e23-b9ad-4080-9e7f-a74a61416d57"/>
+    <Info>Virtual disk information</Info>
+    <Disk ovf:capacity="50" ovf:capacityAllocationUnits="byte * 2^30" ovf:diskId="vmdisk1" ovf:fileRef="file1" ovf:format="http://www.vmware.com/interfaces/specifications/vmdk.html#streamOptimized" />
+   <Disk ovf:capacity="200" ovf:capacityAllocationUnits="byte * 2^30" ovf:diskId="vmdisk2" ovf:fileRef="file2" ovf:format="http://www.vmware.com/interfaces/specifications/vmdk.html#streamOptimized" ovf:populatedSize="683409408" vbox:uuid="d0e17e23-b9ad-4080-9e7f-a74a61416d57"/>
   </DiskSection>
   <NetworkSection>
-    <Info>Logical networks used in the package</Info>
-    <Network ovf:name="NAT">
-      <Description>Logical network used by this appliance.</Description>
+    <Info>The list of logical networks</Info>
+    <Network ovf:name="Network">
+      <Description>Network</Description>
     </Network>
   </NetworkSection>
   <VirtualSystem ovf:id="A3">
-    <Info>A virtual machine</Info>
-    <OperatingSystemSection ovf:id="80">
+    <Info>Aerohive A3 Virtual Appliance</Info>
+    <Name>A3</Name>
+    <OperatingSystemSection ovf:id="107">
       <Info>The kind of installed guest operating system</Info>
       <Description>CentOS 7 (64-bit)</Description>
-      <vbox:OSType ovf:required="false">CentOS 7 (64-bit)</vbox:OSType>
     </OperatingSystemSection>
     <VirtualHardwareSection>
-      <Info>Virtual hardware requirements for a virtual machine</Info>
+      <Info>Virtual hardware requirements</Info>
       <System>
         <vssd:ElementName>Virtual Hardware Family</vssd:ElementName>
         <vssd:InstanceID>0</vssd:InstanceID>
@@ -31,18 +31,17 @@
         <vssd:VirtualSystemType>vmx-08</vssd:VirtualSystemType>
       </System>
       <Item>
-        <rasd:Caption>4 virtual CPU</rasd:Caption>
-        <rasd:Description>Number of virtual CPUs</rasd:Description>
-        <rasd:ElementName>4 virtual CPU</rasd:ElementName>
+        <rasd:AllocationUnits>hertz * 10^6</rasd:AllocationUnits>
+        <rasd:Description>Number of Virtual CPUs</rasd:Description>
+        <rasd:ElementName>4 virtual CPU(s)</rasd:ElementName>
         <rasd:InstanceID>1</rasd:InstanceID>
         <rasd:ResourceType>3</rasd:ResourceType>
         <rasd:VirtualQuantity>4</rasd:VirtualQuantity>
       </Item>
       <Item>
-        <rasd:AllocationUnits>MegaBytes</rasd:AllocationUnits>
-        <rasd:Caption>8192 MB of memory</rasd:Caption>
+        <rasd:AllocationUnits>byte * 2^20</rasd:AllocationUnits>
         <rasd:Description>Memory Size</rasd:Description>
-        <rasd:ElementName>8192 MB of memory</rasd:ElementName>
+        <rasd:ElementName>8192MB of memory</rasd:ElementName>
         <rasd:InstanceID>2</rasd:InstanceID>
         <rasd:ResourceType>4</rasd:ResourceType>
         <rasd:VirtualQuantity>8192</rasd:VirtualQuantity>
@@ -53,7 +52,6 @@
         <rasd:Description>IDE Controller</rasd:Description>
         <rasd:ElementName>ideController0</rasd:ElementName>
         <rasd:InstanceID>3</rasd:InstanceID>
-        <rasd:ResourceSubType>PIIX4</rasd:ResourceSubType>
         <rasd:ResourceType>5</rasd:ResourceType>
       </Item>
       <Item>
@@ -62,16 +60,13 @@
         <rasd:Description>IDE Controller</rasd:Description>
         <rasd:ElementName>ideController1</rasd:ElementName>
         <rasd:InstanceID>4</rasd:InstanceID>
-        <rasd:ResourceSubType>PIIX4</rasd:ResourceSubType>
         <rasd:ResourceType>5</rasd:ResourceType>
       </Item>
       <Item>
         <rasd:AddressOnParent>0</rasd:AddressOnParent>
-        <rasd:Caption>disk1</rasd:Caption>
-        <rasd:Description>Disk Image</rasd:Description>
-        <rasd:ElementName>disk1</rasd:ElementName>
-        <rasd:HostResource>/disk/vmdisk1</rasd:HostResource>
-        <rasd:InstanceID>6</rasd:InstanceID>
+        <rasd:ElementName>Hard Disk 1</rasd:ElementName>
+        <rasd:HostResource>ovf:/disk/vmdisk1</rasd:HostResource>
+        <rasd:InstanceID>5</rasd:InstanceID>
         <rasd:Parent>3</rasd:Parent>
         <rasd:ResourceType>17</rasd:ResourceType>
       </Item>
@@ -87,11 +82,11 @@
       </Item>
       <Item>
         <rasd:AutomaticAllocation>true</rasd:AutomaticAllocation>
-        <rasd:Caption>Ethernet adapter on 'NAT'</rasd:Caption>
-        <rasd:Connection>NAT</rasd:Connection>
-        <rasd:ElementName>Ethernet adapter on 'NAT'</rasd:ElementName>
-        <rasd:InstanceID>8</rasd:InstanceID>
-        <rasd:ResourceSubType>E1000</rasd:ResourceSubType>
+        <rasd:Connection>Network</rasd:Connection>
+        <rasd:Description>VmxNet3 Ethernet adapter on &quot;Network&quot;</rasd:Description>
+        <rasd:ElementName>Ethernet 1</rasd:ElementName>
+        <rasd:InstanceID>6</rasd:InstanceID>
+        <rasd:ResourceSubType>VmxNet3</rasd:ResourceSubType>
         <rasd:ResourceType>10</rasd:ResourceType>
       </Item>
     </VirtualHardwareSection>
