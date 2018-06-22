@@ -151,7 +151,7 @@ END
             </div>
             <div class="row-flex">
                 <div class="col6 card">
-                    <div data-netdata="packetfence.devices.registered_per_role"
+                    <div data-netdata="a3.devices.registered_per_role"
                     data-host="/netdata/127.0.0.1"
                     data-title="Registered devices per role"
                     data-hide-missing="true"
@@ -162,7 +162,7 @@ END
                     data-decimal-digits="0"></div>
                 </div>
                 <div class="col6 card">
-                    <div data-netdata="packetfence.devices.connected_per_connection_type"
+                    <div data-netdata="a3.devices.connected_per_connection_type"
                     data-host="/netdata/127.0.0.1"
                     data-title="Connected devices per connection type"
                     data-hide-missing="true"
@@ -173,7 +173,7 @@ END
                     data-decimal-digits="0"></div>
                 </div>
                 <div class="col6 card">
-                    <div data-netdata="packetfence.devices.connected_per_ssid"
+                    <div data-netdata="a3.devices.connected_per_ssid"
                     data-host="/netdata/127.0.0.1"
                     data-title="Connected devices per SSID"
                     data-hide-missing="true"
@@ -190,7 +190,7 @@ END
                         <div id="packetfence_devices_registered"></div>
                         <div class="counter_chart_title">[% l('Registered Devices') %]</div>
                     </div>
-                    <div data-netdata="statsd_gauge_source.packetfence.devices.registered"
+                    <div data-netdata="statsd_gauge_source.a3.devices.registered"
                     data-host="/netdata/127.0.0.1"
                     data-title="Devices currently registered"
                     data-hide-missing="true"
@@ -209,7 +209,7 @@ END
                         <div id="packetfence_violations"></div>
                         <div class="counter_chart_title">[% l('Open Violations') %]</div>
                     </div>
-                    <div data-netdata="statsd_gauge_source.packetfence.violations"
+                    <div data-netdata="statsd_gauge_source.a3.violations"
                     data-host="/netdata/127.0.0.1"
                     data-title="Open violations"
                     data-hide-missing="true"
@@ -630,7 +630,7 @@ END
                 <div class="card-block">
                     <div class="row-flex">
                         <div class="col9">
-                            <div data-netdata="statsd_gauge_source.packetfence.authentication.success_last_day"
+                            <div data-netdata="statsd_gauge_source.a3.authentication.success_last_day"
                             data-host="/netdata/127.0.0.1"
                             data-common-max="radius"
                             data-common-min="radius"
@@ -646,7 +646,7 @@ END
                             data-decimal-digits="0"></div>
                         </div>
                         <div class="col9">
-                            <div data-netdata="statsd_gauge_source.packetfence.authentication.failed_last_day"
+                            <div data-netdata="statsd_gauge_source.a3.authentication.failed_last_day"
                             data-host="/netdata/127.0.0.1"
                             data-common-max="radius"
                             data-common-min="radius"
@@ -674,7 +674,7 @@ END
                 <div class="card-block">
                     <div class="row-flex">
                         <div class="col9">
-                            <div data-netdata="statsd_gauge_source.packetfence.dhcp_leases_[% interface %]_day"
+                            <div data-netdata="statsd_gauge_source.a3.dhcp_leases_[% interface %]_day"
                             data-host="/netdata/127.0.0.1"
                             data-common-max="dhcp_day"
                             data-common-min="dhcp_day"
@@ -690,7 +690,7 @@ END
                             data-decimal-digits="0"></div>
                         </div>
                         <div class="col9">
-                            <div data-netdata="statsd_gauge_source.packetfence.dhcp_leases_[% interface %]_week"
+                            <div data-netdata="statsd_gauge_source.a3.dhcp_leases_[% interface %]_week"
                             data-host="/netdata/127.0.0.1"
                             data-common-max="dhcp_week"
                             data-common-min="dhcp_week"
@@ -706,7 +706,7 @@ END
                             data-decimal-digits="0"></div>
                         </div>
                         <div class="col9">
-                            <div data-netdata="statsd_gauge_source.packetfence.dhcp_leases_[% interface %]_month"
+                            <div data-netdata="statsd_gauge_source.a3.dhcp_leases_[% interface %]_month"
                             data-host="/netdata/127.0.0.1"
                             data-common-max="dhcp_month"
                             data-common-min="dhcp_month"
@@ -722,7 +722,7 @@ END
                             data-decimal-digits="0"></div>
                         </div>
                         <div class="col9">
-                            <div data-netdata="statsd_gauge_source.packetfence.dhcp_leases_[% interface %]_year"
+                            <div data-netdata="statsd_gauge_source.a3.dhcp_leases_[% interface %]_year"
                             data-host="/netdata/127.0.0.1"
                             data-common-max="dhcp_year"
                             data-common-min="dhcp_year"
@@ -750,7 +750,7 @@ END
                 <div class="card-block">
                     <div class="row-flex">
                         <div class="col9">
-                            <div data-netdata="packetfence.devices.registered_unregistered"
+                            <div data-netdata="a3.devices.registered_unregistered"
                             data-host="/netdata/127.0.0.1"
                             data-title="Registration status of online devices"
                             data-chart-library="dygraph"
@@ -763,7 +763,7 @@ END
                             data-decimal-digits="0"></div>
                         </div>
                         <div class="col9">
-                            <div data-netdata="statsd_gauge_source.packetfence.devices.registered"
+                            <div data-netdata="statsd_gauge_source.a3.devices.registered"
                             data-host="/netdata/127.0.0.1"
                             data-title="Devices currently registered"
                             data-chart-library="dygraph"
@@ -785,7 +785,7 @@ END
                 </div>
                 <div class="card-block">
                     <div class="col18 text-center">
-                        <div data-netdata="packetfence.devices.registered_per_role"
+                        <div data-netdata="a3.devices.registered_per_role"
                         data-host="/netdata/127.0.0.1"
                         data-common-max="role"
                         data-common-min="role"
@@ -808,7 +808,7 @@ END
                 <div class="card-block">
                     <div class="row-flex">
                         <div class="col9">
-                            <div data-netdata="statsd_gauge_source.packetfence.devices.registered_last_hour"
+                            <div data-netdata="statsd_gauge_source.a3.devices.registered_last_hour"
                             data-host="/netdata/127.0.0.1"
                             data-title="New registered devices during the past hour"
                             data-chart-library="dygraph"
@@ -822,7 +822,7 @@ END
                             data-decimal-digits="0"></div>
                         </div>
                         <div class="col9">
-                            <div data-netdata="statsd_gauge_source.packetfence.devices.registered_last_day"
+                            <div data-netdata="statsd_gauge_source.a3.devices.registered_last_day"
                             data-host="/netdata/127.0.0.1"
                             data-title="New registered devices during the past day"
                             data-chart-library="dygraph"
@@ -836,7 +836,7 @@ END
                             data-decimal-digits="0"></div>
                         </div>
                         <div class="col9">
-                            <div data-netdata="statsd_gauge_source.packetfence.devices.registered_last_week"
+                            <div data-netdata="statsd_gauge_source.a3.devices.registered_last_week"
                             data-host="/netdata/127.0.0.1"
                             data-title="New registered devices during the past week"
                             data-chart-library="dygraph"
@@ -850,7 +850,7 @@ END
                             data-decimal-digits="0"></div>
                         </div>
                         <div class="col9">
-                            <div data-netdata="statsd_gauge_source.packetfence.devices.registered_last_month"
+                            <div data-netdata="statsd_gauge_source.a3.devices.registered_last_month"
                             data-host="/netdata/127.0.0.1"
                             data-title="New registered devices during the past month"
                             data-chart-library="dygraph"
@@ -866,7 +866,7 @@ END
                     </div>
                     <div class="row-flex">
                         <div class="col18">
-                            <div data-netdata="statsd_gauge_source.packetfence.devices.registered_last_year"
+                            <div data-netdata="statsd_gauge_source.a3.devices.registered_last_year"
                             data-host="/netdata/127.0.0.1"
                             data-title="New registered devices during the past year"
                             data-chart-library="dygraph"
@@ -889,7 +889,7 @@ END
                 <div class="card-block">
                     <div class="row-flex">
                         <div class="col18">
-                            <div data-netdata="statsd_gauge_source.packetfence.violations"
+                            <div data-netdata="statsd_gauge_source.a3.violations"
                             data-host="/netdata/127.0.0.1"
                             data-title="Currently open violations"
                             data-chart-library="dygraph"
