@@ -7,7 +7,7 @@
   <DiskSection>
     <Info>List of the virtual disks used in the package</Info>
     <Disk ovf:capacity="42949672960" ovf:diskId="vmdisk1" ovf:fileRef="file1" ovf:format="http://www.vmware.com/interfaces/specifications/vmdk.html#streamOptimized" vbox:uuid="f7f99fd5-5044-48b7-95e7-be4b74f27668"/>
-    <Disk ovf:capacity="107374182400" ovf:diskId="vmdisk2" ovf:fileRef="file2" ovf:format="http://www.vmware.com/interfaces/specifications/vmdk.html#streamOptimized" vbox:uuid="d0e17e23-b9ad-4080-9e7f-a74a61416d57"/>
+    <Disk ovf:capacity="214748364800" ovf:diskId="vmdisk2" ovf:fileRef="file2" ovf:format="http://www.vmware.com/interfaces/specifications/vmdk.html#streamOptimized" vbox:uuid="d0e17e23-b9ad-4080-9e7f-a74a61416d57"/>
   </DiskSection>
   <NetworkSection>
     <Info>Logical networks used in the package</Info>
