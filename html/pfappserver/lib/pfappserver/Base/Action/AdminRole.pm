@@ -17,6 +17,7 @@ use Moose::Role;
 use namespace::autoclean;
 
 use pf::admin_roles;
+use pf::error qw(is_success is_error);
 
 =head1 METHODS
 
@@ -40,9 +41,9 @@ before execute => sub {
         $can_access = admin_can_do_any($roles, @$actions);
     }
     unless($can_access) {
-        if($c->user_exists) {
-            $c->log->debug( sub { sprintf('Access to action(s) %s was refused to user %s with admin roles %s',
-                                   join(", ",@$actions), $c->user->id, join(',', @$roles))} );
+        if ($c->user_exists) {
+            $c->log->debug(sub {sprintf('Access to action(s) %s was refused to user %s with admin roles %s',
+                join(", ", @$actions), $c->user->id, join(',', @$roles))});
         }
         $c->response->status(HTTP_UNAUTHORIZED);
         $c->stash->{status_msg} = "You don't have the rights to perform this action.";

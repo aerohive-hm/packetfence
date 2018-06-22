@@ -79,7 +79,7 @@ echo "*****************"
 if [ -n "$PASSPHRASE" ]; then
   $CURRENT_DIR/a3-rpm-build-expect.sh $VERSION $DIST $DATE $BUILD_DIR $PASSPHRASE
 else
-  /usr/bin/rpmbuild -ba --sign --define "ver $VERSION" --define 'snapshot 1' --define "dist $DIST" --define "rev 0.$DATE" $BUILD_DIR/SPECS/A3.spec 1>/dev/null
+  /usr/bin/rpmbuild -ba --define "ver $VERSION" --define 'snapshot 1' --define "dist $DIST" --define "rev 0.$DATE" $BUILD_DIR/SPECS/A3.spec 1>/dev/null
 fi
 
 if [[ "$?" != "0" ]]; then
