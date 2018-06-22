@@ -23,7 +23,7 @@ EOF
 # A3 installation
 yum install perl -y
 yum install --enablerepo=packetfence,aerohive A3 -y
-yum install --enablerepo=packetfence,aerohive A3-PKI -y
+yum install --enablerepo=packetfence,aerohive --disablerepo=A3_os,A3_deps,A3_release A3-PKI -y
 
 # Don't need our repository anymore
 rm /etc/yum.repos.d/aerohive.repo
@@ -82,3 +82,9 @@ cd /etc && patch -p0 <<EOF
  # The authpriv file has restricted access.
  authpriv.*                                              /var/log/secure
 EOF
+
+# remove the vb guest additional
+rm -rf /opt/VBoxGuestAdditions*
+systemctl disable vboxadd
+systemctl disable vboxadd-service
+rm -rf /usr/lib/systemd/system/vboxadd*
