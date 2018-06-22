@@ -1200,7 +1200,7 @@ fi
 %dir                    /usr/local/pf/db
                         /usr/local/pf/db/a3-schema-*.sql
                         /usr/local/pf/db/pf-schema.sql
-                        /usr/local/pf/db/upgrade-1.1.0-1.1.1.sql
+                        /usr/local/pf/db/a3-upgrade*.sql
 %dir                    /usr/local/pf/docs
 %doc                    /usr/local/pf/docs/pfcmd.help
 %dir                    /usr/local/pf/html
