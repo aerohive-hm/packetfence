@@ -234,7 +234,7 @@ sub generate_upgrade_patch_list {
 
 sub check_db_schema_file {
   for (0..$#upgrade_path_list-1) {
-    push @db_schema_files, "upgrade-".$upgrade_path_list[$_]."-".$upgrade_path_list[$_+1].".sql";
+    push @db_schema_files, "a3-upgrade-".$upgrade_path_list[$_]."-".$upgrade_path_list[$_+1].".sql";
   }
   commit_upgrade_log("The database schema files that need to be applied are @db_schema_files");
   foreach (@db_schema_files) {

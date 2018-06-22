@@ -61,9 +61,9 @@ sub key :Path('key') :Args(1) {
         }
         else {
             if ($ek->{err_status} == undef){
-                $c->stash->{status_msg} = $c->loc("Unable to validate entitlement key at this time. Try again later.");
-            } else {
                 $c->stash->{entitlement} = make_ek_hash($ek);
+            } else {
+                $c->stash->{status_msg} = $c->loc("Unable to validate entitlement key at this time. Try again later...");
             }
         }
     }

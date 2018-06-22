@@ -1,0 +1,28 @@
+[% IF is_eula_accepted %]<!-- LICENSE KEY MODAL-->[% ELSE %] <!-- LICENSE TRIAL KEY MODAL--> [% END %]
+<div class="modal fade" id="myModal" style="display: none;">
+  <div class="modal-dialog" role="document">
+<!--BEGINNING ALERT TEXT-->
+       <div class="modal-content licenseAlert">
+        <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
+          <h3 class="modal-title"><b>[% l('Subscription ending in') %]
+            [% IF is_eula_accepted %]
+              [% IF latestKey.defined %]<span>[% latest_key_expires_in %] [% IF latest_key_expires_in == 1 %]day[% ELSE %]days[% END %]</span>[% END %]</b>
+            [% ELSE %]
+              <span id="daysLeft2"></span>
+            [% END %]
+          </h3>
+        </div>
+        <div class="modal-body">
+          <p>[% l('Hello') %] [% c.user | html %]. [% l('It looks like your subscription is almost ending. Renew your license') %] [% IF latestKey.defined %]<span>[% latest_key_expires_in %] [% IF latest_key_expires_in == 1 %]day[% ELSE %]days[% END %]</span>[% ELSE %]<span id="daysLeft"></span>[% END %]</b> [% l('to continue using it. You can do this by calling this number:') %] </p>
+           <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
+          <p>[% l('If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service.') %] </p>
+        </div>
+        Redirect in <1> minute
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success licenseKey" id="licenseKey">[% l('Enter Key') %]</button>
+          <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">[% l('Close') %]</button>
+        </div>
+      </div>
+<!--END OF ALERT TEXT-->
+  </div>
+</div>

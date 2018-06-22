@@ -12,6 +12,7 @@
           <p>[% l('Hello') %] [% c.user | html %]. [% l('It looks like your subscription has ended. Please renew your license to continue using it. You can do this by calling this number') %]: </p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
           <p>[% l('Thank you for using our service.') %] </p>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-success licenseKey" id="licenseKey">[% l('Enter License Key') %]</button>

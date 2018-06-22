@@ -16,6 +16,7 @@ $(document).ready(function(){
 
 // apply button press
 function applyKeyButton(){
+    console.log("inside applyKeyButton");
   var applyKeyButton2 = $("#applyKey");
   applyKeyButton2.click(function(){
     var userKeyInput = document.getElementById('keyInput').value;
@@ -34,6 +35,7 @@ function applyKeyButton(){
 
 // update table after checking regex
 function updateKeyTable(userKeyInput) {
+  console.log("inside updateKeyTable");
     var applyKeyButton2 = $("#applyKey");
     var base_url = window.location.origin;
     $.ajax({
@@ -45,7 +47,7 @@ function updateKeyTable(userKeyInput) {
            if (errMsg != null ) {
                document.getElementById('errorMessage').innerHTML = errMsg;
                $("#success-alert").show(); // use slide down for animation
-               setTimeout(function () {
+               setTimeout(function (){
                  $("#success-alert").slideUp(500);
                }, 3000);
            } else {
@@ -63,6 +65,7 @@ function updateKeyTable(userKeyInput) {
 
 
 function checkKeyInput(userKeyInput){
+    console.log("inside checkKeyInput");
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
     var applyKeyButton2 = $("#applyKey");
     //TRUE OR FALSE
@@ -77,6 +80,7 @@ function checkKeyInput(userKeyInput){
 
 //open eula
 function openEulaModal(){
+    console.log("inside openEulaModal");
    $('#eulaModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
    $('#eulaModal').modal('show');
 }
@@ -84,6 +88,7 @@ function openEulaModal(){
 
 //user submits eula with button press
 function userSubmitEula(){
+    console.log("inside userSubmitEula");
   var base_url = window.location.origin;
   $.ajax({
       type: 'POST',
