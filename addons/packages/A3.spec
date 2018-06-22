@@ -914,7 +914,7 @@ fi
 %config %attr(0440,root,root) %{_sysconfdir}/sudoers.d/A3
 %config %attr(0644,root,root) %{_sysconfdir}/logrotate.d/A3
 %config %attr(0600,root,root) %{_sysconfdir}/cron.d/A3
-%config %attr(0644,root,root) %{_sysconfdir}/yum.repos.d/A3
+%config %attr(0644,root,root) %{_sysconfdir}/yum.repos.d/A3.repo
 
 %dir                    /usr/local/pf
                         /usr/local/pf/Makefile
