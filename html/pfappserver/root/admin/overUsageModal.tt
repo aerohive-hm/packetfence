@@ -1,16 +1,15 @@
 <!--modal for license enforcement-->
-<div class="modal fade" id="enforcementModal" style="display: none;">
+<div class="modal fade" id="overUsageModal" style="display: none;">
   <div class="modal-dialog" role="document">
 <!--BEGINNING ALERT TEXT-->
        <div class="modal-content licenseAlert">
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
-          <h3 class="modal-title"><b>[% l('Over Entitlement Limit') %]</b>
-              <!-- <span>Your current licenses have expired, please subscribe another key.</span> -->
-              <!--Put in po file please-->
+          <h3 class="modal-title"><b>[% l('Over Usage') %]</b>
+              <!-- <span></span> -->
           </h3>
         </div>
         <div class="modal-body">
-          <p>[% l('Hello') %] [% c.user | html %]. [% l('Your current licenses have expired, please subscribe another key. You can do this by calling this number:') %] </p>
+          <p>[% l('Hello') %] [% c.user | html %]. [% l('Your current daily average number of active endpoints has exceeded your entitlement limits, increase your subscription. Call the number below to get a new key:') %] </p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
           <p>[% l('If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service.') %] </p>
         </div>
