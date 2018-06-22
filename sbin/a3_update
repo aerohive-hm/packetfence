@@ -72,7 +72,7 @@ sub A3_Warn {
 
 sub commit_upgrade_log {
   my $msg = shift @_;
-  my $current_time = POSIX::strftime("%Y/%m/%d %H:%M:%S",localtime);
+  my $current_time = POSIX::strftime("%Y-%m-%d %H:%M:%S",localtime);
   print $log_fh "[ $current_time ] $msg\n";
 }
 
