@@ -79,3 +79,6 @@ cd /etc && patch -p0 <<EOF
  # The authpriv file has restricted access.
  authpriv.*                                              /var/log/secure
 EOF
+
+# remove the vb guest additional
+rm -rf /opt/VBoxGuestAdditions*
