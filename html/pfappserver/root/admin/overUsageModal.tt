@@ -1,17 +1,17 @@
-<!--modal for license enforcement-->
+<!--modal for overUsage-->
 <div class="modal fade" id="overUsageModal" style="display: none;">
   <div class="modal-dialog" role="document">
 <!--BEGINNING ALERT TEXT-->
-       <div class="modal-content licenseAlert">
+       <div class="modal-content">
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
           <h3 class="modal-title"><b>[% l('Over Usage') %]</b>
               <!-- <span></span> -->
           </h3>
         </div>
         <div class="modal-body">
-          <p>[% l('Hello') %] [% c.user | html %]. [% l('Your current daily average number of active endpoints has exceeded your entitlement limits, increase your subscription. Call the number below to get a new key:') %] </p>
+          <p>[% l('Hello') %] [% c.user | html %]. [% l('Your current daily average number of active endpoints has exceeded your entitlement limits, Contact Aerohive to renew your subscription to increase your subscription.') %] </p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
-          <p>[% l('If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service.') %] </p>
+          <p>[% l('If you have an entitlement key, press the Enter Key button below. Thanks again for using our service.') %] </p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-success licenseKey" id="licenseKey">[% l('Enter Key') %]</button>

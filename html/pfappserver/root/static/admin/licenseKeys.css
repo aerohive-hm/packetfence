@@ -155,10 +155,6 @@ label{
     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
 
-#overUsageModal, #enforcementModal{
-   display: none;
-}
-
 @media (max-width:1250px){
 
   html, body{

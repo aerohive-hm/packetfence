@@ -202,8 +202,9 @@
         [% END %]
 
         [% IF is_current_entitlement_expired %]
-          [% INCLUDE admin/licenseEnforcementModal.tt %]
+          <!-- [% INCLUDE admin/licenseEnforcementModal.tt %] -->
         [% ELSE %]
+          [% INCLUDE admin/licenseEnforcementModal.tt %]
         [% END %]
         [% IF is_current_usage_under_limit %]
           [% INCLUDE admin/overUsageModal.tt %]
@@ -248,15 +249,10 @@
       [% END %]
       [% IF is_current_entitlement_expired %]
           <script>openEnforcementModal()</script>
-      [% ELSE %]
-        <!-- <script>openEnforcementModal()</script> -->
       [% END %]
 
       [% IF is_current_usage_under_limit %]
-
           <script>openOverUsageModal()</script>
-      [% ELSE %]
-          <!-- <script>openOverUsageModal()</script> -->
       [% END %]
     [% END %]
 [%- END %]
