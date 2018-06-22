@@ -272,14 +272,6 @@ has_field 'custom_field_9' =>
    label => 'custom_field_9',
   );
 
-has_field 'psk' =>
-  (
-   type => 'Text',
-   Label => 'PSK key',
-   tags => { after_element => \&help,
-         help => 'Minimum of 8 characters.' },
-  );
-
 =head2 Blocks
 
 =over
@@ -297,7 +289,7 @@ has_block 'user' =>
 
 has_block 'miscellaneous' =>
   (
-   render_list => [qw(anniversary birthday gender lang nickname organization cell_phone work_phone title building_number apartment_number room_number psk)]
+   render_list => [qw(anniversary birthday gender lang nickname organization cell_phone work_phone title building_number apartment_number room_number)]
   );
 
 has_block 'custom_fields' =>

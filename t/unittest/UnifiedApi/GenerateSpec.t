@@ -296,18 +296,6 @@ cmp_deeply(
                     },
                     description => 'Sources',
                 },
-                'default_psk_key' => {
-                    type => 'string',
-                    description => 'This is the default PSK key when you enable DPSK on this connection profile. The minimum length is eight characters.'
-                },
-                'dpsk' => {
-                    type => 'string',
-                    description => 'This enables the Dynamic PSK feature on this connection profile. It means that the RADIUS server will answer requests with specific attributes like the PSK key to use to connect on the SSID.',
-                },
-                'status' => {
-                    type => 'string',
-                    description => 'If profile is disabled it will not used',
-                },
             },
             required => [
                 qw(

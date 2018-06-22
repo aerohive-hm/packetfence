@@ -65,11 +65,6 @@ sub build_update_subfields {{
         element_class => ['input-mini'],
         element_attr => {'min' => '0'},
        },
-       'PSKLength' =>
-       {
-        element_class => ['input-mini'],
-        element_attr => {'min' => '8'},
-       },
        'TextArea' =>
        {
         element_class => ['input-xlarge'],
@@ -113,7 +108,7 @@ sub update_field {
         $field->set_element_attr('data-required' => 'required');
         $field->tags->{label_after} = ' <i class="icon-required"></i>';
     }
-    if ($field->type eq 'PosInteger' || $field->type eq 'PSKLength') {
+    if ($field->type eq 'PosInteger') {
         $field->type_attr($field->html5_type_attr);
         $field->set_element_attr('data-type' => 'number');
     }

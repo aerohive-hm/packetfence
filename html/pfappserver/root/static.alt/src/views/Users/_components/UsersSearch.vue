@@ -5,7 +5,7 @@
       <h4 class="mb-0" v-t="'Search Users'"></h4>
     </b-card-header>
     <pf-search :quick-with-fields="false" quick-placeholder="Search by name or email"
-      :fields="fields" :store="$store" :advanced-mode="advancedMode" :condition="condition"
+      :fields="fields" :store="$store" :advanced-mode="advancedMode"
       @submit-search="onSearch" @reset-search="onReset"></pf-search>
     <div class="card-body">
       <b-row align-h="between" align-v="center">
@@ -41,21 +41,18 @@
 
 <script>
 import { pfSearchConditionType as attributeType } from '@/globals/pfSearch'
-import pfBaseSearchable from '@/components/pfBaseSearchable'
 import pfSearch from '@/components/pfSearch'
 import ToggleButton from '@/components/ToggleButton'
 
 export default {
   name: 'UsersSearch',
-  extends: pfBaseSearchable,
-  searchApiEndpoint: 'users',
-  defaultSortKeys: ['pid'],
   components: {
     'pf-search': pfSearch,
     'toggle-button': ToggleButton
   },
   data () {
     return {
+      advancedMode: false,
       // Fields must match the database schema
       fields: [ // keys match with b-form-select
         {
@@ -78,53 +75,105 @@ export default {
         },
         {
           key: 'firstname',
-          label: this.$i18n.t('Firstname'),
+          label: this.$i18n.t('firstname'),
           sortable: true,
           visible: true
         },
         {
           key: 'lastname',
-          label: this.$i18n.t('Lastname'),
+          label: this.$i18n.t('lastname'),
           sortable: true,
           visible: true
         },
         {
           key: 'email',
-          label: this.$i18n.t('Email'),
+          label: this.$i18n.t('email'),
           sortable: true,
           visible: true
         }
-      ]
+      ],
+      condition: null,
+      requestPage: 1,
+      currentPage: 1,
+      pageSizeLimit: 10
+    }
+  },
+  computed: {
+    isLoading () {
+      return this.$store.getters['$_users/isLoading']
+    },
+    sortBy () {
+      return this.$store.state.$_users.searchSortBy
+    },
+    sortDesc () {
+      return this.$store.state.$_users.searchSortDesc
+    },
+    visibleColumns () {
+      return this.columns.filter(column => column.visible)
+    },
+    items () {
+      return this.$store.state.$_users.items
+    },
+    totalRows () {
+      return this.$store.state.$_users.searchMaxPageNumber * this.pageSizeLimit
     }
   },
   methods: {
-    quickCondition (newCondition) {
-      return {
-        op: 'or',
-        values: [
-          { field: 'pid', op: 'contains', value: newCondition },
-          { field: 'email', op: 'contains', value: newCondition }
-        ]
+    onSearch (newCondition) {
+      let _this = this
+      let condition = newCondition
+      if (!this.advancedMode) {
+        // Build quick search query
+        condition = {
+          op: 'or',
+          values: [
+            { field: 'pid', op: 'contains', value: newCondition },
+            { field: 'email', op: 'contains', value: newCondition }
+          ]
+        }
       }
+      this.requestPage = 1 // reset to the first page
+      this.$store.dispatch('$_users/setSearchQuery', condition)
+      this.$store.dispatch('$_users/search', this.requestPage).then(() => {
+        _this.currentPage = _this.requestPage
+        _this.condition = condition
+      }).catch(() => {
+        _this.requestPage = _this.currentPage
+      })
+    },
+    onReset () {
+      this.requestPage = 1 // reset to the first page
+      this.$store.dispatch('$_users/setSearchQuery', undefined) // reset search
+      this.$store.dispatch('$_users/search', this.requestPage)
+    },
+    onPageSizeChange () {
+      this.requestPage = 1 // reset to the first page
+      this.$store.dispatch('$_users/setSearchPageSize', this.pageSizeLimit)
+      this.$store.dispatch('$_users/search', this.requestPage)
+    },
+    onPageChange () {
+      let _this = this
+      this.$store.dispatch('$_users/search', this.requestPage).then(() => {
+        _this.currentPage = _this.requestPage
+      }).catch(() => {
+        _this.requestPage = _this.currentPage
+      })
+    },
+    onSortingChanged (params) {
+      this.requestPage = 1 // reset to the first page
+      this.$store.dispatch('$_users/setSearchSorting', params)
+      this.$store.dispatch('$_users/search', this.requestPage)
+    },
+    toggleColumn (column) {
+      column.visible = !column.visible
     },
     onRowClick (item, index) {
       this.$router.push({ name: 'user', params: { pid: item.pid } })
     }
   },
   created () {
-    // pfBaseSearchable.created() has been called
-    if (!this.condition) {
-      // Select first field
-      this.initCondition()
-    } else {
-      // Restore selection of advanced mode; check if condition matches a quick search
-      this.advancedMode = !(this.condition.op === 'or' &&
-        this.condition.values.length === 2 &&
-        this.condition.values[0].field === 'pid' &&
-        this.condition.values[0].op === 'contains' &&
-        this.condition.values[1].field === 'email' &&
-        this.condition.values[1].op === 'contains')
-    }
+    this.$store.dispatch('$_users/search', this.requestPage)
+    this.pageSizeLimit = this.$store.state.$_users.searchPageSize
   }
 }
 </script>

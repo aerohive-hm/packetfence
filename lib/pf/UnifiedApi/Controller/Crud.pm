@@ -187,19 +187,7 @@ sub get_lookup_info {
 sub render_get {
     my ($self) = @_;
     my $stash = $self->stash;
-    return $self->render(json => { item => $self->item, status => $stash->{status}});
-}
-
-=head2 item
-
-item
-
-=cut
-
-sub item {
-    my ($self) = @_;
-    my $stash = $self->stash;
-    return ${$stash->{item}}[-1];
+    return $self->render(json => { item => ${$stash->{item}}[-1], status => $stash->{status}});
 }
 
 sub do_get {
@@ -222,14 +210,10 @@ sub create {
     );
 }
 
-sub create_error_msg {
-    "Unable to create resource"
-}
-
 sub render_create {
     my ($self, $status, $obj) = @_;
     if (is_error($status)) {
-        return $self->render_error($status, $self->create_error_msg($obj));
+        return $self->render_error($status, "Unable to create resource");
     }
     $self->res->headers->location($self->make_location_url($obj));
     return $self->render(text => '', status => $status);
@@ -333,14 +317,7 @@ sub update {
 
 sub update_data {
     my ($self) = @_;
-    my $data = $self->req->json;
-    my %update;
-    for my $field (@{$self->dal->table_field_names}) {
-        next if !exists $data->{$field};
-        $update{$field} = $data->{$field};
-    }
-
-    return \%update;
+    return $self->req->json;
 }
 
 sub replace {

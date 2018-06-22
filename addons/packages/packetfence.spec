@@ -326,9 +326,9 @@ Requires: %{real_name}-pfcmd-suid = %{version}
 Requires: %{real_name}-config = %{version}-%{rev}%{?dist}
 Requires: %{real_name}-pfcmd-suid = %{version}-%{rev}%{?dist}
 %endif
-Requires: haproxy >= 1.8.9, keepalived >= 1.4.3
+Requires: haproxy >= 1.6, keepalived >= 1.3.6
 # CAUTION: we need to require the version we want for Fingerbank and ensure we don't want anything equal or above the next major release as it can add breaking changes
-Requires: fingerbank >= 4.0.1, fingerbank < 5.0.0
+Requires: fingerbank >= 4.0.0, fingerbank < 5.0.0
 Requires: perl(File::Tempdir)
 
 # etcd
@@ -1347,6 +1347,9 @@ fi
 %exclude                /usr/local/pf/addons/pfconfig/pfconfig.init
 
 %changelog
+* Wed May 09 2018 Inverse <info@inverse.ca> - 8.0.1-1
+- New release 8.0.1
+
 * Thu Apr 26 2018 Inverse <info@inverse.ca> - 8.0.0-1
 - New release 8.0.0
 

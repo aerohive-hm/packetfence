@@ -28,8 +28,24 @@
 </template>
 
 <script>
+import store from './_store'
+
 export default {
-  name: 'Users'
+  name: 'Users',
+  props: {
+  },
+  data () {
+    return {
+    }
+  },
+  created () {
+    // Register store module only once
+    if (!this.$store.state.$_users) {
+      this.$store.registerModule('$_users', store)
+    }
+  },
+  mounted () {
+  }
 }
 </script>
 

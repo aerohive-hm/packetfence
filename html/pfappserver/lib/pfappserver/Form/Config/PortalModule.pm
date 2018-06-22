@@ -115,7 +115,7 @@ sub options_actions {
     return map { 
         {
             value => $_,
-            label => $self->_localize($_),
+            label => $_,
         }
     } ("Select an option", @{$self->for_module->available_actions});
 }

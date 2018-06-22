@@ -482,6 +482,7 @@ done
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons/AD
 %{__install} -d -m2770 $RPM_BUILD_ROOT/usr/local/pf/conf
+%{__install} -d -m2770 $RPM_BUILD_ROOT/usr/local/pf/conf_migration
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/conf/radiusd
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/conf/ssl
 %{__install} -d -m2775 $RPM_BUILD_ROOT%logdir
@@ -532,11 +533,14 @@ rmdir addons/pfarp_remote
 cp -r db $RPM_BUILD_ROOT/usr/local/pf/
 cp -r html $RPM_BUILD_ROOT/usr/local/pf/
 cp -r lib $RPM_BUILD_ROOT/usr/local/pf/
+cp conf_migration/* $RPM_BUILD_ROOT/usr/local/pf/conf_migration/
 
 mkdir $RPM_BUILD_ROOT/usr/local/pf/docs
 cp docs/pfcmd.help $RPM_BUILD_ROOT/usr/local/pf/docs
 
 mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen
+
+mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahusavg-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahusavg
 
 # Exclude new Vue.js content for now
 rm -rf $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static.alt/
@@ -933,6 +937,7 @@ fi
 %dir                    /usr/local/pf/bin
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3ec
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3us
+%attr(0755, pf, pf)     /usr/local/pf/bin/a3ma
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfhttpd
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd.pl
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd_vlan
@@ -946,6 +951,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/maintenance
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/node
 %attr(0700, root, root) /usr/local/pf/bin/ahpwgen
+%attr(0755, pf, pf)     /usr/local/pf/bin/ahusavg
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdhcp
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdns
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfstats
@@ -1189,9 +1195,12 @@ fi
                         /usr/local/pf/conf/report.conf.example
 %config(noreplace)      /usr/local/pf/conf/traffic_shaping.conf
                         /usr/local/pf/conf/traffic_shaping.conf.example
+%dir                    /usr/local/pf/conf_migration
+%attr(0755, pf, pf)     /usr/local/pf/conf_migration/*
 %dir                    /usr/local/pf/db
                         /usr/local/pf/db/a3-schema-*.sql
                         /usr/local/pf/db/pf-schema.sql
+                        /usr/local/pf/db/upgrade-1.1.0-1.1.1.sql
 %dir                    /usr/local/pf/docs
 %doc                    /usr/local/pf/docs/pfcmd.help
 %dir                    /usr/local/pf/html
@@ -1320,6 +1329,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/sbin/system-id
 %attr(0755, pf, pf)     /usr/local/pf/sbin/winbindd-wrapper
 %attr(0755, pf, pf)     /usr/local/pf/sbin/radsniff-wrapper
+%attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update
 %dir                    /usr/local/pf/var
 %dir                    /usr/local/pf/var/conf
 %dir                    /usr/local/pf/raddb

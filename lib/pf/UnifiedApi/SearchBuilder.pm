@@ -193,7 +193,7 @@ sub make_join_specs {
     foreach my $f (@{$s->{found_fields} // []}) {
         if (exists $allow_joins->{$f}) {
             my $jf = $allow_joins->{$f};
-            my $namespace = $jf->{namespace};
+            my ($namespace, undef) = split(/\./, $f, 2);
             next if exists $found{$namespace};
             $found{$namespace} = 1;
             push @join_specs, @{$jf->{join_spec} // []};
@@ -224,29 +224,13 @@ sub make_columns {
 
     if (@$cols) {
         push @{$s->{found_fields}}, @$cols;
-        @$cols = map { $self->format_column($s, $_) } @$cols
+        my $t = $s->{dal}->table;
+        @$cols = map { $self->is_table_field($s, $_) ? "${t}.$_" : $_ } @$cols;
     } else {
         $cols = $s->{dal}->table_field_names;
     }
 
     return 200, $cols;
-}
-
-=head2 format_column
-
-format_column
-
-=cut
-
-sub format_column {
-    my ($self, $s, $c) = @_;
-    if ($self->is_table_field($s, $c)) {
-        my $t = $s->{dal}->table;
-        return "${t}.${c}";
-    }
-    my $allowed_join_fields = $self->allowed_join_fields;
-    my $specs = $allowed_join_fields->{$c};
-    return exists $specs->{column_spec} ? $specs->{column_spec} : $c;
 }
 
 =head2 $self->allowed_join_fields()
@@ -337,44 +321,13 @@ sub verify_query {
         }
 
         push @{$s->{found_fields}}, $field;
-        $query = $self->rewrite_query($s, $query);
+        if ($self->is_table_field($s, $field)) {
+            $query->{field} = $s->{dal}->table . "." . $field;
+        }
     }
 
     return (200, $query);
 }
-
-=head2 rewrite_query
-
-rewrite_query
-
-=cut
-
-sub rewrite_query {
-    my ($self, $s, $query) = @_;
-    my $f = $query->{field};
-    if ($self->is_table_field($s, $f)) {
-        $query->{field} = $s->{dal}->table . "." . $f;
-    } elsif ($self->is_field_rewritable($s, $f)) {
-        my $allowed = $self->allowed_join_fields;
-        my $cb = $allowed->{$f}{rewrite_query};
-        $query = $self->$cb($s, $query);
-    }
-
-    return $query;
-}
-
-
-=head2 is_field_rewritable
-
-is_field_rewritable
-
-=cut
-
-sub is_field_rewritable {
-    my ($self, $s, $f) = @_;
-    return exists $self->allowed_join_fields->{$f}{rewrite_query};
-}
-
 
 =head2 $self->is_valid_query($search_info, $query)
 
@@ -413,41 +366,17 @@ Makes the SQL::Abstract::More where clause from the search_info
 sub make_where {
     my ($self, $s) = @_;
     my $query = $s->{query};
-    my @where;
-    if (defined $query) {
-        (my $status, $query) = $self->verify_query($s, $query);
-        if (is_error($status)) {
-            return $status, $query;
-        }
-        my $where = pf::UnifiedApi::Search::searchQueryToSqlAbstract($query);
-        push @where, $where;
+    if (!defined $query) {
+        return 200, {};
     }
 
-    my $sqla = pf::dal->get_sql_abstract;
-    my $where = $sqla->merge_conditions(@where, $self->additional_where_clause($s));
+    (my $status, $query) = $self->verify_query($s, $query);
+    if (is_error($status)) {
+        return $status, $query;
+    }
+
+    my $where = pf::UnifiedApi::Search::searchQueryToSqlAbstract($query);
     return 200, $where;
-}
-
-=head2 additional_where_clause
-
-additional_where_clause
-
-=cut
-
-sub additional_where_clause {
-    my ($self, $s) = @_;
-    my $allowed_join_fields = $self->allowed_join_fields;
-    my @clauses;
-    my %found;
-    foreach my $f (@{$s->{found_fields} // []}) {
-        next if !exists $allowed_join_fields->{$f};
-        my $jf = $allowed_join_fields->{$f};
-        my $namespace = $jf->{namespace};
-        next if !exists $jf->{where_spec};
-        $found{$namespace} = 1;
-        push @clauses, $jf->{where_spec};
-    }
-    return @clauses;
 }
 
 =head2 $self->make_order_by($search_info)

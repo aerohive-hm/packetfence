@@ -56,7 +56,7 @@ $t->get_ok($location)
 
 my $new_notes =  "Notes $test_mac updated";
 
-$t->patch_ok($location => json => { notes => $new_notes, GARBAGE_FIELD => 'sad' })
+$t->patch_ok($location => json => { notes => $new_notes})
   ->status_is(200);
 
 $t->get_ok($location)

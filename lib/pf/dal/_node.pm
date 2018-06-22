@@ -60,7 +60,6 @@ BEGIN {
         device_class
         device_version
         device_score
-        device_manufacturer
         bypass_vlan
         voip
         autoreg
@@ -95,7 +94,6 @@ BEGIN {
         device_class => undef,
         device_version => undef,
         device_score => undef,
-        device_manufacturer => undef,
         bypass_vlan => undef,
         voip => 'no',
         autoreg => 'no',
@@ -130,7 +128,6 @@ BEGIN {
         device_class
         device_version
         device_score
-        device_manufacturer
         bypass_vlan
         voip
         autoreg
@@ -280,12 +277,6 @@ BEGIN {
             is_nullable => 1,
         },
         device_score => {
-            type => 'INT',
-            is_auto_increment => 0,
-            is_primary_key => 0,
-            is_nullable => 1,
-        },
-        device_manufacturer => {
             type => 'VARCHAR',
             is_auto_increment => 0,
             is_primary_key => 0,
@@ -373,7 +364,6 @@ BEGIN {
         node.device_class
         node.device_version
         node.device_score
-        node.device_manufacturer
         node.bypass_vlan
         node.voip
         node.autoreg

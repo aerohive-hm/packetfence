@@ -16,16 +16,9 @@ Version X.Y.Z released on xxxx-xx-xx
 
 New Features
 ++++++++++++
-* Added support for dynamic PSK (Cisco IPSK) for the Cisco WLC and hostapd (PR #3244)
 
 Enhancements
 ++++++++++++
-* Allow profiles to be enabled/disabled (PR #3175)
-* Add new portal module action that wraps the default actions a module would normally execute (fixes #3231)
-* Improved startup time of PacketFence (PR #3213)
-* Fix local/reject realm for eduroam in standalone configuration (PR #3264)
-* Allow Subsecond timeouts for LDAP connections
-* Allow Randomization of the search order for a list of servers
 
 Bug Fixes
 +++++++++

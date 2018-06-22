@@ -1,87 +1,46 @@
 
 <template>
-  <b-form @submit.prevent="save()">
+  <b-form>
     <b-card no-body>
       <b-card-header>
         <b-button-close @click="close"><icon name="times"></icon></b-button-close>
-        <h4 class="mb-0">MAC <strong v-text="mac"></strong></h4>
+        <h4 class="mb-0">MAC {{ mac }}</h4>
       </b-card-header>
       <b-tabs card>
 
         <b-tab title="Info" active>
           <b-row>
             <b-col>
-              <pf-form-input v-model="nodeContent.pid" label="Owner" :validation="$v.nodeContent.pid"/>
-              <b-form-group horizontal label-cols="3" :label="$t('Status')">
-                <b-form-select v-model="nodeContent.status" :options="statuses"></b-form-select>
-             </b-form-group>
-              <b-form-group horizontal label-cols="3" :label="$t('Role')">
-                <b-form-select v-model="nodeContent.category" :options="roles"></b-form-select>
-             </b-form-group>
-              <b-form-group horizontal label-cols="3" :label="$t('Notes')">
-                <b-form-textarea v-model="nodeContent.notes" rows="4" max-rows="6"></b-form-textarea>
-              </b-form-group>
+              <pf-form-row id="pid" label="Owner">
+                <b-form-input id="pid" v-model="node.pid"></b-form-input>
+              </pf-form-row>
+              <pf-form-row id="status" label="Status">
+                <b-form-input v-model="node.status"></b-form-input>
+              </pf-form-row>
+              <pf-form-row id="category_id" label="Role">
+                <b-form-input v-model="node.category_id"></b-form-input>
+              </pf-form-row>
             </b-col>
             <b-col>
-              <pf-form-row :label="$t('Name')">
+              <pf-form-row label="Name">
                 {{ node.computername }}
               </pf-form-row>
-              <pf-form-row :label="$t('Last Seen')">
+              <pf-form-row label="Last Seen">
                 {{ node.last_seen }}
               </pf-form-row>
-              <pf-form-row :label="$t('IPv4 Address')" v-if="node.ip4">
+              <pf-form-row label="IPv4 Address" v-if="node.ip4">
                 {{ node.ip4.ip }}
-                  <b-badge variant="success" v-if="node.ip4.active">{{ $t('Since') }} {{ node.ip4.start_time }}</b-badge>
-                  <b-badge variant="warning" v-else-if="node.ip4.end_time">{{ $t('Inactive since') }} {{ node.ip4.end_time }}</b-badge>
-                  <b-badge variant="danger" v-else>{{ $t('Inactive') }}</b-badge>
+                  <b-badge variant="success" v-if="node.ip4.active">Since {{node.ip4.start_time}}</b-badge>
+                  <b-badge variant="warning" v-else>Inactive since {{node.ip4.end_time}}</b-badge>
               </pf-form-row>
-              <pf-form-row :label="$t('IPv6 Address')" v-if="node.ip6">
-                {{ node.ip6.ip }}
-                  <b-badge variant="success" v-if="node.ip6.active">{{ $t('Since') }} {{ node.ip6.start_time }}</b-badge>
-                  <b-badge variant="warning" v-else-if="node.ip6.end_time">{{ $t('Inactive since') }} {{ node.ip6.end_time }}</b-badge>
-                  <b-badge variant="danger" v-else>{{ $t('Inactive') }}</b-badge>
+              <pf-form-row label="IPv6 Address">
+                {{ node.ip6 }}
               </pf-form-row>
             </b-col>
           </b-row>
         </b-tab>
 
         <b-tab title="Fingerbank">
-          <b-row>
-            <b-col>
-              <pf-form-row :label="$t('Device Class')">
-                {{ node.device_class }}
-              </pf-form-row>
-              <pf-form-row :label="$t('Device Type')">
-                {{ node.device_type }}
-              </pf-form-row>
-              <pf-form-row :label="$t('Fully Qualified Device Name')">
-                {{ node.fingerbank.device_fq }}
-              </pf-form-row>
-              <pf-form-row :label="$t('Version')">
-                {{ node.fingerbank.version }}
-              </pf-form-row>
-              <pf-form-row :label="$t('Score')" v-if="node.fingerbank.score">
-                <pf-fingerbank-score :score="node.fingerbank.score"></pf-fingerbank-score>
-              </pf-form-row>
-              <pf-form-row :label="$t('Mobile')">
-                <b-badge variant="success" v-if="node.fingerbank.mobile === 1">{{ $t('Yes') }}</b-badge>
-                <b-badge variant="danger" v-else-if="node.fingerbank.mobile === 0">{{ $t('No') }}</b-badge>
-                <b-badge variant="light" v-else>{{ $t('Unknown') }}</b-badge>
-              </pf-form-row>
-              <pf-form-row :label="$t('DHCP Fingerprint')">
-                {{ node.dhcp_fingerprint }}
-              </pf-form-row>
-              <pf-form-row :label="$t('DHCP Vendor')">
-                {{ node.device_vendor }}
-              </pf-form-row>
-              <pf-form-row :label="$t('DHCPv6 Fingerprint')">
-                {{ node.dhcp6_fingerprint }}
-              </pf-form-row>
-              <pf-form-row :label="$t('DHCPv6 Enterprise')">
-                {{ node.dhcp6_enterprise }}
-              </pf-form-row>
-            </b-col>
-          </b-row>
         </b-tab>
 
         <b-tab title="IPv4 Addresses">
@@ -121,46 +80,30 @@
         </b-tab>
 
       </b-tabs>
-      <b-card-footer align="right" @mouseenter="$v.nodeContent.$touch()">
-        <b-button variant="outline-danger" class="mr-1" :disabled="isLoading" @click="deleteNode()" v-t="'Delete'"></b-button>
-        <b-button variant="outline-primary" type="submit" :disabled="invalidForm"><icon name="circle-notch" spin v-show="isLoading"></icon> {{ $t('Save') }}</b-button>
+      <b-card-footer>
+        <b-button variant="outline-primary" type="submit" v-t="'Save'"></b-button>
       </b-card-footer>
     </b-card>
   </b-form>
 </template>
 
 <script>
+// import Vue from 'vue'
 import ToggleButton from '@/components/ToggleButton'
-import pfFingerbankScore from '@/components/pfFingerbankScore'
-import pfFormInput from '@/components/pfFormInput'
 import pfFormRow from '@/components/pfFormRow'
 import { pfEapType as eapType } from '@/globals/pfEapType'
-import {
-  pfSearchConditionType as conditionType,
-  pfSearchConditionValues as conditionValues
-} from '@/globals/pfSearch'
-const { validationMixin } = require('vuelidate')
-const { required } = require('vuelidate/lib/validators')
 
 export default {
   name: 'NodeView',
   components: {
     'toggle-button': ToggleButton,
-    'pf-fingerbank-score': pfFingerbankScore,
-    'pf-form-row': pfFormRow,
-    'pf-form-input': pfFormInput
+    'pf-form-row': pfFormRow
   },
-  mixins: [
-    validationMixin
-  ],
   props: {
     mac: String
   },
   data () {
     return {
-      nodeContent: {
-        pid: ''
-      },
       iplogFields: [
         {
           key: 'ip',
@@ -221,26 +164,9 @@ export default {
       ]
     }
   },
-  validations: {
-    nodeContent: {
-      pid: { required }
-    }
-  },
   computed: {
     node () {
-      return this.$store.state.$_nodes.nodes[this.mac]
-    },
-    roles () {
-      return this.$store.getters['config/rolesList']
-    },
-    statuses () {
-      return conditionValues[conditionType.NODE_STATUS]
-    },
-    isLoading () {
-      return this.$store.getters['$_nodes/isLoading']
-    },
-    invalidForm () {
-      return this.$v.nodeContent.$invalid || this.$store.getters['$_nodes/isLoading']
+      return this.$store.state.$_nodes.nodes[this.mac] || {}
     }
   },
   methods: {
@@ -254,34 +180,12 @@ export default {
     },
     violationDescription (id) {
       return this.$store.state.config.violations[id].desc
-    },
-    save () {
-      this.$store.dispatch('$_nodes/updateNode', this.nodeContent).then(response => {
-        this.close()
-      })
-    },
-    deleteNode () {
-      this.$store.dispatch('$_nodes/deleteNode', this.mac).then(response => {
-        this.close()
-      })
-    },
-    onKeyup (event) {
-      switch (event.keyCode) {
-        case 27: // escape
-          this.close()
-      }
     }
   },
   mounted () {
-    this.$store.dispatch('$_nodes/getNode', this.mac).then(data => {
-      this.nodeContent = Object.assign({}, data)
-    })
-    this.$store.dispatch('config/getRoles')
+    this.$store.dispatch('$_nodes/getNode', this.mac)
     this.$store.dispatch('config/getViolations')
-    document.addEventListener('keyup', this.onKeyup)
-  },
-  beforeDestroy () {
-    document.removeEventListener('keyup', this.onKeyup)
   }
 }
 </script>
+

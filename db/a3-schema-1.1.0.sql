@@ -91,7 +91,6 @@ CREATE TABLE person (
   `custom_field_9` varchar(255) default NULL,
   `portal` varchar(255) default NULL,
   `source` varchar(255) default NULL,
-  `psk` varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`tenant_id`, `pid`),
   CONSTRAINT `person_tenant_id` FOREIGN KEY(`tenant_id`) REFERENCES `tenant` (`id`)
 ) ENGINE=InnoDB;
@@ -168,8 +167,7 @@ CREATE TABLE node (
   device_type varchar(255) default NULL,
   device_class varchar(255) default NULL,
   device_version varchar(255) DEFAULT NULL,
-  device_score int DEFAULT NULL,
-  device_manufacturer varchar(255) DEFAULT NULL,
+  device_score varchar(255) DEFAULT NULL,
   bypass_vlan varchar(50) default NULL,
   voip enum('no','yes') NOT NULL DEFAULT 'no',
   autoreg enum('no','yes') NOT NULL DEFAULT 'no',
@@ -1290,4 +1288,11 @@ CREATE TABLE a3_usage_sample (
     timestamp datetime NOT NULL,
     count     int      NOT NULL,
     PRIMARY KEY (timestamp)
+) ENGINE=InnoDB;
+
+CREATE TABLE a3_daily_avg (
+    daily_date   date NOT NULL,
+    daily_avg    int  NOT NULL,
+    moving_avg   int  NOT NULL,
+    PRIMARY KEY (daily_date)
 ) ENGINE=InnoDB;
