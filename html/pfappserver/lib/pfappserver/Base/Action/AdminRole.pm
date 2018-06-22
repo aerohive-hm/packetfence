@@ -17,7 +17,6 @@ use Moose::Role;
 use namespace::autoclean;
 
 use pf::admin_roles;
-use pf::error qw(is_success is_error);
 
 =head1 METHODS
 
