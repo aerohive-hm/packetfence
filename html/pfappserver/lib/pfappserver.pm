@@ -380,9 +380,6 @@ __PACKAGE__->log(Log::Log4perl::Catalyst->new(INSTALL_DIR . '/conf/log.conf.d/ht
 # Handle warnings from Perl as error log messages
 $SIG{__WARN__} = sub { __PACKAGE__->log->error(@_); };
 
-# Automatically reap children
-$SIG{CHLD} = 'IGNORE';
-
 # Start the application
 __PACKAGE__->setup();
 
