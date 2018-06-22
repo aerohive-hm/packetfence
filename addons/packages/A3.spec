@@ -1201,6 +1201,7 @@ fi
                         /usr/local/pf/db/a3-schema-*.sql
                         /usr/local/pf/db/pf-schema.sql
                         /usr/local/pf/db/a3-upgrade*.sql
+			/usr/local/pf/db/upgrade_path
 %dir                    /usr/local/pf/docs
 %doc                    /usr/local/pf/docs/pfcmd.help
 %dir                    /usr/local/pf/html
