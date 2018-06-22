@@ -90,7 +90,7 @@
 
               [%- IF can_access("NODES_READ") %]
               <li[% ' class="active"' IF c.action.name == 'nodes' %]>
-                [% IF is_current_entitlement_expired or is_current_usage_under_limit %]
+                [% IF is_current_usage_under_limit %]
                   <a style="color: #333; cursor: not-allowed;" >[% l('Nodes') %]</a>
                 [% ELSE %]
                   <a href="[% c.uri_for(c.controller('Admin').action_for('nodes')) %]">[% l('Nodes') %]</a>
@@ -100,7 +100,7 @@
 
               [%- IF can_access_any("USERS_READ", "USERS_READ_SPONSORED") %]
               <li[% ' class="active"' IF c.action.name == 'users' %]>
-                [% IF is_current_entitlement_expired or is_current_usage_under_limit %]
+                [% IF is_current_usage_under_limit %]
                   <a style="color: #333; cursor: not-allowed;" >[% l('Users') %]</a>
                 [% ELSE %]
                   <a href="[% c.uri_for(c.controller('Admin').action_for('users')) %]">[% l('Users') %]</a>
@@ -110,7 +110,7 @@
 
               [%- IF can_access_group_any("CONFIGURATION_GROUP_READ") %]
               <li[% ' class="active"' IF c.action.name == 'configuration' %]>
-                [% IF is_current_entitlement_expired or is_current_usage_under_limit %]
+                [% IF is_current_usage_under_limit %]
                   <a style="color: #333; cursor: not-allowed;" >[% l('Configuration') %]</a>
                 [% ELSE %]
                   <a href="[% c.uri_for(c.controller('Admin').action_for('configuration')) %]">[% l('Configuration') %]</a>
@@ -248,6 +248,7 @@
         [% END %]
       [% END %]
       [% IF is_current_entitlement_expired %]
+      [% ELSE %]
           <script>openEnforcementModal()</script>
       [% END %]
 

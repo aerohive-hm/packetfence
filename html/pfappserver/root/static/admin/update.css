@@ -1,3 +1,8 @@
+
+.card-block{
+  height: 600px;
+}
+
 .spacing{
     padding-left: 50px;
     padding-right: 50px;
@@ -40,7 +45,7 @@
 
 .detail-box{
     width: 500px;
-    height: 250px;
+    height: 370px;
     border: 1px #DDD solid;
     margin-bottom:15px;
 }
