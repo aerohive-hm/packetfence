@@ -221,6 +221,16 @@ sub get_trial {
     return find_one($TRIAL_KEY);
 }
 
+=head2 is_in_trial
+
+checks whether the user is in trial or not, in trial means no entitlement keys found and the trial key is found
+
+=cut
+
+sub is_in_trial {
+    return !find_all() && get_trial();
+}
+
 =head2 verify
 
 Sends an entitlement key to ACS for validation
