@@ -105,6 +105,10 @@ msgstr ""
 msgid "A message that will be added to the e-mail sent to the user regarding this violation."
 msgstr ""
 
+# html/pfappserver/root/admin/update.tt
+msgid "A newer version of A3 is available:"
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid "A profile id can only contain alphanumeric characters, dashes, period and or underscores."
 msgstr ""
@@ -1021,6 +1025,10 @@ msgstr ""
 
 # html/pfappserver/root/configurator/configuration.tt
 msgid "Bcrypt hashing"
+msgstr ""
+
+# html/pfappserver/root/admin/update.tt
+msgid "Begin Update"
 msgstr ""
 
 # html/pfappserver/root/config/source/index.tt
@@ -7038,6 +7046,11 @@ msgstr ""
 msgid "Sleep interval between queries of MAC addresses"
 msgstr ""
 
+# html/pfappserver/root/admin/update.tt
+# html/pfappserver/root/admin/wrapper.tt
+msgid "Software Update"
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
 msgid "Source"
 msgstr ""
@@ -7993,6 +8006,10 @@ msgstr ""
 msgid "There are no members in this group"
 msgstr ""
 
+# html/pfappserver/root/admin/update.tt
+msgid "There are no updates available at this time."
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule.pm
 msgid "There was no type specified"
 msgstr ""
@@ -8314,6 +8331,10 @@ msgstr ""
 msgid "Unlimited"
 msgstr ""
 
+# html/pfappserver/root/admin/wrapper.tt
+msgid "Update software"
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/URL.pm
 msgid "URL"
 msgstr ""
@@ -8486,6 +8507,10 @@ msgstr ""
 # html/pfappserver/lib/pfappserver/Form/Node/Create/Import.pm
 # html/pfappserver/root/node/search.tt
 msgid "Unregistration Date"
+msgstr ""
+
+# html/pfappserver/root/admin/update.tt
+msgid "Update complete"
 msgstr ""
 
 # html/pfappserver/root/config/fingerbank/header.tt
@@ -9190,6 +9215,10 @@ msgstr ""
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Config/Profile.pm
 msgid "Your Tier Description"
+msgstr ""
+
+# /html/pfappserver/lib/pfappserver/Base/Action/AdminRole.pm
+msgid "Your current daily average number of active endpoints has exceeded your entitlement limits, please increase your subscription!"
 msgstr ""
 
 # html/pfappserver/root/configurator/networks.tt
@@ -11656,33 +11685,3 @@ msgstr ""
 # html/pfappserver/root/config/profile/files.tt
 msgid "{percent}% of {total_size}"
 msgstr ""
-
-msgid "default_actions"
-msgstr "Execute module default actions"
-
-msgid "set_unregdate"
-msgstr "Set unregistration date"
-
-msgid "no_action"
-msgstr "Don't do any action"
-
-msgid "unregdate_from_source"
-msgstr "Set unregistration date from the auth source"
-
-msgid "role_from_source"
-msgstr "Set role from the auth source"
-
-msgid "time_balance_from_source"
-msgstr "Set the time balance from the auth source"
-
-msgid "bandwidth_balance_from_source"
-msgstr "Set the bandwidth balance from the auth source"
-
-msgid "actions"
-msgstr "Actions"
-
-msgid "multi_source_ids"
-msgstr "Sources"
-
-msgid "network.connection_type_change_detection"
-msgstr "Detect changes in connection type"

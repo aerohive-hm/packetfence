@@ -40,6 +40,7 @@ $(document).ready(function(){
         successEmailMessage.slideDown(1000);
       });
     });
+
 });
 
 function timeLeft(){

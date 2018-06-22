@@ -29,7 +29,7 @@ use pf::error qw(is_success is_error);
 use pf::config qw(%Config);
 use pf::constants qw($TRUE $FALSE $A3_SYSTEM_ID);
 use pf::dal::a3_entitlement;
-
+use pf::dal::a3_daily_avg;
 use JSON;
 use WWW::Curl::Easy;
 
@@ -45,6 +45,49 @@ sub find_one {
     my ( $status, $dal ) = pf::dal::a3_entitlement->find({entitlement_key => $key});
 
     return is_success($status) ? $dal : $FALSE;
+}
+
+=head2 get_current_moving_avg
+
+Returns the current moving avg of daily usage samples
+
+=cut
+
+sub get_current_moving_avg {
+    my $logger = get_logger();
+    my ($status, $iter) = pf::dal::a3_daily_avg->search(
+        -limit => 1,
+        -order_by => {-desc => 'daily_date'},
+    );
+    my $current_avg = $iter->all;
+    if (is_success($status)) {
+        return $STATUS::OK, $current_avg->{moving_avg};
+
+    }
+    else {
+        $logger->error("Failed to get current moving avg");
+        return $STATUS::NOT_FOUND;
+    }
+
+}
+
+=head2 get_current_moving_avg_count
+
+Returns the number of daily moving avg samples
+
+=cut
+
+sub get_current_moving_avg_count {
+    my $logger = get_logger();
+    my ($status, $count) = pf::dal::a3_daily_avg->count();
+    if (is_success($status)) {
+        return $STATUS::OK, $count;
+    }
+    else {
+        $logger->error("Failed to get the count of moving avg");
+        return $STATUS::NOT_FOUND;
+    }
+
 }
 
 =head2 find_all
@@ -176,6 +219,16 @@ sub create_trial {
 
 sub get_trial {
     return find_one($TRIAL_KEY);
+}
+
+=head2 is_in_trial
+
+checks whether the user is in trial or not, in trial means no entitlement keys found and the trial key is found
+
+=cut
+
+sub is_in_trial {
+    return !find_all() && get_trial();
 }
 
 =head2 verify

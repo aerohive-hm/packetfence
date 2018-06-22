@@ -14,6 +14,7 @@ use HTTP::Status qw(:constants is_error is_success);
 use HTML::FormHandler::Moose;
 extends 'pfappserver::Base::Form';
 with 'pfappserver::Base::Form::Role::Help';
+use HTML::FormHandler::Field::Upload;
 
 use pf::log;
 
@@ -95,7 +96,7 @@ has_field 'organizational_unit' =>
 
 has_field 'ca_cert_path' =>
   (
-   type => 'Path',
+   type => 'Upload',
    required => 1,
    tags => { after_element => \&help,
              help => 'Path of the CA that will generate your certificates'},
@@ -103,7 +104,7 @@ has_field 'ca_cert_path' =>
 
 has_field 'server_cert_path' =>
   (
-   type => 'Path',
+   type => 'Upload',
    required => 1,
    tags => { after_element => \&help,
              help => 'Path of the RADIUS server authentication certificate' },

@@ -122,6 +122,10 @@ msgid ""
 "violation."
 msgstr "Un message qui sera ajouté au courriel envoyé à l’utilisateur concernant la violation."
 
+# html/pfappserver/root/admin/update.tt
+msgid "A newer version of A3 is available:"
+msgstr "Une version plus récente de A3 est disponible:"
+
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid ""
 "A profile id can only contain alphanumeric characters, dashes, period and or"
@@ -1082,6 +1086,10 @@ msgstr "Objet de base"
 # html/pfappserver/root/configurator/configuration.tt
 msgid "Bcrypt hashing"
 msgstr "Hachage Bcrypt"
+
+# html/pfappserver/root/admin/update.tt
+msgid "Begin Update"
+msgstr "Démarrer la mise à jour"
 
 # html/pfappserver/root/config/source/index.tt
 msgid "Billing"
@@ -7543,6 +7551,11 @@ msgstr "Intervalle de pause"
 msgid "Sleep interval between queries of MAC addresses"
 msgstr "Temps d’attente entre deux interrogations des adresses MAC."
 
+# html/pfappserver/root/admin/update.tt
+# html/pfappserver/root/admin/wrapper.tt
+msgid "Software Update"
+msgstr "Mise à jour logicielle"
+
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
 msgid "Source"
 msgstr "Source"
@@ -8595,6 +8608,10 @@ msgstr "Nom d’utilisateur pour les webservices"
 msgid "There are no members in this group"
 msgstr "Il n’y a pas de membres dans ce groupe"
 
+# html/pfappserver/root/admin/update.tt
+msgid "There are no updates available at this time."
+msgstr "Il n'y a aucune mise à jour disponible pour le moment."
+
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule.pm
 msgid "There was no type specified"
 msgstr "Il n’y a pas de type specifié"
@@ -9025,6 +9042,10 @@ msgstr "Type de UID"
 msgid "Unlimited"
 msgstr "Illimité"
 
+# html/pfappserver/root/admin/wrapper.tt
+msgid "Update software"
+msgstr "Mettre le logiciel"
+
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/URL.pm
 msgid "URL"
 msgstr "URL"
@@ -9203,6 +9224,10 @@ msgstr "Désenregistrement"
 # html/pfappserver/root/node/search.tt
 msgid "Unregistration Date"
 msgstr "Date de désenregistrement"
+
+# html/pfappserver/root/admin/update.tt
+msgid "Update complete"
+msgstr "Mise à jour terminée"
 
 # html/pfappserver/root/config/fingerbank/header.tt
 msgid "Update Fingerbank DB"
@@ -9982,6 +10007,10 @@ msgstr "Vous allez maintenant être redirigé vers l’interface d’administrat
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Config/Profile.pm
 msgid "Your Tier Description"
 msgstr "Description de votre niveau"
+
+# /html/pfappserver/lib/pfappserver/Base/Action/AdminRole.pm
+msgid "Your current daily average number of active endpoints has exceeded your entitlement limits, please increase your subscription!"
+msgstr "Votre nombre quotidien moyen actuel de points de terminaison actifs a dépassé vos limites de droits, veuillez augmenter votre abonnement!"
 
 # html/pfappserver/root/configurator/networks.tt
 msgid "Your gateway IP address to access Internet."

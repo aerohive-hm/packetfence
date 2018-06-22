@@ -2,15 +2,13 @@ STATIC_FILES = ../admin/v-index.tt
 DYNAMIC_FILES = dist/css/app.* dist/js/app.* dist/js/vendor.* dist/js/[0-9]*
 MANIFEST_FILES = dist/js/manifest.*
 
-.PHONY: all vendor dev dist
+.PHONY: all dev dist
 
 all:
-	@echo "Use 'make vendor' to update external libraries, 'make dev' to generate the static JS/CSS files and 'make dist' to commit the distribution version."
-
-vendor:
-	npm install
+	@echo "Use 'make dev' to generate the static JS/CSS files and 'make dist' to commit the distribution version."
 
 dev:
+	npm install
 	npm run build-dev
 
 dist:

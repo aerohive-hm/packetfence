@@ -100,7 +100,7 @@
                   <li class="disabled"><a href="#" disabled><b>[% l('Click a task to run/re-run') %]</b></a></li>
                   <li id="checkup_task"><a href="" id="checkup_task_toggle">[% l('Perform checkup') %]</a></li>
                   <li id="fixpermissions_task"><a href="" id="fixpermissions_task_toggle">[% l('Fix permissions') %]</a></li>
-                  <li id="upgrade_task"><a href="[% c.uri_for(c.controller('Admin').action_for('upgrades')) %]" id="upgrade_task_toggle">[% l('Upgrades') %]</a></li>
+                  <li id="upgrade_task"><a href="[% c.uri_for(c.controller('Admin').action_for('update')) %]" id="upgrade_task_toggle">[% l('Update software') %]</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -116,8 +116,12 @@
 	          </ul>
           </div>
 
+          <!-- [add is trial valid] -->
+
+
           [% IF is_eula_accepted %]
           [% ELSE %]
+
             <!-- <trial indicator -->
             <div class="trialIndicator" id="trialIndicator">
               <div class="trial-clock-indicator pull-right">
@@ -145,6 +149,7 @@
     </div>
 
     [%- IF c.user_allowed_in_admin() %]
+
       [% IF is_eula_accepted %]
         [% FOREACH key IN entitlement_keys -%]
           [% IF latestKey.defined %]
@@ -161,8 +166,9 @@
             [% IF latest_key_expires_in <= 0 %]
                 [% INCLUDE admin/expiredModal.tt %]
             [% ELSIF latest_key_expires_in < 15  %]
-              [% INCLUDE admin/almostExpiringModal.tt %]
+                [% INCLUDE admin/almostExpiringModal.tt %]
             [% END %]
+            <!-- [IF license engforcement ] -->
           [% END %]
         [% END %]
 
@@ -192,6 +198,9 @@
 [%- IF c.user_allowed_in_admin() %]
     <script type="text/javascript" src="[% c.uri_for('/static/js/adminWrapper.js') %]"></script>
     <script type="text/javascript" src="[% c.uri_for('/static/js/licenseKeys.js') %]"></script>
+  [%- IF can_access_group_any("CONFIGURATION_GROUP_READ") %]
+    <script type="" ></script>
+  [%- END %]
     [% IF is_eula_accepted %]
       [% IF latestKey.defined %]
         [% IF latest_key_expires_in.defined %]

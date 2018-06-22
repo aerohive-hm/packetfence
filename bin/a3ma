@@ -1,0 +1,111 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+a3ma - A3 Moving Avg
+
+=head1 SYNOPSIS
+
+Records and calculates the daily moving usage avg using ahusavg
+
+=cut
+
+use warnings;
+use strict;
+
+use lib '/usr/local/pf/lib';
+
+use POSIX qw(strftime);
+
+use pf::error qw(is_success);
+use pf::log;
+use pf::cluster;
+use pf::node;
+use pf::dal::a3_daily_avg;
+use pf::dal::a3_usage_sample;
+use File::Temp qw(tempfile);
+
+BEGIN {
+    #Ensure that the file permissions of the log file is correct 0660
+    umask (0);
+    use pf::log (service => 'a3ma');
+}
+
+our $PROGRAM_NAME = $0 = 'a3ma';
+
+my $logger = get_logger( $PROGRAM_NAME );
+
+if ($pf::cluster::cluster_enabled && ! pf::cluster::is_management()) {
+    $logger->info("Not calculating the moving avg on non-management node.");
+    exit 0;
+}
+
+#create temp files to store query data
+(my $temp_daily_us_fh, my $temp_daily_us_file) = tempfile(UNLINK => 1);
+(my $temp_daily_avg_fh, my $temp_daily_avg_file) = tempfile(UNLINK => 1);
+
+
+#we run this at 00:45, so an hour ago would be yesterday's date
+my $today   = strftime( "%Y-%m-%d", gmtime(time() - 60 * 60) );
+# we sample usage hourly, so today's avg is the previous 24 hours of samples
+my $num_sample = 24;
+
+#query for last inserted 48 hours of data
+my ($status, $iter) = pf::dal::a3_usage_sample->search(
+    -limit => $num_sample,
+    -order_by => {-desc => 'timestamp'},
+);
+
+# output the data to a temp txt file for ahusavg to calculate daily and moving avg
+if (is_success($status)) {
+    my $today_us = $iter->all;
+    foreach(@$today_us) {
+        print $temp_daily_us_fh $_->{count}."\n";
+    }
+
+}
+else {
+    $logger->error("Failed to get usage sample data: $status");
+    die "\nUnable to read usage sample data for $today\n";
+}
+
+
+# only want the last 6 days of data
+my $daily_avg_limit = 6;
+
+($status, $iter) = pf::dal::a3_daily_avg->search(
+    -limit => $daily_avg_limit,
+    -order_by => {-desc => 'daily_date'},
+);
+
+if (is_success($status)) {
+    my $previous_six_days = $iter->all;
+    foreach(@$previous_six_days) {
+        print $temp_daily_avg_fh $_->{daily_avg}."\n";
+    }
+
+}
+else {
+    $logger->error("Failed to get usage sample data: $status");
+    die "\nUnable to read previous daily avg data on $today\n";
+}
+
+#save the result of ahusavg, first one is today's avg, second is new moving avg
+my @ahusavg_result = `/usr/local/pf/bin/ahusavg $temp_daily_us_file $temp_daily_avg_file`;
+
+#handle error from ahusavg
+if ($? != 0) {
+    $logger->error("Failed to calculate $today usage moving avg, err: @ahusavg_result");
+    die "\nUnable to calculate moving avg\n"
+}
+$logger->info("Daily avg: $ahusavg_result[0] moving avg: $ahusavg_result[1] on $today.");
+
+$status = pf::dal::a3_daily_avg->create({
+    daily_date => $today,
+    daily_avg  => $ahusavg_result[0],
+    moving_avg => $ahusavg_result[1]
+});
+
+if (! is_success($status)) {
+    $logger->error("Failed to record moving daily avg usage: $ahusavg_result[0], moving avg: $ahusavg_result[1] on $today");
+}

@@ -88,23 +88,20 @@ type radiustype struct{}
 
 func (s radiustype) Test(source interface{}, ctx context.Context) {
 	t := StatsdClient.NewTiming()
-	radiusSource := source.(pfconfigdriver.AuthenticationSourceRadius)
-	sourceId := radiusSource.PfconfigHashNS
-	log.LoggerWContext(ctx).Info("Testing RADIUS source " + sourceId)
-	packet := radius.New(radius.CodeAccessRequest, []byte(radiusSource.Secret))
+	packet := radius.New(radius.CodeAccessRequest, []byte(source.(pfconfigdriver.AuthenticationSourceRadius).Secret))
 	UserName_SetString(packet, "tim")
 	UserPassword_SetString(packet, "12345")
 	client := radius.DefaultClient
 	ctx, _ = context.WithTimeout(ctx, 5*time.Second)
-	response, err := client.Exchange(ctx, packet, radiusSource.Host+":"+radiusSource.Port)
+	response, err := client.Exchange(ctx, packet, source.(pfconfigdriver.AuthenticationSourceRadius).Host+":"+source.(pfconfigdriver.AuthenticationSourceRadius).Port)
 	if err != nil {
-		StatsdClient.Gauge("source."+radiusSource.Type+"."+radiusSource.PfconfigHashNS, 0)
+		StatsdClient.Gauge("source."+source.(pfconfigdriver.AuthenticationSourceRadius).Type+"."+source.(pfconfigdriver.AuthenticationSourceRadius).PfconfigHashNS, 0)
 	} else {
-		StatsdClient.Gauge("source."+radiusSource.Type+"."+sourceId, 1)
+		StatsdClient.Gauge("source."+source.(pfconfigdriver.AuthenticationSourceRadius).Type+"."+source.(pfconfigdriver.AuthenticationSourceRadius).PfconfigHashNS, 1)
 		if response.Code == radius.CodeAccessAccept {
-			log.LoggerWContext(ctx).Debug(fmt.Sprintf("RADIUS test for source %s did returned an Access-Accept", sourceId))
+			fmt.Println("Accepted")
 		} else {
-			log.LoggerWContext(ctx).Debug(fmt.Sprintf("RADIUS test for source %s returned a response other than an Access-Accept", sourceId))
+			fmt.Println("Denied")
 		}
 	}
 	t.Send("source." + source.(pfconfigdriver.AuthenticationSourceRadius).Type + "." + source.(pfconfigdriver.AuthenticationSourceRadius).PfconfigHashNS)
@@ -233,7 +230,6 @@ var ctx context.Context
 
 func main() {
 	ctx := context.Background()
-	log.SetProcessName("pfstats")
 	ctx = log.LoggerNewContext(ctx)
 
 	go func() {

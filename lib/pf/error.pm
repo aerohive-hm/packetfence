@@ -87,9 +87,9 @@ Taken from HTTP::Status and stripped. Subject to change.
 
 Readonly::Scalar our $OK                                => 200;
 Readonly::Scalar our $CREATED                           => 201;
-#Readonly::Scalar our $ACCEPTED                         => 202;
+Readonly::Scalar our $ACCEPTED                          => 202;
 #Readonly::Scalar our $NON_AUTHORITATIVE_INFORMATION    => 203;
-#Readonly::Scalar our $NO_CONTENT                       => 204;
+Readonly::Scalar our $NO_CONTENT                        => 204;
 #Readonly::Scalar our $RESET_CONTENT                    => 205;
 #Readonly::Scalar our $PARTIAL_CONTENT                  => 206;
 #Readonly::Scalar our $MULTI_STATUS                     => 207;
@@ -108,7 +108,7 @@ Readonly::Scalar our $BAD_REQUEST                      => 400;
 #Readonly::Scalar our $PAYMENT_REQUIRED                 => 402;
 Readonly::Scalar our $FORBIDDEN                         => 403;
 Readonly::Scalar our $NOT_FOUND                         => 404;
-#Readonly::Scalar our $METHOD_NOT_ALLOWED               => 405;
+Readonly::Scalar our $METHOD_NOT_ALLOWED                => 405;
 #Readonly::Scalar our $NOT_ACCEPTABLE                   => 406;
 #Readonly::Scalar our $PROXY_AUTHENTICATION_REQUIRED    => 407;
 Readonly::Scalar our $REQUEST_TIMEOUT                  => 408;

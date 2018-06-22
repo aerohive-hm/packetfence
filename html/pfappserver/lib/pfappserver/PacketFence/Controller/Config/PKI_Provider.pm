@@ -15,6 +15,17 @@ use Moose;  # automatically turns on strict and warnings
 use namespace::autoclean;
 
 use pf::factory::pki_provider;
+use strict;
+use warnings;
+#for file processing
+use File::Temp qw/ tempfile /;
+use File::Basename;
+use File::Path;
+use File::Spec::Functions;
+use File::Copy; #to move files over and change name
+
+use pf::log;
+use Data::Dumper;
 
 BEGIN {
     extends 'pfappserver::Base::Controller';
@@ -74,11 +85,51 @@ before [qw(clone view _processCreatePost update)] => sub {
 
 sub create_type : Path('create') : Args(1) {
     my ($self, $c, $type) = @_;
+
     my $model = $self->getModel($c);
     my $itemKey = $model->itemKey;
     $c->stash->{$itemKey}{type} = $type;
     $c->forward('create');
 }
+
+sub processCertificate :Path('processCertificate') :Args(1) {
+    my ($self, $c, $type) = @_;
+    my $logger = get_logger();
+    $logger->info("inside acceptCertificate!!!");
+    $logger->info("\ntype: $type");
+    my $filesize;
+
+    #make and get file name
+    my ($fh, $filename) = @_;
+    my $dir = "/tmp";
+    my $template = "mytempfileXXXXXX";
+    ($fh, $filename) = tempfile($template, DIR => $dir, SUFFIX => ".pem");
+    $filesize = -s "$filename";
+
+    $logger->info("filesize: $filesize \nfilename: $filename");
+    # post request, process
+    if ($c->request->method eq 'POST'){
+        #check if tempfile is valid file and if it's a pem type
+        my $checkCertificate = system "/usr/bin/openssl x509 -noout -text -in $filename";
+        $logger->info("checkCertificate: $checkCertificate");
+
+        if ($checkCertificate == 0){
+            #check if size is <1000000 bytes
+            if ($filesize < 1000000){
+                move("/tmp/$filename","/usr/local/pf/conf/$filename");
+            }
+            else{
+                $c->stash->{error_msg} = $c->loc("Certificate size is too big. Try again.");
+            }
+        }
+        else{
+            $c->stash->{error_msg} = $c->loc("File is invalid. Try again.");
+        }
+      }
+}
+
+#find rand function
+# function for checking names, later?
 
 =head1 COPYRIGHT
 

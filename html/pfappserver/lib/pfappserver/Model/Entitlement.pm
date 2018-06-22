@@ -142,6 +142,50 @@ sub get_used_capacity {
     return pf::node::node_count_active();
 }
 
+=head2 is_current_usage_under_limit
+
+Compares the entitlement endpoint limit with daily moving usage avg
+
+=cut
+
+sub is_current_usage_under_limit {
+    my $logger = get_logger();
+    my ($count_status, $count) = pf::a3_entitlement::get_current_moving_avg_count();
+    if (is_success($count_status)) {
+        #return true if we only have less than 7 days of moving avg
+        return $TRUE if $count < 7;
+    }
+    else {
+        $logger->warn("Cannot retrieve moving average count from db");
+        return $STATUS::NOT_FOUND;
+    }
+    my ($status, $current_moving_avg) = pf::a3_entitlement::get_current_moving_avg();
+    if (is_success($status)) {
+        return $current_moving_avg <= get_licensed_capacity();
+    }
+    else {
+        $logger->warn("Cannot retrieve moving average data from db");
+        return $STATUS::NOT_FOUND;
+    }
+}
+
+=head2 is_current_entitlement_expired
+
+Checks whether the entitlement is expired
+
+=cut
+
+sub is_current_entitlement_expired {
+    my $active_entitlements = pf::a3_entitlement::find_active();
+    my ($trial_status, $trial_info) = get_trial_info();
+    if (is_success($trial_status)) {
+        return $trial_info->{is_expired} && @$active_entitlements == 0;
+    }
+    else {
+        return @$active_entitlements == 0;
+    }
+}
+
 =head2 is_trial_eligible
 
 Return whether this A3 system is eligible for a trial

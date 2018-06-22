@@ -17,21 +17,19 @@ use warnings;
 use Mojo::Base 'pf::UnifiedApi::Controller';
 use pf::pfcmd::report;
 
-sub os_all {
+sub os {
     my ($self) = @_;
-    $self->render(json => { items => [report_os_all()]});
-}
-
-sub os_range {
-    my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_os($start, $end)]});
+    $self->render(json => { items => [report_os()]});
 }
 
 sub os_active {
     my ($self) = @_;
     $self->render(json => { items => [report_os_active()]});
+}
+
+sub os_all {
+    my ($self) = @_;
+    $self->render(json => { items => [report_os_all()]});
 }
 
 sub osclass_all {
@@ -104,16 +102,14 @@ sub openviolations_active {
     $self->render(json => { items => [report_openviolations_active()]});
 }
 
+sub connectiontype {
+    my ($self) = @_;
+    $self->render(json => { items => [report_connectiontype()]});
+}
+
 sub connectiontype_all {
     my ($self) = @_;
     $self->render(json => { items => [report_connectiontype_all()]});
-}
-
-sub connectiontype_range {
-    my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_connectiontype($start, $end)]});
 }
 
 sub connectiontype_active {
@@ -131,16 +127,14 @@ sub connectiontypereg_active {
     $self->render(json => { items => [report_connectiontypereg_active()]});
 }
 
+sub ssid {
+    my ($self) = @_;
+    $self->render(json => { items => [report_ssid()]});
+}
+
 sub ssid_all {
     my ($self) = @_;
     $self->render(json => { items => [report_ssid_all()]});
-}
-
-sub ssid_range {
-    my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_ssid($start, $end)]});
 }
 
 sub ssid_active {
@@ -148,36 +142,19 @@ sub ssid_active {
     $self->render(json => { items => [report_ssid_active()]});
 }
 
+sub osclassbandwidth {
+    my ($self) = @_;
+    $self->render(json => { items => [report_osclassbandwidth()]});
+}
+
 sub osclassbandwidth_all {
     my ($self) = @_;
     $self->render(json => { items => [report_osclassbandwidth_all()]});
 }
 
-sub osclassbandwidth_range {
+sub nodebandwidth {
     my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_osclassbandwidth($start, $end)]});
-}
-
-sub osclassbandwidth_day {
-    my ($self) = @_;
-    $self->render(json => { items => [report_osclassbandwidth_day()]});
-}
-
-sub osclassbandwidth_week {
-    my ($self) = @_;
-    $self->render(json => { items => [report_osclassbandwidth_week()]});
-}
-
-sub osclassbandwidth_month {
-    my ($self) = @_;
-    $self->render(json => { items => [report_osclassbandwidth_month()]});
-}
-
-sub osclassbandwidth_year {
-    my ($self) = @_;
-    $self->render(json => { items => [report_osclassbandwidth_year()]});
+    $self->render(json => { items => [report_nodebandwidth()]});
 }
 
 sub nodebandwidth_all {
@@ -185,67 +162,10 @@ sub nodebandwidth_all {
     $self->render(json => { items => [report_nodebandwidth_all()]});
 }
 
-sub nodebandwidth_range {
+sub topsponsor_all {
     my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_nodebandwidth($start, $end)]});
+    $self->render(json => { items => [report_topsponsor_all()]});
 }
-
-sub topauthenticationfailures_by_mac {
-    my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_topauthenticationfailures_by_mac($start, $end)]});
-}
-
-sub topauthenticationfailures_by_ssid {
-    my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_topauthenticationfailures_by_ssid($start, $end)]});
-}
-
-sub topauthenticationfailures_by_username {
-    my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_topauthenticationfailures_by_username($start, $end)]});
-}
-
-sub topauthenticationsuccesses_by_mac {
-    my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_topauthenticationsuccesses_by_mac($start, $end)]});
-}
-
-sub topauthenticationsuccesses_by_ssid {
-    my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_topauthenticationsuccesses_by_ssid($start, $end)]});
-}
-
-sub topauthenticationsuccesses_by_username {
-    my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_topauthenticationsuccesses_by_username($start, $end)]});
-}
-
-sub topauthenticationsuccesses_by_computername {
-    my ($self) = @_;
-    my $start = $self->_get_datetime($self->param('start'));
-    my $end = $self->_get_datetime($self->param('end'));
-    $self->render(json => { items => [report_topauthenticationsuccesses_by_computername($start, $end)]});
-}
-
-sub _get_datetime {
-    my ($self, $datetime) = @_;
-    return $datetime;
-}
-
 
 =head1 AUTHOR
 

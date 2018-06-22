@@ -12,7 +12,7 @@ Type=notify
 PIDFile=/usr/local/pf/var/run/httpd.admin.pid
 Environment=X_PORTAL=default
 Environment=PF_SKIP_MAKE_IMMUTABLE=1
-ExecStartPre=/bin/perl -I/usr/local/pf/lib '-Mpf::services::manager::httpd_admin' -e 'pf::services::manager::httpd_admin->new()->generateConfig()'
+ExecStartPre=/usr/local/pf/bin/pfcmd service httpd.admin generateconfig
 ExecStart=/usr/sbin/httpd -f /usr/local/pf/var/conf/httpd.conf.d/httpd.admin -DFOREGROUND  -Drhel
 ExecStartPost=/usr/local/pf/sbin/checkdb-A3
 ExecReload=/bin/kill -USR1 ${MAINPID}

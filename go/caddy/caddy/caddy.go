@@ -146,7 +146,7 @@ func (i *Instance) Restart(newCaddyfile Input) (*Instance, error) {
 		// notify systemd that startup is complete
 		_, err := daemon.SdNotify(true, "READY=1")
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error sending systemd ready notification %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Error sending systemd ready notification %s", err.Error())
 		}
 	}()
 
@@ -435,7 +435,7 @@ func Start(cdyfile Input) (*Instance, error) {
 		// notify systemd that startup is complete
 		_, err := daemon.SdNotify(true, "READY=1")
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error sending systemd ready notification %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Error sending systemd ready notification %s", err.Error())
 		}
 	}()
 	writePidFile()
