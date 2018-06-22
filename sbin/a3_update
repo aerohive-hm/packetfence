@@ -60,6 +60,7 @@ sub read_passwd {
 sub A3_Die {
   my $msg = shift;
   commit_upgrade_log($msg);
+  commit_progress_log("Update was unsuccessful.");
   die "$msg\n";
 }
 
@@ -81,6 +82,21 @@ sub commit_progress_log {
   print $progress_fh "$msg\n";
 }
 
+sub commit_progress_log_action_start {
+  my $msg = shift @_;
+  print $progress_fh "$msg... ";
+}
+
+sub exit_success {
+  commit_progress_log("Update completed successfully.");
+  exit 0;
+}
+
+sub exit_failure {
+  commit_progress_log("Update was unsuccessful.");
+  exit shift @_ // 1;
+}
+
 sub dump_db {
   $db_passwd = &read_passwd;
   chomp $db_passwd;
@@ -88,25 +104,31 @@ sub dump_db {
     print "We have password $db_passwd\n";
   }
   commit_upgrade_log("Starting database backup");
-  commit_progress_log("Backing up database");
+  commit_progress_log_action_start("Backing up database");
+
   my $ret = system ("$MYSQLDUMP_BIN --opt -u root -p$db_passwd $a3_db > $db_dump");
   if ($ret != 0) {
     commit_upgrade_log('Database backup failed!!');
+    commit_progress_log("error");
     die "Database backup failed!!\n";
   }
+
+  commit_progress_log("done!");
   commit_upgrade_log("Database backup completed");
-  
 }
 
 sub dump_app {
   my $cmd = "$TAR_BIN -C /usr/local -czf $app_dump pf --exclude='pf/logs' --exclude='pf/var'";
-  commit_progress_log("Backing up application data");
+  commit_progress_log_action_start("Backing up application data");
+
   unless (!system $cmd) {
     commit_upgrade_log("Unable to back up application data");
+    commit_progress_log("error");
     die "Application data backup failed!!\n";
   }
-  commit_upgrade_log("Application data backup completed");
 
+  commit_progress_log("done!");
+  commit_upgrade_log("Application data backup completed");
 }
 
 sub stop_services {
@@ -118,14 +140,18 @@ sub stop_services {
     commit_upgrade_log("A3 configuration service is not running");
     die "A3 configuration service is not running\n";
   }
+
   commit_upgrade_log("Starting A3 service shutdown");
-  commit_progress_log("Stopping A3 services");
+  commit_progress_log_action_start("Stopping A3 services");
+
   foreach (@service_stop_cmd) {
     unless(!system $_) {
       commit_upgrade_log("Unable to stop service $_");
       warn "Unable to stop A3 services\n";
     }
   }
+
+  commit_progress_log("done!");
   commit_upgrade_log("A3 service shutdown complete");
 }
 
@@ -141,9 +167,10 @@ sub check_up_to_date {
 }
 
 sub check_yum_connectivity {
-  commit_progress_log("Checking connectivity to update servers");
+  commit_progress_log_action_start("Checking connectivity to update servers");
   my $ret = system "$PING_BIN -c 3 $centos_base > /dev/null 2>&1";
   if ($ret){
+    commit_progress_log("error");
     A3_Die("Unable to connect to CentOS base yum repository!");
   }
   my $repo_ip =  `$YUM_BIN repolist -v       \\
@@ -153,10 +180,15 @@ sub check_yum_connectivity {
                 | $AWK_BIN -F/ '{print \$3}'`;
   my $code = `$CURL_BIN -s -I -m 60 -w %{http_code} -o /dev/null http://$repo_ip`;
   if ($code != 200){
+    commit_progress_log("error");
     commit_upgrade_log("Unable to connect to update servers");
+
     print "Connect to Aerohive A3 yum repository failed!!\n";
-    exit 1;
+
+    exit_failure(1);
   }
+
+  commit_progress_log("done!");
 }
 
 sub get_current_version {
@@ -199,11 +231,16 @@ sub execute_app_upgrade {
   print "The cmd is $cmd";
   $cmd .= " -y";
   commit_upgrade_log("Update pkg cmd is $cmd");
-  commit_progress_log("Updating A3 packages");
+  commit_progress_log_action_start("Updating A3 packages");
+
   if (system("$cmd | $TEE_BIN -a $upgrade_log")) {
     A3_Warn("Unable to update A3 packages, attempting to rollback changes");
+    commit_progress_log("error");
     roll_back("app");
-  } 
+  }
+  else {
+    commit_progress_log("done!");
+  }
 }
 
 sub generate_upgrade_patch_list {
@@ -333,7 +370,7 @@ sub roll_back {
     system $_;
   }
   #special return code for rollback
-  exit 99;
+  exit_failure(99);
 }
 
 sub apply_db_upgrade_schema {
@@ -351,10 +388,13 @@ sub apply_db_upgrade_schema {
 }
 
 sub apply_conf_migration {
-  commit_progress_log("Applying configuration migration scripts");
+  commit_progress_log_action_start("Applying configuration migration scripts");
+
   foreach (@conf_migration_files) {
     system "$a3_conf_migration_dir/$_";
   }
+
+  commit_progress_log("done!");
 }
 
 sub set_up {
@@ -378,13 +418,15 @@ sub post_upgrade {
                        "$PFCMD_BIN service pf restart",
                        "$CAT_BIN /usr/local/pf/conf/pf-release > /usr/local/pf/conf/currently-at");
 
-  commit_progress_log("Starting post-update processing");
+  commit_progress_log_action_start("Starting post-update processing");
 
   foreach my $cmd (@post_cmd_list) {
     unless (! system "$cmd | $TEE_BIN -a $upgrade_log") {
       A3_Die("Post-update processing failed, please investigate!");
     }
   }
+
+  commit_progress_log("done!");
 }
 
 
@@ -394,7 +436,7 @@ check_yum_connectivity();
 if (check_up_to_date()) {
   commit_upgrade_log("A3 services already up to date");
   print "A3 services already up to date\n";
-  exit 0;
+  exit_success();
 }
 
 get_current_version();
@@ -410,3 +452,5 @@ apply_db_upgrade_schema();
 apply_conf_migration();
 find_rpmnew();
 post_upgrade();
+
+exit_success();
