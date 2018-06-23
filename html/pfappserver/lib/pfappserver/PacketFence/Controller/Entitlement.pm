@@ -101,7 +101,8 @@ checks the current moving avg against allowed capacity
 
 sub usageCheck :Path('usageCheck') :Args(0) {
     my ( $self, $c ) = @_;
-
+    my $logger = get_logger();
+    $logger->info("jma_debug:", $c->model('Entitlement')->is_current_usage_under_limit(), $c->model('Entitlement')->get_moving_avg());
     $c->stash->{is_under_capacity} = $c->model('Entitlement')->is_current_usage_under_limit();
     $c->stash->{current_mov_avg} = $c->model('Entitlement')->get_moving_avg();
 }
