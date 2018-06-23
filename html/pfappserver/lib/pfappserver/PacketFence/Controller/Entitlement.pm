@@ -103,6 +103,7 @@ sub usageCheck :Path('usageCheck') :Args(0) {
     my ( $self, $c ) = @_;
 
     $c->stash->{is_under_capacity} = $c->model('Entitlement')->is_current_usage_under_limit();
+    $c->stash->{current_mov_avg} = $c->model('Entitlement')->get_moving_avg();
 }
 
 =head2 licenseKeys
