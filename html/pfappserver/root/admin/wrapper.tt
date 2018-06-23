@@ -58,6 +58,7 @@
           [%- IF c.user_allowed_in_admin() %]
           <div class="nav-collapse">
             <ul class="nav nav-header">
+              <span>under capacity: [% is_under_capacity %] current moving average:[% current_mov_avg %] </span>
               [%- IF can_access_any("REPORTS","SERVICES") %]
               <li[% ' class="active"' IF c.action.name == 'status' %]>
                 [% IF is_current_entitlement_expired or is_current_usage_under_limit %]
@@ -202,13 +203,12 @@
         [% END %]
 
         [% IF is_current_entitlement_expired %]
-          <!-- [% INCLUDE admin/licenseEnforcementModal.tt %] -->
+            [% INCLUDE admin/licenseEnforcementModal.tt %]
         [% ELSE %]
-          [% INCLUDE admin/licenseEnforcementModal.tt %]
         [% END %]
-        [% IF is_current_usage_under_limit %]
-          [% INCLUDE admin/overUsageModal.tt %]
+        [% IF is_under_capacity %]
         [% ELSE %]
+            [% INCLUDE admin/overUsageModal.tt %]
         [% END %]
 
       [% ELSE %]
@@ -248,12 +248,13 @@
         [% END %]
       [% END %]
       [% IF is_current_entitlement_expired %]
+                <script>openEnforcementModal()</script>
       [% ELSE %]
-          <script>openEnforcementModal()</script>
       [% END %]
 
-      [% IF is_current_usage_under_limit %]
-          <script>openOverUsageModal()</script>
+      [% IF is_under_capacity %]
+      [% ELSE %]
+        <script>openOverUsageModal()</script>
       [% END %]
     [% END %]
 [%- END %]

@@ -89,7 +89,6 @@ Usage: /entitlement/keys
 
 sub keys :Path('keys') :Args(0) {
     my ( $self, $c ) = @_;
-
     $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
 }
 
@@ -101,7 +100,6 @@ checks the current moving avg against allowed capacity
 
 sub usageCheck :Path('usageCheck') :Args(0) {
     my ( $self, $c ) = @_;
-
     $c->stash->{is_under_capacity} = $c->model('Entitlement')->is_current_usage_under_limit();
     $c->stash->{current_mov_avg} = $c->model('Entitlement')->get_moving_avg();
 }
