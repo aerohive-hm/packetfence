@@ -5,6 +5,7 @@ $(document).ready(function () {
 function updateButton() {
   var updateButton = $("#update-button");
   updateButton.click(function () {
+      $("#update-button").disable();
     $.ajax({
       url: window.location.origin + '/update/latest',
       type: 'POST'

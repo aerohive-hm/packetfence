@@ -80,23 +80,23 @@ sub latest :Local :Args(0) {
 
 Check on the progress of an update operation.
 
-Usage: /update/progress/<token>
+Usage: /update/progress
 
-A GET request will retrieve status of the update operation
-identified by the given token.
+A GET request will retrieve status of the current update
+operation if one is in progress. Otherwise returns HTTP 404
 
 =cut
 
-sub progress :Local :Args(1) {
-    my ( $self, $c, $token ) = @_;
+sub progress :Local {
+    my ( $self, $c ) = @_;
     my $logger = get_logger();
 
     my $method = $c->request->method;
 
-    $logger->debug("Received $method request for /update/progress/$token");
+    $logger->debug("Received $method request for /update/progress");
 
     if ($method eq 'GET') {
-        my $status = $c->model('Update')->get_update_status();
+        $c->stash->{update_progress} = $c->model('Update')->get_update_status();
     }
     else {
         $c->response->status($STATUS::METHOD_NOT_ALLOWED);
