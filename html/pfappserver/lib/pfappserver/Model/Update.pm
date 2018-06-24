@@ -124,7 +124,7 @@ sub lock_for_update {
 
     if (sysopen LOCKFILE, $UPDATE_LOCK, O_WRONLY | O_CREAT | O_EXCL, 0600) {
         $logger->info("Locking for update");
-        close
+        close LOCKFILE;
     }
     else {
         $logger->info("Update already in progress");
