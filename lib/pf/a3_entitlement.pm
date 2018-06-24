@@ -33,6 +33,13 @@ use pf::dal::a3_daily_avg;
 use JSON;
 use WWW::Curl::Easy;
 
+BEGIN {
+    use Exporter ();
+    our ( @ISA, @EXPORT );
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(get_current_moving_avg);
+}
+
 =head2 find_one
 
 Finds a single entitlement key applied to the current system
@@ -61,7 +68,7 @@ sub get_current_moving_avg {
     );
     my $current_avg = $iter->all;
     if (is_success($status)) {
-        return $STATUS::OK, $current_avg->{moving_avg};
+        return $STATUS::OK, $current_avg->[0]->{moving_avg};
 
     }
     else {
