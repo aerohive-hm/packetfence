@@ -86,7 +86,7 @@ sub start_update {
         elsif (defined $pid) {
             $logger->info("Executing update script at $UPDATE_SCRIPT");
 
-            exec $UPDATE_SCRIPT;
+            exec "/usr/bin/sudo $UPDATE_SCRIPT";
         }
         else {
             $logger->error("Failed to fork child process to run update script: $!");

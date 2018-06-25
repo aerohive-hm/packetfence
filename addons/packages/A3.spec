@@ -502,6 +502,7 @@ done
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/var/control
 %{__install} -d $RPM_BUILD_ROOT/etc/sudoers.d
 %{__install} -d $RPM_BUILD_ROOT/etc/cron.d
+%{__install} -d $RPM_BUILD_ROOT/etc/yum.repos.d
 touch $RPM_BUILD_ROOT/usr/local/pf/var/cache_control
 cp Makefile $RPM_BUILD_ROOT/usr/local/pf/
 cp -r bin $RPM_BUILD_ROOT/usr/local/pf/
@@ -523,6 +524,7 @@ mv -f $RPM_BUILD_ROOT/usr/local/pf/conf/a3-release $RPM_BUILD_ROOT/usr/local/pf/
 cp -r raddb $RPM_BUILD_ROOT/usr/local/pf/
 mv packetfence.sudoers $RPM_BUILD_ROOT/etc/sudoers.d/A3
 mv packetfence.cron.d $RPM_BUILD_ROOT/etc/cron.d/A3
+mv A3.repo $RPM_BUILD_ROOT/etc/yum.repos.d/A3.repo
 mv addons/pfarp_remote/sbin/pfarp_remote $RPM_BUILD_ROOT/usr/local/pf/sbin
 mv addons/pfarp_remote/conf/pfarp_remote.conf $RPM_BUILD_ROOT/usr/local/pf/conf
 rmdir addons/pfarp_remote/sbin
@@ -912,6 +914,7 @@ fi
 %config %attr(0440,root,root) %{_sysconfdir}/sudoers.d/A3
 %config %attr(0644,root,root) %{_sysconfdir}/logrotate.d/A3
 %config %attr(0600,root,root) %{_sysconfdir}/cron.d/A3
+%config %attr(0644,root,root) %{_sysconfdir}/yum.repos.d/A3.repo
 
 %dir                    /usr/local/pf
                         /usr/local/pf/Makefile
@@ -1200,7 +1203,8 @@ fi
 %dir                    /usr/local/pf/db
                         /usr/local/pf/db/a3-schema-*.sql
                         /usr/local/pf/db/pf-schema.sql
-                        /usr/local/pf/db/upgrade-1.1.0-1.1.1.sql
+                        /usr/local/pf/db/a3-upgrade*.sql
+			/usr/local/pf/db/upgrade_path
 %dir                    /usr/local/pf/docs
 %doc                    /usr/local/pf/docs/pfcmd.help
 %dir                    /usr/local/pf/html

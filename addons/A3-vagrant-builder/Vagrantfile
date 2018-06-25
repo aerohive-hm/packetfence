@@ -70,9 +70,28 @@ Vagrant.configure("2") do |config|
     v.name = "A3"
     v.cpus = 4
     v.memory = "2048"
+
+    if ARGV[0] == "up" && ! File.exist?("./disk1.vdi")
+      v.customize [
+        'createhd',
+        '--filename', ".vagrant/machines/target/virtualbox/disk1.vdi",
+        '--format', 'VDI',
+        '--size', 200 * 1024
+      ]
+
+      v.customize [
+        'storageattach', :id,
+        '--storagectl', 'IDE',
+        '--port', 1, '--device', 0,
+        '--type', 'hdd',
+        '--medium',  ".vagrant/machines/target/virtualbox/disk1.vdi"
+      ]
+    end
+
   end
 
   config.vm.provision "shell", inline: <<-SHELL
+    /vagrant/installer/extenddisk.sh
     /vagrant/installer/install-A3.sh
     if [ -f /vagrant/devel ]; then
       touch /etc/devel

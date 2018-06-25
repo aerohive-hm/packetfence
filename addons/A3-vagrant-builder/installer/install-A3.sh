@@ -23,7 +23,7 @@ EOF
 # A3 installation
 yum install perl -y
 yum install --enablerepo=packetfence,aerohive A3 -y
-yum install --enablerepo=packetfence,aerohive A3-PKI -y
+yum install --enablerepo=packetfence,aerohive --disablerepo=A3_os,A3_deps,A3_release A3-PKI -y
 
 # Don't need our repository anymore
 rm /etc/yum.repos.d/aerohive.repo
@@ -83,19 +83,8 @@ cd /etc && patch -p0 <<EOF
  authpriv.*                                              /var/log/secure
 EOF
 
-# add aerohive yum repository for update
-cat <<EOF >/etc/yum.repos.d/aerohive.repo
-[packetfence]
-name=Clone of Inverse\'s PacketFence Repository
-baseurl=http://{PLACE_HOLDER_IP}/yum/packetfence/\$basearch
-gpgcheck=0
-enabled=1
-
-[aerohive]
-name=Aerohive Build Repository
-baseurl=http://{PLACE_HOLDER_IP}/yum/aerohive/\$basearch
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Aerohive
-enabled=1
-EOF
-
+# remove the vb guest additional
+rm -rf /opt/VBoxGuestAdditions*
+systemctl disable vboxadd
+systemctl disable vboxadd-service
+rm -rf /usr/lib/systemd/system/vboxadd*
