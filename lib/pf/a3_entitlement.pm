@@ -10,7 +10,7 @@ Support functions for A3 entitlement
 
 =cut
 
-use strict;
+# use strict;
 use warnings;
 use Readonly;
 
@@ -37,7 +37,7 @@ BEGIN {
     use Exporter ();
     our ( @ISA, @EXPORT );
     @ISA    = qw(Exporter);
-    @EXPORT = qw(get_current_moving_avg);
+    @EXPORT = qw(get_current_moving_avg is_usage_under_capacity is_entitlement_expired);
 }
 
 =head2 find_one
@@ -52,6 +52,97 @@ sub find_one {
     my ( $status, $dal ) = pf::dal::a3_entitlement->find({entitlement_key => $key});
 
     return is_success($status) ? $dal : $FALSE;
+}
+
+
+=head2 is_usage_under_capacity
+
+compares the current endpoints moving avg with allowed capacity
+
+=cut
+
+sub is_usage_under_capacity {
+    my $logger = get_logger();
+    #TODO, Move the get_licensed_capacity sub from Model/Entitlement here
+    my $total = 0;
+
+    foreach my $entitlement (find_active()) {
+        $total += $entitlement->{endpoint_count};
+    }
+
+    if ($total == 0) {
+        my $all_entitlements = find_all();
+        my ($trial_status, $trial_info) = get_trial_info();
+
+        if (@$all_entitlements == 0 && $trial_info) {
+            if (time() < str2time($trial_info->{sub_end})) {
+                $total = $trial_info->{endpoint_count};
+            }
+        }
+    }
+
+    my ($count_status, $count) = get_current_moving_avg_count();
+    if (is_success($count_status)) {
+        #return true if we only have less than 7 days of moving avg
+        return $TRUE if $count < 7;
+    }
+    else {
+        $logger->warn("Cannot retrieve moving average count from db");
+        #if system fault, we omit the usage check
+        return $STATUS::NOT_FOUND;
+    }
+    my ($status, $current_moving_avg) = get_current_moving_avg();
+    if (is_success($status)) {
+        return $current_moving_avg <= $total;
+    }
+    else {
+        $logger->warn("Cannot retrieve moving average data from db");
+        return $STATUS::NOT_FOUND;
+    }
+
+}
+
+=head2 is_trial_expired
+
+Checks whether the trial has expired
+
+=cut
+
+sub is_trial_expired {
+    my $trial = get_trial();
+    if ($trial != $FALSE) {
+        my $now = time();
+        my $end = str2time($trial->{sub_end});
+
+        if ($now < $end) {
+            $trial->{is_expired} = $FALSE;
+            $trial->{expires_in} = $end - $now;
+        }
+        else {
+            $trial->{is_expired} = $TRUE;
+        }
+        return $STATUS::OK, $trial;
+    }
+    else {
+        return $STATUS::NOT_FOUND;
+    }
+}
+
+=head2 is_entitlment_expired
+
+Checks whether the current entitlement is still active or not
+
+=cut
+
+sub is_entitlement_expired {
+    my $active_entitlements = find_active();
+    my ($trial_status, $trial_info) = is_trial_expired();
+    if (is_success($trial_status)) {
+        return $trial_info->{is_expired} && @$active_entitlements == 0;
+    }
+    else {
+        return @$active_entitlements == 0;
+    }
 }
 
 =head2 get_current_moving_avg
@@ -96,6 +187,8 @@ sub get_current_moving_avg_count {
     }
 
 }
+
+
 
 =head2 find_all
 

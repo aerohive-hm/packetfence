@@ -49,9 +49,9 @@ sub auto :Private {
     my $logger = get_logger();
     $c->stash->{readonly_mode} = db_check_readonly();
     my ($status, $curr_mov_avg) = pf::a3_entitlement::get_current_moving_avg();
-    $c->stash->{is_under_capacity} = $c->model('Entitlement')->is_current_usage_under_limit(); # move into A3 entitlement 
     $c->stash->{current_mov_avg} = $curr_mov_avg;
-
+    $c->stash->{is_usage_under_capacity} = pf::a3_entitlement::is_usage_under_capacity();
+    $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
     $logger->info($c->stash->{current_mov_avg});
 
     return 1;
