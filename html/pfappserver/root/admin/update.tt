@@ -38,7 +38,7 @@
           </div>
           <div class="update-details">
             <div class="detail-box">
-              <iframe src="[% releaseNotesUri %]" width="500px" height="250px"></iframe>
+              <iframe src="[% releaseNotesUri %]" width="498px" height="367px"></iframe>
             </div>
           </div>
         [% ELSE %]
