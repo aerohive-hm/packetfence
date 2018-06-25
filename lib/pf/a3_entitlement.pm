@@ -135,13 +135,13 @@ Checks whether the current entitlement is still active or not
 =cut
 
 sub is_entitlement_expired {
-    my $active_entitlements = find_active();
+    my @active_entitlements = find_active();
     my ($trial_status, $trial_info) = is_trial_expired();
     if (is_success($trial_status)) {
-        return $trial_info->{is_expired} && @$active_entitlements == 0;
+        return $trial_info->{is_expired} && @active_entitlements == 0;
     }
     else {
-        return @$active_entitlements == 0;
+        return @active_entitlements == 0;
     }
 }
 
