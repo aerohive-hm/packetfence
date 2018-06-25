@@ -44,7 +44,7 @@
           </div>
           <div class="pad3">
             <label class="ccLabel"><b>[% l('Current Capacity:') %]</b></label>
-            <div id="usedCapacitySpan">
+            <div id="currCapacitySpan">
               <span id="currCapacity">[% current_mov_avg %]</span><span>&nbsp;[% l('endpoints') %]</span>
             </div>
           </div>

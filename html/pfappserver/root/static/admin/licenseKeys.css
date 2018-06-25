@@ -23,7 +23,9 @@
 .pad{
   padding-bottom: 10px;
 }
-.pad2{}
+.pad2{
+  padding-bottom: 10px;
+}
 
 #entire-form{
     margin: 50px 50px;
@@ -36,8 +38,10 @@
 
 .lcLabel{ width: 200px;  float:left; font-size: 20px;}
 .ucLabel{ width: 200px;  float:left; font-size: 20px;}
+.ccLabel{ width: 200px;  float:left; font-size: 20px;}
 #licenseCapaSpan{ width: 500px; text-align: right;}
 #usedCapacitySpan{ width: 500px; text-align: right;}
+#currCapacitySpan{ width: 500px; text-align: right;}
 
 /* INPUT FIELD */
 .entitlementLicenseKeyInput{
