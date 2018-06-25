@@ -149,6 +149,7 @@ Get the current moving avg
 =cut
 
 sub get_moving_avg {
+    my $logger = get_logger();
     my ($status, $moving_avg) = pf::a3_entitlement::get_current_moving_avg();
     if (is_success($status)) {
         return $moving_avg;
