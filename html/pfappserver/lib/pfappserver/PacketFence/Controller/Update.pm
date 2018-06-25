@@ -58,15 +58,24 @@ sub latest :Local :Args(0) {
     $logger->debug("Received $method request for /update/latest");
 
     if ($method eq 'GET') {
-        my ($status, $latest) = $c->model('Update')->fetch_latest_release();
+        $c->stash->{is_update_in_progress} = $c->model('Update')->is_update_in_progress();
 
-        $logger->debug("status = $status, latest = " . Dumper($latest));
-
-        if ($status == $STATUS::OK) {
-            $c->stash->{update_info} = $latest;
+        if ($c->stash->{is_update_in_progress}) {
+            # TODO: TOCTOU issue - what if update completes between call
+            #       to is_update_in_progress and get_update_status?
+            $c->stash->{update_progress} = $c->model('Update')->get_update_status();
         }
+        else {
+            my ($status, $latest) = $c->model('Update')->fetch_latest_release();
 
-        $c->response->status($status);
+            $logger->debug("status = $status, latest = " . Dumper($latest));
+
+            if ($status == $STATUS::OK) {
+                $c->stash->{update_info} = $latest;
+            }
+
+            $c->response->status($status);
+        }
     }
     elsif ($method eq 'POST') {
         $c->response->status( $c->model('Update')->start_update() );

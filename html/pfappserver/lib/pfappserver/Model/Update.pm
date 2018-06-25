@@ -76,7 +76,6 @@ Start the update process
 sub start_update {
     my $logger = get_logger();
 
-    # TODO: Check for update in progress
     if ( ! lock_for_update() ) {
         return $STATUS::CONFLICT;
     }
@@ -131,6 +130,9 @@ sub lock_for_update {
     }
 }
 
+sub is_update_in_progress {
+    return -e $UPDATE_LOCK;
+}
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 
