@@ -5,10 +5,7 @@ $(document).ready(function () {
 function updateButton() {
   var updateButton = $("#update-button");
   updateButton.click(function () {
-    console.log("click");
-
     updateButton.addClass('disabled');
-
     $.ajax({
       url: '/update/latest',
       type: 'POST'
