@@ -60,8 +60,8 @@ auto
 sub auto :Private {
     my ( $self, $c ) = @_;
     $c->stash->{readonly_mode} = db_check_readonly();
-    $c->stash->{is_usage_under_capacity} = is_usage_under_capacity();
-    $c->stash->{is_entitlement_expired} = is_entitlement_expired();
+    $c->stash->{is_usage_under_capacity} = pf::a3_entitlement::is_usage_under_capacity();
+    $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
     return 1;
 }
 
