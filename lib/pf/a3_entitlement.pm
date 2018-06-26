@@ -10,7 +10,7 @@ Support functions for A3 entitlement
 
 =cut
 
-# use strict;
+use strict;
 use warnings;
 use Readonly;
 
