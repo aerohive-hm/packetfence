@@ -142,6 +142,24 @@ sub get_used_capacity {
     return pf::node::node_count_active();
 }
 
+=head2 get_moving_avg
+
+Get the current moving avg
+
+=cut
+
+sub get_moving_avg {
+    my $logger = get_logger();
+    my ($status, $moving_avg) = pf::a3_entitlement::get_current_moving_avg();
+    if (is_success($status)) {
+        return $moving_avg;
+    }
+    else {
+        $logger->warn("Cannot retrieve moving average from db");
+        return 0;
+    }
+}
+
 =head2 is_current_usage_under_limit
 
 Compares the entitlement endpoint limit with daily moving usage avg

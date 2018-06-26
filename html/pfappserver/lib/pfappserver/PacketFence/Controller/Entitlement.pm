@@ -89,7 +89,6 @@ Usage: /entitlement/keys
 
 sub keys :Path('keys') :Args(0) {
     my ( $self, $c ) = @_;
-
     $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
 }
 

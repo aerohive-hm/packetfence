@@ -31,7 +31,7 @@
               [% IF is_update_in_progress %]
                 [% update_progress %]
               [% ELSE %]
-                <iframe src="[% releaseNotesUri %]" width="500px" height="250px"></iframe>
+                <iframe src="[% releaseNotesUri %]" width="498px" height="367px"></iframe>
               [% END %]
             </div>
           </div>
