@@ -37,7 +37,7 @@ BEGIN {
     use Exporter ();
     our ( @ISA, @EXPORT );
     @ISA    = qw(Exporter);
-    @EXPORT = qw(get_current_moving_avg is_usage_under_capacity is_entitlement_expired);
+    @EXPORT = qw(is_usage_under_capacity is_entitlement_expired);
 }
 
 =head2 find_one

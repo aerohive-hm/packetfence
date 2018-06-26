@@ -18,7 +18,7 @@ use warnings;
 use Moose;
 use namespace::autoclean;
 use pf::db;
-use pf::a3_entitlement qw(get_current_moving_avg);
+use pf::a3_entitlement qw(is_usage_under_capacity is_entitlement_expired);
 use pf::config qw(%Config);
 use pf::util;
 use pf::log;
@@ -44,16 +44,24 @@ auto
 
 =cut
 
+# sub auto :Private {
+#     my ( $self, $c ) = @_;
+#     my $logger = get_logger();
+#     $c->stash->{readonly_mode} = db_check_readonly();
+#     my ($status, $curr_mov_avg) = pf::a3_entitlement::get_current_moving_avg();
+#     $c->stash->{current_mov_avg} = $curr_mov_avg;
+#     $c->stash->{is_usage_under_capacity} = pf::a3_entitlement::is_usage_under_capacity();
+#     $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
+#     $logger->info($c->stash->{current_mov_avg});
+#
+#     return 1;
+# }
+
 sub auto :Private {
     my ( $self, $c ) = @_;
-    my $logger = get_logger();
     $c->stash->{readonly_mode} = db_check_readonly();
-    my ($status, $curr_mov_avg) = pf::a3_entitlement::get_current_moving_avg();
-    $c->stash->{current_mov_avg} = $curr_mov_avg;
-    $c->stash->{is_usage_under_capacity} = pf::a3_entitlement::is_usage_under_capacity();
-    $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
-    $logger->info($c->stash->{current_mov_avg});
-
+    $c->stash->{is_usage_under_capacity} = is_usage_under_capacity();
+    $c->stash->{is_entitlement_expired} = is_entitlement_expired();
     return 1;
 }
 
