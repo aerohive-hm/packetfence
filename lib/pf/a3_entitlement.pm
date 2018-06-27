@@ -28,7 +28,7 @@ Readonly::Scalar our $TRIAL_CAPACITY      => 100;
 use pf::log;
 use pf::error qw(is_success is_error);
 use pf::config qw(%Config);
-use pf::constants qw($TRUE $FALSE $A3_SYSTEM_ID);
+use pf::constants qw($TRUE $FALSE $A3_SYSTEM_ID $MAX_LICENSED_CAPACITY);
 use pf::dal::a3_entitlement;
 use pf::dal::a3_daily_avg;
 use JSON;
@@ -73,7 +73,7 @@ sub is_usage_under_capacity {
 
     if ($total == 0) {
         my $all_entitlements = find_all();
-        my ($trial_status, $trial_info) = get_trial_info();
+        my ($trial_status, $trial_info) = get_trial_status();
 
         if (@$all_entitlements == 0 && $trial_info) {
             if (time() < str2time($trial_info->{sub_end})) {
@@ -81,6 +81,8 @@ sub is_usage_under_capacity {
             }
         }
     }
+    #if licensed capacity exceeds 100k, we don't check for usage limit
+    return $TRUE if $total >= $MAX_LICENSED_CAPACITY;
 
     my ($count_status, $count) = get_current_moving_avg_count();
     if (is_success($count_status)) {
@@ -90,7 +92,8 @@ sub is_usage_under_capacity {
     else {
         $logger->warn("Cannot retrieve moving average count from db");
         #if system fault, we omit the usage check
-        return $STATUS::NOT_FOUND;
+        #TODO add the status check
+        return $TRUE;
     }
     my ($status, $current_moving_avg) = get_current_moving_avg();
     if (is_success($status)) {
@@ -98,18 +101,18 @@ sub is_usage_under_capacity {
     }
     else {
         $logger->warn("Cannot retrieve moving average data from db");
-        return $STATUS::NOT_FOUND;
+        return $TRUE;
     }
 
 }
 
-=head2 is_trial_expired
+=head2 get_trial_status
 
 Checks whether the trial has expired
 
 =cut
 
-sub is_trial_expired {
+sub get_trial_status {
     my $trial = get_trial();
     if ($trial != $FALSE) {
         my $now = time();
@@ -137,7 +140,7 @@ Checks whether the current entitlement is still active or not
 
 sub is_entitlement_expired {
     my @active_entitlements = find_active();
-    my ($trial_status, $trial_info) = is_trial_expired();
+    my ($trial_status, $trial_info) = get_trial_status();
     if (is_success($trial_status)) {
         return $trial_info->{is_expired} && @active_entitlements == 0;
     }
