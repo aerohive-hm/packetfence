@@ -50,7 +50,7 @@ sub auto :Private {
     my $logger = get_logger();
     $c->stash->{readonly_mode} = db_check_readonly();
 
-    if (-e "$install_dir/currently-at") {
+    if (-e "$conf_dir/currently-at") {
         my ($status, $curr_mov_avg) = pf::a3_entitlement::get_current_moving_avg();
         $c->stash->{current_mov_avg} = $curr_mov_avg;
         $c->stash->{is_usage_under_capacity} = pf::a3_entitlement::is_usage_under_capacity();
