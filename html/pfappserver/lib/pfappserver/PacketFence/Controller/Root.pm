@@ -20,7 +20,7 @@ use namespace::autoclean;
 use pf::db;
 use pf::a3_entitlement qw(get_current_moving_avg);
 use pf::config qw(%Config);
-use pf::file_paths qw($install_dir);
+use pf::file_paths qw($conf_dir);
 use pf::util;
 use pf::log;
 use Data::Dumper;
@@ -50,7 +50,7 @@ sub auto :Private {
     my $logger = get_logger();
     $c->stash->{readonly_mode} = db_check_readonly();
 
-    if (-e "$install_dir/conf/currently-at") {
+    if (-e "$install_dir/currently-at") {
         my ($status, $curr_mov_avg) = pf::a3_entitlement::get_current_moving_avg();
         $c->stash->{current_mov_avg} = $curr_mov_avg;
         $c->stash->{is_usage_under_capacity} = pf::a3_entitlement::is_usage_under_capacity();
