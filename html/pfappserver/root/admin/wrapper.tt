@@ -239,10 +239,10 @@
           <script>openAlmostExpiredModal();</script>
         [% END %]
       [% END %]
-      <!-- [% IF is_entitlement_expired %] -->
-                <!-- <script>openEnforcementModal()</script> -->
-      <!-- [% ELSE %] -->
-      <!-- [% END %] -->
+      [% IF is_entitlement_expired %]
+                <script>openEnforcementModal()</script>
+      [% ELSE %]
+      [% END %]
 
       [% IF is_usage_under_capacity %]
       [% ELSE %]

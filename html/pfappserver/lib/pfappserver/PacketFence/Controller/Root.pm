@@ -18,7 +18,7 @@ use warnings;
 use Moose;
 use namespace::autoclean;
 use pf::db;
-use pf::a3_entitlement qw(get_current_moving_avg);
+use pf::a3_entitlement qw(get_current_moving_avg is_usage_under_capacity is_entitlement_expired);
 use pf::config qw(%Config);
 use pf::file_paths qw($conf_dir);
 use pf::util;
