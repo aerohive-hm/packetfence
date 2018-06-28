@@ -501,7 +501,7 @@ sub fixpermissions :Chained('object') :PathPart('fixpermissions') :Args(0) {
 
 =cut
 
-sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
+sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0) :AdminRole('NODES_READ'){
     my( $self, $c ) = @_;
     my $logger = get_logger();
 

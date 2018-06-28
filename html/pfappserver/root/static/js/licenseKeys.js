@@ -1,7 +1,7 @@
 
 $(document).ready(function(){
-  document.getElementById("enforcementModal").remove();
   document.getElementById("overUsageModal").remove();
+  document.getElementById("enforcementModal").remove();
   $(".modal-backdrop").hide();
 
   applyKeyButton();
