@@ -68,7 +68,6 @@
 
           <div class="nav-collapse">
             <ul class="nav nav-header">
-              <!-- <span>  capacity: [% IF is_usage_under_capacity %] YES [% ELSE %] NO [% END %] ; entitlement:  [% IF is_entitlement_expired %] YES [% ELSE %] NO [% END %] </span> -->
               [%- IF can_access_any("REPORTS","SERVICES") %]
               <li[% ' class="active"' IF c.action.name == 'status' %]>
                 [% IF !is_usage_under_capacity or is_entitlement_expired  %]
