@@ -38,7 +38,7 @@
 
 .lcLabel{ width: 200px;  float:left; font-size: 20px;}
 .ucLabel{ width: 200px;  float:left; font-size: 20px;}
-.ccLabel{ width: 200px;  float:left; font-size: 20px;}
+.ccLabel{ width: 250px;  float:left; font-size: 20px;}
 #licenseCapaSpan{ width: 500px; text-align: right;}
 #usedCapacitySpan{ width: 500px; text-align: right;}
 #currCapacitySpan{ width: 500px; text-align: right;}

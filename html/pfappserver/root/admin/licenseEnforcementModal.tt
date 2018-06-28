@@ -5,12 +5,11 @@
        <div class="modal-content licenseAlert">
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
           <h3 class="modal-title"><b>[% l('Over Entitlement Limit') %]</b>
-              <!-- <span>Your current licenses have expired, please subscribe another key.</span> -->
               <!--Put in po file please-->
           </h3>
         </div>
         <div class="modal-body">
-          <p>[% l('Hello') %] [% c.user | html %]. [% l('All license keys have expired. Contact Aerohive to renew your subscription.') %] </p>
+          <p>[% l('Hello') %] [% c.user | html %], [% l('All license keys have expired. Contact Aerohive to renew your subscription.') %] </p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
           <p>[% l('If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service.') %] </p>
         </div>

@@ -13,7 +13,7 @@
           </h3>
         </div>
         <div class="modal-body">
-          <p>[% l('Hello') %] [% c.user | html %]. [% l('It looks like your subscription is almost ending. Renew your license') %] [% IF latestKey.defined %]<span>[% latest_key_expires_in %] [% IF latest_key_expires_in == 1 %]day[% ELSE %]days[% END %]</span>[% ELSE %]<span id="daysLeft"></span>[% END %]</b> [% l('to continue using it. You can do this by calling this number:') %] </p>
+          <p>[% l('Hello') %] [% c.user | html %], [% l('Your subscription is ending.') %] [% IF latestKey.defined %]<span>[% latest_key_expires_in %] [% IF latest_key_expires_in == 1 %]day[% ELSE %]days[% END %]</span>[% ELSE %]<span id="daysLeft"></span>[% END %]</b> [% l('You can renew your license by calling this number:') %] </p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
           <p>[% l('If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service.') %] </p>
         </div>

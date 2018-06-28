@@ -100,7 +100,7 @@ has_field 'ca_cert_path' =>
    label    => 'CA cert path',
    required => 1,
    tags     => { after_element => \&help,
-             help => 'Path of the CA that will generate your certificates. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.'},
+             help => 'CA certifcate will generate your certificates. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.'},
   );
 
 has_field 'server_cert_path' =>
@@ -108,7 +108,7 @@ has_field 'server_cert_path' =>
    type => 'Upload',
    required => 1,
    tags => { after_element => \&help,
-             help => 'Path of the RADIUS server authentication certificate. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.' },
+             help => 'RADIUS server authentication certificate. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.' },
   );
 
 

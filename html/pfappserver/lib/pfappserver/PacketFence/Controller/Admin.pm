@@ -265,7 +265,6 @@ sub index :Path :Args(0) {
         }
     }
     $c->response->redirect($c->uri_for($c->controller->action_for($action)));
-
 }
 
 =head2 object
