@@ -9,7 +9,7 @@
           </h3>
         </div>
         <div class="modal-body">
-          <p>[% l('Hello') %] [% c.user | html %]. [% l('All license keys have expired. Contact Aerohive to renew your subscription.') %]: </p>
+          <p>[% l('Hello') %] [% c.user | html %]. [% l('All license keys have expired. Contact Aerohive by calling this number to renew your subscription:') %] </p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
           <p>[% l('Thank you for using our service.') %] </p>
 

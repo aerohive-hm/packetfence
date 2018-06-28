@@ -4,18 +4,17 @@
 <!--BEGINNING ALERT TEXT-->
        <div class="modal-content">
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
-          <h3 class="modal-title"><b>[% l('Over Usage') %]</b>
+          <h3 class="modal-title"><b>[% l('Exceeding License Limit') %]</b>
               <!-- <span></span> -->
           </h3>
         </div>
         <div class="modal-body">
-          <p>[% l('Hello') %] [% c.user | html %]. [% l('Your current average number of active endpoints exceeds your licensed capacity. Contact Aerohive to purchase additional capacity.') %] </p>
+          <p>[% l('Hello') %] [% c.user | html %], [% l('your current average number of active endpoints exceeds your licensed capacity. Contact Aerohive to purchase additional capacity.') %] </p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
           <p>[% l('If you have an entitlement key, press the Enter Key button below. Thanks again for using our service.') %] </p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-success licenseKey" id="licenseKey">[% l('Enter Key') %]</button>
-          <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">[% l('Close') %]</button>
         </div>
       </div>
 <!--END OF ALERT TEXT-->

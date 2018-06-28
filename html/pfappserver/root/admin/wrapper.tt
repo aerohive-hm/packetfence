@@ -147,8 +147,10 @@
 	          </ul>
           </div>
 
+
           [% IF is_eula_accepted %]
           [% ELSE %]
+
             <!-- <trial indicator -->
             <div class="trialIndicator" id="trialIndicator">
               <div class="trial-clock-indicator pull-right">
@@ -239,10 +241,10 @@
           <script>openAlmostExpiredModal();</script>
         [% END %]
       [% END %]
-      [% IF is_entitlement_expired %]
-                <script>openEnforcementModal()</script>
-      [% ELSE %]
-      [% END %]
+      <!-- [% IF is_entitlement_expired %] -->
+                <!-- <script>openEnforcementModal()</script> -->
+      <!-- [% ELSE %] -->
+      <!-- [% END %] -->
 
       [% IF is_usage_under_capacity %]
       [% ELSE %]
