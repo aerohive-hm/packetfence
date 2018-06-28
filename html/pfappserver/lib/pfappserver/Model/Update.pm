@@ -15,6 +15,8 @@ use warnings;
 use Readonly;
 
 Readonly::Scalar our $UPDATE_SCRIPT => '/usr/local/pf/sbin/a3_update';
+Readonly::Scalar our $PROGRESS_LOG  => '/usr/local/pf/logs/a3_update_progress.log';
+Readonly::Scalar our $UPDATE_LOCK   => '/usr/local/pf/var/run/update.lock';
 
 use Moose;
 
@@ -27,6 +29,8 @@ use pf::version;
 use WWW::Curl::Easy;
 
 use Data::Dumper;
+use File::Slurp;
+use Fcntl;
 
 extends 'Catalyst::Model';
 
@@ -72,7 +76,9 @@ Start the update process
 sub start_update {
     my $logger = get_logger();
 
-    # TODO: Check for update in progress
+    if ( ! lock_for_update() ) {
+        return $STATUS::CONFLICT;
+    }
 
     my ($status) = fetch_latest_release();
 
@@ -109,9 +115,24 @@ Get the current status of the update process
 =cut
 
 sub get_update_status {
-    # TODO - finalize how this information will be communicated to front end
+    return read_file($PROGRESS_LOG);
 }
 
+sub lock_for_update {
+    my $logger = get_logger();
+
+    if (sysopen LOCKFILE, $UPDATE_LOCK, O_WRONLY | O_CREAT | O_EXCL, 0600) {
+        $logger->info("Locking for update");
+        close LOCKFILE;
+    }
+    else {
+        $logger->info("Update already in progress");
+    }
+}
+
+sub is_update_in_progress {
+    return -e $UPDATE_LOCK;
+}
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 

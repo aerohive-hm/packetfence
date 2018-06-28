@@ -1334,6 +1334,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/sbin/winbindd-wrapper
 %attr(0755, pf, pf)     /usr/local/pf/sbin/radsniff-wrapper
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update
+%attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update_wrapper
 %dir                    /usr/local/pf/var
 %dir                    /usr/local/pf/var/conf
 %dir                    /usr/local/pf/raddb

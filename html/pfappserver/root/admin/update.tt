@@ -7,8 +7,8 @@
         'js/update'
         ]
     cssFiles = [
-       'admin/update'
-       ]
+        'admin/update'
+        ]
 -%]
 <div class="spacing">
   <section class="card">
@@ -24,24 +24,18 @@
               <button class="btn btn-primary update-button" id="update-button">
                 <span class="content">[% l('Begin Update') %]</span>
               </button>
-              <div class="progress-bar-content">
-                <div id="progress-bar">
-                  <div id="progress">
-                  </div>
-                </div>
-                <div class="progressText">
-                  <p>[% l('Update complete') %]: <span class="update-detail-loading"></span> <span
-                      id="finished-update-part"></span> / 100%</p>
-                </div>
-              </div>
             </div>
           </div>
           <div class="update-details">
             <div class="detail-box">
-              <iframe src="[% releaseNotesUri %]" width="498px" height="367px"></iframe>
+              [% IF is_update_in_progress %]
+                [% update_progress %]
+              [% ELSE %]
+                <iframe src="[% releaseNotesUri %]" width="498px" height="367px"></iframe>
+              [% END %]
             </div>
           </div>
-        [% ELSE %]
+         [% ELSE %]
           <h2>[% l('There are no updates available at this time.') %]</h2>
         [% END %]
       </div>

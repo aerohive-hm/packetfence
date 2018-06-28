@@ -34,8 +34,6 @@ my $debug = 0;
 my $tmp_dir = "/tmp/a3_update_$$";;
 my $db_dump = "$tmp_dir/A3_db.sql";
 my $app_dump = "$tmp_dir/A3_app.tar.gz";
-my $upgrade_log = "$tmp_dir/a3_update.log";
-my $progress_log = "/tmp/a3_update_progress.log";
 my $a3_dir = '/usr/local/pf';
 my $a3_release = "$a3_dir/conf/pf-release";
 my $a3_db_dir = "$a3_dir/db";
@@ -50,6 +48,8 @@ my $to_version;
 my @upgrade_path_list;
 my @db_schema_files;
 my @conf_migration_files;
+my $upgrade_log = "$tmp_dir/a3_update.log";
+my $progress_log = "$a3_dir/logs/a3_update_progress.log";
 my ($log_fh, $progress_fh);
 
 sub read_passwd {
