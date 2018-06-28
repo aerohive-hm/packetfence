@@ -265,7 +265,6 @@ sub index :Path :Args(0) {
         }
     }
     $c->response->redirect($c->uri_for($c->controller->action_for($action)));
-
 }
 
 =head2 object
@@ -501,7 +500,7 @@ sub fixpermissions :Chained('object') :PathPart('fixpermissions') :Args(0) {
 
 =cut
 
-sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0) :AdminRole('NODES_READ'){
+sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     my( $self, $c ) = @_;
     my $logger = get_logger();
 
