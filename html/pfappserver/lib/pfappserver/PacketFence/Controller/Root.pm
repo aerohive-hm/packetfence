@@ -1,7 +1,5 @@
 package pfappserver::PacketFence::Controller::Root;
 
-# package pfappserver::PacketFence::Controller::Entitlement;
-
 =head1 NAME
 
 pfappserver::PacketFence::Controller::Root - Catalyst Controller
@@ -18,8 +16,9 @@ use warnings;
 use Moose;
 use namespace::autoclean;
 use pf::db;
-use pf::a3_entitlement qw(get_current_moving_avg);
+use pf::a3_entitlement qw(is_usage_under_capacity is_entitlement_expired);
 use pf::config qw(%Config);
+use pf::file_paths qw($conf_dir);
 use pf::util;
 use pf::log;
 use Data::Dumper;
@@ -46,13 +45,12 @@ auto
 
 sub auto :Private {
     my ( $self, $c ) = @_;
-    my $logger = get_logger();
     $c->stash->{readonly_mode} = db_check_readonly();
-    my ($status, $curr_mov_avg) = pf::a3_entitlement::get_current_moving_avg();
-    $c->stash->{current_mov_avg} = $curr_mov_avg;
-    $c->stash->{is_usage_under_capacity} = pf::a3_entitlement::is_usage_under_capacity();
-    $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
-    $logger->info($c->stash->{current_mov_avg});
+
+    if (-e "$conf_dir/currently-at") {
+        $c->stash->{is_usage_under_capacity} = pf::a3_entitlement::is_usage_under_capacity();
+        $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
+    }
 
     return 1;
 }
