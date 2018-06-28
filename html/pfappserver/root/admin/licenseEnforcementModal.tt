@@ -5,7 +5,6 @@
        <div class="modal-content licenseAlert">
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
           <h3 class="modal-title"><b>[% l('Over Entitlement Limit') %]</b>
-              <!-- <span>Your current licenses have expired, please subscribe another key.</span> -->
               <!--Put in po file please-->
           </h3>
         </div>
