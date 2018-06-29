@@ -16,12 +16,12 @@ $(document).ready(function(){
 
 // apply button press
 function applyKeyButton(){
-    console.log("inside applyKeyButton");
+  console.log("inside applyKeyButton");
   var applyKeyButton2 = $("#applyKey");
   applyKeyButton2.click(function(){
     var userKeyInput = document.getElementById('keyInput').value;
-    checkKeyInput(userKeyInput);
     if (checkKeyInput(userKeyInput)){
+        console.log("checking key: " + checkKeyInput(userKeyInput));
         $(".errMsg").css('display', 'none');
         $("#keyInput").css('border','1px solid #dfdfdf');
         updateKeyTable(userKeyInput);
@@ -29,6 +29,7 @@ function applyKeyButton(){
         return true;
     } else {
         document.getElementById('keyInput').value = userKeyInput;
+        return false;
     }
   });
 }
@@ -36,7 +37,7 @@ function applyKeyButton(){
 // update table after checking regex
 function updateKeyTable(userKeyInput) {
   console.log("inside updateKeyTable");
-    var applyKeyButton2 = $("#applyKey");
+    // var applyKeyButton2 = $("#applyKey");
     var base_url = window.location.origin;
     $.ajax({
         url : base_url + '/entitlement/key/' + userKeyInput,
@@ -58,7 +59,7 @@ function updateKeyTable(userKeyInput) {
            }
            return true;
         }).fail(function(xhr, status, error){
-           console.log(error);
+           console.log("error: " + error);
            return false;
         });
 }
@@ -71,16 +72,22 @@ function checkKeyInput(userKeyInput){
     //TRUE OR FALSE
     if (checkKeyRegex.test(userKeyInput)){
         $("#keyInput").css('border','1px solid #dfdfdf');
+        console.log("TRUE");
         return true;
     } else {
-        $("#keyInput").css('border','1px solid #d9534f');
+        document.getElementById('errorMessage').innerHTML = "The key entered is in the wrong format. Please enter a valid entitlement key.";
+        $("#success-alert").show(); // use slide down for animation
+        setTimeout(function (){
+          $("#success-alert").slideUp(500);
+        }, 3000);
+        console.log("FALSE");
+        // $("#keyInput").css('border','1px solid #d9534f');
         return false;
     }
 }
 
 //open eula
 function openEulaModal(){
-    console.log("inside openEulaModal");
    $('#eulaModal').modal({backdrop:'static', keyboard: false });   // initialized with no keyboard
    $('#eulaModal').modal('show');
 }
