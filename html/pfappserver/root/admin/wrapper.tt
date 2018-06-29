@@ -55,17 +55,7 @@
           <a class="brand span3 hidden-phone" href="#">
             <img src="[% c.uri_for('/static/img/a3Logo.svg') %]"/>
           </a>
-          [%- IF c.user_allowed_in_admin() %]
-            [% FOREACH key IN entitlement_keys -%]
-              [% IF latestKey.defined %]
-                [% IF latestKey.expires_in < key.expires_in %]
-                  [% SET latestKey = key %]
-                [% END %]
-              [% ELSE %]
-                [% SET latestKey = key %]
-              [% END %]
-            [% END %]
-
+          
           <div class="nav-collapse">
             <ul class="nav nav-header">
               [%- IF can_access_any("REPORTS","SERVICES") %]
@@ -155,10 +145,8 @@
 	          </ul>
           </div>
 
-
           [% IF is_eula_accepted %]
           [% ELSE %]
-
             <!-- <trial indicator -->
             <div class="trialIndicator" id="trialIndicator">
               <div class="trial-clock-indicator pull-right">
@@ -171,11 +159,9 @@
             </div>
           <!--end trialindecator-->
           [% END %]
-
         </div>
         [%- END %]
         <!-- end of if user allowed in admin-->
-
         [% IF SHOW_READONLY_ERROR %]
         <div class="row-error">
           <strong>[% l('Warning!') %]</strong>
@@ -208,9 +194,7 @@
           [% END %]
         [% END %]
 
-        [% SET name = template.name %]
-        [% IF name == 'admin/licenseKeys.tt' %]
-        [% ELSE %]
+        [% IF template.name != 'admin/licenseKeys.tt' %]
           [% IF is_usage_under_capacity %]
           [% ELSE %]
               [% INCLUDE admin/overUsageModal.tt %]
@@ -253,17 +237,15 @@
         [% END %]
       [% END %]
 
-      [% SET name = template.name %]
-      [% IF name == 'admin/licenseKeys.tt' %]
-      [% ELSE %]
+      [% IF template.name != 'admin/licenseKeys.tt' %]
           [% IF is_usage_under_capacity %]
           [% ELSE %]
               <script>openOverUsageModal()</script>
           [% END %]
-          <!-- [% IF is_entitlement_expired %] -->
-                    <!-- <script>openEnforcementModal()</script> -->
-          <!-- [% ELSE %] -->
-          <!-- [% END %] -->
+          [% IF is_entitlement_expired %]
+              <script>openEnforcementModal()</script>
+          [% ELSE %]
+          [% END %]
       [% END %]
     [% END %]
 [%- END %]
