@@ -4,7 +4,8 @@
         'admin/config/items',
         'js/node',
         'js/user',
-        'js/update'
+        'js/update',
+        'js/adminWrapper'
         ]
     cssFiles = [
         'admin/update'

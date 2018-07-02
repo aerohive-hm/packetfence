@@ -11,11 +11,10 @@
         <div class="modal-body">
           <p>[% l('Hello') %] [% c.user | html %], [% l('All license keys have expired. Contact Aerohive to renew your subscription.') %] </p>
            <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
-          <p>[% l('If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service.') %] </p>
+          <p>[% l('If you have an entitlement key you can press the Enter License Key button below. Thanks again for using our service.') %] </p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-success licenseKey" id="licenseKey">[% l('Enter Key') %]</button>
-          <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">[% l('Close') %]</button>
+          <button type="button" class="btn btn-success licenseKey" id="licenseKey" onclick="toLicensePage()">[% l('Enter License Key') %]</button>
         </div>
       </div>
 <!--END OF ALERT TEXT-->
