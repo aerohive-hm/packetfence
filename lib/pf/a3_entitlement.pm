@@ -15,6 +15,7 @@ use warnings;
 use Readonly;
 
 use POSIX qw(strftime);
+use Date::Parse;
 
 Readonly::Scalar our $KEY_STATUS_UNUSED   => 1;
 Readonly::Scalar our $KEY_STATUS_ACTIVE   => 2;
@@ -27,11 +28,18 @@ Readonly::Scalar our $TRIAL_CAPACITY      => 100;
 use pf::log;
 use pf::error qw(is_success is_error);
 use pf::config qw(%Config);
-use pf::constants qw($TRUE $FALSE $A3_SYSTEM_ID);
+use pf::constants qw($TRUE $FALSE $A3_SYSTEM_ID $MAX_LICENSED_CAPACITY);
 use pf::dal::a3_entitlement;
-
+use pf::dal::a3_daily_avg;
 use JSON;
 use WWW::Curl::Easy;
+
+BEGIN {
+    use Exporter ();
+    our ( @ISA, @EXPORT );
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(is_usage_under_capacity is_entitlement_expired);
+}
 
 =head2 find_one
 
@@ -46,6 +54,145 @@ sub find_one {
 
     return is_success($status) ? $dal : $FALSE;
 }
+
+
+=head2 is_usage_under_capacity
+
+compares the current endpoints moving avg with allowed capacity
+
+=cut
+
+sub is_usage_under_capacity {
+    my $logger = get_logger();
+    #TODO, Move the get_licensed_capacity sub from Model/Entitlement here
+    my $total = 0;
+
+    foreach my $entitlement (find_active()) {
+        $total += $entitlement->{endpoint_count};
+    }
+
+    if ($total == 0) {
+        my $all_entitlements = find_all();
+        my ($trial_status, $trial_info) = get_trial_status();
+
+        if (@$all_entitlements == 0 && $trial_info) {
+            if (time() < str2time($trial_info->{sub_end})) {
+                $total = $trial_info->{endpoint_count};
+            }
+        }
+    }
+    #if licensed capacity exceeds 100k, we don't check for usage limit
+    return $TRUE if $total >= $MAX_LICENSED_CAPACITY;
+
+    my ($count_status, $count) = get_current_moving_avg_count();
+    if (is_success($count_status)) {
+        #return true if we only have less than 7 days of moving avg
+        return $TRUE if $count < 7;
+    }
+    else {
+        $logger->warn("Cannot retrieve moving average count from db");
+        #if system fault, we omit the usage check
+        #TODO add the status check
+        return $TRUE;
+    }
+    my ($status, $current_moving_avg) = get_current_moving_avg();
+    if (is_success($status)) {
+        return $current_moving_avg <= $total;
+    }
+    else {
+        $logger->warn("Cannot retrieve moving average data from db");
+        return $TRUE;
+    }
+
+}
+
+=head2 get_trial_status
+
+Checks whether the trial has expired
+
+=cut
+
+sub get_trial_status {
+    my $trial = get_trial();
+    if ($trial != $FALSE) {
+        my $now = time();
+        my $end = str2time($trial->{sub_end});
+
+        if ($now < $end) {
+            $trial->{is_expired} = $FALSE;
+            $trial->{expires_in} = $end - $now;
+        }
+        else {
+            $trial->{is_expired} = $TRUE;
+        }
+        return $STATUS::OK, $trial;
+    }
+    else {
+        return $STATUS::NOT_FOUND;
+    }
+}
+
+=head2 is_entitlment_expired
+
+Checks whether the current entitlement is still active or not
+
+=cut
+
+sub is_entitlement_expired {
+    my @active_entitlements = find_active();
+    my ($trial_status, $trial_info) = get_trial_status();
+    if (is_success($trial_status)) {
+        return $trial_info->{is_expired} && @active_entitlements == 0;
+    }
+    else {
+        return @active_entitlements == 0;
+    }
+}
+
+=head2 get_current_moving_avg
+
+Returns the current moving avg of daily usage samples
+
+=cut
+
+sub get_current_moving_avg {
+    my $logger = get_logger();
+    my ($status, $iter) = pf::dal::a3_daily_avg->search(
+        -limit => 1,
+        -order_by => {-desc => 'daily_date'},
+    );
+    my $current_avg = $iter->all;
+    if (is_success($status)) {
+        return $STATUS::OK, $current_avg->[0]->{moving_avg};
+
+    }
+    else {
+        $logger->error("Failed to get current moving avg");
+        return $STATUS::NOT_FOUND;
+    }
+
+}
+
+=head2 get_current_moving_avg_count
+
+Returns the number of daily moving avg samples
+
+=cut
+
+sub get_current_moving_avg_count {
+    my $logger = get_logger();
+    my ($status, $count) = pf::dal::a3_daily_avg->count();
+    if (is_success($status)) {
+        return $STATUS::OK, $count;
+    }
+    else {
+        $logger->error("Failed to get the count of moving avg");
+        return $STATUS::NOT_FOUND;
+    }
+
+}
+
+
 
 =head2 find_all
 
@@ -176,6 +323,16 @@ sub create_trial {
 
 sub get_trial {
     return find_one($TRIAL_KEY);
+}
+
+=head2 is_in_trial
+
+checks whether the user is in trial or not, in trial means no entitlement keys found and the trial key is found
+
+=cut
+
+sub is_in_trial {
+    return !find_all() && get_trial();
 }
 
 =head2 verify

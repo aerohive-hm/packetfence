@@ -56,12 +56,6 @@ rogueinterval=10
 # This can help detect MAC spoofing.
 hostname_change_detection=disabled
 #
-# network.connection_type_change_detection
-#
-# Will identify if a device switches from wired to wireless (or the opposite) and send an e-mail with these changes.
-# This can help detect MAC spoofing.
-connection_type_change_detection=disabled
-#
 # network.dhcpoption82logger
 #
 # If enabled A3 will monitor DHCP option82 location-based information.
@@ -1174,3 +1168,7 @@ verify_path=/a3/entitlement/verify
 # A3.eula_path
 #
 eula_path=/a3/eula
+#
+# A3.release_info_path
+#
+release_info_path=/a3/update/latest

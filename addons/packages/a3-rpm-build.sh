@@ -11,8 +11,10 @@
 
 DATE="`date +%Y%m%d`"
 BRANCH=$1
+PASSPHRASE=$2
 
 BUILD_DIR=~/rpmbuild
+CURRENT_DIR=`pwd`
 # valid values: .el6 .el5 .fc16
 DIST=.el7
 SPECFILE=addons/packages/A3.spec
@@ -74,7 +76,11 @@ fi
 echo -e "\n\n\n"
 echo "Building the RPMs"
 echo "*****************"
-/usr/bin/rpmbuild -ba --define "ver $VERSION" --define 'snapshot 1' --define "dist $DIST" --define "rev 0.$DATE" $BUILD_DIR/SPECS/A3.spec 1>/dev/null
+if [ -n "$PASSPHRASE" ]; then
+  $CURRENT_DIR/a3-rpm-build-expect.sh $VERSION $DIST $DATE $BUILD_DIR $PASSPHRASE
+else
+  /usr/bin/rpmbuild -ba --define "ver $VERSION" --define 'snapshot 1' --define "dist $DIST" --define "rev 0.$DATE" $BUILD_DIR/SPECS/A3.spec 1>/dev/null
+fi
 
 if [[ "$?" != "0" ]]; then
 	echo "Problem building the RPM. Aborting build process..." && exit 3

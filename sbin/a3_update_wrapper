@@ -1,0 +1,6 @@
+#!/bin/sh
+
+/usr/local/pf/sbin/a3_update
+
+# Be sure to clean up lock file
+/usr/bin/rm -f /usr/local/pf/var/run/update.lock

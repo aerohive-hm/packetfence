@@ -144,7 +144,6 @@ sub default_query {
             "IFNULL(node_category_bypass_role.name, '')|bypass_role",
             (
                 map { "IFNULL($_,' ')|$_" } qw(
-                    device_manufacturer
                     device_class
                     device_type
                     device_version

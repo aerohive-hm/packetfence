@@ -44,7 +44,7 @@ sub build_child {
         $tmp_cfg{"metric 'total dhcp leases remaining on $int' past day"} = {
             'type' => 'api',
             'statsd_type' => 'gauge',
-            'statsd_ns' => 'source.packetfence.dhcp_leases_'.$int.'_day',
+            'statsd_ns' => 'source.a3.dhcp_leases_'.$int.'_day',
             'api_method' => 'GET',
             'api_path' => "/api/v1/dhcp/stats/$int",
             'api_compile' => '$[0].free',
@@ -53,7 +53,7 @@ sub build_child {
         $tmp_cfg{"metric 'total dhcp leases remaining on $int' past week"} = {
             'type' => 'api',
             'statsd_type' => 'gauge',
-            'statsd_ns' => 'source.packetfence.dhcp_leases_'.$int.'_week',
+            'statsd_ns' => 'source.a3.dhcp_leases_'.$int.'_week',
             'api_method' => 'GET',
             'api_path' => "/api/v1/dhcp/stats/$int",
             'api_compile' => '$[0].free',
@@ -62,7 +62,7 @@ sub build_child {
         $tmp_cfg{"metric 'total dhcp leases remaining on $int' past month"} = {
             'type' => 'api',
             'statsd_type' => 'gauge',
-            'statsd_ns' => 'source.packetfence.dhcp_leases_'.$int.'_month',
+            'statsd_ns' => 'source.a3.dhcp_leases_'.$int.'_month',
             'api_method' => 'GET',
             'api_path' => "/api/v1/dhcp/stats/$int",
             'api_compile' => '$[0].free',
@@ -71,7 +71,7 @@ sub build_child {
         $tmp_cfg{"metric 'total dhcp leases remaining on $int' past year"} = {
             'type' => 'api',
             'statsd_type' => 'gauge',
-            'statsd_ns' => 'source.packetfence.dhcp_leases_'.$int.'_year',
+            'statsd_ns' => 'source.a3.dhcp_leases_'.$int.'_year',
             'api_method' => 'GET',
             'api_path' => "/api/v1/dhcp/stats/$int",
             'api_compile' => '$[0].free',

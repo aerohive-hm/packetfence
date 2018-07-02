@@ -40,6 +40,7 @@ $(document).ready(function(){
         successEmailMessage.slideDown(1000);
       });
     });
+
 });
 
 function timeLeft(){
@@ -111,6 +112,19 @@ function openExpiredModal(){
 }
 
 function openAlmostExpiredModal(){
+      console.log("show almost expired modal");
     $('#myModal').modal({backdrop:'static', keyboard: false });
     $('#myModal').modal('show');
+}
+
+function openEnforcementModal(){
+      console.log("show open enforcement modal");
+    $('#enforcementModal').modal({backdrop:'static', keyboard: false });
+    $('#enforcementModal').modal('show');
+}
+
+function openOverUsageModal(){
+      console.log("show open over usage modal");
+    $('#overUsageModal').modal({backdrop:'static', keyboard: false });
+    $('#overUsageModal').modal('show');
 }

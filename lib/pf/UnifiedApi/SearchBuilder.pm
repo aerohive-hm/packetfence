@@ -224,29 +224,13 @@ sub make_columns {
 
     if (@$cols) {
         push @{$s->{found_fields}}, @$cols;
-        @$cols = map { $self->format_column($s, $_) } @$cols
+        my $t = $s->{dal}->table;
+        @$cols = map { $self->is_table_field($s, $_) ? "${t}.$_" : $_ } @$cols;
     } else {
         $cols = $s->{dal}->table_field_names;
     }
 
     return 200, $cols;
-}
-
-=head2 format_column
-
-format_column
-
-=cut
-
-sub format_column {
-    my ($self, $s, $c) = @_;
-    if ($self->is_table_field($s, $c)) {
-        my $t = $s->{dal}->table;
-        return "${t}.${c}";
-    }
-    my $allowed_join_fields = $self->allowed_join_fields;
-    my $specs = $allowed_join_fields->{$c};
-    return exists $specs->{column_spec} ? $specs->{column_spec} : $c;
 }
 
 =head2 $self->allowed_join_fields()
@@ -337,7 +321,6 @@ sub verify_query {
         }
 
         push @{$s->{found_fields}}, $field;
-        $query = $self->rewrite_query($s, $query);
         if ($self->is_table_field($s, $field)) {
             $query->{field} = $s->{dal}->table . "." . $field;
         }
@@ -345,39 +328,6 @@ sub verify_query {
 
     return (200, $query);
 }
-
-=head2 rewrite_query
-
-rewrite_query
-
-=cut
-
-sub rewrite_query {
-    my ($self, $s, $query) = @_;
-    my $f = $query->{field};
-    if ($self->is_table_field($s, $f)) {
-        $query->{field} = $s->{dal}->table . "." . $f;
-    } elsif ($self->is_field_rewritable($s, $f)) {
-        my $allowed = $self->allowed_join_fields;
-        my $cb = $allowed->{$f}{rewrite_query};
-        $query = $self->$cb($s, $query);
-    }
-
-    return $query;
-}
-
-
-=head2 is_field_rewritable
-
-is_field_rewritable
-
-=cut
-
-sub is_field_rewritable {
-    my ($self, $s, $f) = @_;
-    return exists $self->allowed_join_fields->{$f}{rewrite_query};
-}
-
 
 =head2 $self->is_valid_query($search_info, $query)
 
@@ -426,28 +376,7 @@ sub make_where {
     }
 
     my $where = pf::UnifiedApi::Search::searchQueryToSqlAbstract($query);
-    my $sqla = pf::dal->get_sql_abstract;
-    $where = $sqla->merge_conditions($where, $self->additional_where_clause($s));
     return 200, $where;
-}
-
-=head2 additional_where_clause
-
-additional_where_clause
-
-=cut
-
-sub additional_where_clause {
-    my ($self, $s) = @_;
-    my $allowed_join_fields = $self->allowed_join_fields;
-    my @clauses;
-    foreach my $f (@{$s->{found_fields} // []}) {
-        next if !exists $allowed_join_fields->{$f};
-        my $jf = $allowed_join_fields->{$f};
-        next if !exists $jf->{where_spec};
-        push @clauses, $jf->{where_spec};
-    }
-    return @clauses;
 }
 
 =head2 $self->make_order_by($search_info)

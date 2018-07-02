@@ -1,0 +1,456 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use POSIX ();
+use File::Find;
+
+use Readonly;
+
+# Binaries
+Readonly::Scalar my $AWK_BIN       => '/usr/bin/awk';
+Readonly::Scalar my $CAT_BIN       => '/usr/bin/cat';
+Readonly::Scalar my $CP_BIN        => '/usr/bin/cp';
+Readonly::Scalar my $CURL_BIN      => '/usr/bin/curl';
+Readonly::Scalar my $GREP_BIN      => '/usr/bin/grep';
+Readonly::Scalar my $HEAD_BIN      => '/usr/bin/head';
+Readonly::Scalar my $MKDIR_BIN     => '/usr/bin/mkdir';
+Readonly::Scalar my $MYSQL_BIN     => '/usr/bin/mysql';
+Readonly::Scalar my $MYSQLDUMP_BIN => '/usr/bin/mysqldump';
+Readonly::Scalar my $PFCMD_BIN     => '/usr/local/pf/bin/pfcmd';
+Readonly::Scalar my $PING_BIN      => '/usr/bin/ping';
+Readonly::Scalar my $RM_BIN        => '/usr/bin/rm';
+Readonly::Scalar my $RPM_BIN       => '/usr/bin/rpm';
+Readonly::Scalar my $SED_BIN       => '/usr/bin/sed';
+Readonly::Scalar my $SYSTEMCTL_BIN => '/usr/bin/systemctl';
+Readonly::Scalar my $TAR_BIN       => '/usr/bin/tar';
+Readonly::Scalar my $TEE_BIN       => '/usr/bin/tee';
+Readonly::Scalar my $YUM_BIN       => '/usr/bin/yum';
+
+`$MKDIR_BIN -p /tmp/a3_update_$$`;
+my $db_info = '/usr/local/pf/conf/dbinfo.A3';
+my $centos_base = 'mirrorlist.centos.org';
+my $debug = 0;
+my $tmp_dir = "/tmp/a3_update_$$";;
+my $db_dump = "$tmp_dir/A3_db.sql";
+my $app_dump = "$tmp_dir/A3_app.tar.gz";
+my $a3_dir = '/usr/local/pf';
+my $a3_release = "$a3_dir/conf/pf-release";
+my $a3_db_dir = "$a3_dir/db";
+my $a3_conf_migration_dir = "$a3_dir/conf_migration";
+my $a3_upgrade_path = "$a3_db_dir/upgrade_path";
+my $a3_pkg = 'A3';
+my $a3_db = 'A3';
+my $db_passwd;
+my @a3_and_dep_pkg = qw(A3 A3-config A3-pfcmd-suid);
+my $current_version;
+my $to_version;
+my @upgrade_path_list;
+my @db_schema_files;
+my @conf_migration_files;
+my $upgrade_log = "$tmp_dir/a3_update.log";
+my $progress_log = "$a3_dir/logs/a3_update_progress.log";
+my ($log_fh, $progress_fh);
+
+sub read_passwd {
+  die "Unable to find the database information file!" unless -e $db_info ;
+  `$CAT_BIN $db_info | $GREP_BIN pass | $AWK_BIN -F= '{print \$2}'`;
+}
+
+sub A3_Die {
+  my $msg = shift;
+  commit_upgrade_log($msg);
+  commit_progress_log("Update was unsuccessful.");
+  die "$msg\n";
+}
+
+sub A3_Warn {
+  my $msg = shift;
+  print "$msg";
+  commit_upgrade_log($msg);
+  warn "$msg\n";
+}
+
+sub commit_upgrade_log {
+  my $msg = shift @_;
+  my $current_time = POSIX::strftime("%Y-%m-%d %H:%M:%S",localtime);
+  print $log_fh "[ $current_time ] $msg\n";
+}
+
+sub commit_progress_log {
+  my $msg = shift @_;
+  print $progress_fh "$msg\n";
+}
+
+sub commit_progress_log_action_start {
+  my $msg = shift @_;
+  print $progress_fh "$msg... ";
+}
+
+sub exit_success {
+  commit_progress_log("Update completed successfully.");
+  exit 0;
+}
+
+sub exit_failure {
+  commit_progress_log("Update was unsuccessful.");
+  exit shift @_ // 1;
+}
+
+sub dump_db {
+  $db_passwd = &read_passwd;
+  chomp $db_passwd;
+  if ($debug) {
+    print "We have password $db_passwd\n";
+  }
+  commit_upgrade_log("Starting database backup");
+  commit_progress_log_action_start("Backing up database");
+
+  my $ret = system ("$MYSQLDUMP_BIN --opt -u root -p$db_passwd $a3_db > $db_dump");
+  if ($ret != 0) {
+    commit_upgrade_log('Database backup failed!!');
+    commit_progress_log("error");
+    die "Database backup failed!!\n";
+  }
+
+  commit_progress_log("done!");
+  commit_upgrade_log("Database backup completed");
+}
+
+sub dump_app {
+  my $cmd = "$TAR_BIN -C /usr/local -czf $app_dump pf --exclude='pf/logs' --exclude='pf/var'";
+  commit_progress_log_action_start("Backing up application data");
+
+  unless (!system $cmd) {
+    commit_upgrade_log("Unable to back up application data");
+    commit_progress_log("error");
+    die "Application data backup failed!!\n";
+  }
+
+  commit_progress_log("done!");
+  commit_upgrade_log("Application data backup completed");
+}
+
+sub stop_services {
+  #my @service_stop_cmd = ('/usr/local/pf/bin/pfcmd service pf stop', 'service packetfence-config stop');
+  # stop packetfence-config will conflict with some %post step in spec scriptlet -- updatesystemd
+  my @service_stop_cmd = ("$PFCMD_BIN service pf stop");
+  # We need to make sure config service is running, otherwise pfcmd will not able to do the stop job
+  unless (!system "$SYSTEMCTL_BIN status packetfence-config | $GREP_BIN Active | $GREP_BIN running") {
+    commit_upgrade_log("A3 configuration service is not running");
+    die "A3 configuration service is not running\n";
+  }
+
+  commit_upgrade_log("Starting A3 service shutdown");
+  commit_progress_log_action_start("Stopping A3 services");
+
+  foreach (@service_stop_cmd) {
+    unless(!system $_) {
+      commit_upgrade_log("Unable to stop service $_");
+      warn "Unable to stop A3 services\n";
+    }
+  }
+
+  commit_progress_log("done!");
+  commit_upgrade_log("A3 service shutdown complete");
+}
+
+sub check_up_to_date {
+  system "$YUM_BIN clean all >/dev/null; $YUM_BIN makecache fast >/dev/null";
+  open CMD, '-|', "$YUM_BIN list $a3_pkg" or die $@;
+  local $/=undef;
+  my $line = <CMD>;
+  if ($line =~ /Available/m) {
+    return 0
+  }
+  1;
+}
+
+sub check_yum_connectivity {
+  commit_progress_log_action_start("Checking connectivity to update servers");
+  my $ret = system "$PING_BIN -c 3 $centos_base > /dev/null 2>&1";
+  if ($ret){
+    commit_progress_log("error");
+    A3_Die("Unable to connect to CentOS base yum repository!");
+  }
+  my $repo_ip =  `$YUM_BIN repolist -v       \\
+                | $GREP_BIN Repo-baseurl     \\
+                | $GREP_BIN aerohive         \\
+                | $AWK_BIN -F: '{print \$3}' \\
+                | $AWK_BIN -F/ '{print \$3}'`;
+  my $code = `$CURL_BIN -s -I -m 60 -w %{http_code} -o /dev/null http://$repo_ip`;
+  if ($code != 200){
+    commit_progress_log("error");
+    commit_upgrade_log("Unable to connect to update servers");
+
+    print "Connect to Aerohive A3 yum repository failed!!\n";
+
+    exit_failure(1);
+  }
+
+  commit_progress_log("done!");
+}
+
+sub get_current_version {
+  open my $fh, '<', $a3_release or die "Unable to find the A3 release file, $!";
+  while (<$fh>) {
+    $current_version = (split / /, $_)[1];
+    chomp $current_version;
+  }
+  close $fh;
+}
+
+sub get_to_version {
+  my $ava_version;
+  open CMD, '-|', "$YUM_BIN list $a3_pkg available" or die $@;
+  while (<CMD>) {
+    if($_ =~ /Available Packages/) {
+      next;
+    }
+    #this will be 1.1.1-0.20180611.el7 string value
+    $ava_version = (split /(\s)+/, $_)[2];
+  }
+  $to_version = (split /-/, $ava_version)[0];
+  commit_upgrade_log("A3 current version is $current_version and target update version is $to_version");
+}
+
+sub execute_app_upgrade {
+  my @all_pkgs;
+  my $cmd = "$YUM_BIN update ";
+  open CMD, '-|',  "$YUM_BIN list $a3_pkg*    \\
+                  | $SED_BIN '1,/Available/d' \\
+                  | $AWK_BIN '{print \$1}'    \\
+                  | $TEE_BIN -a $upgrade_log" or die $@;
+  while (<CMD>) {
+    chomp($_);
+    push @all_pkgs, $_;
+  }
+  foreach (@all_pkgs) {
+       $cmd .= $_ . " ";
+  }
+  print "The cmd is $cmd";
+  $cmd .= " -y";
+  commit_upgrade_log("Update pkg cmd is $cmd");
+  commit_progress_log_action_start("Updating A3 packages");
+
+  if (system("$cmd | $TEE_BIN -a $upgrade_log")) {
+    A3_Warn("Unable to update A3 packages, attempting to rollback changes");
+    commit_progress_log("error");
+    roll_back("app");
+  }
+  else {
+    commit_progress_log("done!");
+  }
+}
+
+sub generate_upgrade_patch_list {
+ open my $fh, '<', "$a3_upgrade_path" or die "Unable to locate upgrade path file, $!";
+  my $count = 0;
+  # get the upgrade list from upgrade path file (From to To only)
+  while (<$fh>) {
+    chomp $_;
+    if ($current_version eq $_) {
+      $count++;
+      push @upgrade_path_list, $_;
+      next;
+    }elsif ($to_version eq $_) {
+      push @upgrade_path_list, $_;
+      last;
+    }
+
+    if ($count == 0) {
+      next;
+    } else {
+      push @upgrade_path_list, $_;
+    }
+  }
+  print "The upgrade path list is @upgrade_path_list";
+  commit_upgrade_log("The upgrade path is @upgrade_path_list");
+}
+
+
+sub check_db_schema_file {
+  for (0..$#upgrade_path_list-1) {
+    push @db_schema_files, "a3-upgrade-".$upgrade_path_list[$_]."-".$upgrade_path_list[$_+1].".sql";
+  }
+  commit_upgrade_log("The database schema files that need to be applied are @db_schema_files");
+  foreach (@db_schema_files) {
+    if (! -e $a3_db_dir."/".$_) {
+	A3_Die("The database schema migration script for $_ does not exist, fatal!!");
+    }
+  }
+
+}
+
+sub check_conf_migration_file {
+  for (0..$#upgrade_path_list-1) {
+    push @conf_migration_files, "conf_migration-".$upgrade_path_list[$_]."-".$upgrade_path_list[$_+1];
+  }
+  commit_upgrade_log("The configuration migration files that need to be applied are @conf_migration_files");
+  foreach (@conf_migration_files) {
+    if (! -e $a3_conf_migration_dir."/".$_) {
+        A3_Die("The configuration migration script for $_ does not exist, fatal!!");
+    }
+  }
+}
+
+sub unpack_app_back {
+  unless (! system "$TAR_BIN xfz $app_dump -C $tmp_dir") {
+    A3_Die("Unable to unpack the application data backup file!");
+  }
+}
+
+sub restore_conf_file {
+  my $app_dump_copy = $app_dump;
+  #remove suffix
+  $app_dump_copy =~ s/\..*$//;
+  commit_upgrade_log("Restoring configuration files");
+  system "$RM_BIN -rf /$a3_dir/conf/*; \\
+          $CP_BIN -rf $tmp_dir/pf/conf/* $a3_dir/conf/";
+}
+
+sub roll_back_db {
+  if (! -e $db_dump) {
+    A3_Die("Database backup file does not exist, unable to restore!!");
+  }
+  if(! system "$MYSQL_BIN -u root -p$db_passwd $a3_db < $db_dump") {
+    A3_Die("Database restore has failed, please investigate!!");
+  } 
+}
+
+sub roll_back_app {
+  unpack_app_back();
+  my $rpm_version = `$RPM_BIN -qa $a3_pkg | $AWK_BIN -F- '{print \$2}'`;
+  chomp $rpm_version;
+  #There are possible 3 situations after failure of yum update A3
+  #1)old rpm is removed, and new rpm is not installed
+  #2)old rpm is partially removed, and new rpm is not installed(probabyl we will not get there per rpm update mechanism)
+  #3)new rpm is partially installed
+  commit_upgrade_log("RPM version is $rpm_version and current_version is $current_version");
+  if (! $rpm_version) {
+    unless(! system "$YUM_BIN install $a3_pkg."-".$current_version -y | $TEE_BIN -a $upgrade_log") {
+      A3_Die("Failed to rollback application, really Die!!");
+    }
+    #restore conf 
+    restore_conf_file();
+  }
+  elsif ($rpm_version eq $current_version) {
+    commit_upgrade_log("To be done more");
+    restore_conf_file();   
+  }
+  elsif ($rpm_version eq $to_version) {
+    my $history_id = `$YUM_BIN history 2>/dev/null   \\
+                    | $GREP_BIN -E '[[:digit:]]{4}-' \\
+                    | $AWK_BIN -F'|' '{print \$1}'   \\
+                    | $HEAD_BIN -1`;
+    commit_upgrade_log("Start rolling back last update");
+    system "$YUM_BIN history undo $history_id -y | $TEE_BIN -a $upgrade_log";
+    commit_upgrade_log("Finished rolling back last upgrade");
+    restore_conf_file();   
+  }
+}
+
+sub roll_back {
+  my $stage = shift;
+  if ($stage eq "db") {
+    roll_back_db();
+  }
+  elsif ($stage eq "app") {
+    roll_back_app();
+  }
+  elsif ($stage eq "all") {
+    roll_back_db();
+    roll_back_app();
+  }
+  #start pf service
+  my @service_start_cmd = ("$SYSTEMCTL_BIN start packetfence-config",
+                           "$PFCMD_BIN service pf start");
+  commit_upgrade_log("Starting A3 services");
+  foreach (@service_start_cmd) {
+    system $_;
+  }
+  #special return code for rollback
+  exit_failure(99);
+}
+
+sub apply_db_upgrade_schema {
+  my $passwd = &read_passwd;
+  chomp $passwd;
+  commit_progress_log("Applying database schema updates");
+  foreach my $db_file (@db_schema_files) {
+    my $ret = `$MYSQL_BIN -u root -p$passwd $a3_db < $a3_db_dir/$db_file 2>&1`;
+    if ($ret =~ /ERROR/i) {
+      A3_Warn("Unable to apply database schema update $db_file: failed with error message \"$ret\"!");
+      roll_back("db");
+    }
+  }
+  commit_upgrade_log("Finished applying database schema updates!");
+}
+
+sub apply_conf_migration {
+  commit_progress_log_action_start("Applying configuration migration scripts");
+
+  foreach (@conf_migration_files) {
+    system "$a3_conf_migration_dir/$_";
+  }
+
+  commit_progress_log("done!");
+}
+
+sub set_up {
+  # clean yum cache
+  system "$YUM_BIN clean all";
+  unlink ($progress_log);
+  open $log_fh, '>>', $upgrade_log or die "Unable to create upgrade log file, $!";
+  open $progress_fh, '>>', $progress_log or die "Unable to create progress log file, $!";
+}
+
+sub find_rpmnew {
+  my @rpmnew_list;
+  find sub { if ($File::Find::name =~ /\.rpmnew/) {  push @rpmnew_list, $File::Find::name; } }, ($a3_dir);
+  commit_upgrade_log ("The list of rpmnew files is @rpmnew_list; These files may need to be merged manually if necessary!!");
+}
+
+sub post_upgrade {
+  my @post_cmd_list = ("$PFCMD_BIN fixpermissions",
+                       "$PFCMD_BIN pfconfig clear_backend",
+                       "$SYSTEMCTL_BIN restart packetfence-config",
+                       "$PFCMD_BIN service pf restart",
+                       "$CAT_BIN /usr/local/pf/conf/pf-release > /usr/local/pf/conf/currently-at");
+
+  commit_progress_log_action_start("Starting post-update processing");
+
+  foreach my $cmd (@post_cmd_list) {
+    unless (! system "$cmd | $TEE_BIN -a $upgrade_log") {
+      A3_Die("Post-update processing failed, please investigate!");
+    }
+  }
+
+  commit_progress_log("done!");
+}
+
+
+set_up();
+check_yum_connectivity();
+
+if (check_up_to_date()) {
+  commit_upgrade_log("A3 services already up to date");
+  print "A3 services already up to date\n";
+  exit_success();
+}
+
+get_current_version();
+get_to_version();
+dump_db();
+dump_app();
+stop_services();
+execute_app_upgrade();
+generate_upgrade_patch_list();
+check_db_schema_file();
+check_conf_migration_file();
+apply_db_upgrade_schema();
+apply_conf_migration();
+find_rpmnew();
+post_upgrade();
+
+exit_success();

@@ -187,19 +187,7 @@ sub get_lookup_info {
 sub render_get {
     my ($self) = @_;
     my $stash = $self->stash;
-    return $self->render(json => { item => $self->item, status => $stash->{status}});
-}
-
-=head2 item
-
-item
-
-=cut
-
-sub item {
-    my ($self) = @_;
-    my $stash = $self->stash;
-    return ${$stash->{item}}[-1];
+    return $self->render(json => { item => ${$stash->{item}}[-1], status => $stash->{status}});
 }
 
 sub do_get {
@@ -329,14 +317,7 @@ sub update {
 
 sub update_data {
     my ($self) = @_;
-    my $data = $self->req->json;
-    my %update;
-    for my $field (@{$self->dal->table_field_names}) {
-        next if !exists $data->{$field};
-        $update{$field} = $data->{$field};
-    }
-
-    return \%update;
+    return $self->req->json;
 }
 
 sub replace {

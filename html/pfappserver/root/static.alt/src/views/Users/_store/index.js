@@ -1,37 +1,26 @@
 /**
-* "$_users" store module
-*/
-import Vue from 'vue'
+ * "$_users" store module
+ */
 import api from '../_api'
 
 const STORAGE_SEARCH_LIMIT_KEY = 'users-search-limit'
-const STORAGE_VISIBLE_COLUMNS_KEY = 'users-visible-columns'
 
 // Default values
 const state = {
-  items: [], // search results
-  users: {}, // users details
-  message: '',
-  userStatus: '',
-  searchStatus: '',
-  searchFields: [],
+  status: '',
+  items: [],
   searchQuery: null,
   searchSortBy: 'pid',
   searchSortDesc: false,
   searchMaxPageNumber: 1,
-  searchPageSize: localStorage.getItem(STORAGE_SEARCH_LIMIT_KEY) || 10,
-  visibleColumns: JSON.parse(localStorage.getItem(STORAGE_VISIBLE_COLUMNS_KEY)) || false
+  searchPageSize: localStorage.getItem(STORAGE_SEARCH_LIMIT_KEY) || 10
 }
 
 const getters = {
-  isLoading: state => state.userStatus === 'loading',
-  isLoadingResults: state => state.searchStatus === 'loading'
+  isLoading: state => state.status === 'loading'
 }
 
 const actions = {
-  setSearchFields: ({commit}, fields) => {
-    commit('SEARCH_FIELDS_UPDATED', fields)
-  },
   setSearchQuery: ({commit}, query) => {
     commit('SEARCH_QUERY_UPDATED', query)
     commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
@@ -46,86 +35,31 @@ const actions = {
     commit('SEARCH_SORT_DESC_UPDATED', params.sortDesc)
     commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
   },
-  setVisibleColumns: ({commit}, columns) => {
-    localStorage.setItem(STORAGE_VISIBLE_COLUMNS_KEY, JSON.stringify(columns))
-    commit('VISIBLE_COLUMNS_UPDATED', columns)
-  },
   search: ({state, getters, commit, dispatch}, page) => {
     let sort = [state.searchSortDesc ? `${state.searchSortBy} DESC` : state.searchSortBy]
     let body = {
       cursor: state.searchPageSize * (page - 1),
       limit: state.searchPageSize,
-      fields: state.searchFields,
       sort
     }
     let apiPromise = state.searchQuery ? api.search(Object.assign(body, {query: state.searchQuery})) : api.all(body)
-    if (state.searchStatus !== 'loading') {
-      return new Promise((resolve, reject) => {
-        commit('SEARCH_REQUEST')
-        apiPromise.then(response => {
-          commit('SEARCH_SUCCESS', response)
-          resolve(response)
-        }).catch(err => {
-          commit('SEARCH_ERROR', err.response)
-          reject(err)
-        })
-      })
-    }
-  },
-  getUser: ({commit, state}, pid) => {
-    if (state.users[pid]) {
-      return Promise.resolve(state.users[pid])
-    }
-    commit('USER_REQUEST')
-    return api.user(pid).then(data => {
-      commit('USER_REPLACED', data)
-      return state.users[pid]
-    }).catch(err => {
-      commit('USER_ERROR', err.response)
-      return err
-    })
-  },
-  createUser: ({commit}, data) => {
-    commit('USER_REQUEST')
     return new Promise((resolve, reject) => {
-      api.createUser(data).then(response => {
-        commit('USER_REPLACED', data)
+      commit('SEARCH_REQUEST')
+      apiPromise.then(response => {
+        commit('SEARCH_SUCCESS', response)
         resolve(response)
       }).catch(err => {
-        commit('USER_ERROR', err.response)
+        commit('SEARCH_ERROR', err.response)
         reject(err)
       })
     })
   },
-  updateUser: ({commit}, data) => {
-    commit('USER_REQUEST')
-    delete data.access_duration
-    delete data.access_level
-    return api.updateUser(data).then(response => {
-      commit('USER_REPLACED', data)
-      return response
-    }).catch(err => {
-      commit('USER_ERROR', err.response)
-    })
-  },
-  deleteUser: ({commit}, pid) => {
-    commit('USER_REQUEST')
-    return new Promise((resolve, reject) => {
-      api.deleteUser(pid).then(response => {
-        commit('USER_DESTROYED', pid)
-        resolve(response)
-      }).catch(err => {
-        commit('USER_ERROR', err.response)
-        reject(err)
-      })
-    })
+  getUser: ({dispatch}, pid) => {
+    return api.user(pid)
   }
 }
 
 const mutations = {
-  SEARCH_FIELDS_UPDATED: (state, fields) => {
-    state.searchFields = fields
-  },
   SEARCH_QUERY_UPDATED: (state, query) => {
     state.searchQuery = query
   },
@@ -142,10 +76,10 @@ const mutations = {
     state.searchPageSize = limit
   },
   SEARCH_REQUEST: (state) => {
-    state.searchStatus = 'loading'
+    state.status = 'loading'
   },
   SEARCH_SUCCESS: (state, response) => {
-    state.searchStatus = 'success'
+    state.status = 'success'
     state.items = response.items
     let nextPage = Math.floor(response.nextCursor / state.searchPageSize) + 1
     if (nextPage > state.searchMaxPageNumber) {
@@ -153,28 +87,7 @@ const mutations = {
     }
   },
   SEARCH_ERROR: (state, response) => {
-    state.searchStatus = 'error'
-    if (response && response.data) {
-      state.message = response.data.message
-    }
-  },
-  VISIBLE_COLUMNS_UPDATED: (state, columns) => {
-    state.visibleColumns = columns
-  },
-  USER_REQUEST: (state) => {
-    state.userStatus = 'loading'
-  },
-  USER_REPLACED: (state, data) => {
-    Vue.set(state.users, data.pid, data)
-    // TODO: update items if found in it
-    state.userStatus = 'success'
-  },
-  USER_DESTROYED: (state, pid) => {
-    state.userStatus = 'success'
-    Vue.set(state.users, pid, null)
-  },
-  USER_ERROR: (state, response) => {
-    state.userStatus = 'error'
+    state.status = 'error'
     if (response && response.data) {
       state.message = response.data.message
     }

@@ -189,11 +189,13 @@ sub record_result {
             'device_class'  => $query_result->{device_class},
             'device_version' => $query_result->{'version'},
             'device_score' => $query_result->{'score'},
-            'device_manufacturer' => $query_result->{'manufacturer'}->{'name'} // "",
             map { $RECORD_RESULT_ATTR_MAP{$_} => $attributes->{$_} } keys(%RECORD_RESULT_ATTR_MAP),
         },
         -where => {
             mac => $mac,
+            tenant_id => {
+                -in => \['SELECT id FROM tenant'],
+            },
         },
         -no_auto_tenant_id => 1,
     );

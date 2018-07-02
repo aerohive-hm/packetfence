@@ -265,7 +265,6 @@ sub index :Path :Args(0) {
         }
     }
     $c->response->redirect($c->uri_for($c->controller->action_for($action)));
-
 }
 
 =head2 object
@@ -511,6 +510,7 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     $c->stash->{max_capacity} = $c->model('Entitlement')->get_licensed_capacity();
     $c->stash->{used_capacity} = $c->model('Entitlement')->get_used_capacity();
     $c->stash->{system_id} = $A3_SYSTEM_ID;
+    $c->stash->{current_mov_avg} = $c->model('Entitlement')->get_moving_avg();
 
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
@@ -520,22 +520,32 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     if ($c->request->method eq 'POST') {
         $c->stash->{current_view} = 'JSON';
 
-        # Get data
-
-        # TODO: Get the userinput key and find data in table
     }
 
 }
 
 
-=head2 upgrades
+=head2 update
 
 =cut
 
-sub upgrades :Chained('object') :PathPart('upgrades') :Args(0){
+sub update :Chained('object') :PathPart('update') :Args(0){
     my( $self, $c ) = @_;
-    if ($c->request->method eq 'POST') {
-        $c->stash->{current_view} = 'JSON';
+
+    if ($c->request->method eq 'GET') {
+        my ($status, $latest) = $c->model('Update')->fetch_latest_release();
+
+        if ($status == $STATUS::OK) {
+            $c->stash->{update_available} = $TRUE;
+            $c->stash->{version}          = $latest->{version};
+            $c->stash->{releaseNotesUri}  = $latest->{releaseNotesUri};
+        }
+        elsif ($status == $STATUS::NO_CONTENT) {
+            $c->stash->{update_available} = $FALSE;
+        }
+        else {
+            # TODO: Error
+        }
     }
 }
 

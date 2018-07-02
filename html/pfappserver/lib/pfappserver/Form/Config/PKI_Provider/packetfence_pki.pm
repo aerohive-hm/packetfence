@@ -13,6 +13,7 @@ use HTML::FormHandler::Moose;
 
 extends 'pfappserver::Base::Form';
 with 'pfappserver::Base::Form::Role::Help';
+use HTML::FormHandler::Field::Upload;
 
 has_field 'id' => (
     type        => 'Text',
@@ -38,7 +39,7 @@ has_field 'host' => (
     default => "127.0.0.1",
     tags    => {
         after_element   => \&help,
-        help            => 'Host which hosts the A3 PKI',
+        help            => 'Host which hosts the PacketFence PKI',
     },
 );
 
@@ -48,7 +49,7 @@ has_field 'port' => (
     default => '9393',
     tags    => {
         after_element   => \&help,
-        help            => 'Port on which to contact the A3 PKI API',
+        help            => 'Port on which to contact the PacketFence PKI API',
     },
 );
 
@@ -59,7 +60,7 @@ has_field 'proto' => (
     options => [ { label => 'https', value => 'https' }, { label => 'http', value => 'http' } ],
     tags    => {
         after_element   => \&help,
-        help            => 'Protocol to use to contact the A3 PKI API',
+        help            => 'Protocol to use to contact the PacketFence PKI API',
     },
 );
 
@@ -118,12 +119,12 @@ has_field 'organization' => (
 );
 
 has_field 'ca_cert_path' => (
-    type        => 'Path',
+    type        => 'Upload',
     label       => 'CA cert path',
     required    => 1,
     tags        => {
         after_element   => \&help,
-        help            => 'Path of the CA certificate that will generate your certificates',
+        help            => 'CA certificate will generate your certificates. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.',
     },
 );
 
@@ -144,17 +145,17 @@ has_field 'cn_format' => (
     default => '%s',
     tags    => {
         after_element   => \&help,
-        help            => 'Defines how the common name will be formatted. %s will expand to the defined Common Name Attribute value',
+        help            => 'Defines how the common name will be formated. %s will expand to the defined Common Name Attribute value',
     },
 );
 
 has_field 'server_cert_path' => (
-    type        => 'Path',
+    type        => 'Upload',
     label       => 'Server cert path',
     required    => 1,
     tags        => {
         after_element   => \&help,
-        help            => 'Path of the RADIUS server authentication certificate',
+        help            => 'RADIUS server authentication certificate. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.',
     },
 );
 

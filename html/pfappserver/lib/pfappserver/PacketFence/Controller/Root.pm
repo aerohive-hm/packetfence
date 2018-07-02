@@ -16,8 +16,13 @@ use warnings;
 use Moose;
 use namespace::autoclean;
 use pf::db;
+use pf::a3_entitlement qw(is_usage_under_capacity is_entitlement_expired);
 use pf::config qw(%Config);
+use pf::file_paths qw($conf_dir);
 use pf::util;
+use pf::log;
+use Data::Dumper;
+
 BEGIN { extends 'Catalyst::Controller' }
 
 #
@@ -41,6 +46,12 @@ auto
 sub auto :Private {
     my ( $self, $c ) = @_;
     $c->stash->{readonly_mode} = db_check_readonly();
+
+    if (-e "$conf_dir/currently-at") {
+        $c->stash->{is_usage_under_capacity} = pf::a3_entitlement::is_usage_under_capacity();
+        $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
+    }
+
     return 1;
 }
 

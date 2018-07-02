@@ -17,8 +17,6 @@ use warnings;
 use Moo;
 extends qw(pf::UnifiedApi::SearchBuilder);
 use pf::dal::node;
-use pf::dal::locationlog;
-use pf::dal::radacct;
 use pf::constants qw($ZERO_DATE);
 
 our @LOCATION_LOG_JOIN = (
@@ -57,96 +55,27 @@ our @IP4LOG_JOIN = (
     'ip4log',
 );
 
-our @RADACCT_JOIN = (
-    '=>{node.mac=radacct.callingstationid,node.tenant_id=radacct.tenant_id}',
-    'radacct|radacct',
-    {
-        operator  => '=>',
-        condition => {
-            'node.mac' => { '=' => { -ident => '%2$s.callingstationid' } },
-            'node.tenant_id' => { '=' => { -ident => '%2$s.tenant_id' } },
-            -or              => [
-                '%1$s.acctstarttime' =>
-                  { '<' => { -ident => '%2$s.acctstarttime' } },
-                -and => [
-                    -or => [
-                        '%1$s.acctstarttime' =>
-                          { '=' => { -ident => '%2$s.acctstarttime' } },
-                        -and => [
-                            '%1$s.acctstarttime' => undef,
-                            '%2$s.acctstarttime' => undef
-                        ],
-                    ],
-                    '%1$s.radacctid' =>
-                      { '<' => { -ident => '%2$s.radacctid' } },
-                ],
-            ],
-        },
-    },
-    'radacct|r2'
-);
-
-our %RADACCT_WHERE = (
-    'r2.radacctid' => undef,
-);
-
-our %LOCATION_LOG_WHERE = (
-    'locationlog2.id' => undef,
-);
-
 our %ALLOWED_JOIN_FIELDS = (
     'ip4log.ip' => {
         join_spec => \@IP4LOG_JOIN,
-        'column_spec' => make_join_column_spec('ip4log', 'ip'),
-        namespace => 'ip4log',
     },
-    'online' => {
-        join_spec  => \@RADACCT_JOIN,
-        where_spec => \%RADACCT_WHERE,
-        namespace => 'radacct',
-        rewrite_query => \&rewrite_online_query,
-        column_spec => "IF(radacct.acctstarttime IS NULL,'unknown',IF(radacct.acctstoptime IS NULL, 'on', 'off'))|online",
-    },
-    map_dal_fields_to_join_spec("pf::dal::radacct", \@RADACCT_JOIN, \%RADACCT_WHERE),
-    map_dal_fields_to_join_spec("pf::dal::locationlog", \@LOCATION_LOG_JOIN, \%LOCATION_LOG_WHERE),
-
+    (
+        map {
+            (
+                "locationlog.$_" => {
+                    join_spec => \@LOCATION_LOG_JOIN,
+                }
+            )
+          } qw(
+          switch port vlan
+          role connection_type connection_sub_type
+          dot1x_username ssid start_time
+          end_time switch_ip switch_mac
+          stripped_user_name realm session_id
+          ifDesc
+          )
+      )
 );
-
-sub rewrite_online_query {
-    my ($self, $s, $q) = @_;
-    if ($q->{op} eq 'equals') {
-        my $value = $q->{value};
-        $q->{value} = undef;
-        if ($value eq 'unknown') {
-            $q->{field} = 'radacct.acctstarttime';
-        } else {
-            $q->{field} = 'radacct.acctstoptime';
-            $q->{op} = $value eq 'on' ? 'equals' : 'not_equals';
-        }
-    }
-    return $q;
-}
-
-sub map_dal_fields_to_join_spec {
-    my ($dal, $join_spec, $where_spec, $exclude) = @_;
-    $exclude //= {};
-    my $table = $dal->table;
-    return map { map_dal_field_to_join_spec($table, $_,$join_spec, $where_spec) } grep {!exists $exclude->{$_}} @{$dal->table_field_names}; 
-}
-
-sub map_dal_field_to_join_spec {
-    my ($table, $field, $join_spec, $where_spec) = @_;
-    return "${table}.${field}" => {
-        join_spec => $join_spec,
-        (defined $where_spec ? (where_spec => $where_spec) : () ),
-        column_spec => make_join_column_spec($table, $field),
-   } 
-}
-
-sub make_join_column_spec {
-    my ($t, $f) = @_;
-    return \"`${t}`.`${f}` AS `${t}.${f}`";
-}
 
 sub allowed_join_fields {
     \%ALLOWED_JOIN_FIELDS

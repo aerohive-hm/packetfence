@@ -8,6 +8,9 @@
 userdel vagrant
 /usr/bin/rm -f /etc/sudoers.d/vagrant
 
+# Clear stale update lock
+/usr/bin/rm -f /usr/local/pf/var/run/update.lock
+
 # Set up some VMware-related environment variables
 # vmblock is block filesystem driver to provide drag-and-drop functionality from the remote console.
 vmware_guest_vmblock_enable="NO"

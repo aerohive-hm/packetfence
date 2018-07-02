@@ -1,8 +1,35 @@
+
 [% IF c.action.name == "view"  %]
 [% SET action_uri = c.uri_for(c.controller.action_for('update'), [ item.id ]) %]
 [%ELSE%]
 [% SET action_uri = c.req.uri %]
 [% END %]
+<style>
+.pki_alert {
+    padding: 10px;
+    background-color: #f44336;
+    color: white;
+    display: table;
+    margin: 0 auto;
+    z-index: 15;
+    display:none;
+}
+
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.closebtn:hover {
+    color: black;
+}
+</style>
 <form name="modalItem" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
   [%- IF item.id %]<input type="hidden" name="id" value="[% item.id | html %]">[% END %]
   <div class="modal-header">
@@ -10,14 +37,180 @@
     <h3>[% IF item %]<i>[% l('PKI Provider') %]</i> [% item.id | html %][% ELSE %][% l('New PKI Provider') %][% END %]</h3>
   </div>
 
-  <div class="modal-body">
-        [% form.field('id').render | none UNLESS item && item.id.defined %]
-        [% form.block('definition').render | none %]
+  <div class="alert pki_alert">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    <span id="pki_alert_error_text"></span>
+  </div>
+
+  <div class="modal-body pki-group">
+    [% form.field('id').render | none UNLESS item && item.id.defined %]
+    <div class="pki-group">
+    [% form.block('definition').render | none %]
+    </div>
   </div><!--modal-body-->
 
   <div class="modal-footer">
     <a href="#" class="btn" data-dismiss="modal">[% l('Close') %]</a>
-    [% IF can_access("PKI_PROVIDER_UPDATE") %]<button class="btn btn-primary" data-loading-text="[% l('Saving') %]">[% l('Save') %]</button>[% END %]
+    [% IF can_access("PKI_PROVIDER_UPDATE") %]<button class="btn btn-primary" id="savePKI" data-loading-text="[% l('Saving') %]">[% l('Save') %]</button>[% END %]
   </div>
 
 </form>
+<script>
+$(document).ready(function(){
+
+  document.getElementById("ca_cert_path").onchange = function(){
+    showCaCertFileInfo();
+  };
+  document.getElementById("server_cert_path").onchange = function(){
+    showServerFileInfo();
+  };
+
+  //if save button is pressed
+  // check if showCaCertFileSize and showServerFileSize are TRUE
+  //then call process files
+  document.getElementById("savePKI").onclick = function(){
+      if (showCaCertFileInfo() && showServerFileInfo()){
+         processFiles();
+      }
+  };
+});
+
+function showServerFileInfo(){
+  console.log("inside server cert path");
+  var input2;
+  var file2;
+  var fileType2, fileSize2;
+
+  if (!window.FileReader) {
+      alert("The File API isn't supported on this browser please change to Google Chrome.");
+      return;
+  }
+
+  input2 = document.getElementById('server_cert_path');
+
+  console.log("server_cert_path: " + input2);
+  console.log("server_cert_path: " + file2);
+
+  if (!input2) {
+      alert("Couldn't find the file input element.");
+  }
+  else if (!input2.files) {
+      alert("This browser doesn't support the `files` property of file inputs.");
+  }
+  else if (!input2.files[0]) {
+      alert("Please select a file before clicking 'Save'");
+  }
+  else {
+      file2 = input2.files[0];
+      fileType2 = file2.type;
+      fileSize2 = file2.size/1024;
+
+      console.log(" \nserver_cert: " + file2);
+      console.log(" \nserver_cert type: " + fileType2);
+      console.log(" \nserver_cert filesize: " + fileSize2);
+      console.log(fileTypeValidation(input2));
+
+      //test if file is .pem or not
+      if (fileTypeValidation(input2)){
+          if (fileSize2 < 1){
+              return true;
+          }
+          else{
+              alert("File size is greater than 1MB. Upload again. server");
+          }
+      } else {
+          alert("Incorrect file type. Upload again. Make sure the file type is .pem.");
+      }
+  }
+}
+
+function showCaCertFileInfo() {
+    console.log(" in ca cert file size");
+    var input;
+    var file;
+    var fileType,fileSize;
+
+    if (!window.FileReader) {
+        alert("The File API isn't supported on this browser please change to Google Chrome.");
+        return;
+    }
+
+    input = document.getElementById('ca_cert_path');
+    console.log("ca_cert_path: " + input);
+    console.log("ca_cert_path: " + file);
+    if (!input) {
+        alert("Couldn't find the file input element.");
+    }
+    else if (!input.files) {
+        alert("This browser doesn't support the `files` property of file inputs.");
+    }
+    else if (!input.files[0]) {
+        alert("Please select a file before clicking 'Save'");
+    }
+    else {
+        file = input.files[0];
+        fileType = file.type;
+        fileSize = file.size/1024;
+        console.log(" \nca_cert: " + file );
+        console.log(" \nca_cert type: " + fileType );
+        console.log(" \nca_cert filesize: " + fileSize);
+
+        console.log(fileTypeValidation(input));
+
+        if (fileTypeValidation(input)){
+            if (fileSize < 1){
+                return true;
+            }
+            else{
+                alert("File size is greater than 1MB. Upload again.");
+            }
+        } else {
+            alert("Incorrect file type. Upload again. Make sure the file type is .pem.");
+        }
+    }
+}
+
+//test file types
+function fileTypeValidation(file){
+    var filePath = file.value;
+    var allowedExtensions = /(\.pem)$/i;
+    if(!allowedExtensions.exec(filePath)){
+        // alert('Upload file having extensions .pem only.');
+        file.value = '';
+        return false;
+    }else{
+        return true;
+    }
+}
+
+
+//shows alert balloon when there is an error.
+function alertFile(tagName, innerHTML) {
+    console.log("in body append");
+    var elm;
+    elm = document.createElement(tagName);
+    elm.innerHTML = innerHTML;
+    console.log(elm);
+    // $(".controls").append(elm);
+
+    $("#pki_alert_error_text").append(elm);
+    $("#pki_alert_error_text").slideDown();
+}
+
+//call only when save button is pressed
+function processFiles(){
+  console.log("in process files function");
+  var base_url = window.location.origin;
+  //check if the scep modal is open or the a3 PKI modal
+    $.ajax({
+        type: 'POST',
+        url: base_url + 'admin/configuration/pki_provider/processCertificate/' + "scep",
+        success: function(){
+            alert("SUCCESS!! Files uploaded");
+        },
+        error: function(XMLHttpRequest){
+
+        }
+    });
+  }
+</script>
