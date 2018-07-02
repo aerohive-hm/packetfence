@@ -16,14 +16,14 @@
           [% IF is_eula_accepted %]
             <p>[% l('Hello') %] [% c.user | html %], [% l('All license keys have expired. Contact Aerohive by calling this number to renew your subscription:') %] </p>
           [% ELSE %]
-            <p>[% l('Hello') %] [% c.user | html %], [% l('Your trial has ended. Contact Aerohive by calling this number to renew your subscription:') %]</p>
+            <p>[% l('Hello') %] [% c.user | html %], [% l('your trial has ended. Contact Aerohive by calling this number to renew your subscription:') %]</p>
           [% END %]
             <p style="font-size: 40px; letter-spacing: 10px; text-align:center; vertical-align:center; padding: 15px 0px 15px 0px;">1-408-510-6100</p>
             <p>[% l('Thank you for using our service.') %] </p>
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-success licenseKey" id="licenseKey">[% l('Enter License Key') %]</button>
+          <button type="button" class="btn btn-success licenseKey" id="licenseKey" onclick="toLicensePage()">[% l('Enter License Key') %]</button>
         </div>
       </div>
 <!--END OF ALERT TEXT-->

@@ -124,7 +124,7 @@ has_field 'ca_cert_path' => (
     required    => 1,
     tags        => {
         after_element   => \&help,
-        help            => 'CA certificate will generate your certificates. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.',
+        help            => 'CA certificate for generating certificates. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.',
     },
 );
 
