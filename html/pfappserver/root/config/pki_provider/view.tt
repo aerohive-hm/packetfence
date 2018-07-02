@@ -117,7 +117,6 @@ function showServerFileInfo(){
           }
           else{
               alert("File size is greater than 1MB. Upload again.");
-              break;
           }
       } else {
           alert("Incorrect file type. Upload again. Make sure the file type is .pem.");
@@ -164,7 +163,6 @@ function showCaCertFileInfo() {
             }
             else{
                 alert("File size is greater than 1MB. Upload again.");
-                break;
             }
         } else {
             alert("Incorrect file type. Upload again. Make sure the file type is .pem.");
@@ -185,6 +183,9 @@ function fileTypeValidation(file){
     }
 }
 
+function fileSizeValidation(file){
+  
+}
 
 //shows alert balloon when there is an error.
 function alertFile(tagName, innerHTML) {
