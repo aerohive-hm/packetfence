@@ -43,6 +43,14 @@ $(document).ready(function(){
 
 });
 
+function toLicensePage(){
+    // document.getElementById("licenseKey").onclick = function () {
+      var base_url = window.location.origin;
+      console.log("going to license management page");
+      location.href = base_url+"/admin/licenseKeys";
+    // };
+}
+
 function timeLeft(){
   var base_url = window.location.origin;
   var timeBar = document.getElementById("time-indicator-bar");
@@ -118,7 +126,7 @@ function openAlmostExpiredModal(){
 }
 
 function openEnforcementModal(){
-      console.log("show open enforcement modal");
+      console.log("show expired enforcement modal");
     $('#enforcementModal').modal({backdrop:'static', keyboard: false });
     $('#enforcementModal').modal('show');
 }

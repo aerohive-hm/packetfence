@@ -55,7 +55,7 @@
           <a class="brand span3 hidden-phone" href="#">
             <img src="[% c.uri_for('/static/img/a3Logo.svg') %]"/>
           </a>
-          
+          [%- IF c.user_allowed_in_admin() %]
           <div class="nav-collapse">
             <ul class="nav nav-header">
               [%- IF can_access_any("REPORTS","SERVICES") %]
@@ -184,17 +184,17 @@
           [% END %]
         [% END %]
         <!--for reg keys-->
-        [% IF latestKey.defined %]
-          [% IF latest_key_expires_in.defined %]
-            [% IF latest_key_expires_in <= 0 %]
-                [% INCLUDE admin/expiredModal.tt %]
-            [% ELSIF latest_key_expires_in < 15  %]
-                [% INCLUDE admin/almostExpiringModal.tt %]
-            [% END %]
-          [% END %]
-        [% END %]
 
         [% IF template.name != 'admin/licenseKeys.tt' %]
+          [% IF latestKey.defined %]
+            [% IF latest_key_expires_in.defined %]
+              [% IF latest_key_expires_in <= 0 %]
+                  [% INCLUDE admin/expiredModal.tt %]
+              [% ELSIF latest_key_expires_in < 15  %]
+                  [% INCLUDE admin/almostExpiringModal.tt %]
+              [% END %]
+            [% END %]
+          [% END %]
           [% IF is_usage_under_capacity %]
           [% ELSE %]
               [% INCLUDE admin/overUsageModal.tt %]
@@ -202,8 +202,10 @@
         [% END %]
       [% ELSE %]
           <!--for trial-->
-        [% INCLUDE admin/almostExpiringModal.tt %]
-        [% INCLUDE admin/expiredModal.tt %]
+        [% IF template.name != 'admin/licenseKeys.tt' %]
+          [% INCLUDE admin/almostExpiringModal.tt %]
+          [% INCLUDE admin/expiredModal.tt %]
+        [% END %]
       [% END %]
     [% END %]
 
@@ -232,7 +234,6 @@
     [% IF is_eula_accepted %]
       [% IF latestKey.defined %]
         [% IF latest_key_expires_in.defined %]
-          <script>openExpiredModal();</script>
           <script>openAlmostExpiredModal();</script>
         [% END %]
       [% END %]
@@ -247,6 +248,10 @@
           [% ELSE %]
           [% END %]
       [% END %]
+
+    [% ELSE %]
+        <script>openExpiredModal();</script>
+        <script>openAlmostExpiredModal();</script>
     [% END %]
 [%- END %]
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.0/jquery.cookie.min.js"></script>
