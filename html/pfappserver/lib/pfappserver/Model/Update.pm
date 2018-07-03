@@ -15,7 +15,7 @@ use warnings;
 use Readonly;
 
 Readonly::Scalar our $UPDATE_SCRIPT => '/usr/local/pf/sbin/a3_update_wrapper';
-Readonly::Scalar our $PROGRESS_LOG  => '/usr/local/pf/logs/a3_update_progress.log';
+Readonly::Scalar our $PROGRESS_LOG  => '/usr/local/pf/logs/a3_update.progress';
 Readonly::Scalar our $UPDATE_LOCK   => '/usr/local/pf/var/run/update.lock';
 
 use Moose;
