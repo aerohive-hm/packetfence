@@ -184,7 +184,6 @@ function fileTypeValidation(file){
 }
 
 function fileSizeValidation(file){
-  
 }
 
 //shows alert balloon when there is an error.
@@ -212,7 +211,6 @@ function processFiles(){
             alert("SUCCESS!! Files uploaded");
         },
         error: function(XMLHttpRequest){
-
         }
     });
   }

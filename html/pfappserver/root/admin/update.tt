@@ -1,16 +1,20 @@
-<!-- Where software update page starts  -->
+
 [%  jsFiles = [
         'js/vendor/raphael.min',
         'admin/config/items',
         'js/node',
         'js/user',
-        'js/update',
-        'js/adminWrapper'
+        'js/update'
         ]
     cssFiles = [
         'admin/update'
         ]
 -%]
+[% MACRO list_entry(action,description) BLOCK %]
+              <li[% IF section == action %] class="active"[% END %]>
+                <a href="#[% action %]">[% l(description) %]</a>
+              </li>
+[% END -%]
 <div class="spacing">
   <section class="card">
     <div class="card-block">
