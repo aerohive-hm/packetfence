@@ -308,6 +308,8 @@ Requires: netdata, fping, MySQL-python
 # pki
 Requires: perl(Crypt::SMIME)
 
+# Cluster-related
+Requires: percona-xtrabackup
 
 Requires: perl(Sereal::Encoder), perl(Sereal::Decoder), perl(Data::Serializer::Sereal) >= 1.04
 #
