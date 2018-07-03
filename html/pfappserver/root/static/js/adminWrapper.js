@@ -5,18 +5,13 @@ $(document).ready(function(){
       width: "toggle"
     });
   });
+
   // $("#trialIndicator").load(window.location + " #trialIndicator");
+  timeLeft();
+
   $(".dismiss-modal").click(function(){
     $("#myModal").css("display", "none");
   });
-
-  document.getElementById("licenseKey").onclick = function () {
-    var base_url = window.location.origin;
-    console.log("going to license management page");
-    location.href = base_url+"/admin/licenseKeys";
-  };
-
-  timeLeft();
 
   var emailForm = $('.emailForm');
   var emailFormButton = $('.toggle-emailForm');
@@ -52,6 +47,7 @@ function toLicensePage(){
 }
 
 function timeLeft(){
+  console.log("inside time left");
   var base_url = window.location.origin;
   var timeBar = document.getElementById("time-indicator-bar");
   var numOfDaysLeft = 0;
@@ -66,7 +62,6 @@ function timeLeft(){
          var parseSeconds = parseInt(seconds, 10);
          days  = Math.ceil(parseSeconds / (3600*24));
          hours = Math.ceil(parseSeconds / 3600);
-         console.log("Days: " + days);
          numberOfDaysLeft = days;
          var percentageWidth = Math.round((numberOfDaysLeft) * (100/30)) + '%';
          if (numberOfDaysLeft > 15 && numberOfDaysLeft < 29){
@@ -82,15 +77,16 @@ function timeLeft(){
          }else if(numberOfDaysLeft <= 15 && numberOfDaysLeft > 0 ){
             if ($.cookie('pop') == null) {
                console.log("show modal");
-               $('#myModal').modal('show');
+               openAlmostExpiredModal();
+               // $('#myModal').modal('show');
                $.cookie('pop', '1');
             }
             if (numberOfDaysLeft == 1){
-              document.getElementById("daysLeft2").innerHTML= numberOfDaysLeft + " day";
+              // document.getElementById("daysLeft2").innerHTML= numberOfDaysLeft + " day";
               $("#daysLeft").html(numberOfDaysLeft + " " + "day");
               $(timeBar).css('width', percentageWidth);
             }else{
-              document.getElementById("daysLeft2").innerHTML= numberOfDaysLeft + " days";
+              // document.getElementById("daysLeft2").innerHTML= numberOfDaysLeft + " days";
               $("#daysLeft").html(numberOfDaysLeft + " " + "days");
               $(timeBar).css('width', percentageWidth);
             }

@@ -75,11 +75,11 @@ function checkKeyInput(userKeyInput){
         console.log("TRUE");
         return true;
     } else {
-        document.getElementById('errorMessage').innerHTML = "The key entered is in the wrong format. Please enter a valid entitlement key.";
-        $("#success-alert").show(); // use slide down for animation
-        setTimeout(function (){
-          $("#success-alert").slideUp(500);
-        }, 3000);
+        // document.getElementById('errorMessage').innerHTML = "The key entered is in the wrong format. Please enter a valid entitlement key.";
+        // $("#success-alert").show();
+        // setTimeout(function (){
+        //   $("#success-alert").slideUp(500);
+        // }, 3000);
         console.log("FALSE");
         // $("#keyInput").css('border','1px solid #d9534f');
         return false;
