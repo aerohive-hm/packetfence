@@ -26,6 +26,7 @@ use pf::constants qw($TRUE $FALSE);
 use pf::a3_update;
 use pf::version;
 
+use Data::Dumper;
 use File::Slurp;
 use Fcntl;
 
