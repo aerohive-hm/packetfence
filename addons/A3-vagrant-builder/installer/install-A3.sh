@@ -83,6 +83,11 @@ cd /etc && patch -p0 <<EOF
  authpriv.*                                              /var/log/secure
 EOF
 
+# Remove IPv6 localhost entry from /etc/hosts
+cat <<EOF > /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+EOF
+
 # remove the vb guest additional
 rm -rf /opt/VBoxGuestAdditions*
 systemctl disable vboxadd

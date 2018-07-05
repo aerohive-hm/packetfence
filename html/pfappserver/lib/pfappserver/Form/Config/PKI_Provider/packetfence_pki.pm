@@ -120,7 +120,7 @@ has_field 'organization' => (
 
 has_field 'ca_cert_path' => (
     type        => 'Upload',
-    label       => 'CA cert path',
+    label       => 'CA cert',
     required    => 1,
     tags        => {
         after_element   => \&help,
@@ -151,7 +151,7 @@ has_field 'cn_format' => (
 
 has_field 'server_cert_path' => (
     type        => 'Upload',
-    label       => 'Server cert path',
+    label       => 'Server cert',
     required    => 1,
     tags        => {
         after_element   => \&help,

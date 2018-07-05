@@ -308,6 +308,8 @@ Requires: netdata, fping, MySQL-python
 # pki
 Requires: perl(Crypt::SMIME)
 
+# Cluster-related
+Requires: percona-xtrabackup, socat
 
 Requires: perl(Sereal::Encoder), perl(Sereal::Decoder), perl(Data::Serializer::Sereal) >= 1.04
 #
@@ -815,6 +817,9 @@ kernel.sched_migration_cost_ns = 5000000
 
 # Group tasks by TTY
 kernel.sched_autogroup_enabled = 0
+
+# Disable IPv6
+net.ipv6.conf.all.disable_ipv6 = 1
 EOF
 sysctl -p /etc/sysctl.d/99-A3.conf
 

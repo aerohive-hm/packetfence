@@ -471,6 +471,10 @@ sub time_offset :Chained('object') :PathPart('time_offset') :Args(1) {
 
 sub help :Chained('object') :PathPart('help') :Args(0) {
     my ( $self, $c ) = @_;
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
+
 }
 
 =head2 checkup
@@ -519,7 +523,6 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 
     if ($c->request->method eq 'POST') {
         $c->stash->{current_view} = 'JSON';
-
     }
 
 }
@@ -531,7 +534,7 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 
 sub update :Chained('object') :PathPart('update') :Args(0){
     my( $self, $c ) = @_;
-
+    my $logger = get_logger();
     if ($c->request->method eq 'GET') {
         my ($status, $latest) = $c->model('Update')->fetch_latest_release();
 
@@ -547,6 +550,9 @@ sub update :Chained('object') :PathPart('update') :Args(0){
             # TODO: Error
         }
     }
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
 }
 
 =head1 COPYRIGHT
