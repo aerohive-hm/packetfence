@@ -654,6 +654,8 @@ else
     /bin/systemctl set-default packetfence.target
 fi
 
+/usr/bin/mkdir -p /usr/local/pf/html/update
+
 #Check if log files exist and create them with the correct owner
 for fic_log in packetfence.log redis_cache.log violation.log httpd.admin.audit.log
 do
@@ -1160,7 +1162,6 @@ fi
 %config                 /usr/local/pf/conf/httpd.conf.d/log.conf
 %config(noreplace)	/usr/local/pf/conf/httpd.conf.d/ssl-certificates.conf
                         /usr/local/pf/conf/httpd.conf.d/ssl-certificates.conf.example
-%config                 /usr/local/pf/conf/httpd.conf.d/httpd.update.conf
 %config(noreplace)      /usr/local/pf/conf/iptables.conf
 %config(noreplace)      /usr/local/pf/conf/keepalived.conf
                         /usr/local/pf/conf/keepalived.conf.example
