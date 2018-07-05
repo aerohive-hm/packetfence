@@ -13,6 +13,10 @@ $(document).ready(function(){
     $("#myModal").css("display", "none");
   });
 
+  $("#logout").click(function(){
+     localStorage.clear();
+  });
+
   var emailForm = $('.emailForm');
   var emailFormButton = $('.toggle-emailForm');
   var licenseAlertButton = $('.toggle-licenseAlert');
@@ -39,11 +43,9 @@ $(document).ready(function(){
 });
 
 function toLicensePage(){
-    // document.getElementById("licenseKey").onclick = function () {
       var base_url = window.location.origin;
       console.log("going to license management page");
       location.href = base_url+"/admin/licenseKeys";
-    // };
 }
 
 function timeLeft(){
@@ -116,9 +118,18 @@ function openExpiredModal(){
 }
 
 function openAlmostExpiredModal(){
-    console.log("show almost expired modal");
-    $('#myModal').modal({backdrop:'static', keyboard: false });
-    $('#myModal').modal('show');
+      console.log("show almost expired modal");
+      if(typeof(Storage) !== "undefined") {
+          var almostModalShows = localStorage.getItem('modalShowed');
+          if (!almostModalShows) {
+              $('#myModal').modal({backdrop:'static', keyboard: false });
+              $('#myModal').modal('show');
+              localStorage.setItem('modalShowed', 1);
+          }
+          else {
+              $("#myModal").hide();
+          }
+      }
 }
 
 function openEnforcementModal(){
