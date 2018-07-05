@@ -202,7 +202,6 @@
           [% END %]
           [% IF is_entitlement_expired %]
               [% INCLUDE admin/licenseEnforcementModal.tt %]
-          [% ELSE %]
           [% END %]
         [% END %]
       [% ELSE %]
