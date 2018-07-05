@@ -136,6 +136,7 @@ function showCaCertFileInfo() {
     }
 
     input = document.getElementById('ca_cert_path');
+
     console.log("ca_cert_path: " + input);
     console.log("ca_cert_path: " + file);
     if (!input) {
@@ -150,22 +151,20 @@ function showCaCertFileInfo() {
     else {
         file = input.files[0];
         fileType = file.type;
-        fileSize = file.size/1024;
+        fileSize = file.size/1024/1024;
         console.log(" \nca_cert: " + file );
         console.log(" \nca_cert type: " + fileType );
         console.log(" \nca_cert filesize: " + fileSize);
 
-        console.log(fileTypeValidation(input));
+        // console.log("fileType: " + fileTypeValidation(input));
+        // console.log("fileSize: " + fileSizeValidation(input));
 
         if (fileTypeValidation(input)){
-            if (fileSize < 1){
-                return true;
-            }
-            else{
-                alert("File size is greater than 1MB. Upload again.");
+            if (fileSizeValidation(input)){
+            } else {
             }
         } else {
-            alert("Incorrect file type. Upload again. Make sure the file type is .pem.");
+            alert("Incorrect file type. Upload again.");
         }
     }
 }
@@ -184,6 +183,20 @@ function fileTypeValidation(file){
 }
 
 function fileSizeValidation(file){
+  console.log("file: " + file.value);
+    var fileSize = file.size;
+    console.log("fileSize validation size: " + fileSize);
+    if (fileSize > 1){
+      alert("File size is greater than 1MB. Upload again.");
+        console.log("size bigger than 1");
+        $(file).val('');
+        // file.value = '';
+        return false;
+    }
+    else{
+        console.log("size smaller than 1");
+        return true;
+    }
 }
 
 //shows alert balloon when there is an error.

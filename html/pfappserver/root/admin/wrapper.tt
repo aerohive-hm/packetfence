@@ -129,14 +129,18 @@
                   <li class="disabled"><a href="#" disabled><b>[% l('Click a task to run/re-run') %]</b></a></li>
                   <li id="checkup_task"><a href="" id="checkup_task_toggle">[% l('Perform checkup') %]</a></li>
                   <li id="fixpermissions_task"><a href="" id="fixpermissions_task_toggle">[% l('Fix permissions') %]</a></li>
-                  <li id="upgrade_task"><a href="[% c.uri_for(c.controller('Admin').action_for('update')) %]" id="upgrade_task_toggle">[% l('Update software') %]</a></li>
+                  [% IF !is_usage_under_capacity or is_entitlement_expired  %]
+                    <li id="upgrade_task"><a style="color: #c3c3c3; cursor: not-allowed;">[% l('Update software') %]</a></li>
+                  [% ELSE %]
+                    <li id="upgrade_task"><a href="[% c.uri_for(c.controller('Admin').action_for('update')) %]" id="upgrade_task_toggle">[% l('Update software') %]</a></li>
+                  [% END %]
                 </ul>
               </li>
               <li class="dropdown">
                 <a href="" class="dropdown-toggle" data-toggle="dropdown"><img src="[% c.uri_for('/static/img/icon-account.svg') %]"/></a>
                 <ul class="dropdown-menu">
                   <li><a href="[% c.uri_for(c.controller('Admin').action_for('licenseKeys')) %]"><i class="icon-off"></i> [% l('Manage Licenses') %]</a></li>
-                  <li><a href="[% c.uri_for(c.controller('Admin').action_for('logout')) %]"><i class="icon-off"></i> [% l('Log out') %]</a></li>
+                  <li><a id="logout" href="[% c.uri_for(c.controller('Admin').action_for('logout')) %]"><i class="icon-off"></i> [% l('Log out') %]</a></li>
                 </ul>
               </li>
               <li class="user_info" style="padding-top: 20px; text-transform: lowercase !important; color: #F4F6F9; padding-left: 10px; padding-right:5px;">
@@ -185,9 +189,7 @@
         [% END %]
         [% IF latestKey.defined %]
           [% IF latest_key_expires_in.defined %]
-            [% IF latest_key_expires_in <= 0 %]
-                [% INCLUDE admin/expiredModal.tt %]
-            [% ELSIF latest_key_expires_in < 15  %]
+            [% IF latest_key_expires_in < 15 %]
                 [% INCLUDE admin/almostExpiringModal.tt %]
             [% END %]
           [% END %]
@@ -199,8 +201,8 @@
               [% INCLUDE admin/overUsageModal.tt %]
           [% END %]
           [% IF is_entitlement_expired %]
-          [% ELSE %]
               [% INCLUDE admin/licenseEnforcementModal.tt %]
+          [% ELSE %]
           [% END %]
         [% END %]
       [% ELSE %]
