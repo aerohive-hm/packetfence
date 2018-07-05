@@ -542,6 +542,7 @@ cp -r lib $RPM_BUILD_ROOT/usr/local/pf/
 cp conf_migration/* $RPM_BUILD_ROOT/usr/local/pf/conf_migration/
 
 mkdir $RPM_BUILD_ROOT/usr/local/pf/docs
+mkdir -p $RPM_BUILD_ROOT/usr/local/pf/html/update
 cp docs/pfcmd.help $RPM_BUILD_ROOT/usr/local/pf/docs
 
 mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen
@@ -653,8 +654,6 @@ else
     echo "Setting packetfence.target as the default systemd target."
     /bin/systemctl set-default packetfence.target
 fi
-
-/usr/bin/mkdir -p /usr/local/pf/html/update
 
 #Check if log files exist and create them with the correct owner
 for fic_log in packetfence.log redis_cache.log violation.log httpd.admin.audit.log
