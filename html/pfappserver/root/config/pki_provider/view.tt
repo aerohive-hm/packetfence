@@ -187,7 +187,6 @@ function fileSizeValidation(input){
     if (fileSize > 1){
         console.log("size bigger than 1");
         $(input).val('');
-        // file.value = '';
         return false;
     }
     else{
@@ -203,7 +202,6 @@ function alertFile(tagName, innerHTML) {
     elm = document.createElement(tagName);
     elm.innerHTML = innerHTML;
     console.log(elm);
-    // $(".controls").append(elm);
 
     $("#pki_alert_error_text").append(elm);
     $("#pki_alert_error_text").slideDown();
