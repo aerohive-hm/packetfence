@@ -33,13 +33,13 @@ function pollForProgress() {
     // TODO: Error message in UI
 
     // Schedule next anyway
-    scheduleNext(data.update_progress);
+    scheduleNext('');
   });
 }
 
 function scheduleNext(update_progress) {
-    if (data.update_progress.indexOf("Update was unsuccessful.") === -1
-        && data.update_progress.indexOf("Update completed successfully.") === -1) {
+    if (update_progress.indexOf("Update was unsuccessful.") === -1
+        && update_progress.indexOf("Update completed successfully.") === -1) {
       sleep(10000).then(function () { pollForProgress(); });
     }
 }
