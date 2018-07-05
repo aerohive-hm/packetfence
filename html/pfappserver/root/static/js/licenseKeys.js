@@ -81,7 +81,6 @@ function checkKeyInput(userKeyInput){
         //   $("#success-alert").slideUp(500);
         // }, 3000);
         console.log("FALSE");
-        // $("#keyInput").css('border','1px solid #d9534f');
         return false;
     }
 }

@@ -112,14 +112,12 @@ function showServerFileInfo(){
 
       //test if file is .pem or not
       if (fileTypeValidation(input2)){
-          if (fileSize2 < 1){
-              return true;
-          }
-          else{
-              alert("File size is greater than 1MB. Upload again.");
+          if (fileSizeValidation(input2)){
+          } else {
+            alert("File size is greater than 1MB. Upload again.");
           }
       } else {
-          alert("Incorrect file type. Upload again. Make sure the file type is .pem.");
+          alert("Incorrect file type. Upload again.");
       }
   }
 }
@@ -151,17 +149,17 @@ function showCaCertFileInfo() {
     else {
         file = input.files[0];
         fileType = file.type;
-        fileSize = file.size/1024/1024;
+        fileSize = file.size/1024;
         console.log(" \nca_cert: " + file );
         console.log(" \nca_cert type: " + fileType );
         console.log(" \nca_cert filesize: " + fileSize);
 
-        // console.log("fileType: " + fileTypeValidation(input));
-        // console.log("fileSize: " + fileSizeValidation(input));
+        console.log(fileTypeValidation(input));
 
         if (fileTypeValidation(input)){
             if (fileSizeValidation(input)){
             } else {
+              alert("File size is greater than 1MB. Upload again.");
             }
         } else {
             alert("Incorrect file type. Upload again.");
@@ -170,26 +168,25 @@ function showCaCertFileInfo() {
 }
 
 //test file types
-function fileTypeValidation(file){
-    var filePath = file.value;
+function fileTypeValidation(input){
+    var filePath = input.value;
+    console.log(filePath);
     var allowedExtensions = /(\.pem)$/i;
     if(!allowedExtensions.exec(filePath)){
         // alert('Upload file having extensions .pem only.');
-        file.value = '';
+        input.value = '';
         return false;
     }else{
         return true;
     }
 }
 
-function fileSizeValidation(file){
-  console.log("file: " + file.value);
-    var fileSize = file.size;
-    console.log("fileSize validation size: " + fileSize);
+function fileSizeValidation(input){
+    var fileSize = input.files[0].size/1024;
+    console.log(fileSize);
     if (fileSize > 1){
-      alert("File size is greater than 1MB. Upload again.");
         console.log("size bigger than 1");
-        $(file).val('');
+        $(input).val('');
         // file.value = '';
         return false;
     }

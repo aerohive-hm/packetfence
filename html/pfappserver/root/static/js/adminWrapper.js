@@ -120,8 +120,8 @@ function openExpiredModal(){
 function openAlmostExpiredModal(){
       console.log("show almost expired modal");
       if(typeof(Storage) !== "undefined") {
-          var almostModalShows = localStorage.getItem('modalShowed');
-          if (!almostModalShows) {
+          var almostModalShowed = localStorage.getItem('modalShowed');
+          if (!almostModalShowed) {
               $('#myModal').modal({backdrop:'static', keyboard: false });
               $('#myModal').modal('show');
               localStorage.setItem('modalShowed', 1);
