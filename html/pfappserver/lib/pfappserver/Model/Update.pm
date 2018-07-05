@@ -14,9 +14,9 @@ use strict;
 use warnings;
 use Readonly;
 
-Readonly::Scalar our $UPDATE_SCRIPT => '/usr/local/pf/sbin/a3_update';
-Readonly::Scalar our $PROGRESS_LOG  => '/usr/local/pf/logs/a3_update_progress.log';
-Readonly::Scalar our $UPDATE_LOCK   => '/usr/local/pf/var/run/update.lock';
+Readonly::Scalar our $UPDATE_CMD   => '/usr/bin/systemctl start a3-update';
+Readonly::Scalar our $PROGRESS_LOG => '/usr/local/pf/html/update/a3_update.progress';
+Readonly::Scalar our $UPDATE_LOCK  => '/usr/local/pf/var/run/update.lock';
 
 use Moose;
 
@@ -26,9 +26,6 @@ use pf::constants qw($TRUE $FALSE);
 use pf::a3_update;
 use pf::version;
 
-use WWW::Curl::Easy;
-
-use Data::Dumper;
 use File::Slurp;
 use Fcntl;
 
@@ -74,8 +71,6 @@ Start the update process
 =cut
 
 sub start_update {
-    my $logger = get_logger();
-
     if ( ! lock_for_update() ) {
         return $STATUS::CONFLICT;
     }
@@ -83,25 +78,8 @@ sub start_update {
     my ($status) = fetch_latest_release();
 
     if ($status == $STATUS::OK) {
-        # fork/exec the update script
-        my $pid = fork();
-
-        if ($pid) {
-            return $STATUS::ACCEPTED;
-        }
-        elsif (defined $pid) {
-            $logger->info("Executing update script at $UPDATE_SCRIPT");
-
-            exec "/usr/bin/sudo $UPDATE_SCRIPT";
-        }
-        else {
-            $logger->error("Failed to fork child process to run update script: $!");
-            return $STATUS::INTERNAL_SERVER_ERROR;
-        }
-    }
-    elsif ($status == $STATUS::NO_CONTENT) {
-        $logger->info("Current version is already the latest available");
-        return $STATUS::NOT_FOUND;
+        system("/usr/bin/sudo $UPDATE_CMD &");
+        return $STATUS::ACCEPTED;
     }
     else {
         return $STATUS::INTERNAL_SERVER_ERROR;
@@ -124,9 +102,11 @@ sub lock_for_update {
     if (sysopen LOCKFILE, $UPDATE_LOCK, O_WRONLY | O_CREAT | O_EXCL, 0600) {
         $logger->info("Locking for update");
         close LOCKFILE;
+        return $TRUE;
     }
     else {
         $logger->info("Update already in progress");
+        return $FALSE;
     }
 }
 

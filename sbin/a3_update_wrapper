@@ -1,6 +1,17 @@
 #!/bin/sh
 
-/usr/local/pf/sbin/a3_update
+LOGFILE=/usr/local/pf/logs/a3_update.log
+TMPDIR=`/usr/bin/mktemp -d -p /tmp a3_update.XXXXXXXX`
 
-# Be sure to clean up lock file
-/usr/bin/rm -f /usr/local/pf/var/run/update.lock
+if [ $? -ne 0 ]; then
+    echo "Unable to create workspace for update" >> $LOGFILE
+    exit 1
+fi
+
+/usr/local/pf/sbin/a3_update $TMPDIR
+
+# Be sure to remove tmpdir
+/usr/bin/rm -rf $TMPDIR
+
+# Give the UI a chance to update progress
+/usr/bin/sleep 30
