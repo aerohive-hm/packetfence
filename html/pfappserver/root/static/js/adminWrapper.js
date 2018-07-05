@@ -116,7 +116,7 @@ function openExpiredModal(){
 }
 
 function openAlmostExpiredModal(){
-      console.log("show almost expired modal");
+    console.log("show almost expired modal");
     $('#myModal').modal({backdrop:'static', keyboard: false });
     $('#myModal').modal('show');
 }

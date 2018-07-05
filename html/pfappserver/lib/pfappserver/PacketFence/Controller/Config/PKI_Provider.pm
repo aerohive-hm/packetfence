@@ -83,7 +83,7 @@ before [qw(clone view _processCreatePost update)] => sub {
     $c->stash->{current_form} = "${form}::${type}";
 };
 
-sub create_type : Path('create') : Args(1){
+sub create_type : Path('create') : Args(1) {
     my ($self, $c, $type) = @_;
     my $logger = get_logger();
     my $model = $self->getModel($c);
@@ -91,7 +91,6 @@ sub create_type : Path('create') : Args(1){
     $c->stash->{$itemKey}{type} = $type;
     $logger->info("model: " .Dumper($c));
     $c->forward('create');
-    $logger->info("ctran-debug: " $c->forward('create'));
 }
 
 sub processCertificate :Path('processCertificate') :Args(1) {
@@ -101,10 +100,13 @@ sub processCertificate :Path('processCertificate') :Args(1) {
     $logger->info("\ntype: $type");
     my $filesize;
 
+    #add PKI unique ID name ($type)
+
     #make and get file name
     my ($fh, $filename) = @_;
     my $dir = "/tmp";
-    my $template = "$type XXXXXX";
+    my $template = "$type mytempfile XXXXXX";
+    #map($template -> $type)
     ($fh, $filename) = tempfile($template, DIR => $dir, SUFFIX => ".pem");
     $filesize = -s "$filename";
 
@@ -119,8 +121,8 @@ sub processCertificate :Path('processCertificate') :Args(1) {
         if ($checkCertificate == 0){
             #check if size is <1000000 bytes
             if ($filesize < 1000000){
-                # map($template -> PKI provider name )
-                move("/tmp/$filename","/usr/local/pf/conf/ssl/tls_certs/$filename $type");
+
+                move("/tmp/$filename","/usr/local/pf/conf/ssl/tls_certs/$filename");
             }
             else{
                 $c->stash->{error_msg} = $c->loc("Certificate size is too big. Try again.");
