@@ -91,6 +91,10 @@ sub create_type : Path('create') : Args(1) {
     $c->stash->{$itemKey}{type} = $type;
     $logger->info("model: " .Dumper($c));
     $c->forward('create');
+<<<<<<< HEAD
+=======
+    $logger->info("ctran-debug: " . $c->forward('create'));
+>>>>>>> 03d04e8f4ed2897c4c0f7bfbbf1c411f339a17f0
 }
 
 sub processCertificate :Path('processCertificate') :Args(1) {

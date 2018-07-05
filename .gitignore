@@ -3,6 +3,11 @@
 # Except this file
 !.gitignore
 
+# Unwanted IDE/OS stuff
+.DS_Store
+.idea
+*.iml
+
 # temporary files
 *.swp
 *.orig
