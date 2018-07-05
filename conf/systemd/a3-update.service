@@ -1,0 +1,12 @@
+[Unit]
+Description=A3 Software Update Service
+Requires=a3-httpd.update.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/pf/sbin/a3_update_wrapper
+# Be sure to clean up lock file on success
+ExecStartPost=-/usr/bin/rm -f /usr/local/pf/var/run/update.lock
+# Be sure to clean up lock file on failure
+ExecStopPost=-/usr/bin/rm -f /usr/local/pf/var/run/update.lock

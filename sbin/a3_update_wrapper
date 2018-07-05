@@ -10,8 +10,8 @@ fi
 
 /usr/local/pf/sbin/a3_update $TMPDIR
 
-# Be sure to clean up lock file
-/usr/bin/rm -f /usr/local/pf/var/run/update.lock
-
 # Be sure to remove tmpdir
 /usr/bin/rm -rf $TMPDIR
+
+# Give the UI a chance to update progress
+/usr/bin/sleep 30

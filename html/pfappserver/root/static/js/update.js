@@ -27,12 +27,21 @@ function pollForProgress() {
       type: 'GET'
   }).done(function (data) {
     $('.detail-box').html(data.update_progress.split('\n').join('<br/>'));
+    scheduleNext(data.update_progress);
+  }).fail(function (xhr, status, error) {
+    console.log(error);
+    // TODO: Error message in UI
 
-    if (data.update_progress.indexOf("") === -1
-        && data.update_progress.indexOf("") === -1) {
+    // Schedule next anyway
+    scheduleNext(data.update_progress);
+  });
+}
+
+function scheduleNext(update_progress) {
+    if (data.update_progress.indexOf("Update was unsuccessful.") === -1
+        && data.update_progress.indexOf("Update completed successfully.") === -1) {
       sleep(10000).then(function () { pollForProgress(); });
     }
-  });
 }
 
 function sleep (time) {

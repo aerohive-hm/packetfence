@@ -23,11 +23,12 @@ Readonly::Scalar my $A3_BIN_DIR           => "$A3_BASE_DIR/bin";
 Readonly::Scalar my $A3_CONF_DIR          => "$A3_BASE_DIR/conf";
 Readonly::Scalar my $A3_MIGRATION_DIR     => "$A3_BASE_DIR/conf_migration";
 Readonly::Scalar my $A3_DB_DIR            => "$A3_BASE_DIR/db";
+Readonly::Scalar my $A3_HTML_DIR          => "$A3_BASE_DIR/html";
 Readonly::Scalar my $A3_LOG_DIR           => "$A3_BASE_DIR/logs";
 Readonly::Scalar my $A3_SBIN_DIR          => "$A3_BASE_DIR/sbin";
 Readonly::Scalar my $A3_UPDATE_PATH_FILE  => "$A3_DB_DIR/a3-update-path";
 Readonly::Scalar my $A3_UPDATE_LOG_FILE   => "$A3_LOG_DIR/a3_update.log";
-Readonly::Scalar my $A3_PROGRESS_LOG_FILE => "$A3_LOG_DIR/a3_update.progress";
+Readonly::Scalar my $A3_PROGRESS_LOG_FILE => "$A3_HTML_DIR/update/a3_update.progress";
 Readonly::Scalar my $A3_DBINFO_FILE       => "$A3_CONF_DIR/dbinfo.A3";
 Readonly::Scalar my $A3_UPDATE_DB_DUMP    => "$TMP_DIR/A3_db.sql";
 Readonly::Scalar my $A3_UPDATE_APP_DUMP   => "$TMP_DIR/A3_app.tar.gz";
@@ -189,10 +190,6 @@ sub stop_services {
 
   commit_progress_log("done!");
   commit_update_log("A3 service shutdown complete");
-
-  # Need the admin UI running to update progress
-  system("$SYSTEMCTL_BIN start packetfence-httpd.admin");
-  commit_update_log("Restored administrative UI");
 }
 
 sub check_up_to_date {
