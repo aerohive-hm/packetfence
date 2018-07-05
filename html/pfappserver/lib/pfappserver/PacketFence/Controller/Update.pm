@@ -32,6 +32,8 @@ This controller defaults view is JSON.
 sub begin :Private {
     my ( $self, $c ) = @_;
     $c->stash->{current_view} = 'JSON';
+
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
 }
