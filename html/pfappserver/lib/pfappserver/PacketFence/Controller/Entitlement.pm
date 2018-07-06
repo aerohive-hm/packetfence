@@ -110,8 +110,12 @@ sub licenseKeys :Path('licenseKeys') :Args(0) {
 
     my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+
+    my $trialInfo = $c->model('Entitlement')->get_trial_info();
+    $c->stash->{expires_in} = @$trialInfo < 15 && $c->model('Entitlement')->get_trial_status();
+    $logger->info("ctran2 : " . Dumper($c->stash->{expires_in}));
+
     $c->forward('View::HTML');
-    $logger->info($c->stash->{current_mov_avg});
 }
 
 =head2 trial

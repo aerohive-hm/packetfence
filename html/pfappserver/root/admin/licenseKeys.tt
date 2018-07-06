@@ -25,7 +25,7 @@
       <div id="entire-form">
         <div class="head">
           <h1><b>[% l('LICENSE MANAGEMENT') %]</b></h1>
-          <p>is trial expired? [% IF is_expired %] YES [% ELSE %] NO [% END %]</p>
+          <p>is trial expired?[% is_expired %] [% get_trial_status %]</p>
           <p> [% expires_in %]</p>
           <br>
 

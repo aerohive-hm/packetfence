@@ -519,8 +519,10 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
-    $c->stash->{trial_info} = $c->model('Entitlement')->get_trial_info();
-    $logger->info("ctran : " . Dumper($c->model('Entitlement')->get_trial_info()));
+
+    my $trialInfo = $c->model('Entitlement')->get_trial_info();
+    $c->stash->{expires_in} = $c->model('Entitlement')->get_trial_status();
+    $logger->info("ctran : " . Dumper($c->model('Entitlement')->get_trial_status()));
 
     $c->stash->{latest_key_expires_in} = undef;
 
