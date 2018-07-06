@@ -191,10 +191,8 @@
 
         [% IF template.name != 'admin/licenseKeys.tt' %]
           [% IF is_entitlement_expired %]
-          <script>alert("exntitlement expired");</script>
               [% INCLUDE admin/licenseEnforcementModal.tt %]
           [% ELSIF !is_usage_under_capacity %]
-          <script>alert("over capacity");</script>
               [% INCLUDE admin/overUsageModal.tt %]
           [% ELSIF latestKey.defined %]
             [% IF latest_key_expires_in.defined %]
