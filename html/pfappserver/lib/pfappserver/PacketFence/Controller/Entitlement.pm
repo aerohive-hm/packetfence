@@ -112,10 +112,8 @@ sub licenseKeys :Path('licenseKeys') :Args(0) {
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
 
     my ($status, $trial) = $c->model('Entitlement')->get_trial_info();
-    my $is_expired = ($status == $STATUS::OK) && $trial->{is_expired};
     $c->stash->{is_expired} = ($status == $STATUS::OK) && $trial->{is_expired};
     $c->stash->{expires_in} = int($trial->{expires_in}/(3600*24));
-    $logger->info("is_expired: $is_expired");
     $logger->info("ctran : " . Dumper($c->model('Entitlement')->get_trial_info()));
 
     $c->forward('View::HTML');

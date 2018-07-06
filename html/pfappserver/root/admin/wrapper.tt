@@ -205,11 +205,13 @@
         [% END %]
       [% ELSE %]
         [% IF template.name != 'admin/licenseKeys.tt' %]
-            [% IF is_entitlement_expired %]
-                [% INCLUDE admin/expiredModal.tt %]
-            [% END %]
             [% IF expires_in < 16 and expires_in > 0 %]
                 [% INCLUDE admin/almostExpiringModal.tt %]
+            [% END %]
+            [% IF is_entitlement_expired %]
+                [% INCLUDE admin/expiredModal.tt %]
+            [% ELSIF !is_usage_under_capacity %]
+                [% INCLUDE admin/overUsageModal.tt %]
             [% END %]
         [% END %]
       [% END %]
@@ -252,8 +254,12 @@
       [% END %]
     [% ELSE %]
         [% IF template.name != 'admin/licenseKeys.tt' %]
-            <script>openExpiredModal()</script>
             <script>openAlmostExpiredModal()</script>
+            [% IF is_entitlement_expired %]
+              <script>openExpiredModal()</script>
+            [% ELSIF !is_usage_under_capacity %]
+              <script>openOverUsageModal()</script>
+            [% END %]
         [% END %]
     [% END %]
 [%- END %]
