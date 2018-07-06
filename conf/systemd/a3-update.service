@@ -10,3 +10,4 @@ ExecStart=/usr/local/pf/sbin/a3_update_wrapper
 ExecStartPost=-/usr/bin/rm -f /usr/local/pf/var/run/update.lock
 # Be sure to clean up lock file on failure
 ExecStopPost=-/usr/bin/rm -f /usr/local/pf/var/run/update.lock
+KillMode=none
