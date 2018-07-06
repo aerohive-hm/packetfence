@@ -327,7 +327,7 @@ sub unpack_app_back {
 }
 
 sub restore_conf_file {
-  my $app_dump_copy = $$A3_UPDATE_APP_DUMP;
+  my $app_dump_copy = $A3_UPDATE_APP_DUMP;
   #remove suffix
   $app_dump_copy =~ s/\..*$//;
   commit_update_log("Restoring configuration files");
