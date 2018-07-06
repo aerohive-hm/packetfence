@@ -38,7 +38,7 @@ BEGIN {
     use Exporter ();
     our ( @ISA, @EXPORT );
     @ISA    = qw(Exporter);
-    @EXPORT = qw(is_usage_under_capacity is_entitlement_expired);
+    @EXPORT = qw(is_usage_under_capacity is_entitlement_expired get_trial_status);
 }
 
 =head2 find_one

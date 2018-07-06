@@ -77,18 +77,18 @@ function timeLeft(){
             $(timeBar).css('width', 180);
 
          }else if(numberOfDaysLeft <= 15 && numberOfDaysLeft > 0 ){
+            console.log("yes less than 15 days");
+            openAlmostExpiredModal();
             if ($.cookie('pop') == null) {
                console.log("show modal");
-               openAlmostExpiredModal();
+               // openAlmostExpiredModal();
                // $('#myModal').modal('show');
                $.cookie('pop', '1');
             }
             if (numberOfDaysLeft == 1){
-              // document.getElementById("daysLeft2").innerHTML= numberOfDaysLeft + " day";
               $("#daysLeft").html(numberOfDaysLeft + " " + "day");
               $(timeBar).css('width', percentageWidth);
             }else{
-              // document.getElementById("daysLeft2").innerHTML= numberOfDaysLeft + " days";
               $("#daysLeft").html(numberOfDaysLeft + " " + "days");
               $(timeBar).css('width', percentageWidth);
             }

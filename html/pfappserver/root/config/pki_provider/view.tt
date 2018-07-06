@@ -4,32 +4,6 @@
 [%ELSE%]
 [% SET action_uri = c.req.uri %]
 [% END %]
-<style>
-.pki_alert {
-    padding: 10px;
-    background-color: #f44336;
-    color: white;
-    display: table;
-    margin: 0 auto;
-    z-index: 15;
-    display:none;
-}
-
-.closebtn {
-    margin-left: 15px;
-    color: white;
-    font-weight: bold;
-    float: right;
-    font-size: 22px;
-    line-height: 20px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.closebtn:hover {
-    color: black;
-}
-</style>
 <form name="modalItem" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
   [%- IF item.id %]<input type="hidden" name="id" value="[% item.id | html %]">[% END %]
   <div class="modal-header">
@@ -65,9 +39,9 @@ $(document).ready(function(){
     showServerFileInfo();
   };
 
-  //if save button is pressed
+  // if save button is pressed
   // check if showCaCertFileSize and showServerFileSize are TRUE
-  //then call process files
+  // then call process files
   document.getElementById("savePKI").onclick = function(){
       if (showCaCertFileInfo() && showServerFileInfo()){
          processFiles();
@@ -182,7 +156,7 @@ function fileTypeValidation(input){
 }
 
 function fileSizeValidation(input){
-    var fileSize = input.files[0].size/1024;
+    var fileSize = input.files[0].size/1024/1024;
     console.log(fileSize);
     if (fileSize > 1){
         console.log("size bigger than 1");
