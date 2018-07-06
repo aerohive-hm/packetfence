@@ -77,9 +77,11 @@ function timeLeft(){
             $(timeBar).css('width', 180);
 
          }else if(numberOfDaysLeft <= 15 && numberOfDaysLeft > 0 ){
+            console.log("yes less than 15 days");
+            openAlmostExpiredModal();
             if ($.cookie('pop') == null) {
                console.log("show modal");
-               openAlmostExpiredModal();
+               // openAlmostExpiredModal();
                // $('#myModal').modal('show');
                $.cookie('pop', '1');
             }

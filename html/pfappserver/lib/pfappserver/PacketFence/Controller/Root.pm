@@ -17,6 +17,7 @@ use Moose;
 use namespace::autoclean;
 use pf::db;
 use pf::a3_entitlement qw(is_usage_under_capacity is_entitlement_expired);
+use pf::a3_eula_acceptance qw(is_eula_accepted);
 use pf::config qw(%Config);
 use pf::file_paths qw($conf_dir);
 use pf::util;
@@ -50,6 +51,7 @@ sub auto :Private {
     if (-e "$conf_dir/currently-at") {
         $c->stash->{is_usage_under_capacity} = pf::a3_entitlement::is_usage_under_capacity();
         $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
+        $c->stash->{is_eula_accepted} = pf::a3_eula_acceptance::is_eula_accepted();
     }
 
     return 1;

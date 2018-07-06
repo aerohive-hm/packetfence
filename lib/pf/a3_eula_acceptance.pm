@@ -22,6 +22,13 @@ use pf::dal::a3_eula_acceptance;
 use JSON;
 use WWW::Curl::Easy;
 
+BEGIN {
+    use Exporter ();
+    our ( @ISA, @EXPORT );
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(is_eula_accepted);
+}
+
 =head2 record_local
 
 Saves a local record of the time at which the Aerohive EULA was accepted.

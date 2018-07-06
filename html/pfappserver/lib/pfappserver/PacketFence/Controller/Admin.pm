@@ -288,6 +288,7 @@ sub object :Chained('/') :PathPart('admin') :CaptureArgs(0) {
       $c->stash->{latest_key}            = $entitlements->[0];
       $c->stash->{latest_key_expires_in} = $entitlements->[0]->{expires_in};
     }
+
 }
 
 
@@ -518,6 +519,8 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{trial_info} = $c->model('Entitlement')->get_trial_info();
+    $logger->info("ctran : " . Dumper($c->model('Entitlement')->get_trial_info()));
 
     $c->stash->{latest_key_expires_in} = undef;
 

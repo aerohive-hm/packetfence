@@ -178,6 +178,7 @@
     [%- IF c.user_allowed_in_admin() %]
 
       [% IF is_eula_accepted %]
+
         [% FOREACH key IN entitlement_keys -%]
           [% IF latestKey.defined %]
             [% IF latestKey.expires_in < key.expires_in %]
@@ -196,34 +197,18 @@
         [% END %]
 
         [% IF template.name != 'admin/licenseKeys.tt' %]
-          [% IF is_usage_under_capacity %]
-          [% ELSE %]
-              [% INCLUDE admin/overUsageModal.tt %]
-          [% END %]
           [% IF is_entitlement_expired %]
               [% INCLUDE admin/licenseEnforcementModal.tt %]
+          [% ELSIF !is_usage_under_capacity %]
+              [% INCLUDE admin/overUsageModal.tt %]
           [% END %]
         [% END %]
       [% ELSE %]
         [% IF template.name != 'admin/licenseKeys.tt' %]
-          [% FOREACH key IN entitlement_keys -%]
-            [% IF latestKey.defined %]
-              [% IF latestKey.expires_in < key.expires_in %]
-                [% SET latestKey = key %]
-              [% END %]
-            [% ELSE %]
-              [% SET latestKey = key %]
+            [% IF is_entitlement_expired %]
+                [% INCLUDE admin/expiredModal.tt %]
             [% END %]
-          [% END %]
-          [% IF latestKey.defined %]
-            [% IF latest_key_expires_in.defined %]
-              [% IF latest_key_expires_in <= 0 %]
-                  [% INCLUDE admin/expiredModal.tt %]
-              [% ELSIF latest_key_expires_in < 15  %]
-                  [% INCLUDE admin/almostExpiringModal.tt %]
-              [% END %]
-            [% END %]
-          [% END %]
+                [% INCLUDE admin/almostExpiringModal.tt %]
         [% END %]
       [% END %]
     [% END %]
@@ -254,19 +239,15 @@
           [% IF latestKey.defined %]
             [% IF latest_key_expires_in.defined %]
               <script>openAlmostExpiredModal();</script>
-              <script>openExpiredModal();</script>
             [% END %]
           [% END %]
-          [% IF is_usage_under_capacity %]
-          [% ELSE %]
-              <script>openOverUsageModal()</script>
-          [% END %]
+
           [% IF is_entitlement_expired %]
               <script>openEnforcementModal()</script>
-          [% ELSE %]
+          [% ELSIF !is_usage_under_capacity %]
+              <script>openOverUsageModal()</script>
           [% END %]
       [% END %]
-
     [% ELSE %]
         [% IF template.name != 'admin/licenseKeys.tt' %]
             <script>openExpiredModal()</script>

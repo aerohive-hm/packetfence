@@ -14,7 +14,7 @@
           <p>[% l('If you have an entitlement key, press the Enter License Key button below. Thanks again for using our service.') %] </p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-success licenseKey" id="licenseKey" onclick="toLicensePage()>[% l('Enter License Key') %]</button>
+          <button type="button" class="btn btn-success licenseKey" id="licenseKey" onclick="toLicensePage()">[% l('Enter License Key') %]</button>
         </div>
       </div>
 <!--END OF ALERT TEXT-->
