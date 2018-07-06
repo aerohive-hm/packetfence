@@ -15,3 +15,5 @@ fi
 
 # Give the UI a chance to update progress
 /usr/bin/sleep 30
+
+/usr/bin/rm -f /usr/local/pf/var/run/update.lock
