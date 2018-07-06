@@ -291,7 +291,7 @@ sub object :Chained('/') :PathPart('admin') :CaptureArgs(0) {
 
     my ($status, $trial) = $c->model('Entitlement')->get_trial_info();
     $c->stash->{is_expired} = ($status == $STATUS::OK) && $trial->{is_expired};
-    $c->stash->{expires_in} = int($trial->{expires_in}/(3600*24))+1;
+    $c->stash->{expires_in} = int($trial->{expires_in}/(3600*24));
 }
 
 
@@ -525,7 +525,7 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 
     my ($status, $trial) = $c->model('Entitlement')->get_trial_info();
     $c->stash->{is_expired} = ($status == $STATUS::OK) && $trial->{is_expired};
-    $c->stash->{expires_in} = int($trial->{expires_in}/(3600*24))+1;
+    $c->stash->{expires_in} = int($trial->{expires_in}/(3600*24));
 
     $c->stash->{latest_key_expires_in} = undef;
 

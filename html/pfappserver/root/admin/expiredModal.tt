@@ -6,9 +6,9 @@
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
           <h3 class="modal-title">
             [% IF is_eula_accepted %]
-              <b>[% l('Your subscription has expired') %]</b>
+              <b>[% l('Subscription Has Expired') %]</b>
             [% ELSE %]
-              <b>[% l('Your trial has expired') %]</b>
+              <b>[% l('Trial Has Expired') %]</b>
             [% END %]
           </h3>
         </div>

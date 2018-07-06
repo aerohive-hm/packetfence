@@ -46,6 +46,7 @@ auto
 
 sub auto :Private {
     my ( $self, $c ) = @_;
+    my $logger = get_logger();
     $c->stash->{readonly_mode} = db_check_readonly();
 
     if (-e "$conf_dir/currently-at") {
