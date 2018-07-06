@@ -65,8 +65,6 @@ sub latest :Local :Args(0) {
         $c->stash->{is_update_in_progress} = $c->model('Update')->is_update_in_progress();
 
         if ($c->stash->{is_update_in_progress}) {
-            # TODO: TOCTOU issue - what if update completes between call
-            #       to is_update_in_progress and get_update_status?
             $c->stash->{update_progress} = $c->model('Update')->get_update_status();
         }
         else {
@@ -110,6 +108,10 @@ sub progress :Local {
 
     if ($method eq 'GET') {
         $c->stash->{update_progress} = $c->model('Update')->get_update_status();
+
+        if (!$c->stash->{update_progress}) {
+            $c->response->status($STATUS::SERVICE_UNAVAILABLE);
+        }
     }
     else {
         $c->response->status($STATUS::METHOD_NOT_ALLOWED);
