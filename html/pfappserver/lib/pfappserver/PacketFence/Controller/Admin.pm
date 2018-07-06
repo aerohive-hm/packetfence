@@ -289,6 +289,13 @@ sub object :Chained('/') :PathPart('admin') :CaptureArgs(0) {
       $c->stash->{latest_key_expires_in} = $entitlements->[0]->{expires_in};
     }
 
+    my ($status, $trial) = $c->model('Entitlement')->get_trial_info();
+    my $is_expired = ($status == $STATUS::OK) && $trial->{is_expired};
+    $c->stash->{is_expired} = ($status == $STATUS::OK) && $trial->{is_expired};
+    $c->stash->{expires_in} = int($trial->{expires_in}/(3600*24))+1;
+    $logger->info("is_expired: $is_expired");
+    $logger->info("ctran : " . Dumper($c->model('Entitlement')->get_trial_info()));
+
 }
 
 
@@ -520,9 +527,12 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
 
-    my $trialInfo = $c->model('Entitlement')->get_trial_info();
-    $c->stash->{expires_in} = $c->model('Entitlement')->get_trial_status();
-    $logger->info("ctran : " . Dumper($c->model('Entitlement')->get_trial_status()));
+    my ($status, $trial) = $c->model('Entitlement')->get_trial_info();
+    my $is_expired = ($status == $STATUS::OK) && $trial->{is_expired};
+    $c->stash->{is_expired} = ($status == $STATUS::OK) && $trial->{is_expired};
+    $c->stash->{expires_in} = int($trial->{expires_in}/(3600*24))+1;
+    $logger->info("is_expired: $is_expired");
+    $logger->info("ctran : " . Dumper($c->model('Entitlement')->get_trial_info()));
 
     $c->stash->{latest_key_expires_in} = undef;
 

@@ -86,11 +86,9 @@ function timeLeft(){
                $.cookie('pop', '1');
             }
             if (numberOfDaysLeft == 1){
-              // document.getElementById("daysLeft2").innerHTML= numberOfDaysLeft + " day";
               $("#daysLeft").html(numberOfDaysLeft + " " + "day");
               $(timeBar).css('width', percentageWidth);
             }else{
-              // document.getElementById("daysLeft2").innerHTML= numberOfDaysLeft + " days";
               $("#daysLeft").html(numberOfDaysLeft + " " + "days");
               $(timeBar).css('width', percentageWidth);
             }

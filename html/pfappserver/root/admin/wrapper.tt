@@ -56,7 +56,6 @@
             <img src="[% c.uri_for('/static/img/a3Logo.svg') %]"/>
           </a>
           [%- IF c.user_allowed_in_admin() %]
-          [% expires_in %] [% is_expired %]
           <div class="nav-collapse">
             <ul class="nav nav-header">
               [%- IF can_access_any("REPORTS","SERVICES") %]
@@ -209,7 +208,9 @@
             [% IF is_entitlement_expired %]
                 [% INCLUDE admin/expiredModal.tt %]
             [% END %]
+            [% IF expires_in < 16 and expires_in > 0 %]
                 [% INCLUDE admin/almostExpiringModal.tt %]
+            [% END %]
         [% END %]
       [% END %]
     [% END %]
