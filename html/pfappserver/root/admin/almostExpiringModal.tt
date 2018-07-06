@@ -6,9 +6,9 @@
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
           <h3 class="modal-title"><b>[% l('Subscription ending in') %]
             [% IF is_eula_accepted %]
-              [% IF latestKey.defined %]<span>[% latest_key_expires_in %] [% IF latest_key_expires_in == 1 %][% l(day') %][% ELSE %][% l(days') %][% END %]</span>[% END %]</b>
+              [% IF latestKey.defined %]<span>[% latest_key_expires_in %] [% IF latest_key_expires_in == 1 %][% l('day') %][% ELSE %][% l('days') %][% END %]</span>[% END %]</b>
             [% ELSE %]
-              <span id="daysLeft2">[% expires_in %][% IF expires_in == 1 %] [% l(day') %][% ELSE %] [% l(days') %][% END %]</span>
+              <span id="daysLeft2">[% expires_in %][% IF expires_in == 1 %] [% l('day') %][% ELSE %] [% l('days') %][% END %]</span>
             [% END %]
           </h3>
         </div>
