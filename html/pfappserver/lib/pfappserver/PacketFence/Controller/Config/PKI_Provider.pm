@@ -100,17 +100,17 @@ sub processCertificate :Path('processCertificate') :Args(1) {
     $logger->info("\ntype: $type");
     my $filesize;
 
-    #add PKI unique ID name ($type)
-
     #make and get file name
     my ($fh, $filename) = @_;
     my $dir = "/tmp";
-    my $template = "$type mytempfile XXXXXX";
+    my $template = "$type XXXXXX";
     #map($template -> $type)
     ($fh, $filename) = tempfile($template, DIR => $dir, SUFFIX => ".pem");
     $filesize = -s "$filename";
 
     $logger->info("filesize: $filesize \nfilename: $filename");
+    $c->stash->{filePath} = "/usr/local/pf/conf/ssl/tls_certs/$template";
+    $logger->info("filename: " .Dumper($c->stash->{filePath}));
     # post request, process
     if ($c->request->method eq 'POST'){
         #check if tempfile is valid file and if it's a pem type
@@ -122,7 +122,7 @@ sub processCertificate :Path('processCertificate') :Args(1) {
             #check if size is <1000000 bytes
             if ($filesize < 1000000){
 
-                move("/tmp/$filename","/usr/local/pf/conf/ssl/tls_certs/$filename");
+                rename("/tmp/$filename","/usr/local/pf/conf/ssl/tls_certs/$filename");
             }
             else{
                 $c->stash->{error_msg} = $c->loc("Certificate size is too big. Try again.");
