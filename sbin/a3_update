@@ -411,7 +411,7 @@ sub roll_back {
 
 sub apply_db_update_schema {
   my $passwd = get_db_password();
-  commit_progress_log("Applying database schema updates");
+  commit_progress_log_action_start("Applying database schema updates");
   foreach my $db_file (@db_schema_files) {
     my $ret = `$MYSQL_BIN -u root -p$passwd $a3_db < $A3_DB_DIR/$db_file 2>&1`;
     if ($ret =~ /ERROR/i) {
@@ -420,6 +420,7 @@ sub apply_db_update_schema {
     }
   }
   commit_update_log("Finished applying database schema updates!");
+  commit_progress_log("done!");
 }
 
 sub apply_conf_migration {
@@ -454,6 +455,7 @@ sub post_update {
 
   foreach my $cmd (@post_cmd_list) {
     if (call_system("$cmd >> $A3_UPDATE_LOG_FILE 2>&1") != 0) {
+      commit_progress_log("error");
       A3_Die("Post-update processing failed, please investigate!");
     }
   }
