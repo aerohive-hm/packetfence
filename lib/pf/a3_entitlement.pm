@@ -215,8 +215,9 @@ sub find_all {
         return $iter->all;
     }
     else {
+        #return empty array if error in accessing db
         $logger->error("Failed to list entitlement keys: $status");
-        return $FALSE
+        return [];
     }
 }
 
