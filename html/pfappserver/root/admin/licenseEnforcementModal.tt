@@ -4,7 +4,7 @@
 <!--BEGINNING ALERT TEXT-->
        <div class="modal-content licenseAlert">
         <div class="modal-header" style="background-color: #FFC007; color:#333; font-weight:400; text-align:center;">
-          <h3 class="modal-title"><b>[% l('Your subscription has expired') %]</b>
+          <h3 class="modal-title"><b>[% l('License Has Expired') %]</b>
               <!--Put in po file please-->
           </h3>
         </div>

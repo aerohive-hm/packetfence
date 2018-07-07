@@ -25,7 +25,7 @@
 
   <div class="modal-footer">
     <a href="#" class="btn" data-dismiss="modal">[% l('Close') %]</a>
-    [% IF can_access("PKI_PROVIDER_UPDATE") %]<button class="btn btn-primary" id="savePKI" data-loading-text="[% l('Saving') %]">[% l('Save') %]</button>[% END %]
+    [% IF can_access("PKI_PROVIDER_UPDATE") %]<li class="btn btn-primary" id="savePKI" data-loading-text="[% l('Saving') %]">[% l('Save') %]</li>[% END %]
   </div>
 
 </form>
@@ -39,12 +39,19 @@ $(document).ready(function(){
     showServerFileInfo();
   };
 
-  // if save button is pressed
-  // check if showCaCertFileSize and showServerFileSize are TRUE
-  // then call process files
-  document.getElementById("savePKI").onclick = function(){
-      if (showCaCertFileInfo() && showServerFileInfo()){
-         processFiles();
+  document.getElementById("savePKI").onclick = function(e){
+      e.preventDefault();
+      var caFile = document.getElementById('ca_cert_path');
+      var serverFile = document.getElementById('server_cert_path');
+      console.log("clicked on save");
+      var pki_provider_name = document.getElementById("id").value;
+      console.log("pki_provider_name: " + pki_provider_name);
+      if (showCaCertFileInfo()){
+        if (showServerFileInfo()){
+          console.log("checked file validation");
+           processFiles(caFile, pki_provider_name);
+           processFiles(serverFile, pki_provider_name);
+         }
       }
   };
 });
@@ -79,19 +86,16 @@ function showServerFileInfo(){
       fileType2 = file2.type;
       fileSize2 = file2.size/1024;
 
-      console.log(" \nserver_cert: " + file2);
-      console.log(" \nserver_cert type: " + fileType2);
-      console.log(" \nserver_cert filesize: " + fileSize2);
-      console.log(fileTypeValidation(input2));
-
-      //test if file is .pem or not
       if (fileTypeValidation(input2)){
           if (fileSizeValidation(input2)){
+            return true;
           } else {
             alert("File size is greater than 1MB. Upload again.");
+            return false;
           }
       } else {
           alert("Incorrect file type. Upload again.");
+          return false;
       }
   }
 }
@@ -121,24 +125,20 @@ function showCaCertFileInfo() {
         alert("Please select a file before clicking 'Save'");
     }
     else {
-        file = input.files[0];
-        fileType = file.type;
-        fileSize = file.size/1024;
-        console.log(" \nca_cert: " + file );
-        console.log(" \nca_cert type: " + fileType );
-        console.log(" \nca_cert filesize: " + fileSize);
-
-        console.log(fileTypeValidation(input));
 
         if (fileTypeValidation(input)){
             if (fileSizeValidation(input)){
+              return true;
             } else {
               alert("File size is greater than 1MB. Upload again.");
+              return false;
             }
         } else {
             alert("Incorrect file type. Upload again.");
+            return false;
         }
     }
+
 }
 
 //test file types
@@ -182,17 +182,25 @@ function alertFile(tagName, innerHTML) {
 }
 
 //call only when save button is pressed
-function processFiles(){
+
+function processFiles(file, pki_provider_name){
   console.log("in process files function");
   var base_url = window.location.origin;
-  //check if the scep modal is open or the a3 PKI modal
+  console.log("url: " + base_url + 'config/pki_provider/processCertificate/' + "scep?name=" + pki_provider_name);
     $.ajax({
         type: 'POST',
-        url: base_url + 'admin/configuration/pki_provider/processCertificate/' + "scep",
-        success: function(){
-            alert("SUCCESS!! Files uploaded");
+        url: base_url + '/config/pki_provider/processCertificate/' + "scep?name=" + pki_provider_name,
+        data: {
+
         },
-        error: function(XMLHttpRequest){
+        success: function(data){
+            console.log("data: " + data);
+            console.log(data.filePath);
+            alert("SUCCESS!! Files uploaded");
+            return true;
+        },
+        error: function(data, XMLHttpRequest){
+           alert("ERROR" + data.status_msg);
         }
     });
   }

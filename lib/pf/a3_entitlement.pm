@@ -141,7 +141,7 @@ Checks whether the current entitlement is still active or not
 sub is_entitlement_expired {
     my @active_entitlements = find_active();
     my ($trial_status, $trial_info) = get_trial_status();
-    if (is_success($trial_status)) {
+    if (is_success($trial_status) && is_in_trial()) {
         return $trial_info->{is_expired} && @active_entitlements == 0;
     }
     else {
@@ -333,7 +333,8 @@ checks whether the user is in trial or not, in trial means no entitlement keys f
 =cut
 
 sub is_in_trial {
-    return !find_all() && get_trial();
+    my $all_entitlements = find_all();
+    return !@$all_entitlements && get_trial();
 }
 
 =head2 verify

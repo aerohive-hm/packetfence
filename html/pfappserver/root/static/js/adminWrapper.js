@@ -62,8 +62,8 @@ function timeLeft(){
     }).done(function(data){
          seconds = data.trial[0].expires_in;
          var parseSeconds = parseInt(seconds, 10);
-         days  = Math.ceil(parseSeconds / (3600*24));
-         hours = Math.ceil(parseSeconds / 3600);
+         days  = Math.floor(parseSeconds / (3600*24));
+         hours = Math.floor(parseSeconds / 3600);
          numberOfDaysLeft = days;
          var percentageWidth = Math.round((numberOfDaysLeft) * (100/30)) + '%';
          if (numberOfDaysLeft > 15 && numberOfDaysLeft < 29){
@@ -78,7 +78,7 @@ function timeLeft(){
 
          }else if(numberOfDaysLeft <= 15 && numberOfDaysLeft > 0 ){
             console.log("yes less than 15 days");
-            openAlmostExpiredModal();
+            // openAlmostExpiredModal();
             if ($.cookie('pop') == null) {
                console.log("show modal");
                // openAlmostExpiredModal();
