@@ -124,8 +124,22 @@ sub exit_success {
 }
 
 sub exit_failure {
+  my ($code) = @_;
   commit_progress_log("Update was unsuccessful.");
-  exit $_ // 1;
+  exit $code // 1;
+}
+
+sub call_system {
+  my $cmd = shift;
+
+  commit_update_log("call_system invoked with \"$cmd\"");
+
+  my $ret       = system($cmd);
+  my $exit_code = $ret >> 8;
+
+  commit_update_log("system() returned $ret, exit code is $exit_code");
+
+  return $exit_code;
 }
 
 sub dump_db {
@@ -143,8 +157,7 @@ sub dump_db {
     print "We have password $db_passwd\n";
   }
 
-  my $ret = system("$MYSQLDUMP_BIN --opt -u root -p$db_passwd $a3_db > $A3_UPDATE_DB_DUMP");
-  if ($ret != 0) {
+  if (call_system("$MYSQLDUMP_BIN --opt -u root -p$db_passwd $a3_db > $A3_UPDATE_DB_DUMP") != 0) {
     commit_update_log("Unable to back up database: $!");
     commit_progress_log("error");
     die "Database backup failed!\n";
@@ -157,8 +170,7 @@ sub dump_db {
 sub dump_app {
   commit_progress_log_action_start("Backing up application data");
 
-  my $ret = system "$TAR_BIN -C /usr/local -czf $A3_UPDATE_APP_DUMP pf --exclude='pf/logs' --exclude='pf/var'";
-  if ($ret != 0) {
+  if (call_system("$TAR_BIN -C /usr/local -czf $A3_UPDATE_APP_DUMP pf --exclude='pf/logs' --exclude='pf/var'") != 0) {
     commit_update_log("Unable to back up application data: $!");
     commit_progress_log("error");
     die "Application data backup failed!\n";
@@ -173,7 +185,7 @@ sub stop_services {
   my @service_stop_cmd = ("$PFCMD_BIN service pf stop");
 
   # We need to make sure config service is running, otherwise pfcmd will not able to do the stop job
-  if (system("$SYSTEMCTL_BIN status packetfence-config | $GREP_BIN Active | $GREP_BIN running") != 0) {
+  if (call_system("$SYSTEMCTL_BIN status packetfence-config | $GREP_BIN Active | $GREP_BIN running") != 0) {
     commit_update_log("A3 configuration service is not running");
     die "A3 configuration service is not running\n";
   }
@@ -182,7 +194,7 @@ sub stop_services {
   commit_progress_log_action_start("Stopping A3 services");
 
   foreach (@service_stop_cmd) {
-    if (system($_) != 0) {
+    if (call_system($_) != 0) {
       commit_update_log("Unable to stop service $_");
       warn "Unable to stop A3 services\n";
     }
@@ -193,9 +205,9 @@ sub stop_services {
 }
 
 sub check_up_to_date {
-  system "$YUM_BIN clean all >/dev/null; $YUM_BIN makecache fast >/dev/null";
+  call_system("$YUM_BIN clean all >/dev/null; $YUM_BIN makecache fast >/dev/null");
   open CMD, '-|', "$YUM_BIN list $a3_pkg" or die $!;
-  local $/=undef;
+  local $/ = undef;
   my $line = <CMD>;
 
   return $line !~ /Available/m;
@@ -204,8 +216,7 @@ sub check_up_to_date {
 sub check_yum_connectivity {
   commit_progress_log_action_start("Checking connectivity to update servers");
 
-  my $ret = system("$PING_BIN -c 3 $CENTOS_BASE >/dev/null 2>&1");
-  if ($ret != 0){
+  if (call_system("$PING_BIN -c 3 $CENTOS_BASE >/dev/null 2>&1") != 0){
     commit_progress_log("error");
     A3_Die("Unable to connect to CentOS base yum repository!");
   }
@@ -261,7 +272,7 @@ sub execute_app_update {
   commit_update_log("Update pkg cmd is $cmd");
   commit_progress_log_action_start("Updating A3 packages");
 
-  if (system("$cmd 2>&1 | $TEE_BIN -a $A3_UPDATE_LOG_FILE") != 0) {
+  if (call_system("$cmd >> $A3_UPDATE_LOG_FILE 2>&1") != 0) {
     A3_Warn("Unable to update A3 packages, attempting to rollback changes");
     commit_progress_log("error");
     roll_back("app");
@@ -312,34 +323,33 @@ sub check_conf_migration_file {
   for (0..$#update_path_list-1) {
     push @conf_migration_files, "conf_migration-".$update_path_list[$_]."-".$update_path_list[$_+1];
   }
-  commit_update_log('The configuration migration files that need to be applied are' . join(',',@conf_migration_files));
+  commit_update_log('The configuration migration files that need to be applied are ' . join(',',@conf_migration_files));
   foreach (@conf_migration_files) {
     if (! -e $A3_MIGRATION_DIR."/".$_) {
-        A3_Die("The configuration migration script for $_ does not exist, fatal!!");
+      A3_Die("The configuration migration script for $_ does not exist, fatal!!");
     }
   }
 }
 
 sub unpack_app_back {
-  if (system("$TAR_BIN xfz $A3_UPDATE_APP_DUMP -C $TMP_DIR") != 0) {
+  if (call_system("$TAR_BIN xfz $A3_UPDATE_APP_DUMP -C $TMP_DIR") != 0) {
     A3_Die("Unable to unpack the application data backup file!");
   }
 }
 
 sub restore_conf_file {
-  my $app_dump_copy = $$A3_UPDATE_APP_DUMP;
+  my $app_dump_copy = $A3_UPDATE_APP_DUMP;
   #remove suffix
   $app_dump_copy =~ s/\..*$//;
   commit_update_log("Restoring configuration files");
-  system "$RM_BIN -rf $A3_CONF_DIR/*; \\
-          $CP_BIN -rf $TMP_DIR/pf/conf/* $A3_CONF_DIR";
+  call_system("$RM_BIN -rf $A3_CONF_DIR/*; $CP_BIN -rf $TMP_DIR/pf/conf/* $A3_CONF_DIR");
 }
 
 sub roll_back_db {
   if (! -e $A3_UPDATE_DB_DUMP) {
     A3_Die("Database backup file does not exist, unable to restore!!");
   }
-  if (system "$MYSQL_BIN -u root -p$db_passwd $a3_db < $A3_UPDATE_DB_DUMP" != 0) {
+  if (call_system "$MYSQL_BIN -u root -p$db_passwd $a3_db < $A3_UPDATE_DB_DUMP" != 0) {
     A3_Die("Database restore has failed, please investigate!!");
   }
 }
@@ -354,7 +364,7 @@ sub roll_back_app {
   #3)new rpm is partially installed
   commit_update_log("RPM version is $rpm_version and current version is $CURRENT_VERSION");
   if (! $rpm_version) {
-    if (system("$YUM_BIN install $a3_pkg."-".$CURRENT_VERSION -y | $TEE_BIN -a $A3_UPDATE_LOG_FILE}") != 0) {
+    if (call_system("$YUM_BIN install $a3_pkg."-".$CURRENT_VERSION -y | $TEE_BIN -a $A3_UPDATE_LOG_FILE}") != 0) {
       A3_Die("Failed to roll back application, really Die!!");
     }
     #restore conf
@@ -370,7 +380,7 @@ sub roll_back_app {
                     | $AWK_BIN -F'|' '{print \$1}'   \\
                     | $HEAD_BIN -1`;
     commit_update_log("Start rolling back last update");
-    system("$YUM_BIN history undo $history_id -y | $TEE_BIN -a $A3_UPDATE_LOG_FILE");
+    call_system("$YUM_BIN history undo $history_id -y | $TEE_BIN -a $A3_UPDATE_LOG_FILE");
     commit_update_log("Finished rolling back last update");
     restore_conf_file();
   }
@@ -401,7 +411,7 @@ sub roll_back {
 
 sub apply_db_update_schema {
   my $passwd = get_db_password();
-  commit_progress_log("Applying database schema updates");
+  commit_progress_log_action_start("Applying database schema updates");
   foreach my $db_file (@db_schema_files) {
     my $ret = `$MYSQL_BIN -u root -p$passwd $a3_db < $A3_DB_DIR/$db_file 2>&1`;
     if ($ret =~ /ERROR/i) {
@@ -410,13 +420,14 @@ sub apply_db_update_schema {
     }
   }
   commit_update_log("Finished applying database schema updates!");
+  commit_progress_log("done!");
 }
 
 sub apply_conf_migration {
   commit_progress_log_action_start("Applying configuration migration scripts");
 
   foreach (@conf_migration_files) {
-    system "$A3_MIGRATION_DIR/$_";
+    call_system("$A3_MIGRATION_DIR/$_");
   }
 
   commit_progress_log("done!");
@@ -424,13 +435,13 @@ sub apply_conf_migration {
 
 sub set_up {
   # clean yum cache
-  system("$YUM_BIN clean all");
+  call_system("$YUM_BIN clean all");
 }
 
 sub find_rpmnew {
   my @rpmnew_list;
   find sub { if ($File::Find::name =~ /\.rpmnew/) { push @rpmnew_list, $File::Find::name; } }, ($A3_BASE_DIR);
-  commit_update_log ('The list of rpmnew files is ' . join(',',@rpmnew_list) . 'These files may need to be merged manually if necessary!');
+  commit_update_log('The list of rpmnew files is ' . join(',',@rpmnew_list) . '; These files may need to be merged manually if necessary!');
 }
 
 sub post_update {
@@ -443,7 +454,8 @@ sub post_update {
   commit_progress_log_action_start("Starting post-update processing");
 
   foreach my $cmd (@post_cmd_list) {
-     if (system("$cmd | $TEE_BIN -a $A3_UPDATE_LOG_FILE") != 0) {
+    if (call_system("$cmd >> $A3_UPDATE_LOG_FILE 2>&1") != 0) {
+      commit_progress_log("error");
       A3_Die("Post-update processing failed, please investigate!");
     }
   }

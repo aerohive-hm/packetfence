@@ -542,22 +542,28 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
 
 sub update :Chained('object') :PathPart('update') :Args(0){
     my( $self, $c ) = @_;
-    my $logger = get_logger();
-    if ($c->request->method eq 'GET') {
-        my ($status, $latest) = $c->model('Update')->fetch_latest_release();
 
-        if ($status == $STATUS::OK) {
-            $c->stash->{update_available} = $TRUE;
-            $c->stash->{version}          = $latest->{version};
-            $c->stash->{releaseNotesUri}  = $latest->{releaseNotesUri};
-        }
-        elsif ($status == $STATUS::NO_CONTENT) {
-            $c->stash->{update_available} = $FALSE;
-        }
-        else {
-            # TODO: Error
+    if ($c->request->method eq 'GET') {
+        my $is_update_in_progress = $c->model('Update')->is_update_in_progress();
+        my ($status, $latest)     = $c->model('Update')->fetch_latest_release();
+
+        $c->stash->{is_update_in_progress} = $is_update_in_progress;
+
+        if ( ! $is_update_in_progress ) {
+            if ($status == $STATUS::OK) {
+                $c->stash->{update_available} = $TRUE;
+                $c->stash->{version} = $latest->{version};
+                $c->stash->{releaseNotesUri} = $latest->{releaseNotesUri};
+            }
+            elsif ($status == $STATUS::NO_CONTENT) {
+                $c->stash->{update_available} = $FALSE;
+            }
+            else {
+                # TODO: Error
+            }
         }
     }
+
     my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
