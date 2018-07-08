@@ -827,6 +827,10 @@ msgstr "Un email a été envoyé à %1 pour %2 utilisateurs."
 msgid "An SMS was sent to %1 out of %2 users."
 msgstr "Un email a été envoyé à %1 pour %2 utilisateurs."
 
+# html/pfappserver/root/admin/update.tt
+msgid "An update to version %1 is currently in progress."
+msgstr "Une mise à jour vers la version %1 est actuellement en cours."
+
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Admin.pm
 msgid "Another challenge."
 msgstr "Un autre challenge."

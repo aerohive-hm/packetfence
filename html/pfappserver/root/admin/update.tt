@@ -22,7 +22,15 @@
         <h1 class="center-title">[% l('Software Update') %]</h1>
       </div>
       <div class="update-body">
-        [% IF update_available %]
+        [% IF is_update_in_progress %]
+          <div class="version-number">
+            <h2>[% l('An update to version [_1] is currently in progress.', [version]) %]</h2>
+          </div>
+          <div class="update-details">
+            <div class="detail-box update-in-progress">
+            </div>
+          </div>
+        [% ELSIF update_available %]
           <div class="version-number">
             <h2>[% l('A newer version of A3 is available:') %] [% version %]</h2>
             <div class="update-area">
@@ -33,15 +41,13 @@
           </div>
           <div class="update-details">
             <div class="detail-box">
-              [% IF is_update_in_progress %]
-                [% update_progress %]
-              [% ELSE %]
-                <iframe src="[% releaseNotesUri %]" width="498px" height="367px"></iframe>
-              [% END %]
+              <iframe src="[% releaseNotesUri %]" width="498px" height="367px"></iframe>
             </div>
           </div>
-         [% ELSE %]
-          <h2>[% l('There are no updates available at this time.') %]</h2>
+        [% ELSE %]
+          <div class="version-number">
+            <h2>[% l('There are no updates available at this time.') %]</h2>
+          </div>
         [% END %]
       </div>
     </div>
