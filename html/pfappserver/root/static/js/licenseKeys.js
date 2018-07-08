@@ -16,7 +16,6 @@ $(document).ready(function(){
 
 // apply button press
 function applyKeyButton(){
-  console.log("inside applyKeyButton");
   var applyKeyButton2 = $("#applyKey");
   applyKeyButton2.click(function(){
     var userKeyInput = document.getElementById('keyInput').value;

@@ -103,7 +103,7 @@ sub processCertificate :Path('processCertificate') :Args(1) {
     #make and get file name
     my ($fh, $filename) = @_;
     my $dir = "/tmp";
-    my $template = "$type XXXXXX";
+    my $template = "$type-XXXXXX";
     #map($template -> $type)
     ($fh, $filename) = tempfile($template, DIR => $dir, SUFFIX => ".pem");
     $filesize = -s "$filename";
