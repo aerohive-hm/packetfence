@@ -172,35 +172,15 @@ function processFiles(input, pki_provider_name){
     console.log("in process files function");
     console.log("file: " + input);
     var base_url = window.location.origin;
-
-    // var form = document.forms.namedItem("modalItem");
-    // var request = new XMLHttpRequest();
-    // request.upload.addEventListener('load', function (e){
-    //     console.log("loaded and complete");
-    // }, false);
-    //
-    // form.addEventListener('submit', function(e){
-    //     e.preventDefault();
-    //     var fd = new FormData(form);
-    //     console.log("fd1");
-    //     console.log(fd);
-    //     fd.append('file', input.files[0]);
-    //     request.open('post', base_url + '/config/pki_provider/processCertificate/' + "scep?name=" + pki_provider_name, true);
-    //     request.send(fd);
-    // }, false);
-
-
-    // console.log("url: " + base_url + 'config/pki_provider/processCertificate/' + "scep?name=" + pki_provider_name);
     var form = document.forms.namedItem("modalItem");
-    console.log("form: ");
-    console.log(form);
+    // console.log("form: ");
+    // console.log(form);
     var fd = new FormData(form[0]);
-    console.log("fd1");
-    console.log(fd);
-    // fd.append('input', input.files[0]);
+    // console.log("fd1");
+    // console.log(fd);
     fd.append("file", input.files[0]);
-    console.log("fd2");
-    console.log(fd);
+    // console.log("fd2");
+    // console.log(fd);
     $.ajax({
         type: 'POST',
         url: base_url + '/config/pki_provider/processCertificate/' + "scep?name=" + pki_provider_name,
