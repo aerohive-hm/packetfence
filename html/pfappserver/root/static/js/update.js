@@ -1,5 +1,10 @@
 $(document).ready(function () {
   updateButton();
+
+  var inProgress = $(".update-in-progress");
+  if (inProgress.length > 0) {
+    pollForProgress();
+  }
 });
 
 function updateButton() {
@@ -9,14 +14,13 @@ function updateButton() {
     $.ajax({
       url: '/update/latest',
       type: 'POST'
-    }).done(function (data) {
+    }).done(function () {
       updateButton.slideUp();
       $('.detail-box').empty();
       $('.detail-box').text('Starting A3 update...');
       sleep(10000).then(function () { pollForProgress(); });
     }).fail(function (xhr, status, error) {
       console.log(error);
-      // TODO: Error message in UI
     });
   });
 }
@@ -27,24 +31,25 @@ function pollForProgress() {
       type: 'GET'
   }).done(function (data) {
     if (data.update_progress) {
-      $('.detail-box').html(data.update_progress.split('\n').join('<br/>'));
+      $('.detail-box').html(data.update_progress.join('<br/>'));
       scheduleNext(data.update_progress);
     }
     else {
-      scheduleNext('');
+      scheduleNext(['']);
     }
   }).fail(function (xhr, status, error) {
     console.log(error);
-    // TODO: Error message in UI
-
-    // Schedule next anyway
-    scheduleNext('');
+    scheduleNext(['']);
   });
 }
 
 function scheduleNext(update_progress) {
-  if (update_progress.indexOf("Update was unsuccessful.") === -1
-      && update_progress.indexOf("Update completed successfully.") === -1) {
+  var lastLine = update_progress[update_progress.length - 1];
+
+  if (lastLine
+      && lastLine.indexOf("Update was unsuccessful.")       === -1
+      && lastLine.indexOf("Update completed successfully.") === -1) {
+
     sleep(10000).then(function () { pollForProgress(); });
   }
   else {

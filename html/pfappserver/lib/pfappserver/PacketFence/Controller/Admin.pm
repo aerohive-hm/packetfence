@@ -536,23 +536,28 @@ sub update :Chained('object') :PathPart('update') :Args(0){
     my( $self, $c ) = @_;
 
     if ($c->request->method eq 'GET') {
-        my $is_update_in_progress = $c->model('Update')->is_update_in_progress();
-        my ($status, $latest)     = $c->model('Update')->fetch_latest_release();
+        my $logger = get_logger();
 
-        $c->stash->{is_update_in_progress} = $is_update_in_progress;
+        $c->stash->{is_update_in_progress} = $c->model('Update')->is_update_in_progress();
 
-        if ( ! $is_update_in_progress ) {
-            if ($status == $STATUS::OK) {
-                $c->stash->{update_available} = $TRUE;
-                $c->stash->{version} = $latest->{version};
-                $c->stash->{releaseNotesUri} = $latest->{releaseNotesUri};
-            }
-            elsif ($status == $STATUS::NO_CONTENT) {
-                $c->stash->{update_available} = $FALSE;
-            }
-            else {
-                # TODO: Error
-            }
+        $logger->info("is_update_in_progress = " . $c->stash->{is_update_in_progress});
+
+        if ($c->stash->{is_update_in_progress}) {
+            $c->stash->{update_progress} = $c->model('Update')->get_update_status();
+        }
+
+        my ($status, $latest) = $c->model('Update')->fetch_latest_release();
+
+        if ($status == $STATUS::OK) {
+            $c->stash->{update_available} = $TRUE;
+            $c->stash->{version} = $latest->{version};
+            $c->stash->{releaseNotesUri} = $latest->{releaseNotesUri};
+        }
+        elsif ($status == $STATUS::NO_CONTENT) {
+            $c->stash->{update_available} = $FALSE;
+        }
+        else {
+            # TODO: Error
         }
     }
 

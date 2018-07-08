@@ -760,6 +760,10 @@ msgstr ""
 msgid "An SMS was sent to %1 out of %2 users."
 msgstr ""
 
+# html/pfappserver/root/admin/update.tt
+msgid "An update to version %1 is currently in progress."
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Admin.pm
 msgid "Another challenge."
 msgstr ""

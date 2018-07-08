@@ -94,7 +94,9 @@ Get the current status of the update process
 =cut
 
 sub get_update_status {
-    return read_file($PROGRESS_LOG);
+    my @text = read_file($PROGRESS_LOG);
+
+    return \@text;
 }
 
 sub lock_for_update {
