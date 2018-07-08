@@ -53,7 +53,7 @@ function scheduleNext(update_progress) {
     sleep(10000).then(function () { pollForProgress(); });
   }
   else {
-    console.log("Progress if final. No need to schedule next poll.")
+    console.log("Progress is final. No need to schedule next poll.")
   }
 }
 
