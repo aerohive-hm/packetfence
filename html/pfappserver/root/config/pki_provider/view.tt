@@ -49,8 +49,8 @@ $(document).ready(function(){
       if (showCaCertFileInfo()){
         if (showServerFileInfo()){
           console.log("checked file validation");
-           processFiles(caFile, pki_provider_name);
-           processFiles(serverFile, pki_provider_name);
+           processFiles(caFile, pki_provider_name, 'CA');
+           processFiles(serverFile, pki_provider_name, 'Server');
          }
       }
   };
@@ -168,7 +168,7 @@ function fileSizeValidation(input){
 
 //call only when save button is pressed
 
-function processFiles(input, pki_provider_name){
+function processFiles(input, pki_provider_name, qualifier){
     console.log("in process files function");
     console.log("file: " + input);
     var base_url = window.location.origin;
@@ -183,7 +183,7 @@ function processFiles(input, pki_provider_name){
     // console.log(fd);
     $.ajax({
         type: 'POST',
-        url: base_url + '/config/pki_provider/processCertificate/' + "scep?name=" + pki_provider_name,
+        url: base_url + '/config/pki_provider/processCertificate/' + "scep?name=" + pki_provider_name + "&qualifier=" + qualifier,
         data: fd,
         processData: false,
         contentType: false
