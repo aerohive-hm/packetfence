@@ -110,7 +110,7 @@ sub processCertificate :Path('processCertificate') :Args(1) {
         my $source    = $c->request->{uploads}->{file}->{tempname};
         my $targetdir = '/usr/local/pf/conf/ssl/tls_certs';
         my $template  = 'cert-XXXXXX';
-        my $target    = "$targetdir/$type-$name-$qualifier.pem";
+        my $target    = "$targetdir/$qualifier-$name.pem";
         my $tempfile  = "/usr/local/pf/conf/ssl/tls_certs/cert-XXXXXX.tmp";
         my $filesize  = -s $source;
 
