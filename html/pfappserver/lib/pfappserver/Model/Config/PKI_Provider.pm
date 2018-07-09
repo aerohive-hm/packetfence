@@ -45,12 +45,10 @@ sub remove {
         my ($obj_status, $obj) = $self->read($id);
         my ($status, $status_msg) = $self->SUPER::remove($id);
         if (is_success($status) && is_success($obj_status)) {
-            unlink($obj->{server_cert_path});
-            if (-e $obj->{server_cert_path}) {
+            if(unlink($obj->{server_cert_path}) != 1) {
                 $logger->warn("Failed to remove server cert for [_1] at [_2] $!",$id, $obj->{server_cert_path});
             }
-            unlink($obj->{ca_cert_path});
-            if (-e $obj->{ca_cert_path}) {
+            if(unlink($obj->{ca_cert_path}) != 1) {
                 $logger->warn("Failed to remove ca cert for [_1] at [_2] $!",$id, $obj->{ca_cert_path});
             }
         }
