@@ -46,15 +46,17 @@ function pollForProgress() {
 function scheduleNext(update_progress) {
   var lastLine = update_progress[update_progress.length - 1];
 
-  if (lastLine
-      && lastLine.indexOf("Update was unsuccessful.")       === -1
-      && lastLine.indexOf("Update completed successfully.") === -1) {
-
-    sleep(10000).then(function () { pollForProgress(); });
-  }
-  else {
+  if (lastLine && isTerminal(lastLine)) {
     console.log("Progress is final. No need to schedule next poll.")
   }
+  else {
+    sleep(10000).then(function () { pollForProgress(); });
+  }
+}
+
+function isTerminal(line) {
+  return line.indexOf("Update was unsuccessful.")       !== -1
+      || line.indexOf("Update completed successfully.") !== -1;
 }
 
 function sleep (time) {
