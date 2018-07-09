@@ -49,7 +49,6 @@ function toLicensePage(){
 }
 
 function timeLeft(){
-  console.log("inside time left");
   var base_url = window.location.origin;
   var timeBar = document.getElementById("time-indicator-bar");
   var numOfDaysLeft = 0;
@@ -77,12 +76,8 @@ function timeLeft(){
             $(timeBar).css('width', 180);
 
          }else if(numberOfDaysLeft <= 15 && numberOfDaysLeft > 0 ){
-            console.log("yes less than 15 days");
-            // openAlmostExpiredModal();
             if ($.cookie('pop') == null) {
                console.log("show modal");
-               // openAlmostExpiredModal();
-               // $('#myModal').modal('show');
                $.cookie('pop', '1');
             }
             if (numberOfDaysLeft == 1){

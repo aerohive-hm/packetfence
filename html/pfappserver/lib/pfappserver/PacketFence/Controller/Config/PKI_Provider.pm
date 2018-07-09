@@ -95,43 +95,64 @@ sub create_type : Path('create') : Args(1) {
 
 sub processCertificate :Path('processCertificate') :Args(1) {
     my ($self, $c, $type) = @_;
+
     my $logger = get_logger();
+
     $logger->info("inside acceptCertificate!!!");
     $logger->info("\ntype: $type");
-    my $filesize;
 
-    #make and get file name
-    my ($fh, $filename) = @_;
-    my $dir = "/tmp";
-    my $template = "$type XXXXXX";
-    #map($template -> $type)
-    ($fh, $filename) = tempfile($template, DIR => $dir, SUFFIX => ".pem");
-    $filesize = -s "$filename";
+    $c->stash->{current_view} = 'JSON';
 
-    $logger->info("filesize: $filesize \nfilename: $filename");
-    $c->stash->{filePath} = "/usr/local/pf/conf/ssl/tls_certs/$template";
-    $logger->info("filename: " .Dumper($c->stash->{filePath}));
-    # post request, process
     if ($c->request->method eq 'POST'){
-        #check if tempfile is valid file and if it's a pem type
-        my $checkCertificate = system "/usr/bin/openssl x509 -noout -text -in $filename";
-        # my $makeDir = system "mkdir /usr/local/pf/conf/ssl/tls_certs/"
-        $logger->info("checkCertificate: $checkCertificate");
+        my $filename  = $c->request->{uploads}->{file}->{filename};
+        my $name      = $c->request->{query_parameters}->{name};
+        my $qualifier = $c->request->{query_parameters}->{qualifier};
+        my $source    = $c->request->{uploads}->{file}->{tempname};
+        my $targetdir = '/usr/local/pf/conf/ssl/tls_certs';
+        my $template  = 'cert-XXXXXX';
+        my $target    = "$targetdir/$type-$name-$qualifier.pem";
+        my $tempfile  = "/usr/local/pf/conf/ssl/tls_certs/cert-XXXXXX.tmp";
+        my $filesize  = -s $source;
 
-        if ($checkCertificate == 0){
-            #check if size is <1000000 bytes
-            if ($filesize < 1000000){
+        $logger->info("filename: $filename, size: $filesize, location: $source");
 
-                rename("/tmp/$filename","/usr/local/pf/conf/ssl/tls_certs/$filename");
-            }
-            else{
-                $c->stash->{error_msg} = $c->loc("Certificate size is too big. Try again.");
-            }
+        if ($filesize && $filesize > 1000000) {
+            $logger->warn("Uploaded file $filename is too large");
+            $c->response->status($STATUS::BAD_REQUEST);
+            $c->stash->{status_msg} = $c->loc("Certificate size is too big. Try again.");
+            return;
         }
-        else{
-            $c->stash->{error_msg} = $c->loc("File is invalid. Try again.");
+
+        my $ret = system("/usr/bin/openssl x509 -noout -text -in $source");
+
+        if (($ret >> 8) != 0) {
+            $logger->warn("Uploaded file $filename is not a certificate in PEM format");
+            $c->response->status($STATUS::BAD_REQUEST);
+            $c->stash->{status_msg} = $c->loc("File is invalid. Try again.");
+            return;
         }
-      }
+
+        my (undef, $tmp_filename) = tempfile($template, DIR => $targetdir, SUFFIX => ".tmp");
+
+        if ((system("/usr/bin/cp -f $source $tmp_filename") >> 8) != 0) {
+            $logger->warn("Failed to save file data: $!");
+            unlink($tmp_filename);
+
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+            return;
+        }
+
+        if ( ! rename($tmp_filename, $target) ) {
+            $logger->warn("Failed to move certificate file $filename into place at $target: $!");
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+            return;
+        }
+
+        $c->stash->{filePath} = $target;
+        $logger->info("Saved certificate at $target");
+    }
 }
 
 #find rand function

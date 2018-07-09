@@ -96,7 +96,7 @@ has_field 'organizational_unit' =>
 
 has_field 'ca_cert_path' =>
   (
-   type     => 'Upload',
+   type     => 'Text',
    label    => 'CA cert path',
    required => 1,
    tags     => { after_element => \&help,
@@ -105,7 +105,7 @@ has_field 'ca_cert_path' =>
 
 has_field 'server_cert_path' =>
   (
-   type => 'Upload',
+   type => 'Text',
    required => 1,
    tags => { after_element => \&help,
              help => 'RADIUS server authentication certificate. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.' },
