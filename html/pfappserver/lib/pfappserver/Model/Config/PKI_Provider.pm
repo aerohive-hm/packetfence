@@ -17,7 +17,7 @@ use Moose;
 use namespace::autoclean;
 use pf::ConfigStore::PKI_Provider;
 use pf::ConfigStore::Provisioning;
-
+use pf::log;
 extends 'pfappserver::Base::Model::Config';
 
 
@@ -31,7 +31,8 @@ Override the parent method to validate we don't remove a PKI provider that is us
 
 sub remove {
     my ($self, $id) = @_;
-    pf::log::get_logger->info("Deleting $id");
+    my $logger = get_logger();
+    $logger->info("Deleting $id");
     my @results = pf::ConfigStore::Provisioning->new->search("pki_provider", $id, "id");
     if(@results){
         my @ids = map { $_->{id} } @results;
@@ -41,7 +42,19 @@ sub remove {
         return ($status, $status_msg);
     }
     else {
-        return $self->SUPER::remove($id);
+        my ($obj_status, $obj) = $self->read($id);
+        my ($status, $status_msg) = $self->SUPER::remove($id);
+        if (is_success($status) && is_success($obj_status)) {
+            unlink($obj->{server_cert_path});
+            if (-e $obj->{server_cert_path}) {
+                $logger->warn("Failed to remove server cert for [_1] at [_2] $!",$id, $obj->{server_cert_path});
+            }
+            unlink($obj->{ca_cert_path});
+            if (-e $obj->{ca_cert_path}) {
+                $logger->warn("Failed to remove ca cert for [_1] at [_2] $!",$id, $obj->{ca_cert_path});
+            }
+        }
+        return ($status, $status_msg);
     }
 }
 
