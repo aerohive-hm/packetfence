@@ -13,7 +13,7 @@
   </div>
 
   <div class="alert alert-danger" id='success-alert' role="alert" style="display:none; position:fixed; z-index:25; left: 40%;">
-      <span id="errorMessage"></span>
+    <span id="errorMessage"></span>
   </div>
 
   <div class="modal-body pki-group">
@@ -46,6 +46,9 @@ $(document).ready(function(){
       var caFile = document.getElementById('ca_cert_path');
       var serverFile = document.getElementById('server_cert_path');
       var pki_provider_name = document.getElementById("id").value;
+      // if (pki_provider_name = null){
+        // return error msg; don't run the cert validation
+      // }
       if (showCaCertFileInfo()){
         if (showServerFileInfo()){
            processFiles(caFile, pki_provider_name, 'CA');
