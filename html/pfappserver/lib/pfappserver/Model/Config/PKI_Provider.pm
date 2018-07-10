@@ -56,6 +56,44 @@ sub remove {
     }
 }
 
+=head2 create
+
+Override the parent method to clone the old pki_provider config
+
+=cut
+
+sub create {
+    my ($self, $id, $assignments) = @_;
+    my ($status, $status_msg) = (HTTP_OK, "");
+    my $old_id_server = fileparse($assignments->{server_cert_path}, qr/\.[^.]*/);
+    $old_id_server = substr ($old_id_server, 0, -7);
+    my $old_id_ca = fileparse($assignments->{ca_cert_path}, qr/\.[^.]*/);
+    $old_id_ca = substr ($old_id_ca, 0, -3);
+    my $targetdir = '/usr/local/pf/conf/ssl/tls_certs';
+
+    #check if the server/CA certificate is changed or not
+    if ($old_id_server != $id) {
+        my $server_filename = "$targetdir/$id-Server.pem";
+        if ((system("/usr/bin/cp -f $assignments->{server_cert_path} $server_filename") >> 8) != 0) {
+            $logger->warn("Failed to copy [_1] to [_2] $!", $assignments->{server_cert_path}, $server_filename);
+            $status = $STATUS::INTERNAL_SERVER_ERROR;
+            $status_msg = "Unable to clone certificate. Try again.";
+            return ($status, $status_msg);
+        }
+    }
+
+    if ($old_id_ca != $id) {
+        my $ca_filename = "$targetdir/$id-CA.pem";
+        if ((system("/usr/bin/cp -f $assignments->{ca_cert_path} $ca_filename") >> 8) != 0) {
+            $logger->warn("Failed to copy [_1] to [_2] $!", $assignments->{ca_cert_path}, $ca_filename);
+            $status = $STATUS::INTERNAL_SERVER_ERROR;
+            $status_msg = "Unable to clone certificate. Try again.";
+            return ($status, $status_msg);
+        }
+    }
+    return $self->SUPER::create($id);
+}
+
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 
 =head1 COPYRIGHT
