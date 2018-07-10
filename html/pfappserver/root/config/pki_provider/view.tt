@@ -4,7 +4,33 @@
 [%ELSE%]
 [% SET action_uri = c.req.uri %]
 [% END %]
+<style>
+#ca_cert_path_upload, #server_cert_path_upload{
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+#ca_cert_path_upload + label, #server_cert_path_upload + label {
+    font-size: 1.25em;
+    font-weight: 700;
+    color: white;
+    background-color: #333;
+    display: inline-block;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    width: 220px;
+    text-align: center;
+}
 
+#ca_cert_path_upload + label:hover, #server_cert_path_upload + label:hover {
+    background-color: gray;
+
+}
+
+</style>
 <form name="modalItem" id="pki_form" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
   [%- IF item.id %]<input type="hidden" name="id" value="[% item.id | html %]">[% END %]
   <div class="modal-header">
@@ -13,7 +39,7 @@
   </div>
 
   <div class="alert alert-danger" id='success-alert' role="alert" style="display:none; position:fixed; z-index:25; left: 40%;">
-      <span id="errorMessage"></span>
+    <span id="errorMessage"></span>
   </div>
 
   <div class="modal-body pki-group">
@@ -31,21 +57,29 @@
 </form>
 <script>
 $(document).ready(function(){
-  $("#ca_cert_path").attr('type', 'File');
-  $("#server_cert_path").attr('type', 'File');
+  var caNewlabel = document.createElement("Label");
+    caNewlabel.setAttribute("for", "ca_cert_path_upload");
+    caNewlabel.setAttribute("id", "ca_cert_label_upload");
+    caNewlabel.innerHTML = "Upload File";
+  $("#ca_cert_path_upload").after(caNewlabel);
+  var servNewlabel = document.createElement("Label");
+    servNewlabel.setAttribute("for", "server_cert_path_upload");
+    servNewlabel.setAttribute("id", "server_cert_label_upload");
+    servNewlabel.innerHTML = "Choose File...";
+  $("#server_cert_path_upload").after(servNewlabel);
 
-  document.getElementById("ca_cert_path").onchange = function(){
+  document.getElementById("ca_cert_path_upload").onchange = function(){
     showCaCertFileInfo();
   };
-  document.getElementById("server_cert_path").onchange = function(){
+  document.getElementById("server_cert_path_upload").onchange = function(){
     showServerFileInfo();
   };
-
   document.getElementById("savePKI").onclick = function(e){
       e.preventDefault();
-      var caFile = document.getElementById('ca_cert_path');
-      var serverFile = document.getElementById('server_cert_path');
+      var caFile = document.getElementById('ca_cert_path_upload');
+      var serverFile = document.getElementById('server_cert_path_upload');
       var pki_provider_name = document.getElementById("id").value;
+
       if (showCaCertFileInfo()){
         if (showServerFileInfo()){
            processFiles(caFile, pki_provider_name, 'CA');
@@ -54,6 +88,8 @@ $(document).ready(function(){
       }
   };
 });
+
+
 
 function showServerFileInfo(){
   var input2;
@@ -65,7 +101,7 @@ function showServerFileInfo(){
       return;
   }
 
-  input2 = document.getElementById('server_cert_path');
+  input2 = document.getElementById('server_cert_path_upload');
   if (!input2) {
       alert("Couldn't find the file input element.");
   }
@@ -82,6 +118,10 @@ function showServerFileInfo(){
 
       if (fileTypeValidation(input2)){
           if (fileSizeValidation(input2)){
+            // append file name
+            var fileName = '';
+            fileName = input2.files[0].name;
+            document.getElementById("server_cert_label_upload").innerHTML = fileName;
             return true;
           } else {
             alert("File size is greater than 1MB. Upload again.");
@@ -104,7 +144,7 @@ function showCaCertFileInfo() {
         return;
     }
 
-    input = document.getElementById('ca_cert_path');
+    input = document.getElementById('ca_cert_path_upload');
     if (!input) {
         alert("Couldn't find the file input element.");
     }
@@ -118,13 +158,18 @@ function showCaCertFileInfo() {
 
         if (fileTypeValidation(input)){
             if (fileSizeValidation(input)){
+              var fileName = '';
+              fileName = input.files[0].name;
+              document.getElementById("ca_cert_label_upload").innerHTML = fileName;
               return true;
             } else {
+              document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
               alert("File size is greater than 1MB. Upload again.");
               return false;
             }
         } else {
             alert("Incorrect file type. Upload again.");
+            document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
             return false;
         }
     }
@@ -172,11 +217,9 @@ function processFiles(input, pki_provider_name, qualifier){
           var filePath = data.filePath;
           if (qualifier === "CA"){
             var ca_path = document.getElementById("ca_cert_path");
-            $("#ca_cert_path").attr('type', 'text');
             ca_path.value = filePath;
           } else if (qualifier === "Server") {
             var server_path = document.getElementById("server_cert_path");
-            $("#server_cert_path").attr('type', 'text');
             server_path.value = filePath;
           } else{
             console.log("does not exist");
@@ -187,7 +230,7 @@ function processFiles(input, pki_provider_name, qualifier){
           var errMsg = data.status_msg;
           if (errMsg != null ) {
               document.getElementById('errorMessage').innerHTML = errMsg;
-              $("#success-alert").show(); // use slide down for animation
+              $("#success-alert").show();
               setTimeout(function (){
                 $("#success-alert").slideUp(500);
               }, 3000);
