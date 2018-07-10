@@ -632,13 +632,20 @@ msgstr ""
 
 #html/pfappserver/root/admin/almostExpiringModal.tt
 
-msgid "It looks like your subscription is almost ending. Please renew your license by"
-msgstr ""
+msgid "Subscription Ending In"
+msgstr "La Période de Souscription Fin En "
+
+msgid "Your subscription is ending in"
+msgstr "La Période de Souscription Fin En"
 
 msgid "to continue using it. You can do this by calling this number:"
 msgstr ""
 
 msgid "If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service."
+msgstr ""
+
+#html/pfappserver/root/admin/licenseEnforcementModal.tt
+msgid "All license keys have expired. Contact Aerohive by calling this number to renew your subscription:"
 msgstr ""
 
 # html/pfappserver/root/config/adminroles/view.tt
@@ -4701,6 +4708,9 @@ msgstr "Nouveaux Appareils"
 # html/pfappserver/root/config/pki_provider/view.tt
 msgid "New PKI Provider"
 msgstr "Nouveau fournisseur de certificats"
+
+msgid "Choose file..."
+msgstr "Choisir un fichier..."
 
 # html/pfappserver/root/configurator/database.tt
 msgid "New Password"

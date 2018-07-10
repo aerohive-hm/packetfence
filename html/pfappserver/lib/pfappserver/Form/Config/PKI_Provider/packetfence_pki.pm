@@ -39,7 +39,7 @@ has_field 'host' => (
     default => "127.0.0.1",
     tags    => {
         after_element   => \&help,
-        help            => 'Host which hosts the PacketFence PKI',
+        help            => 'Host which hosts the A3 PKI',
     },
 );
 
@@ -49,7 +49,7 @@ has_field 'port' => (
     default => '9393',
     tags    => {
         after_element   => \&help,
-        help            => 'Port on which to contact the PacketFence PKI API',
+        help            => 'Port on which to contact the A3 PKI API',
     },
 );
 
@@ -60,7 +60,7 @@ has_field 'proto' => (
     options => [ { label => 'https', value => 'https' }, { label => 'http', value => 'http' } ],
     tags    => {
         after_element   => \&help,
-        help            => 'Protocol to use to contact the PacketFence PKI API',
+        help            => 'Protocol to use to contact the A3 PKI API',
     },
 );
 
@@ -118,14 +118,20 @@ has_field 'organization' => (
     },
 );
 
-has_field 'ca_cert_path' => (
-    type        => 'Text',
+has_field 'ca_cert_path_upload' => (
+    type        => 'Upload',
     label       => 'CA cert',
-    required    => 1,
+    required    => 0,
     tags        => {
         after_element   => \&help,
         help            => 'CA certificate for generating certificates. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.',
     },
+);
+
+has_field 'ca_cert_path' => (
+    type        => 'Hidden',
+    label       => 'CA cert',
+    required    => 1,
 );
 
 has_field 'cn_attribute' => (
@@ -149,14 +155,20 @@ has_field 'cn_format' => (
     },
 );
 
-has_field 'server_cert_path' => (
-    type        => 'Text',
+has_field 'server_cert_path_upload' => (
+    type        => 'Upload',
     label       => 'Server cert',
-    required    => 1,
+    required    => 0,
     tags        => {
         after_element   => \&help,
         help            => 'RADIUS server authentication certificate. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.',
     },
+);
+
+has_field 'server_cert_path' => (
+    type        => 'Hidden',
+    label       => 'Server cert',
+    required    => 1,
 );
 
 has_field 'revoke_on_unregistration' => (
@@ -170,7 +182,7 @@ has_field 'revoke_on_unregistration' => (
 );
 
 has_block 'definition' => (
-    render_list => [ qw(type proto host port username password profile country state organization cn_attribute cn_format revoke_on_unregistration ca_cert_path server_cert_path) ],
+    render_list => [ qw(type proto host port username password profile country state organization cn_attribute cn_format revoke_on_unregistration ca_cert_path ca_cert_path_upload server_cert_path server_cert_path_upload) ],
 );
 
 =head1 AUTHOR

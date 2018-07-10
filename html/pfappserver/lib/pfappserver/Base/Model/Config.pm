@@ -16,6 +16,8 @@ Is the Generic class for the cached config
 use Moose;
 use namespace::autoclean;
 use HTTP::Status qw(:constants :is);
+use pf::log;
+use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Model'; }
 
@@ -187,6 +189,7 @@ To create
 sub create {
     my ($self, $id, $assignments) = @_;
     my ($status, $status_msg) = (HTTP_OK, "");
+      my $logger = get_logger();
     delete $assignments->{$self->idKey};
     my $config = $self->configStore;
     if ($config->create($id,$assignments)) {
@@ -195,6 +198,7 @@ sub create {
         $status_msg = ["Section [_1] already exists in the configuration",$id];
         $status =  HTTP_PRECONDITION_FAILED;
     }
+    $logger->info("assignments: " .Dumper($assignments));
     return ($status, $status_msg);
 }
 
@@ -345,4 +349,3 @@ Copyright (C) 2005-2018 Inverse inc.
 =cut
 
 1;
-
