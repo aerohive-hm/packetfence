@@ -40,7 +40,6 @@ Readonly::Scalar my $CP_BIN               => "$BIN_DIR/cp";
 Readonly::Scalar my $CURL_BIN             => "$BIN_DIR/curl";
 Readonly::Scalar my $GREP_BIN             => "$BIN_DIR/grep";
 Readonly::Scalar my $HEAD_BIN             => "$BIN_DIR/head";
-Readonly::Scalar my $MKDIR_BIN            => "$BIN_DIR/mkdir";
 Readonly::Scalar my $MYSQL_BIN            => "$BIN_DIR/mysql";
 Readonly::Scalar my $MYSQLDUMP_BIN        => "$BIN_DIR/mysqldump";
 Readonly::Scalar my $PFCMD_BIN            => "$A3_BIN_DIR/pfcmd";
@@ -48,9 +47,11 @@ Readonly::Scalar my $PING_BIN             => "$BIN_DIR/ping";
 Readonly::Scalar my $RM_BIN               => "$BIN_DIR/rm";
 Readonly::Scalar my $RPM_BIN              => "$BIN_DIR/rpm";
 Readonly::Scalar my $SED_BIN              => "$BIN_DIR/sed";
+Readonly::Scalar my $SORT_BIN             => "$BIN_DIR/sort";
 Readonly::Scalar my $SYSTEMCTL_BIN        => "$BIN_DIR/systemctl";
 Readonly::Scalar my $TAR_BIN              => "$BIN_DIR/tar";
 Readonly::Scalar my $TEE_BIN              => "$BIN_DIR/tee";
+Readonly::Scalar my $UNIQ_BIN             => "$BIN_DIR/uniq";
 Readonly::Scalar my $YUM_BIN              => "$BIN_DIR/yum";
 
 # Environment
@@ -221,19 +222,29 @@ sub check_yum_connectivity {
     A3_Die("Unable to connect to CentOS base yum repository!");
   }
 
-  my $repo_ip =  `$YUM_BIN repolist -v       \\
-                | $GREP_BIN Repo-baseurl     \\
-                | $GREP_BIN aerohive         \\
-                | $AWK_BIN -F: '{print \$3}' \\
-                | $AWK_BIN -F/ '{print \$3}'`;
-  my $code = `$CURL_BIN -s -I -m 60 -w %{http_code} -o /dev/null http://$repo_ip`;
-  if ($code != 200){
-    commit_progress_log("error");
-    commit_update_log("Unable to connect to update servers");
+  my @repo_hosts = `$YUM_BIN repolist -v                               \\
+                  | $GREP_BIN -E Repo-baseurl.*aerohive                \\
+                  | $AWK_BIN -F' : ' '{print \$2}'                     \\
+                  | $SED_BIN -r 's/^(https?:\\/\\/[^/]+)\\/.*\$/\\1/g' \\
+                  | $SORT_BIN                                          \\
+                  | $UNIQ_BIN`;
 
-    print "Connect to Aerohive A3 yum repository failed!\n";
+  commit_update_log("Found update servers: " . join(',', @repo_hosts));
 
-    exit_failure(1);
+  foreach my $host (@repo_hosts) {
+    chomp $host;
+    commit_update_log("Checking connectivity to $host");
+
+    my $status = `$CURL_BIN -s -I -m 60 -w %{http_code} -o /dev/null $host`;
+
+    if ($status < 200 || $status >= 400) {
+      commit_progress_log("error");
+      commit_update_log("Unable to connect to update server $host");
+
+      print "Connect to Aerohive A3 yum repository at $host failed!\n";
+
+      exit_failure(1);
+    }
   }
 
   commit_progress_log("done!");
