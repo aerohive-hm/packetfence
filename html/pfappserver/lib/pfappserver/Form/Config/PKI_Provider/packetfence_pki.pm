@@ -134,6 +134,11 @@ has_field 'ca_cert_path' => (
     required    => 1,
 );
 
+has_field 'ca_cert_subject' => (
+    type        => 'Hidden',
+    required    => 0,
+);
+
 has_field 'cn_attribute' => (
     type    => 'Select',
     label   => 'Common Name Attribute',
@@ -171,6 +176,11 @@ has_field 'server_cert_path' => (
     required    => 1,
 );
 
+has_field 'server_cert_subject' => (
+    type        => 'Hidden',
+    required    => 0,
+);
+
 has_field 'revoke_on_unregistration' => (
     type             => 'Checkbox',
     label            => 'Revoke on unregistration',
@@ -182,7 +192,7 @@ has_field 'revoke_on_unregistration' => (
 );
 
 has_block 'definition' => (
-    render_list => [ qw(type proto host port username password profile country state organization cn_attribute cn_format revoke_on_unregistration ca_cert_path ca_cert_path_upload server_cert_path server_cert_path_upload) ],
+    render_list => [ qw(type proto host port username password profile country state organization cn_attribute cn_format revoke_on_unregistration ca_cert_path ca_cert_path_upload ca_cert_subject server_cert_path server_cert_path_upload server_cert_subject) ],
 );
 
 =head1 AUTHOR
