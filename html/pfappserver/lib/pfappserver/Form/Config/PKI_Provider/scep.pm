@@ -110,6 +110,12 @@ has_field 'ca_cert_path' =>
    required => 1,
    );
 
+has_field 'ca_cert_subject' =>
+  (
+   type     => 'Hidden',
+   required => 0,
+   );
+
 has_field 'server_cert_path_upload' =>
   (
    type => 'Upload',
@@ -125,6 +131,11 @@ has_field 'server_cert_path' =>
    required => 1,
   );
 
+has_field 'server_cert_subject' =>
+  (
+   type => 'Hidden',
+   required => 0,
+  );
 
 has_field 'cn_attribute' =>
   (
@@ -148,7 +159,7 @@ has_field 'cn_format' => (
 
 has_block definition =>
   (
-    render_list => [qw(type url username password country state locality organization organizational_unit cn_attribute cn_format ca_cert_path ca_cert_path_upload server_cert_path server_cert_path_upload)],
+    render_list => [qw(type url username password country state locality organization organizational_unit cn_attribute cn_format ca_cert_path ca_cert_path_upload ca_cert_subject server_cert_path server_cert_path_upload server_cert_subject)],
   );
 
 =head1 COPYRIGHT
