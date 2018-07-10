@@ -4,7 +4,58 @@
 [%ELSE%]
 [% SET action_uri = c.req.uri %]
 [% END %]
+<style>
+#ca_cert_path_upload{
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+#ca_cert_path_upload + label {
+    font-size: 1.25em;
+    font-weight: 700;
+    color: white;
+    background-color: #333;
+    display: inline-block;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    width: 220px;
+    text-align: center;
+}
 
+#ca_cert_path_upload + label:hover {
+    background-color: gray;
+
+}
+
+
+#server_cert_path_upload{
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+#server_cert_path_upload + label {
+    font-size: 1.25em;
+    font-weight: 700;
+    color: white;
+    background-color: #333;
+    display: inline-block;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    width: 220px;
+    text-align: center;
+}
+
+#server_cert_path_upload + label:hover {
+    background-color: gray;
+
+}
+</style>
 <form name="modalItem" id="pki_form" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
   [%- IF item.id %]<input type="hidden" name="id" value="[% item.id | html %]">[% END %]
   <div class="modal-header">
@@ -31,16 +82,16 @@
 </form>
 <script>
 $(document).ready(function(){
-  // var caNewlabel = document.createElement("Label");
-  //   caNewlabel.setAttribute("for", "ca_cert_path");
-  //   caNewlabel.setAttribute("id", "ca_cert_label");
-  //   caNewlabel.innerHTML = "Upload File";
-  // document.getElementById("#ca_cert_path").appendChild(caNewlabel);
-  // var servNewlabel = document.createElement("Label");
-  //   servNewlabel.setAttribute("for", "server_cert_path");
-  //   servNewlabel.setAttribute("id", "server_cert_label");
-  //   servNewlabel.innerHTML = "Upload File";
-  // document.getElementById("#server_cert_path").appendChild(servNewlabel);
+  var caNewlabel = document.createElement("Label");
+    caNewlabel.setAttribute("for", "ca_cert_path_upload");
+    caNewlabel.setAttribute("id", "ca_cert_label_upload");
+    caNewlabel.innerHTML = "Upload File";
+  $("#ca_cert_path_upload").after(caNewlabel);
+  var servNewlabel = document.createElement("Label");
+    servNewlabel.setAttribute("for", "server_cert_path_upload");
+    servNewlabel.setAttribute("id", "server_cert_label_upload");
+    servNewlabel.innerHTML = "Upload File";
+  $("#server_cert_path_upload").after(servNewlabel);
 
   document.getElementById("ca_cert_path_upload").onchange = function(){
     showCaCertFileInfo();
@@ -107,6 +158,10 @@ function showServerFileInfo(){
 
       if (fileTypeValidation(input2)){
           if (fileSizeValidation(input2)){
+            // append file name
+            var fileName = '';
+            fileName = input2.files[0].name;
+            document.getElementById("server_cert_label_upload").innerHTML = fileName;
             return true;
           } else {
             alert("File size is greater than 1MB. Upload again.");
@@ -143,13 +198,18 @@ function showCaCertFileInfo() {
 
         if (fileTypeValidation(input)){
             if (fileSizeValidation(input)){
+              var fileName = '';
+              fileName = input.files[0].name;
+              document.getElementById("ca_cert_label_upload").innerHTML = fileName;
               return true;
             } else {
+              document.getElementById("ca_cert_label_upload").innerHTML = 'Upload File';
               alert("File size is greater than 1MB. Upload again.");
               return false;
             }
         } else {
             alert("Incorrect file type. Upload again.");
+            document.getElementById("ca_cert_label_upload").innerHTML = 'Upload File';
             return false;
         }
     }
