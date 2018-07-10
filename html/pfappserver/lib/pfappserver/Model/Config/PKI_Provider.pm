@@ -99,6 +99,7 @@ sub create {
         if (is_error($status)) {
             return ($status, $status_msg);
         }
+        $assignments->{server_cert_path} = $server_filename;
     }
 
     if ($old_id_ca ne $id) {
@@ -107,6 +108,7 @@ sub create {
             unlink($server_filename);
             return ($status, $status_msg);
         }
+        $assignments->{ca_cert_path} = $ca_filename;
     }
     return $self->SUPER::create($id);
 }
