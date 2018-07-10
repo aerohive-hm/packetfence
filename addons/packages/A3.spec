@@ -489,7 +489,7 @@ done
 %{__install} -d -m2770 $RPM_BUILD_ROOT/usr/local/pf/conf_migration
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/conf/radiusd
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/conf/ssl
-%{__install} -d -g pf -o pf -m0755 $RPM_BUILD_ROOT/usr/local/pf/conf/ssl/tls_certs
+%{__install} -d -m0755 $RPM_BUILD_ROOT/usr/local/pf/conf/ssl/tls_certs
 %{__install} -d -m2775 $RPM_BUILD_ROOT%logdir
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/raddb/sites-enabled
 %{__install} -d -m2775 $RPM_BUILD_ROOT/usr/local/pf/var
