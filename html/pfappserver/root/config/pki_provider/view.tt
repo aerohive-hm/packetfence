@@ -13,21 +13,21 @@
 	position: absolute;
 	z-index: -1;
 }
+
 #ca_cert_path_upload + label, #server_cert_path_upload + label {
-    font-size: 1.25em;
-    font-weight: 700;
-    color: white;
-    background-color: #333;
-    display: inline-block;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    width: 220px;
-    text-align: center;
+  font-size: 1.25em;
+  font-weight: 700;
+  color: white;
+  background-color: #333;
+  display: inline-block;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  width: 220px;
+  text-align: center;
 }
 
 #ca_cert_path_upload + label:hover, #server_cert_path_upload + label:hover {
-    background-color: gray;
-
+  background-color: gray;
 }
 </style>
 <form name="modalItem" id="pki_form" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
