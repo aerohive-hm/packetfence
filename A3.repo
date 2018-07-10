@@ -1,18 +1,18 @@
 [A3_os]
 name=Aerohive A3 Base Operating System Repository
-baseurl=http://cloud.aerohive.com/yum/A3_os/\$basearch
+baseurl=https://cloud.aerohive.com/yum/A3_os/\$basearch
 gpgcheck=0
 enabled=0
 
 [A3_deps]
 name=Aerohive A3 Application Dependency Repository
-baseurl=http://cloud.aerohive.com/yum/A3_deps/\$basearch
+baseurl=https://cloud.aerohive.com/yum/A3_deps/\$basearch
 gpgcheck=0
 enabled=1
 
 [A3_release]
 name=Aerohive A3 Release Repository
-baseurl=http://cloud.aerohive.com/yum/A3_release/\$basearch
+baseurl=https://cloud.aerohive.com/yum/A3_release/\$basearch
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Aerohive
 enabled=1
