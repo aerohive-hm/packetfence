@@ -84,13 +84,15 @@ before [qw(clone view _processCreatePost update)] => sub {
 };
 
 sub create_type : Path('create') : Args(1) {
-    my ($self, $c, $type) = @_;
-    my $logger = get_logger();
+    my ($self, $c, $type, $assignments) = @_;
+    # my $logger = get_logger();
     my $model = $self->getModel($c);
     my $itemKey = $model->itemKey;
     $c->stash->{$itemKey}{type} = $type;
-    $logger->info("model: " .Dumper($c));
+    # $logger->info("assignments: " .Dumper($assignments));
+    # $logger->info("assignments: $assignments");
     $c->forward('create');
+
 }
 
 sub processCertificate :Path('processCertificate') :Args(1) {

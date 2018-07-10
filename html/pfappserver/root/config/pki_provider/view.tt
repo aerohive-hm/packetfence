@@ -31,24 +31,44 @@
 </form>
 <script>
 $(document).ready(function(){
-  $("#ca_cert_path").attr('type', 'File');
-  $("#server_cert_path").attr('type', 'File');
+  // var caNewlabel = document.createElement("Label");
+  //   caNewlabel.setAttribute("for", "ca_cert_path");
+  //   caNewlabel.setAttribute("id", "ca_cert_label");
+  //   caNewlabel.innerHTML = "Upload File";
+  // document.getElementById("#ca_cert_path").appendChild(caNewlabel);
+  // var servNewlabel = document.createElement("Label");
+  //   servNewlabel.setAttribute("for", "server_cert_path");
+  //   servNewlabel.setAttribute("id", "server_cert_label");
+  //   servNewlabel.innerHTML = "Upload File";
+  // document.getElementById("#server_cert_path").appendChild(servNewlabel);
 
-  document.getElementById("ca_cert_path").onchange = function(){
+  document.getElementById("ca_cert_path_upload").onchange = function(){
     showCaCertFileInfo();
   };
-  document.getElementById("server_cert_path").onchange = function(){
+  document.getElementById("server_cert_path_upload").onchange = function(){
     showServerFileInfo();
   };
 
+
+  // var ca_path_test = document.getElementById("ca_cert_path_upload");
+  // var serv_path_test = document.getElementById("ca_cert_path_upload");
+  // if(ca_path_test.value != null){
+  //    console.log("ca not null!");
+  // }else{
+  //     console.log("null");
+  // }
+  // if (serv_path_test.value != null){
+  //   console.log("serv not null");
+  // }else{
+  //     console.log("null");
+  // }
+
   document.getElementById("savePKI").onclick = function(e){
       e.preventDefault();
-      var caFile = document.getElementById('ca_cert_path');
-      var serverFile = document.getElementById('server_cert_path');
+      var caFile = document.getElementById('ca_cert_path_upload');
+      var serverFile = document.getElementById('server_cert_path_upload');
       var pki_provider_name = document.getElementById("id").value;
-      // if (pki_provider_name = null){
-        // return error msg; don't run the cert validation
-      // }
+
       if (showCaCertFileInfo()){
         if (showServerFileInfo()){
            processFiles(caFile, pki_provider_name, 'CA');
@@ -57,6 +77,8 @@ $(document).ready(function(){
       }
   };
 });
+
+
 
 function showServerFileInfo(){
   var input2;
@@ -68,7 +90,7 @@ function showServerFileInfo(){
       return;
   }
 
-  input2 = document.getElementById('server_cert_path');
+  input2 = document.getElementById('server_cert_path_upload');
   if (!input2) {
       alert("Couldn't find the file input element.");
   }
@@ -107,7 +129,7 @@ function showCaCertFileInfo() {
         return;
     }
 
-    input = document.getElementById('ca_cert_path');
+    input = document.getElementById('ca_cert_path_upload');
     if (!input) {
         alert("Couldn't find the file input element.");
     }
@@ -175,12 +197,14 @@ function processFiles(input, pki_provider_name, qualifier){
           var filePath = data.filePath;
           if (qualifier === "CA"){
             var ca_path = document.getElementById("ca_cert_path");
-            $("#ca_cert_path").attr('type', 'text');
+            // $("#ca_cert_path").attr('type', 'text');
             ca_path.value = filePath;
+            console.log("ca path: " + ca_path.value);
           } else if (qualifier === "Server") {
             var server_path = document.getElementById("server_cert_path");
-            $("#server_cert_path").attr('type', 'text');
+            // $("#server_cert_path").attr('type', 'text');
             server_path.value = filePath;
+            console.log("server path: " + server_path.value);
           } else{
             console.log("does not exist");
           }
