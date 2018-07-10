@@ -110,7 +110,7 @@ sub create {
         }
         $assignments->{ca_cert_path} = $ca_filename;
     }
-    return $self->SUPER::create($id);
+    return $self->SUPER::create($id, $assignments);
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
