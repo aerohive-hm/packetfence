@@ -18,6 +18,8 @@ use namespace::autoclean;
 use pf::ConfigStore::PKI_Provider;
 use pf::ConfigStore::Provisioning;
 use pf::log;
+use File::Basename;
+
 extends 'pfappserver::Base::Model::Config';
 
 
@@ -56,6 +58,23 @@ sub remove {
     }
 }
 
+=head2 copy_certs
+
+copies the certificates
+
+=cut
+
+sub copy_certs {
+    my ($file_from, $file_to = (@_);
+    my ($status, $status_msg) = (HTTP_OK, "");
+    if ((system("/usr/bin/cp -f $file_from $file_to") >> 8) != 0) {
+        $logger->warn("Failed to copy $file_from to $file_to $!");
+        $status = $STATUS::INTERNAL_SERVER_ERROR;
+        $status_msg = "Unable to clone certificate. Try again.";
+        return($status, $status_msg);
+    }
+}
+
 =head2 create
 
 Override the parent method to clone the old pki_provider config
@@ -70,24 +89,20 @@ sub create {
     my $old_id_ca = fileparse($assignments->{ca_cert_path}, qr/\.[^.]*/);
     $old_id_ca = substr ($old_id_ca, 0, -3);
     my $targetdir = '/usr/local/pf/conf/ssl/tls_certs';
-
+    my $server_filename = "$targetdir/$id-Server.pem";
+    my $ca_filename = "$targetdir/$id-CA.pem";
     #check if the server/CA certificate is changed or not
-    if ($old_id_server != $id) {
-        my $server_filename = "$targetdir/$id-Server.pem";
-        if ((system("/usr/bin/cp -f $assignments->{server_cert_path} $server_filename") >> 8) != 0) {
-            $logger->warn("Failed to copy [_1] to [_2] $!", $assignments->{server_cert_path}, $server_filename);
-            $status = $STATUS::INTERNAL_SERVER_ERROR;
-            $status_msg = "Unable to clone certificate. Try again.";
+    if ($old_id_server ne $id) {
+        ($status, $status_msg) = copy_certs($assignments->{server_cert_path}, $server_filename);
+        if (is_error($status)) {
             return ($status, $status_msg);
         }
     }
 
-    if ($old_id_ca != $id) {
-        my $ca_filename = "$targetdir/$id-CA.pem";
-        if ((system("/usr/bin/cp -f $assignments->{ca_cert_path} $ca_filename") >> 8) != 0) {
-            $logger->warn("Failed to copy [_1] to [_2] $!", $assignments->{ca_cert_path}, $ca_filename);
-            $status = $STATUS::INTERNAL_SERVER_ERROR;
-            $status_msg = "Unable to clone certificate. Try again.";
+    if ($old_id_ca ne $id) {
+        ($status, $status_msg) = copy_certs($assignments->{ca_cert_path}, $ca_filename);
+        if (is_error($status)) {
+            unlink($server_filenam);
             return ($status, $status_msg);
         }
     }
