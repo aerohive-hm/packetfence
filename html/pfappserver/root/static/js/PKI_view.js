@@ -23,11 +23,12 @@ $(document).ready(function(){
   var serverFile = document.getElementById('server_cert_path_upload');
   var serverFileExists = document.getElementById('server_cert_path');
   var pki_provider_name = document.getElementById("id");
-  console.log("caFile value: " + caFile.value.length);
-  console.log("servFile value: " + serverFile.value.length);
-  console.log("caFileExist value: " + caFileExists.value.length);
-  console.log("serverFileExists value: " + serverFileExists.value.length);
-  console.log("pki id: " + pki_provider_name);
+  var pki_provider_id = $("input[name=id]").val();
+  var caSubjectVal = document.getElementById('ca_cert_subject').value;
+  var servSubjectVal = document.getElementById('server_cert_subject').value;
+
+  document.getElementById('ca_cert_label_upload').after(caSubjectVal);
+  document.getElementById('server_cert_label_upload').after(servSubjectVal);
 
   document.getElementById("savePKI").onclick = function(e){
       e.preventDefault();
