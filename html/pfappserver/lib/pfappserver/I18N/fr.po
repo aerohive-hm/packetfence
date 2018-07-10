@@ -1168,8 +1168,18 @@ msgstr "Court-circuiter les systèmes de détection de portail captif par certai
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "CA cert path"
+msgid "CA Certificate"
+msgstr "Certificat de l’AC"
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+msgid "CA Certificate Path"
 msgstr "Emplacement du certificat de l’AC"
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_scep.pm
+msgid "CA certificate for generating certificates.<br/>When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format."
+msgstr "Certificat CA pour la génération de certificats.<br/>Lors du téléchargement, assurez-vous que le fichier est sous 1 Mo (1 mégaoctet ou 1000000 octets) et au format PEM."
 
 # html/pfappserver/root/admin/licenseKeys.tt
 msgid "Capacity"
@@ -1339,7 +1349,7 @@ msgstr "Cochez cette case pour que la durée d’accès corresponde au temps d�
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 msgid ""
-"Check this box to have the certificate revoke when the node using it is "
+"Check this box to have the certificate revoked when the node using it is "
 "unregistered.<br/>Do not use if multiple devices share the same certificate"
 msgstr "Cocher cette case pour que le certificat soit révoqué lorsqu’un équipement est désenregistré.</br>À ne pas utiliser si plusieurs équipements partagent le même certificat."
 
@@ -1732,6 +1742,7 @@ msgid "Comma-separated list of the device uplinks"
 msgstr "Liste des ports uplinks du équipement séparée par une virgule."
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
 msgid "Common Name Attribute"
 msgstr "Attribut nom d’hôte"
 
@@ -1739,10 +1750,6 @@ msgstr "Attribut nom d’hôte"
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
 msgid "Common Name Format"
 msgstr "Format nom d’hôte"
-
-# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
-msgid "Common name Attribute"
-msgstr "Attribut nom d’hôte"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
 msgid "Community Read"
@@ -5170,6 +5177,10 @@ msgid "Organization for the certificate"
 msgstr "Organisme définit dans le certificat"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
+msgid "Organizational Unit"
+msgstr "L’unité organisationnelle"
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
 msgid "Organizational unit for the certificate"
 msgstr "L’unité organisationnelle définit dans le certificat"
 
@@ -5270,7 +5281,7 @@ msgstr "Nom du fournisseur de certificats"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "PKI Provider type"
+msgid "PKI Provider Type"
 msgstr "Type du fournisseur de certificats"
 
 # html/pfappserver/root/configuration/portal_config.tt
@@ -6207,6 +6218,11 @@ msgstr "Secret RADIUS"
 msgid "RADIUS server certificate path"
 msgstr "Chemin du certificat RADIUS"
 
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+msgid "RADIUS server authentication certificate.<br/>When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format."
+msgstr "Certificat d'authentification du serveur RADIUS.<br/>Lors du téléchargement, assurez-vous que le fichier est sous 1 Mo (1 mégaoctet ou 1000000 octets) et au format PEM."
+
 # pf::admin_roles (Actions groups)
 msgid "RADIUS_LOG"
 msgstr "Journal d’Audit RADIUS"
@@ -6644,8 +6660,8 @@ msgid "Revert File"
 msgstr "Revenir sur le fichier"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "Revoke on unregistration"
-msgstr "Révoquer sur désenregistrement"
+msgid "Revoke When Unregistered?"
+msgstr "Révoquer sur désenregistrement?"
 
 # html/pfappserver/lib/pfappserver/Form/Config/BillingTiers.pm
 # html/pfappserver/lib/pfappserver/Form/Config/DeviceRegistration.pm
@@ -7183,7 +7199,12 @@ msgstr "Charge moyenne du serveur"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "Server cert path"
+msgid "Server Certificate"
+msgstr "Certificat serveur"
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+msgid "Server Certificate Path"
 msgstr "Emplacement du certificat serveur"
 
 # conf/documentation.conf (database.host)
