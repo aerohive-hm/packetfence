@@ -155,31 +155,6 @@ sub processCertificate :Path('processCertificate') :Args(1) {
     }
 }
 
-sub get_cert_subject {
-    return _get_cert_info(shift, '^\s*Subject:\s+(.*)$');
-}
-
-sub get_cert_subject_cn {
-    return _get_cert_info(shift, '^\s*Subject:.*\s(CN=[^,]+)$');
-}
-
-sub _get_cert_info {
-    my ($certfile, $pattern) = @_;
-
-    my @cert = `/usr/bin/openssl x509 -noout -text -in $certfile`;
-
-    if ($? == 0) {
-        foreach my $line (@cert) {
-            chomp $line;
-            if ($line =~ $pattern) {
-                return $1;
-            }
-        }
-    }
-
-    return undef;
-}
-
 #find rand function
 # function for checking names, later?
 

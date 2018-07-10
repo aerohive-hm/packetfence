@@ -23,6 +23,27 @@ extends 'pfappserver::Base::Model::Config';
 
 sub _buildConfigStore { pf::ConfigStore::PKI_Provider->new }
 
+=head2 read
+
+Override the parent method to inject certificate subject
+
+=cut
+
+sub read {
+    my ($self, $id) = @_;
+    my ($status, $result) = $self->SUPER::read($id);
+
+    if ($result->{ca_cert_path}) {
+        $result->{ca_cert_subject} = get_cert_subject_cn($result->{ca_cert_path});
+    }
+
+    if ($result->{server_cert_path}) {
+        $result->{server_cert_subject} = get_cert_subject_cn($result->{server_cert_path});
+    }
+
+    return ($status, $result);
+}
+
 =head2 remove
 
 Override the parent method to validate we don't remove a PKI provider that is used in a provisioner
@@ -54,6 +75,31 @@ sub remove {
         }
         return ($status, $status_msg);
     }
+}
+
+sub get_cert_subject {
+    return _get_cert_info(shift, '^\s*Subject:\s+(.*)$');
+}
+
+sub get_cert_subject_cn {
+    return _get_cert_info(shift, '^\s*Subject:.*\s(CN=[^,]+)$');
+}
+
+sub _get_cert_info {
+    my ($certfile, $pattern) = @_;
+
+    my @cert = `/usr/bin/openssl x509 -noout -text -in $certfile`;
+
+    if ($? == 0) {
+        foreach my $line (@cert) {
+            chomp $line;
+            if ($line =~ $pattern) {
+                return $1;
+            }
+        }
+    }
+
+    return undef;
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
