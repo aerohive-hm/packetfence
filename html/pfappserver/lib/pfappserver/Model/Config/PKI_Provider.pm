@@ -58,21 +58,22 @@ sub remove {
     }
 }
 
-=head2 copy_certs
+=head2 copy_cert
 
 copies the certificates
 
 =cut
 
-sub copy_certs {
-    my ($file_from, $file_to = (@_);
+sub copy_cert {
+    my $logger = get_logger();
+    my ($file_from, $file_to) = (@_);
     my ($status, $status_msg) = (HTTP_OK, "");
     if ((system("/usr/bin/cp -f $file_from $file_to") >> 8) != 0) {
         $logger->warn("Failed to copy $file_from to $file_to $!");
         $status = $STATUS::INTERNAL_SERVER_ERROR;
         $status_msg = "Unable to clone certificate. Try again.";
-        return($status, $status_msg);
     }
+    return($status, $status_msg);
 }
 
 =head2 create
@@ -91,18 +92,19 @@ sub create {
     my $targetdir = '/usr/local/pf/conf/ssl/tls_certs';
     my $server_filename = "$targetdir/$id-Server.pem";
     my $ca_filename = "$targetdir/$id-CA.pem";
+
     #check if the server/CA certificate is changed or not
     if ($old_id_server ne $id) {
-        ($status, $status_msg) = copy_certs($assignments->{server_cert_path}, $server_filename);
+        ($status, $status_msg) = copy_cert($assignments->{server_cert_path}, $server_filename);
         if (is_error($status)) {
             return ($status, $status_msg);
         }
     }
 
     if ($old_id_ca ne $id) {
-        ($status, $status_msg) = copy_certs($assignments->{ca_cert_path}, $ca_filename);
+        ($status, $status_msg) = copy_cert($assignments->{ca_cert_path}, $ca_filename);
         if (is_error($status)) {
-            unlink($server_filenam);
+            unlink($server_filename);
             return ($status, $status_msg);
         }
     }
