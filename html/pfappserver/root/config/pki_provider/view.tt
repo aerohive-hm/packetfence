@@ -5,7 +5,7 @@
 [% SET action_uri = c.req.uri %]
 [% END %]
 <style>
-#ca_cert_path_upload{
+#ca_cert_path_upload, #server_cert_path_upload{
 	width: 0.1px;
 	height: 0.1px;
 	opacity: 0;
@@ -13,7 +13,7 @@
 	position: absolute;
 	z-index: -1;
 }
-#ca_cert_path_upload + label {
+#ca_cert_path_upload + label, #server_cert_path_upload + label {
     font-size: 1.25em;
     font-weight: 700;
     color: white;
@@ -25,36 +25,11 @@
     text-align: center;
 }
 
-#ca_cert_path_upload + label:hover {
+#ca_cert_path_upload + label:hover, #server_cert_path_upload + label:hover {
     background-color: gray;
 
 }
 
-
-#server_cert_path_upload{
-	width: 0.1px;
-	height: 0.1px;
-	opacity: 0;
-	overflow: hidden;
-	position: absolute;
-	z-index: -1;
-}
-#server_cert_path_upload + label {
-    font-size: 1.25em;
-    font-weight: 700;
-    color: white;
-    background-color: #333;
-    display: inline-block;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    width: 220px;
-    text-align: center;
-}
-
-#server_cert_path_upload + label:hover {
-    background-color: gray;
-
-}
 </style>
 <form name="modalItem" id="pki_form" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
   [%- IF item.id %]<input type="hidden" name="id" value="[% item.id | html %]">[% END %]
@@ -90,7 +65,7 @@ $(document).ready(function(){
   var servNewlabel = document.createElement("Label");
     servNewlabel.setAttribute("for", "server_cert_path_upload");
     servNewlabel.setAttribute("id", "server_cert_label_upload");
-    servNewlabel.innerHTML = "Upload File";
+    servNewlabel.innerHTML = "Choose File...";
   $("#server_cert_path_upload").after(servNewlabel);
 
   document.getElementById("ca_cert_path_upload").onchange = function(){
@@ -99,21 +74,6 @@ $(document).ready(function(){
   document.getElementById("server_cert_path_upload").onchange = function(){
     showServerFileInfo();
   };
-
-
-  // var ca_path_test = document.getElementById("ca_cert_path_upload");
-  // var serv_path_test = document.getElementById("ca_cert_path_upload");
-  // if(ca_path_test.value != null){
-  //    console.log("ca not null!");
-  // }else{
-  //     console.log("null");
-  // }
-  // if (serv_path_test.value != null){
-  //   console.log("serv not null");
-  // }else{
-  //     console.log("null");
-  // }
-
   document.getElementById("savePKI").onclick = function(e){
       e.preventDefault();
       var caFile = document.getElementById('ca_cert_path_upload');
@@ -203,13 +163,13 @@ function showCaCertFileInfo() {
               document.getElementById("ca_cert_label_upload").innerHTML = fileName;
               return true;
             } else {
-              document.getElementById("ca_cert_label_upload").innerHTML = 'Upload File';
+              document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
               alert("File size is greater than 1MB. Upload again.");
               return false;
             }
         } else {
             alert("Incorrect file type. Upload again.");
-            document.getElementById("ca_cert_label_upload").innerHTML = 'Upload File';
+            document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
             return false;
         }
     }
@@ -257,14 +217,10 @@ function processFiles(input, pki_provider_name, qualifier){
           var filePath = data.filePath;
           if (qualifier === "CA"){
             var ca_path = document.getElementById("ca_cert_path");
-            // $("#ca_cert_path").attr('type', 'text');
             ca_path.value = filePath;
-            console.log("ca path: " + ca_path.value);
           } else if (qualifier === "Server") {
             var server_path = document.getElementById("server_cert_path");
-            // $("#server_cert_path").attr('type', 'text');
             server_path.value = filePath;
-            console.log("server path: " + server_path.value);
           } else{
             console.log("does not exist");
           }
@@ -274,7 +230,7 @@ function processFiles(input, pki_provider_name, qualifier){
           var errMsg = data.status_msg;
           if (errMsg != null ) {
               document.getElementById('errorMessage').innerHTML = errMsg;
-              $("#success-alert").show(); // use slide down for animation
+              $("#success-alert").show();
               setTimeout(function (){
                 $("#success-alert").slideUp(500);
               }, 3000);
