@@ -94,21 +94,35 @@ has_field 'organizational_unit' =>
              help => 'Organizational unit for the certificate'},
   );
 
-has_field 'ca_cert_path' =>
+has_field 'ca_cert_path_upload' =>
   (
-   type     => 'Text',
+   type     => 'Upload',
    label    => 'CA cert path',
-   required => 1,
+   required => 0,
    tags     => { after_element => \&help,
              help => 'CA certifcate for generating certificates. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.'},
   );
 
-has_field 'server_cert_path' =>
+has_field 'ca_cert_path' =>
   (
-   type => 'Text',
+   type     => 'Hidden',
+   label    => 'CA cert path',
    required => 1,
+   );
+
+has_field 'server_cert_path_upload' =>
+  (
+   type => 'Upload',
+   label    => 'Server cert path',
+   required => 0,
    tags => { after_element => \&help,
              help => 'RADIUS server authentication certificate. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.' },
+  );
+
+has_field 'server_cert_path' =>
+  (
+   type => 'Hidden',
+   required => 1,
   );
 
 
@@ -134,7 +148,7 @@ has_field 'cn_format' => (
 
 has_block definition =>
   (
-    render_list => [qw(type url username password country state locality organization organizational_unit cn_attribute cn_format ca_cert_path server_cert_path)],
+    render_list => [qw(type url username password country state locality organization organizational_unit cn_attribute cn_format ca_cert_path ca_cert_path_upload server_cert_path server_cert_path_upload)],
   );
 
 =head1 COPYRIGHT
