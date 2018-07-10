@@ -41,6 +41,7 @@ has_field 'type' =>
 has_field 'url' =>
   (
    type => 'Text',
+   label => 'URL',
    tags => { after_element => \&help,
              help => 'The URL used to connect to the SCEP PKI service'},
   );
@@ -90,6 +91,7 @@ has_field 'organization' =>
 has_field 'organizational_unit' =>
   (
    type => 'Text',
+   label => 'Organizational Unit',
    tags => { after_element => \&help,
              help => 'Organizational unit for the certificate'},
   );
@@ -97,16 +99,16 @@ has_field 'organizational_unit' =>
 has_field 'ca_cert_path_upload' =>
   (
    type     => 'Upload',
-   label    => 'CA cert path',
+   label    => 'CA Certificate',
    required => 0,
    tags     => { after_element => \&help,
-             help => 'CA certifcate for generating certificates. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.'},
+             help => 'CA certificate for generating certificates.<br/>When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format.'},
   );
 
 has_field 'ca_cert_path' =>
   (
    type     => 'Hidden',
-   label    => 'CA cert path',
+   label    => 'CA Certificate Path',
    required => 1,
    );
 
@@ -119,15 +121,16 @@ has_field 'ca_cert_subject' =>
 has_field 'server_cert_path_upload' =>
   (
    type => 'Upload',
-   label    => 'Server cert path',
+   label    => 'Server Certificate',
    required => 0,
    tags => { after_element => \&help,
-             help => 'RADIUS server authentication certificate. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.' },
+             help => 'RADIUS server authentication certificate.<br/>When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format.' },
   );
 
 has_field 'server_cert_path' =>
   (
    type => 'Hidden',
+   label    => 'Server Certificate Path',
    required => 1,
   );
 
@@ -140,7 +143,7 @@ has_field 'server_cert_subject' =>
 has_field 'cn_attribute' =>
   (
    type => 'Select',
-   label => 'Common name Attribute',
+   label => 'Common Name Attribute',
    options => [{ label => 'MAC address', value => 'mac' }, { label => 'Username' , value => 'pid' }],
    default => 'pid',
    tags => { after_element => \&help,
