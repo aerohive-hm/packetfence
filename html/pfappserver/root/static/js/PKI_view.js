@@ -44,7 +44,6 @@ $(document).ready(function(){
           if (caFile.value.length =! 0 && serverFile.value.length != 0){
             if (showCaCertFileInfo()){
               if (showServerFileInfo()){
-                console.log("Everything looks ok");
                  processFiles(caFile, pki_provider_name.value, 'CA');
                  processFiles(serverFile, pki_provider_name.value, 'Server');
                }
@@ -56,8 +55,22 @@ $(document).ready(function(){
             if (showCaCertFileInfo()){
               if (showServerFileInfo()){
                 console.log("Everything looks ok");
-                 processFiles(caFile, pki_provider_id, 'CA');
-                 processFiles(serverFile, pki_provider_id, 'Server');
+                processFiles(caFile, pki_provider_id, 'CA').then(function(){
+                  processFiles(serverFile, pki_provider_id, 'Server')
+                }).done( $('form').submit());
+                 // processFiles(caFile, pki_provider_id, 'CA').then(function(data){
+                 //    // processFiles(serverFile, pki_provider_id, 'Server');
+                 // }).then(function(data){
+                 //    processFiles(serverFile, pki_provider_id, 'Server');
+                 //    // $('form').submit();
+                 // }).then(function(){
+                 //    $('form').submit();
+                 // }).catch(function (error){
+                 //    console.log("update failed");
+                 // }).then(function(){
+                 //    console.log("update success");
+                 // });
+                 // processFiles(serverFile, pki_provider_id, 'Server');
                }
             }
           } else { $('form').submit(); }
@@ -65,7 +78,6 @@ $(document).ready(function(){
           console.log("create logic");
           if (showCaCertFileInfo()){
             if (showServerFileInfo()){
-              console.log("Everything looks ok");
                processFiles(caFile, pki_provider_name.value, 'CA');
                processFiles(serverFile, pki_provider_name.value, 'Server');
              }
@@ -196,7 +208,6 @@ function processFiles(input, pki_provider_name, qualifier){
     var form = document.forms.namedItem("modalItem");
     var fd = new FormData(form[0]);
     fd.append("file", input.files[0]);
-
     $.ajax({
         type: 'POST',
         url: base_url + '/config/pki_provider/processCertificate/' + "scep?name=" + pki_provider_name + "&qualifier=" + qualifier,
@@ -213,7 +224,11 @@ function processFiles(input, pki_provider_name, qualifier){
             var server_path = document.getElementById("server_cert_path");
             server_path.value = filePath;
           } else{
-            console.log("does not exist");
+              document.getElementById('errorMessage').innerHTML = "Something went wrong.";
+              $("#success-alert").show();
+              setTimeout(function (){
+                $("#success-alert").slideUp(500);
+              }, 3000);
           }
           $('form').submit();
         },
