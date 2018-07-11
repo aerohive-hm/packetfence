@@ -58,18 +58,6 @@ $(document).ready(function(){
                 processFiles(caFile, pki_provider_id, 'CA').then(function(){
                   processFiles(serverFile, pki_provider_id, 'Server')
                 }).done( $('form').submit());
-                 // processFiles(caFile, pki_provider_id, 'CA').then(function(data){
-                 //    // processFiles(serverFile, pki_provider_id, 'Server');
-                 // }).then(function(data){
-                 //    processFiles(serverFile, pki_provider_id, 'Server');
-                 //    // $('form').submit();
-                 // }).then(function(){
-                 //    $('form').submit();
-                 // }).catch(function (error){
-                 //    console.log("update failed");
-                 // }).then(function(){
-                 //    console.log("update success");
-                 // });
                  // processFiles(serverFile, pki_provider_id, 'Server');
                }
             }
