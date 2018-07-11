@@ -1107,11 +1107,6 @@ msgstr ""
 msgid "CA Certificate Path"
 msgstr ""
 
-# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_scep.pm
-msgid "CA certificate for generating certificates.<br/>When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format."
-msgstr ""
-
 # html/pfappserver/root/admin/licenseKeys.tt
 msgid "Capacity"
 msgstr ""
@@ -5771,11 +5766,6 @@ msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Provisioning/mobileconfig.pm
 msgid "RADIUS server certificate path"
-msgstr ""
-
-# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
-# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "RADIUS server authentication certificate.<br/>When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format."
 msgstr ""
 
 # pf::admin_roles (Actions groups)
@@ -11687,6 +11677,11 @@ msgstr "Username"
 
 # html/pfappserver/lib/pfappserver/Form/Field/Duration.pm
 msgid "weeks"
+msgstr ""
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+msgid "When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format."
 msgstr ""
 
 # pf::provisioner (Provisioners)
