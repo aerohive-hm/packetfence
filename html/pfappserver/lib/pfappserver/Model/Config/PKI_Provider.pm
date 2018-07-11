@@ -36,11 +36,11 @@ sub read {
     my ($status, $result) = $self->SUPER::read($id);
 
     if ($result->{ca_cert_path}) {
-        $result->{ca_cert_subject} = get_cert_subject_cn($result->{ca_cert_path});
+        $result->{ca_cert_subject} = get_cert_subject($result->{ca_cert_path});
     }
 
     if ($result->{server_cert_path}) {
-        $result->{server_cert_subject} = get_cert_subject_cn($result->{server_cert_path});
+        $result->{server_cert_subject} = get_cert_subject($result->{server_cert_path});
     }
 
     return ($status, $result);
