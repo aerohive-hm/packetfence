@@ -44,7 +44,6 @@ $(document).ready(function(){
 
 function toLicensePage(){
       var base_url = window.location.origin;
-      console.log("going to license management page");
       location.href = base_url+"/admin/licenseKeys";
 }
 
@@ -77,7 +76,6 @@ function timeLeft(){
 
          }else if(numberOfDaysLeft <= 15 && numberOfDaysLeft > 0 ){
             if ($.cookie('pop') == null) {
-               console.log("show modal");
                $.cookie('pop', '1');
             }
             if (numberOfDaysLeft == 1){
@@ -88,7 +86,6 @@ function timeLeft(){
               $(timeBar).css('width', percentageWidth);
             }
          }else if (numberOfDaysLeft == 0){
-              console.log("show expired modal");
                $('#expiredModal').modal('show');
                $("#daysLeft").html(numberOfDaysLeft + " " + "day");
                $(timeBar).css('width', percentageWidth);
@@ -99,7 +96,6 @@ function timeLeft(){
            // modal to show for actually expire
     }).fail(function(xhr, status, error){
         $('.trialIndicator').remove();
-        console.log("removing trial indicator");
 
     });
     return numOfDaysLeft;
@@ -107,13 +103,11 @@ function timeLeft(){
 
 
 function openExpiredModal(){
-    console.log("show expired modal");
     $('#expiredModal').modal({backdrop:'static', keyboard: false });
     $('#expiredModal').modal('show');
 }
 
 function openAlmostExpiredModal(){
-      console.log("show almost expired modal");
       if(typeof(Storage) !== "undefined") {
           var almostModalShowed = localStorage.getItem('modalShowed');
           if (!almostModalShowed) {
@@ -128,13 +122,11 @@ function openAlmostExpiredModal(){
 }
 
 function openEnforcementModal(){
-      console.log("show expired enforcement modal");
     $('#enforcementModal').modal({backdrop:'static', keyboard: false });
     $('#enforcementModal').modal('show');
 }
 
 function openOverUsageModal(){
-      console.log("show open over usage modal");
     $('#overUsageModal').modal({backdrop:'static', keyboard: false });
     $('#overUsageModal').modal('show');
 }

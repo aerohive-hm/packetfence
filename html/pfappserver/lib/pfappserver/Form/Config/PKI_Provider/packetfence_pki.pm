@@ -29,7 +29,7 @@ has_field 'id' => (
 
 has_field 'type' => (
     type        => 'Hidden',
-    label       => 'PKI Provider type',
+    label       => 'PKI Provider Type',
     required    => 1,
 );
 
@@ -120,18 +120,23 @@ has_field 'organization' => (
 
 has_field 'ca_cert_path_upload' => (
     type        => 'Upload',
-    label       => 'CA cert',
+    label       => 'CA Certificate',
     required    => 0,
     tags        => {
         after_element   => \&help,
-        help            => 'CA certificate for generating certificates. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.',
+        help            => 'When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format.',
     },
 );
 
 has_field 'ca_cert_path' => (
     type        => 'Hidden',
-    label       => 'CA cert',
+    label       => 'CA Certificate Path',
     required    => 1,
+);
+
+has_field 'ca_cert_subject' => (
+    type        => 'Hidden',
+    required    => 0,
 );
 
 has_field 'cn_attribute' => (
@@ -151,38 +156,43 @@ has_field 'cn_format' => (
     default => '%s',
     tags    => {
         after_element   => \&help,
-        help            => 'Defines how the common name will be formated. %s will expand to the defined Common Name Attribute value',
+        help            => 'Defines how the common name will be formatted. %s will expand to the defined Common Name Attribute value',
     },
 );
 
 has_field 'server_cert_path_upload' => (
     type        => 'Upload',
-    label       => 'Server cert',
+    label       => 'Server Certificate',
     required    => 0,
     tags        => {
         after_element   => \&help,
-        help            => 'RADIUS server authentication certificate. <br/>When uploading, make sure the file is within 1MB (1 megabyte or 1000000 bytes) and in .pem format.',
+        help            => 'When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format.',
     },
 );
 
 has_field 'server_cert_path' => (
     type        => 'Hidden',
-    label       => 'Server cert',
+    label       => 'Server Certificate Path',
     required    => 1,
+);
+
+has_field 'server_cert_subject' => (
+    type        => 'Hidden',
+    required    => 0,
 );
 
 has_field 'revoke_on_unregistration' => (
     type             => 'Checkbox',
-    label            => 'Revoke on unregistration',
+    label            => 'Revoke When Unregistered?',
     checkbox_value   => 'Y',
     tags             => {
         after_element   => \&help,
-        help            => 'Check this box to have the certificate revoke when the node using it is unregistered.<br/>Do not use if multiple devices share the same certificate',
+        help            => 'Check this box to have the certificate revoked when the node using it is unregistered.<br/>Do not use if multiple devices share the same certificate',
     },
 );
 
 has_block 'definition' => (
-    render_list => [ qw(type proto host port username password profile country state organization cn_attribute cn_format revoke_on_unregistration ca_cert_path ca_cert_path_upload server_cert_path server_cert_path_upload) ],
+    render_list => [ qw(type proto host port username password profile country state organization cn_attribute cn_format revoke_on_unregistration ca_cert_path ca_cert_path_upload ca_cert_subject server_cert_path server_cert_path_upload server_cert_subject) ],
 );
 
 =head1 AUTHOR

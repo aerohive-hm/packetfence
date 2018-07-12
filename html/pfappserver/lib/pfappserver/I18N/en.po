@@ -1099,7 +1099,12 @@ msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "CA cert path"
+msgid "CA Certificate"
+msgstr ""
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+msgid "CA Certificate Path"
 msgstr ""
 
 # html/pfappserver/root/admin/licenseKeys.tt
@@ -1267,7 +1272,7 @@ msgid "Check this box to have the access duration be a real time usage.<br/>This
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "Check this box to have the certificate revoke when the node using it is unregistered.<br/>Do not use if multiple devices share the same certificate"
+msgid "Check this box to have the certificate revoked when the node using it is unregistered.<br/>Do not use if multiple devices share the same certificate"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/LDAP.pm
@@ -1621,16 +1626,13 @@ msgid "Comma-separated list of the device uplinks"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
 msgid "Common Name Attribute"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
 msgid "Common Name Format"
-msgstr ""
-
-# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
-msgid "Common name Attribute"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
@@ -4787,6 +4789,10 @@ msgid "Organization for the certificate"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
+msgid "Organizational Unit"
+msgstr ""
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
 msgid "Organizational unit for the certificate"
 msgstr ""
 
@@ -4884,7 +4890,7 @@ msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "PKI Provider type"
+msgid "PKI Provider Type"
 msgstr ""
 
 # html/pfappserver/root/configuration/portal_config.tt
@@ -6191,7 +6197,7 @@ msgid "Revert File"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "Revoke on unregistration"
+msgid "Revoke When Unregistered?"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/BillingTiers.pm
@@ -6730,7 +6736,12 @@ msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "Server cert path"
+msgid "Server Certificate"
+msgstr ""
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+msgid "Server Certificate Path"
 msgstr ""
 
 # conf/documentation.conf (database.host)
@@ -11666,6 +11677,11 @@ msgstr "Username"
 
 # html/pfappserver/lib/pfappserver/Form/Field/Duration.pm
 msgid "weeks"
+msgstr ""
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+msgid "When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format."
 msgstr ""
 
 # pf::provisioner (Provisioners)
