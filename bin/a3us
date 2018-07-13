@@ -54,6 +54,17 @@ if (! is_success($status)) {
 }
 
 #clean up the db for us that is over 30 days
-$status = pf::dal::a3_usage_sample->remove(
-    -where => {unix_timestamp(timestamp) < (unix_timestamp(now()) - (86400 * $Config{A3}->{db_us_clean_threshold}) )}
+my $one_month_ago = 60 * 60 * 24 * $Config{A3}->{db_us_clean_threshold};
+my $dal_now = pf::dal->now();
+my ($remove_status, $rows) = pf::dal::a3_usage_sample->remove_items(
+    -where => {
+        timestamp => {
+            "<" => \[ 'DATE_SUB(?, INTERVAL ? SECOND)', $dal_now, $one_month_ago ]
+        }
+    }
 );
+if(is_success($remove_status)) {
+    $logger->info("Removed $rows entry from usage sample db");
+} else {
+    $logger->error("Failed to clean up the usage sample db");
+}
