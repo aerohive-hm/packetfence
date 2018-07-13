@@ -22,6 +22,7 @@ use pf::log;
 use pf::cluster;
 use pf::node;
 use pf::dal::a3_usage_sample;
+use pf::config qw(%Config);
 
 BEGIN {
     #Ensure that the file permissions of the log file is correct 0660
@@ -51,3 +52,8 @@ my $status = pf::dal::a3_usage_sample->create({
 if (! is_success($status)) {
     $logger->error("Failed to record usage sample at $now");
 }
+
+#clean up the db for us that is over 30 days
+$status = pf::dal::a3_usage_sample->remove(
+    -where => {unix_timestamp(timestamp) < (unix_timestamp(now()) - (86400 * $Config{A3}->{db_us_clean_threshold}) )}
+);
