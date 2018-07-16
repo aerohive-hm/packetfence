@@ -1172,3 +1172,7 @@ eula_path=/a3/eula
 # A3.release_info_path
 #
 release_info_path=/a3/update/latest
+#
+# A3.db_us_clean_threshold
+# in num of days
+db_us_clean_threshold=30

@@ -22,6 +22,7 @@ use pf::log;
 use pf::cluster;
 use pf::node;
 use pf::dal::a3_usage_sample;
+use pf::config qw(%Config);
 
 BEGIN {
     #Ensure that the file permissions of the log file is correct 0660
@@ -50,4 +51,20 @@ my $status = pf::dal::a3_usage_sample->create({
 
 if (! is_success($status)) {
     $logger->error("Failed to record usage sample at $now");
+}
+
+#clean up the db for us that is outdated based on the db_us_clean_threshold config
+my $one_month_ago = 60 * 60 * 24 * $Config{A3}->{db_us_clean_threshold};
+my $dal_now = pf::dal->now();
+my ($remove_status, $rows) = pf::dal::a3_usage_sample->remove_items(
+    -where => {
+        timestamp => {
+            "<" => \[ 'DATE_SUB(?, INTERVAL ? SECOND)', $dal_now, $one_month_ago ]
+        }
+    }
+);
+if(is_success($remove_status)) {
+    $logger->info("Removed $rows entry from usage sample db");
+} else {
+    $logger->error("Failed to clean up the usage sample db");
 }
