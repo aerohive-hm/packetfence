@@ -53,7 +53,7 @@ if (! is_success($status)) {
     $logger->error("Failed to record usage sample at $now");
 }
 
-#clean up the db for us that is over 30 days
+#clean up the db for us that is outdated based on the db_us_clean_threshold config
 my $one_month_ago = 60 * 60 * 24 * $Config{A3}->{db_us_clean_threshold};
 my $dal_now = pf::dal->now();
 my ($remove_status, $rows) = pf::dal::a3_usage_sample->remove_items(
