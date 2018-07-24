@@ -76,6 +76,12 @@ fi
 echo -e "\n\n\n"
 echo "Building the RPMs"
 echo "*****************"
+if [ "$BUILD_TYPE" == "RELEASE" ]; then
+  export BUILD_TYPE=RELEASE
+else
+  export BUILD_TYPE=DEV
+fi
+  
 if [ -n "$PASSPHRASE" ]; then
   $CURRENT_DIR/a3-rpm-build-expect.sh $VERSION $DIST $DATE $BUILD_DIR $PASSPHRASE
 else
