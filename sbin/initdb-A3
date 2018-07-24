@@ -8,6 +8,8 @@ DB_ROOT_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
 DB_USER=$DB_NAME
 DB_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
 
+echo "DB root passwd is : $DB_ROOT_PW" >> /tmp/dbtest
+
 /usr/bin/curl -k -d@- 'https://127.0.0.1:1443/db/reset_password' <<EOF >/dev/null 2>&1
 root_user=$DB_ROOT&root_password_new=$DB_ROOT_PW
 EOF
