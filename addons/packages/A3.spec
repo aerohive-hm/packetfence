@@ -530,10 +530,10 @@ mv -f $RPM_BUILD_ROOT/usr/local/pf/conf/a3-release $RPM_BUILD_ROOT/usr/local/pf/
 cp -r raddb $RPM_BUILD_ROOT/usr/local/pf/
 mv packetfence.sudoers $RPM_BUILD_ROOT/etc/sudoers.d/A3
 mv packetfence.cron.d $RPM_BUILD_ROOT/etc/cron.d/A3
-%if "%{BUILD_TYPE}" == "SNAPSHOT"
-  mv A3-dev.repo $RPM_BUILD_ROOT/etc/yum.repos.d/A3-dev.repo
-%else
+%if %{is_release}
   mv A3.repo $RPM_BUILD_ROOT/etc/yum.repos.d/A3.repo
+%else
+  mv A3-dev.repo $RPM_BUILD_ROOT/etc/yum.repos.d/A3-dev.repo
 %endif
 mv addons/pfarp_remote/sbin/pfarp_remote $RPM_BUILD_ROOT/usr/local/pf/sbin
 mv addons/pfarp_remote/conf/pfarp_remote.conf $RPM_BUILD_ROOT/usr/local/pf/conf
@@ -929,10 +929,10 @@ fi
 %config %attr(0440,root,root) %{_sysconfdir}/sudoers.d/A3
 %config %attr(0644,root,root) %{_sysconfdir}/logrotate.d/A3
 %config %attr(0600,root,root) %{_sysconfdir}/cron.d/A3
-%if "%{BUILD_TYPE}" == "SNAPSHOT"
-  %config %attr(0644,root,root) %{_sysconfdir}/yum.repos.d/A3-dev.repo
-%else
+%if %{is_release}
   %config %attr(0644,root,root) %{_sysconfdir}/yum.repos.d/A3.repo
+%else
+  %config %attr(0644,root,root) %{_sysconfdir}/yum.repos.d/A3-dev.repo
 %endif
   
 
