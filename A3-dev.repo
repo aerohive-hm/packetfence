@@ -1,0 +1,18 @@
+[A3_os]
+name=Aerohive A3 Base Operating System Repository
+baseurl=https://10.16.134.184/yum/A3_os_future/\$basearch
+gpgcheck=0
+enabled=1
+
+[A3_deps]
+name=Aerohive A3 Application Dependency Repository
+baseurl=https://10.16.134.184/yum/A3_deps_future/\$basearch
+gpgcheck=0
+enabled=1
+
+[A3_release]
+name=Aerohive A3 Release Repository
+baseurl=https://10.16.134.184/yum/A3_release_future/\$basearch
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Aerohive
+enabled=1
