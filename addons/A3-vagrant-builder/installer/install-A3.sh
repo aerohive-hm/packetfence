@@ -28,6 +28,8 @@ yum install --enablerepo=packetfence,aerohive --disablerepo=A3_os,A3_deps,A3_rel
 # Don't need our repository anymore
 rm /etc/yum.repos.d/aerohive.repo
 
+systemctl status packetfence-httpd.admin.service
+ls -l /usr/local/pf/conf/dbinfo.A3 
 # Setting the hostname
 hostname A3
 echo "A3" > /etc/hostname
@@ -87,6 +89,8 @@ EOF
 cat <<EOF > /etc/hosts
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 EOF
+systemctl status packetfence-httpd.admin.service
+ls -l /usr/local/pf/conf/dbinfo.A3 
 
 # remove the vb guest additional
 rm -rf /opt/VBoxGuestAdditions*
