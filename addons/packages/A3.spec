@@ -508,6 +508,7 @@ done
 %{__install} -d $RPM_BUILD_ROOT/etc/sudoers.d
 %{__install} -d $RPM_BUILD_ROOT/etc/cron.d
 %{__install} -d $RPM_BUILD_ROOT/etc/yum.repos.d
+echo "here is ===$BUILD_TYPE"
 touch $RPM_BUILD_ROOT/usr/local/pf/var/cache_control
 cp Makefile $RPM_BUILD_ROOT/usr/local/pf/
 cp -r bin $RPM_BUILD_ROOT/usr/local/pf/
