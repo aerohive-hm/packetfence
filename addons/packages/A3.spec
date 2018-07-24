@@ -845,7 +845,10 @@ rm -rf /usr/local/pf/var/cache/
 /bin/systemctl enable packetfence-httpd.admin
 
 /usr/local/pf/bin/pfcmd configreload
-/bin/systemctl start packetfence-httpd.admin
+# Don't launch it during image building stage, otherwise all image has same DB root password
+if [ "$1" = "2" ]; then
+  /bin/systemctl start packetfence-httpd.admin
+fi
 
 echo Installation complete
 echo "  * Open your web browser and navigate to https://@ip_packetfence:1443/configurator to complete your A3 configuration."
