@@ -76,7 +76,7 @@ fi
 echo -e "\n\n\n"
 echo "Building the RPMs"
 echo "*****************"
-if [ "$BUILD_TYPE == "RELEASE" ]; then
+if [ "$BUILD_TYPE" == "RELEASE" ]; then
   export BUILD_TYPE=RELEASE
 else
   export BUILD_TYPE=DEV
