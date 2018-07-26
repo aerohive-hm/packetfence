@@ -81,9 +81,9 @@ sub checkForUpgrade {
         $logger->info("Configuration process");
         return $CONFIGURATION;
     } else {
-        $currently_at =~ s/PacketFence //;
+        $currently_at =~ s/A3 //;
         $currently_at =~ s/-/_/;
-        $pf_release =~ s/PacketFence //;
+        $pf_release =~ s/A3 //;
         $pf_release =~ s/-/_/;
         if ($currently_at =~ Perl::Version::MATCH) {
             my $current_version = Perl::Version->new($currently_at);
@@ -96,6 +96,7 @@ sub checkForUpgrade {
                 return $CONFIGURATION;
             }
         } else {
+            $logger->info("Installation process");
             return $INSTALLATION;
         }
     }
