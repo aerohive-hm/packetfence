@@ -41,7 +41,7 @@ __PACKAGE__->config(namespace => '');
 =head2 auto
 
 auto
-C
+
 =cut
 
 sub auto :Private {
