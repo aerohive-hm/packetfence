@@ -21,6 +21,7 @@ $(document).ready(function(){
   var caSubjectVal = document.getElementById('ca_cert_subject').value;
   var servSubjectVal = document.getElementById('server_cert_subject').value;
   $('#ca_cert_label_upload').css("margin-right", "15px");
+  $('#server_cert_label_upload').css("margin-right", "15px");
   document.getElementById('ca_cert_label_upload').after(caSubjectVal);
   document.getElementById('server_cert_label_upload').after(servSubjectVal);
 
@@ -57,28 +58,62 @@ $(document).ready(function(){
       } else if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name == null) {
         //updates
           console.log("inside update");
-          var processCAFile = processFiles(caFile, pki_provider_id, 'CA');
-          var processServFile = processFiles(serverFile, pki_provider_id, 'Server');
-          if (caFile.value.length != 0 || serverFile.value.length != 0){
-            if (showCaCertFileInfo() || showServerFileInfo()){
-              console.log("in iff ");
-                $.when(processCAFile, processServFile).done(function(caFilePath, servFilePath){
-                    console.log("in when statement");
-                    console.log(caFilePath[0].filePath); console.log(servFilePath[0].filePath);
-                    if (caFilePath[1] == "success" || servFilePath[1] == "success"){
-                        var ca_path = document.getElementById("ca_cert_path");
-                        ca_path.value = caFilePath[0].filePath;
-                        var server_path = document.getElementById("server_cert_path");
-                        server_path.value = servFilePath[0].filePath;
-                        $('form').submit();
-                    } else {
-                        $('form').submit();
-                    }
-                });
-            }else{
-               $('form').submit();
-            }
+
+          //if only ca file update
+          if (caFile.value.length != 0 && serverFile.value.length == 0){
+              var processCAFile = processFiles(caFile, pki_provider_id, 'CA');
+              // var processServFile = processFiles(serverFile, pki_provider_id, 'Server');
+              if (showCaCertFileInfo() || showServerFileInfo()){
+                console.log("in iff ");
+                  $.when(processCAFile).done(function(caFilePath){
+
+                      if (caFilePath[1] == "success"){
+                          var ca_path = document.getElementById("ca_cert_path");
+                          ca_path.value = caFilePath[0].filePath;
+                      }
+                      $('form').submit();
+                  });
+              }else{
+                 $('form').submit();
+              }
+          //if ionly serv file update
+          } else if (caFile.value.length == 0 && serverFile.value.length != 0){
+              // var processCAFile = processFiles(caFile, pki_provider_id, 'CA');
+              var processServFile = processFiles(serverFile, pki_provider_id, 'Server');
+              if (showServerFileInfo()){
+                console.log("in iff ");
+                  $.when(processServFile).done(function(servFilePath){
+                      if (servFilePath[1] == "success"){
+                          var server_path = document.getElementById("server_cert_path");
+                          server_path.value = servFilePath[0].filePath;
+                      }
+                      $('form').submit();
+                  });
+              }else{
+                 $('form').submit();
+              }
+          //if both files updte
+          } else if (caFile.value.length != 0 && serverFile.value.length != 0){
+              var processCAFile = processFiles(caFile, pki_provider_id, 'CA');
+              var processServFile = processFiles(serverFile, pki_provider_id, 'Server');
+              if (showCaCertFileInfo() || showServerFileInfo()){
+                console.log("in iff ");
+                  $.when(processCAFile, processServFile).done(function(caFilePath, servFilePath){
+
+                      if (caFilePath[1] == "success" && servFilePath[1] == "success"){
+                          var ca_path = document.getElementById("ca_cert_path");
+                          ca_path.value = caFilePath[0].filePath;
+                          var server_path = document.getElementById("server_cert_path");
+                          server_path.value = servFilePath[0].filePath;
+                      }
+                      $('form').submit();
+                  });
+              }else{
+                 $('form').submit();
+              }
+            //nothing updated
           } else { $('form').submit(); }
+          //end of updates
       } else if ((caFile.value.length != 0 && serverFile.value.length != 0) && (caFileExists.value.length == 0 && serverFileExists.value.length == 0)){
           //create
           var processCAFile2 = processFiles(caFile, pki_provider_name.value, 'CA');
