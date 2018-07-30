@@ -1,28 +1,6 @@
 
 $(document).ready(function(){
 
-  var applyKeyButton2 = $("#applyKey");
-  applyKeyButton2.click(function(){
-    var userKeyInput = document.getElementById('keyInput').value;
-    if (checkKeyInput(userKeyInput) === true){
-        $(".errMsg").css('display', 'none');
-        $("#keyInput").css('border','1px solid #dfdfdf');
-        updateKeyTable(userKeyInput);
-        document.getElementById('keyInput').value ='';
-        return true;
-    } else if (checkKeyInput(userKeyInput) === false){
-        document.getElementById('keyInput').value = userKeyInput;
-        document.getElementById('errorMessage').innerHTML = "The key entered is the wrong format.";
-        $("#success-alert").show(); // use slide down for animation
-        setTimeout(function (){
-          $("#success-alert").slideUp(500);
-        }, 3000);
-        return false;
-    } else{
-
-    }
-  });
-
   $('.agreeToEula').click(function() {
       //changes checkbox to submit button
       $(".agree").slideUp();
@@ -35,23 +13,23 @@ $(document).ready(function(){
 });
 
 // apply button press
-// function applyKeyButton(){
-//   console.log("inside apply key");
-//   var applyKeyButton2 = $("#applyKey");
-//   applyKeyButton2.click(function(){
-//     var userKeyInput = document.getElementById('keyInput').value;
-//     if (checkKeyInput(userKeyInput)){
-//         $(".errMsg").css('display', 'none');
-//         $("#keyInput").css('border','1px solid #dfdfdf');
-//         updateKeyTable(userKeyInput);
-//         document.getElementById('keyInput').value ='';
-//         return true;
-//     } else {
-//         document.getElementById('keyInput').value = userKeyInput;
-//         return false;
-//     }
-//   });
-// }
+function applyKeyButton(){
+  console.log("inside apply key");
+  var applyKeyButton2 = $("#applyKey");
+  applyKeyButton2.click(function(){
+    var userKeyInput = document.getElementById('keyInput').value;
+    if (checkKeyInput(userKeyInput)){
+        $(".errMsg").css('display', 'none');
+        $("#keyInput").css('border','1px solid #dfdfdf');
+        updateKeyTable(userKeyInput);
+        document.getElementById('keyInput').value ='';
+        return true;
+    } else {
+        document.getElementById('keyInput').value = userKeyInput;
+        return false;
+    }
+  });
+}
 
 // update table after checking regex
 function updateKeyTable(userKeyInput) {
