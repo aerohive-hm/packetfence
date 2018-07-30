@@ -60,7 +60,7 @@
             <ul class="nav nav-header">
               [%- IF can_access_any("REPORTS","SERVICES") %]
               <li[% ' class="active"' IF c.action.name == 'status' %]>
-                [% IF !is_usage_under_capacity or is_entitlement_expired  %]
+                [% IF !is_usage_under_capacity or is_entitlement_expired %]
                   <a style="color: #333; cursor: not-allowed;" >[% l('Status') %]</a>
                 [% ELSE %]
                   <a href="[% c.uri_for(c.controller('Admin').action_for('status')) %]">[% l('Status') %]</a>
