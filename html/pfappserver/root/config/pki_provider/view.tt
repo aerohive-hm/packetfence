@@ -30,6 +30,16 @@
   background-color: gray;
 }
 
+#caSubjNewlabel, #servSubjNewlabel{
+  display: inline-block;
+  white-space: nowrap;
+  width: 315px;
+  overflow-y: hidden;
+  overflow-x:hidden;
+}
+
+
+
 </style>
 <form name="modalItem" id="pki_form" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
   [%- IF item.id %]<input type="hidden" name="id" value="[% item.id | html %]">[% END %]
