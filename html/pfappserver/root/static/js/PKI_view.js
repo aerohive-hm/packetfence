@@ -18,11 +18,13 @@ $(document).ready(function(){
       showServerFileInfo();
     };
 
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+
 //***********for label after the upload button***************//
     var caSubjectVal = document.getElementById('ca_cert_subject').value;
     var servSubjectVal = document.getElementById('server_cert_subject').value;
-    $('#ca_cert_label_upload').css("margin-right", "15px");
-    $('#server_cert_label_upload').css("margin-right", "15px");
 
     var caSubjNewlabel = document.createElement("Div");
     caSubjNewlabel.setAttribute("id", "caSubjNewlabel");
@@ -34,7 +36,23 @@ $(document).ready(function(){
     document.getElementById('ca_cert_label_upload').after(caSubjNewlabel); //add after upload button
     document.getElementById('server_cert_label_upload').after(servSubjNewlabel);
 
+    var caLength = $("#caSubjNewlabel").width();
+    var caTextLength = $("#ca_cert_subject").width();
+    var servLength = $("#servSubjNewlabel").width();
+    var servTextLength = $("#server_cert_subject").width();
 
+    if (caTextLength > caLength) {
+      document.getElementById('caSubjNewlabel').after("...");
+      caSubjNewlabel.setAttribute("data-toggle", "tooltip");
+      caSubjNewlabel.setAttribute("data-placement", "top");
+      caSubjNewlabel.setAttribute("title", caSubjectVal);
+    }
+    if (servTextLength > servLength) {
+      document.getElementById('servSubjNewlabel').after("...");
+      servSubjNewlabel.setAttribute("data-toggle", "tooltip");
+      servSubjNewlabel.setAttribute("data-placement", "top");
+      servSubjNewlabel.setAttribute("title", servSubjectVal);
+    }
   //*****************save button press pki********************//
     document.getElementById("savePKI").onclick = function(e){
         console.log("clicked on save");
@@ -137,7 +155,7 @@ $(document).ready(function(){
                 });
             }
         } else {
-            document.getElementById('errorMessage').innerHTML = "Files are incorrect. Try reuploading the files again.";
+            document.getElementById('errorMessage').innerHTML = "Files are incorrect. Try uploading the files again.";
             $("#success-alert").show();
             setTimeout(function (){
               $("#success-alert").slideUp(500);

@@ -14,6 +14,10 @@
 	z-index: -1;
 }
 
+#ca_cert_label_upload, #server_cert_label_upload{
+  margin-right: 15px;
+}
+
 #ca_cert_path_upload + label, #server_cert_path_upload + label {
   font-size: 1.25em;
   font-weight: 700;
@@ -22,7 +26,7 @@
   display: inline-block;
   padding-top: 6px;
   padding-bottom: 6px;
-  width: 220px;
+  width: 300px;
   text-align: center;
 }
 
@@ -33,12 +37,10 @@
 #caSubjNewlabel, #servSubjNewlabel{
   display: inline-block;
   white-space: nowrap;
-  width: 315px;
+  width: 200px;
   overflow-y: hidden;
-  overflow-x:hidden;
+  overflow-x: hidden;
 }
-
-
 
 </style>
 <form name="modalItem" id="pki_form" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
