@@ -338,6 +338,8 @@ Requires: perl(File::Tempdir)
 
 # etcd
 Requires: etcd >= 3.1
+# psmisc
+Requires: psmisc
 
 %description -n %{real_name}
 
