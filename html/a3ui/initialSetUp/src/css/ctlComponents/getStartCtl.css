@@ -1,8 +1,138 @@
 
 .global-div-getStartCtl{
     float:left;
-    width:980px;
-    height:880px;
-    background: red;
+    width:1280px;
+}
 
+.new-deployment-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 590px;
+    background: url("../../media/newDeploymentBackground.png");
+
+}
+.new-deployment-logo-div-getStartCtl{
+    float:left;
+    margin-top:101px;
+    margin-left:297px;
+    width:56px;
+    height: 66px;
+}
+.new-deployment-logo-img-getStartCtl{
+    float:left;
+    width:56px;
+    height: 66px;
+}
+.new-deployment-new-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    margin-top:16px;
+    line-height: 65px;
+    font-size: 48px;
+    color:#ffffff;
+    text-align: center;
+
+}
+.new-deployment-deployment-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    line-height: 65px;
+    font-size: 48px;
+    color:#ffffff;
+    text-align: center;
+
+}
+.new-deployment-explain-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    line-height: 65px;
+    font-size: 18px;
+    color:#ffffff;
+    text-align: center;
+
+}
+.new-deployment-button-div-getStartCtl{
+    float:left;
+    width:260px;
+    height: 80px;
+    margin-left:190px;
+    line-height: 80px;
+    font-size: 22px;
+    background: #ffffff;
+    color:#1774bc;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+
+}
+
+
+
+
+
+.join-cluster-div-getStartCtl{
+    float:left;
+    width:640px;
+    height:590px;
+    background: url("../../media/joinClusterBackground.png");
+
+}
+.join-cluster-logo-div-getStartCtl{
+    float:left;
+    margin-top:101px;
+    margin-left:297px;
+    width:56px;
+    height: 66px;
+}
+.join-cluster-logo-img-getStartCtl{
+    float:left;
+    width:56px;
+    height: 66px;
+}
+.join-cluster-new-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    margin-top:16px;
+    line-height: 65px;
+    font-size: 48px;
+    color:#ffffff;
+    text-align: center;
+
+}
+.join-cluster-deployment-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    line-height: 65px;
+    font-size: 48px;
+    color:#ffffff;
+    text-align: center;
+
+}
+.join-cluster-explain-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    line-height: 65px;
+    font-size: 18px;
+    color:#ffffff;
+    text-align: center;
+
+}
+.join-cluster-button-div-getStartCtl{
+    float:left;
+    width:260px;
+    height: 80px;
+    margin-left:190px;
+    line-height: 80px;
+    font-size: 22px;
+    background: #ffffff;
+    color:#1774bc;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
 }

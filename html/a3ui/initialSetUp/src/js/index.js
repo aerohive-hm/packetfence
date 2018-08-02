@@ -65,30 +65,13 @@ class App extends Component {
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>
-        }else if(show==="resetPassword"){
+        }else if(show==="getStart"){
             contentHtml=<div>
-                <ResetPassword 
-                    changeStatus={self.changeStatus.bind(self)} 
-                />
-            </div>
-        }else if(show==="register"){
-            contentHtml=<div>
-                <Register 
-                    changeStatus={self.changeStatus.bind(self)} 
-                />
-            </div>
-        }else if(show==="main"){
-            contentHtml=<div>
-                <Main 
-                    accessToken={accessToken}
-                    email={email}
+                <GetStartCtl 
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>
         }
-
-
-
 
         return (
             <LocaleProvider locale={i18n}>

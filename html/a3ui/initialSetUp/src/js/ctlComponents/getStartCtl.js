@@ -15,6 +15,9 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/getStartCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/getStartCtl";
 
+import newDeploymentLogoImg from "../../media/newDeploymentLogo.png";
+import joinClusterBackgroundLogo from "../../media/joinClusterBackgroundLogo.png";
+
 const {Component} = React;
 
 class getStartCtl extends Component {
@@ -56,7 +59,42 @@ class getStartCtl extends Component {
         });
         return (
             <div className="global-div-getStartCtl">
-                
+                <div className="new-deployment-div-getStartCtl">
+                    <div className="new-deployment-logo-div-getStartCtl">
+                        <img src={newDeploymentLogoImg} className="new-deployment-logo-img-getStartCtl" />
+                    </div>
+                    <div className="new-deployment-new-div-getStartCtl">
+                        NEW
+                    </div>
+                    <div className="new-deployment-deployment-div-getStartCtl">
+                        DEPLOYMENT
+                    </div>
+                    <div className="new-deployment-explain-div-getStartCtl">
+                        Set up a new cluster or standalone
+                    </div>
+                    <div className="new-deployment-button-div-getStartCtl">
+                        GET STARTED
+                    </div>
+                    <div className="clear-float-div-common" ></div >
+                </div>
+                <div className="join-cluster-div-getStartCtl">
+                    <div className="join-cluster-logo-div-getStartCtl">
+                        <img src={joinClusterBackgroundLogo} className="join-cluster-logo-img-getStartCtl" />
+                    </div>
+                    <div className="join-cluster-new-div-getStartCtl">
+                        JOIN
+                    </div>
+                    <div className="join-cluster-deployment-div-getStartCtl">
+                        CLUSTER
+                    </div>
+                    <div className="join-cluster-explain-div-getStartCtl">
+                        Join an existing cluster
+                    </div>
+                    <div className="join-cluster-button-div-getStartCtl">
+                        GET STARTED
+                    </div>
+                    <div className="clear-float-div-common" ></div >
+                </div>
                 <div className="clear-float-div-common" ></div >
             </div>
             
