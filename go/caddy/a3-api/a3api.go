@@ -105,5 +105,5 @@ func (h A3apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 		return 0, nil
 	}
 
-	return 0, nil
+	return h.Next.ServeHTTP(w, r)
 }

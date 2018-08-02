@@ -848,6 +848,7 @@ rm -rf /usr/local/pf/var/cache/
 /bin/systemctl enable packetfence-routes
 /bin/systemctl isolate packetfence-base
 /bin/systemctl enable packetfence-httpd.admin
+/bin/systemctl enable a3-api-backend
 
 /usr/local/pf/bin/pfcmd configreload
 # Don't launch it during image building stage, otherwise all image has same DB root password
