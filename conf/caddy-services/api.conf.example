@@ -36,7 +36,8 @@
   }
 
   # a3 API backend access
-  proxy /a3/api/v1 127.0.0.1:10000 {
+  proxy /a3 127.0.0.1:10000 {
+    without /a3
     transparent
   }
 

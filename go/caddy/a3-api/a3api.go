@@ -60,8 +60,8 @@ func buildA3apiHandler(ctx context.Context) (A3apiHandler, error) {
 	A3api := A3apiHandler{}
 
 	router := httprouter.New()
-	router.POST("/a3/api/v1/event", A3api.handlePostEvent)
-	router.GET("/a3/api/v1/event", A3api.handleGetEvent)
+	router.POST("/api/v1/event", A3api.handlePostEvent)
+	router.GET("/api/v1/event", A3api.handleGetEvent)
 
 	A3api.router = router
 
