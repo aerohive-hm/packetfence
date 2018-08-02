@@ -44,4 +44,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+#Create replication user
+mysql -u root -p$DB_ROOT_PW -e "CREATE USER 'aerohivecluster'@'%' IDENTIFIED BY 'aerohive';"
+mysql -u root -p$DB_ROOT_PW -e "GRANT PROCESS, RELOAD, LOCK TABLES, REPLICATION CLIENT, SUPER ON *.* TO 'aerohivecluster'@'%';"
+mysql -u root -p$DB_ROOT_PW -e "FLUSH PRIVILEGES;"
+
 echo "Finished initializing A3 database"
