@@ -1,0 +1,76 @@
+
+.clear-float-div-common{
+    clear:both;
+}
+
+
+
+
+
+.ant-tooltip-arrow{
+    border-right-color:#f2f3f5 !important ;
+}
+.ant-tooltip-inner{
+    background: #faf9fe !important ;
+    color:#85929b  !important ;
+}
+
+.ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+    padding-top: 5px !important ;
+    padding-right: 8px !important ;
+    padding-bottom: 5px !important ;
+    padding-left: 8px !important ;
+}
+
+.ant-table-thead > tr > th {
+    background: #7693a1 !important ;
+}
+
+.ant-input{
+    border: 1px solid #999999 ;
+    border-radius: 0px !important ;
+}
+
+
+.ant-message-notice-content{
+    margin-left: -110px !important ;
+}
+
+.ant-pagination-item-link{
+   
+}
+
+.ant-message-notice-content{
+    max-width: 760px;
+}
+
+.ant-message-notice-content span{
+    max-width: 700px;
+    display:inline-block;
+    float:right;
+    word-wrap:break-word;
+    text-align:left;
+}
+
+.ant-table-column-sorter .anticon-caret-up, .ant-table-column-sorter .anticon-caret-down {
+    color: #ffffff;
+}
+
+.ant-table-pagination.ant-pagination{
+    float:right;
+    margin-right:60px;
+}
+
+
+.ant-table-thead > tr > th{
+    color: #ffffff;
+}
+
+
+.ant-switch{
+    border-radius: 0px !important ;
+}
+
+.ant-switch:after{
+    border-radius: 0px !important ;
+}
