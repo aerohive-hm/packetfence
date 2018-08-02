@@ -9,6 +9,7 @@ import Util from "../libs/util";
 
 import * as mock from "../libs/mockData";
 import GetStartCtl from './ctlComponents/getStartCtl';
+import Logo from "../libs/logo/js/logo";
 
 import en_GB from 'antd/lib/locale-provider/en_GB';
 import fr_FR from 'antd/lib/locale-provider/fr_FR';
@@ -21,6 +22,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
+            show:"getStart",
 
         };
     }
@@ -45,15 +47,58 @@ class App extends Component {
 
     }
 
-    render() {
-        const {i18n} = this.state;
+    changeStatus(show){
         let self=this;
-        return (
-            <div className="app-div-index">
-                <LocaleProvider locale={i18n}>
-                    <GetStartCtl />
-                </LocaleProvider>
+        self.setState({
+            show:show,
+        })
+    }
+
+    render() {
+        const {i18n,show} = this.state;
+        let self=this;
+
+        let contentHtml;
+        if(show==="getStart"){
+            contentHtml=<div>
+                <GetStartCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
             </div>
+        }else if(show==="resetPassword"){
+            contentHtml=<div>
+                <ResetPassword 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="register"){
+            contentHtml=<div>
+                <Register 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="main"){
+            contentHtml=<div>
+                <Main 
+                    accessToken={accessToken}
+                    email={email}
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }
+
+
+
+
+        return (
+            <LocaleProvider locale={i18n}>
+            <div className="app-div-index">
+                <Logo />
+                <div className="content-div-index" >
+                    {contentHtml}
+                </div>
+            </div>
+            </LocaleProvider>
 
         );
     }
