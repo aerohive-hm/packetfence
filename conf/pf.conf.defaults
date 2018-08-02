@@ -957,12 +957,12 @@ voip=no
 # webservices.user
 #
 # username to use to connect to the webAPI
-user = aero
+user=aero
 #
 # webservices.pass
 #
 # password of the username
-pass = hive
+pass=hive
 #
 # webservices.host
 #
