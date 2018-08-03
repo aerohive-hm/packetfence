@@ -6,7 +6,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail} from "../../libs/util";     
 import '../../css/ctlComponents/adminUserCtl.css';
 import '../../libs/common.css';
 
@@ -27,7 +27,14 @@ class adminUserCtl extends Component {
         super(props);
         this.state = {
             i18n:{},
+            wrongMessage:{
+                userWrongMessage:"",
+                passWrongMessage:"",
+                passConfirmWrongMessage:"",
+                
+            },
         };
+
 
     }
     
@@ -51,8 +58,146 @@ class adminUserCtl extends Component {
         })
 
     }
+
+    onBlurCheckUser(e){
+        let self=this;
+        self.checkUser(e.target.value);
+    }
+
+    checkUser=(user)=>{
+        let self=this;
+        let newWrongMessage=self.state.wrongMessage;
+
+        if(!user||user.toString().trim()===""){
+            newWrongMessage.userWrongMessage="Email is required.";
+        }else
+        if(isEmail(user)===false){
+            newWrongMessage.userWrongMessage="Email format is incorrect.";
+        }else{
+            newWrongMessage.userWrongMessage="";
+        }
+
+
+        self.setState({
+            wrongMessage:newWrongMessage
+        })
+        if(newWrongMessage.userWrongMessage===""){
+            $("#user").css({
+                "border":"1px solid #999999",
+            });
+            return true;
+        }else{
+            $("#user").css({
+                "border":"1px solid red",
+            });
+            
+            return false;
+        }
+    }
+
+    onBlurCheckPass(e){
+        let self=this;
+        self.checkPass(e.target.value);
+    }
+
+    checkPass=(pass)=>{
+        let self=this;
+        let newWrongMessage=self.state.wrongMessage;
+
+        if(!pass||pass.toString().trim()===""){
+            newWrongMessage.passWrongMessage="Password is required";
+        }else{
+            newWrongMessage.passWrongMessage="";
+        }
+
+
+        self.setState({
+            wrongMessage:newWrongMessage
+        })
+        if(newWrongMessage.passWrongMessage===""){
+            $("#pass").css({
+                "border":"1px solid #999999",
+            });
+            return true;
+        }else{
+            $("#pass").css({
+                "border":"1px solid red",
+            });
+            
+            return false;
+        }
+    }
+
+    onBlurCheckPassConfirm(e){
+        let self=this;
+        self.checkPassConfirm(e.target.value);
+    }
+
+    checkPassConfirm=(passConfirm)=>{
+        let self=this;
+        let newWrongMessage=self.state.wrongMessage;
+
+        if(!passConfirm||passConfirm.toString().trim()===""){
+            newWrongMessage.passConfirmWrongMessage="Confirm Password is required";
+        }else
+        if(passConfirm.toString().trim()!==($("#pass").value()?$("#pass").value().toString().trim():"")){
+            newWrongMessage.passConfirmWrongMessage="Password do not match";
+        }else{
+            newWrongMessage.passConfirmWrongMessage="";
+        }
+
+
+        self.setState({
+            wrongMessage:newWrongMessage
+        })
+        if(newWrongMessage.passConfirmWrongMessage===""){
+            $("#passConfirm").css({
+                "border":"1px solid #999999",
+            });
+            return true;
+        }else{
+            $("#passConfirm").css({
+                "border":"1px solid red",
+            });
+            
+            return false;
+        }
+    }
+
+    handleSubmit = (e) => {
+        let self=this;
+        e.preventDefault();
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                let hasWrongValue=false;
+                if(self.checkPassConfirm(values.passConfirm)===false){
+                    hasWrongValue=true;
+                    $("#passConfirm").focus();
+                }
+                if(self.checkPass(values.pass)===false){
+                    hasWrongValue=true;
+                    $("#pass").focus();
+                }
+                if(self.checkUser(values.user)===false){
+                    hasWrongValue=true;
+                    $("#user").focus();
+                }
+                if(hasWrongValue===true){
+                    return;
+                }
+
+
+            }
+        });
+        
+    }
+
+
+
+
+
     render() {
-        const {} = this.state;
+        const {wrongMessage} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
@@ -73,7 +218,90 @@ class adminUserCtl extends Component {
                 </div>
 
                 <div className="right-div-adminUserCtl">
+                    
+                    <Form onSubmit={self.handleSubmit.bind(self)}>
+                    <div className="form-item-div-radiusConfigurationCtl">
+                        <div className="form-item-title-div-radiusConfigurationCtl">
+                            Admin Email
+                        </div>
+                        <div className="form-item-input-div-radiusConfigurationCtl">
+                            {getFieldDecorator('user', {
+                                rules: [],
+                            })(
+                                <Input 
+                                style={{height:"32px"}}
+                                onBlur={self.onBlurCheckUser.bind(self)}
+                                />
+                            )}
+                        </div>
+                        <div className="form-item-wrong-div-radiusConfigurationCtl" 
+                        style={{display:wrongMessage.userWrongMessage===""?"none":"block"}}>
+                                {wrongMessage.userWrongMessage}
+                        </div>
+                        <div className="clear-float-div-common" ></div >
+                    </div>
 
+                    <div className="form-item-div-radiusConfigurationCtl">
+                        <div className="form-item-title-div-radiusConfigurationCtl">
+                            Password
+                        </div>
+                        <div className="form-item-input-div-radiusConfigurationCtl">
+                            {getFieldDecorator('pass', {
+                                rules: [],
+                            })(
+                                <Input 
+                                style={{height:"32px"}}
+                                onBlur={self.onBlurCheckPass.bind(self)}
+                                />
+                            )}
+                        </div>
+                        <div className="form-item-wrong-div-radiusConfigurationCtl" 
+                        style={{display:wrongMessage.passWrongMessage===""?"none":"block"}}>
+                                {wrongMessage.passWrongMessage}
+                        </div>
+                        <div className="clear-float-div-common" ></div >
+                    </div>
+
+                    <div className="form-item-div-radiusConfigurationCtl">
+                        <div className="form-item-title-div-radiusConfigurationCtl">
+                            Confirm Password
+                        </div>
+                        <div className="form-item-input-div-radiusConfigurationCtl">
+                            {getFieldDecorator('passConfirm', {
+                                rules: [],
+                            })(
+                                <Input 
+                                style={{height:"32px"}}
+                                onBlur={self.onBlurCheckPassConfirm.bind(self)}
+                                />
+                            )}
+                        </div>
+                        <div className="form-item-wrong-div-radiusConfigurationCtl" 
+                        style={{display:wrongMessage.passConfirmWrongMessage===""?"none":"block"}}>
+                                {wrongMessage.passConfirmWrongMessage}
+                        </div>
+                        <div className="clear-float-div-common" ></div >
+                    </div>
+
+                    <div className="form-button-div-radiusConfigurationCtl">
+                        <div className="form-button-next-div-radiusConfigurationCtl">
+                            <Button 
+                                type="primary" 
+                                className="form-button-next-antd-button-radiusConfigurationCtl" 
+                                htmlType="submit" 
+                            >NEXT</Button>
+                        </div>
+                        <div className="form-button-cancel-div-radiusConfigurationCtl">
+                            <Button 
+                                className="form-button-cancel-antd-button-radiusConfigurationCtl" 
+                            >CANCEL</Button>
+                        </div>
+                    </div>
+
+                    </Form>
+
+                         
+              
                     <div className="clear-float-div-common" ></div >
                 </div>
                 <div className="clear-float-div-common" ></div >

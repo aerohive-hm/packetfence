@@ -90,3 +90,9 @@ export function isPositiveInteger(data){
   return r.test(data.toString());
 
 }
+
+export function isEmail(data){　
+  var r = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/;
+  return r.test(data.toString().trim());
+
+}
