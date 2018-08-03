@@ -84,3 +84,12 @@
     width:78px;
     height:32px;
 }
+
+
+.test-div-radiusConfigurationCtl{
+    float:left;
+    width:800px;
+    height:90px;
+    border: 1px solid red;
+
+}

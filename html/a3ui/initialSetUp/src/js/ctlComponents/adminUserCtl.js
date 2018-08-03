@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactPasswordStrength from 'react-password-strength';
 
 import { Form, Button,Switch,Icon,message,Input, Checkbox,Row,Tree,Radio  ,Select,Spin,Tooltip ,Table,Modal } from 'antd';
 const { TextArea } = Input;
@@ -33,6 +34,7 @@ class adminUserCtl extends Component {
                 passConfirmWrongMessage:"",
                 
             },
+            passNow:"",
         };
 
 
@@ -140,7 +142,7 @@ class adminUserCtl extends Component {
         if(!passConfirm||passConfirm.toString().trim()===""){
             newWrongMessage.passConfirmWrongMessage="Confirm Password is required";
         }else
-        if(passConfirm.toString().trim()!==($("#pass").value()?$("#pass").value().toString().trim():"")){
+        if(passConfirm.toString().trim()!==($("#pass").val()?$("#pass").val().toString().trim():"")){
             newWrongMessage.passConfirmWrongMessage="Password do not match";
         }else{
             newWrongMessage.passConfirmWrongMessage="";
@@ -192,12 +194,30 @@ class adminUserCtl extends Component {
         
     }
 
+    reactPasswordStrengthCallback = (state) => {
+        let self=this;
+        console.log(state);
+        
+    }
+    onChangePass=(e) =>{
+        let self=this;
+        console.log("rrrrrrrrrrrrrr"+e.target.value);
+
+        self.setState({
+            passNow:e.target.value
+        },function(){
+            console.log(self.state.passNow);
+        })
+
+    }
+
+
 
 
 
 
     render() {
-        const {wrongMessage} = this.state;
+        const {wrongMessage,passNow} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
@@ -231,6 +251,7 @@ class adminUserCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckUser.bind(self)}
+                                value={passNow}
                                 />
                             )}
                         </div>
@@ -252,7 +273,10 @@ class adminUserCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPass.bind(self)}
+                                onChange={self.onChangePass.bind(self)}
                                 />
+
+                                
                             )}
                         </div>
                         <div className="form-item-wrong-div-radiusConfigurationCtl" 
@@ -273,6 +297,7 @@ class adminUserCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPassConfirm.bind(self)}
+                                
                                 />
                             )}
                         </div>
@@ -298,12 +323,23 @@ class adminUserCtl extends Component {
                         </div>
                     </div>
 
+                    <div className="test-div-radiusConfigurationCtl">
+                        <ReactPasswordStrength
+                            value={passNow}
+                            minLength={6}
+                            inputProps={{id: 'reactPasswordStrengthId' }}
+                            changeCallback={self.reactPasswordStrengthCallback.bind(self)}
+                            scoreWords={['weak1', 'okay2', 'good3', 'strong4', 'stronger5']}
+                        /> 
+                    </div>
+
                     </Form>
 
-                         
+
               
                     <div className="clear-float-div-common" ></div >
                 </div>
+
                 <div className="clear-float-div-common" ></div >
             </div>
             
