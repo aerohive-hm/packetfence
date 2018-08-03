@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactPasswordStrength from 'react-password-strength';
-
+import zxcvbn from 'zxcvbn';
 import { Form, Button,Switch,Icon,message,Input, Checkbox,Row,Tree,Radio  ,Select,Spin,Tooltip ,Table,Modal } from 'antd';
 const { TextArea } = Input;
 const RadioGroup = Radio.Group;
@@ -34,7 +34,6 @@ class adminUserCtl extends Component {
                 passConfirmWrongMessage:"",
                 
             },
-            passNow:"",
         };
 
 
@@ -194,20 +193,11 @@ class adminUserCtl extends Component {
         
     }
 
-    reactPasswordStrengthCallback = (state) => {
-        let self=this;
-        console.log(state);
-        
-    }
     onChangePass=(e) =>{
         let self=this;
-        console.log("rrrrrrrrrrrrrr"+e.target.value);
+        console.log(zxcvbn(e.target.value).score);
 
-        self.setState({
-            passNow:e.target.value
-        },function(){
-            console.log(self.state.passNow);
-        })
+
 
     }
 
@@ -217,7 +207,7 @@ class adminUserCtl extends Component {
 
 
     render() {
-        const {wrongMessage,passNow} = this.state;
+        const {wrongMessage} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
@@ -251,7 +241,6 @@ class adminUserCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckUser.bind(self)}
-                                value={passNow}
                                 />
                             )}
                         </div>
@@ -321,16 +310,6 @@ class adminUserCtl extends Component {
                                 className="form-button-cancel-antd-button-radiusConfigurationCtl" 
                             >CANCEL</Button>
                         </div>
-                    </div>
-
-                    <div className="test-div-radiusConfigurationCtl">
-                        <ReactPasswordStrength
-                            value={passNow}
-                            minLength={6}
-                            inputProps={{id: 'reactPasswordStrengthId' }}
-                            changeCallback={self.reactPasswordStrengthCallback.bind(self)}
-                            scoreWords={['weak1', 'okay2', 'good3', 'strong4', 'stronger5']}
-                        /> 
                     </div>
 
                     </Form>
