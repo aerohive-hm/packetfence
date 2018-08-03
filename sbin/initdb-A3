@@ -52,9 +52,9 @@ DB_CLUSTER_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin
 /usr/bin/mysql -u root -p$DB_ROOT_PW -e "GRANT PROCESS, RELOAD, LOCK TABLES, REPLICATION CLIENT, SUPER ON *.* TO 'aerohivecluster'@'localhost';"
 /usr/bin/mysql -u root -p$DB_ROOT_PW -e "FLUSH PRIVILEGES;"
 PF_CONF_DEFAULT=/usr/local/pf/conf/pf.conf.defaults
-/usr/bin/sed -i.bak "s/^galera_replication_password.*/galera_replication_password=$DB_CLUSTER_USER_PW/" $PF_CONF_DEFAULT
+/usr/bin/sed -i.bak "s!^galera_replication_password.*!galera_replication_password=$DB_CLUSTER_USER_PW!" $PF_CONF_DEFAULT
 WS_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
-/usr/bin/sed -i.bak -e "/\[webservices\]/,/pass=/ s/^pass.*/pass=$WS_USER_PW/" $PF_CONF_DEFAULT
-/usr/bin/rm ${PF_CONF_DEFAULT}.bak
+/usr/bin/sed -i.bak -e "/\[webservices\]/,/pass=/ s!^pass.*!pass=$WS_USER_PW!" $PF_CONF_DEFAULT
+/usr/bin/rm -f ${PF_CONF_DEFAULT}.bak
 
 echo "Finished initializing A3 database"
