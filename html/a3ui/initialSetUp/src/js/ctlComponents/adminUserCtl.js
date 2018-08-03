@@ -11,9 +11,13 @@ import '../../css/ctlComponents/adminUserCtl.css';
 import '../../libs/common.css';
 
 import * as mock from "../../libs/mockData";
+import Guidance from "../../libs/guidance/js/guidance";
 import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/adminUserCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/adminUserCtl";
+
+import adminUserImg from "../../media/adminUser.png";
+
 
 
 const {Component} = React;
@@ -57,7 +61,21 @@ class adminUserCtl extends Component {
         });
         return (
             <div className="global-div-adminUserCtl">
-                
+                <div className="left-div-adminUserCtl">
+                    <Guidance 
+                        title={"Admin User"} 
+                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
+                    />
+                    <div className="img-div-adminUserCtl">
+                       <img src={adminUserImg} className="img-img-adminUserCtl" />
+                    </div>
+                    <div className="clear-float-div-common" ></div >
+                </div>
+
+                <div className="right-div-adminUserCtl">
+
+                    <div className="clear-float-div-common" ></div >
+                </div>
                 <div className="clear-float-div-common" ></div >
             </div>
             
