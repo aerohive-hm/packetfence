@@ -34,6 +34,7 @@ class adminUserCtl extends Component {
                 passConfirmWrongMessage:"",
                 
             },
+            passScore:-1
         };
 
 
@@ -196,6 +197,10 @@ class adminUserCtl extends Component {
     onChangePass=(e) =>{
         let self=this;
         console.log(zxcvbn(e.target.value).score);
+        self.checkPass(e.target.value);
+        self.setState({
+            passScore:zxcvbn(e.target.value).score,
+        })
 
 
 
@@ -207,13 +212,62 @@ class adminUserCtl extends Component {
 
 
     render() {
-        const {wrongMessage} = this.state;
+        const {wrongMessage,passScore} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
         message.config({
             duration: 10,
         });
+        let passMessageHtml;
+        if(wrongMessage.passWrongMessage!==""){
+            passMessageHtml=<div className="form-item-wrong-div-radiusConfigurationCtl" >
+                                {wrongMessage.passWrongMessage}
+                             </div>                           
+        }else
+        if(passScore===0){
+            passMessageHtml=<div className="form-item-pass-score-div-radiusConfigurationCtl" >
+                                <div className="form-item-pass-score-0-div-radiusConfigurationCtl" >
+                                    Very Weak
+                                </div>  
+                                <div className="form-item-pass-score-message-div-radiusConfigurationCtl" >
+                                    Short keyboard patterns are easy to guess.
+                                </div> 
+                                <div className="clear-float-div-common" ></div > 
+                             </div>                           
+        }else
+        if(passScore===1){
+            passMessageHtml=<div className="form-item-pass-score-div-radiusConfigurationCtl" >
+                                <div className="form-item-pass-score-1-div-radiusConfigurationCtl" >
+                                    Weak
+                                </div>  
+                                <div className="form-item-pass-score-message-div-radiusConfigurationCtl" >
+                                    Repeats like "aaa" are easy to guess.
+                                </div> 
+                                <div className="clear-float-div-common" ></div > 
+                             </div>                           
+        }else
+        if(passScore===2){
+            passMessageHtml=<div className="form-item-pass-score-div-radiusConfigurationCtl" >
+                                <div className="form-item-pass-score-2-div-radiusConfigurationCtl" >
+                                    Average
+                                </div>  
+                                <div className="form-item-pass-score-message-div-radiusConfigurationCtl" >
+                                    Add another word or two. Uncommon words are better.
+                                </div> 
+                                <div className="clear-float-div-common" ></div > 
+                             </div>                           
+        }else
+        if(passScore===3){
+            passMessageHtml=<div className="form-item-pass-score-3-div-radiusConfigurationCtl" >
+                                Strong
+                            </div>                            
+        }else
+        if(passScore===4){
+            passMessageHtml=<div className="form-item-pass-score-4-div-radiusConfigurationCtl" >
+                                Very Strong
+                            </div>                            
+        }
         return (
             <div className="global-div-adminUserCtl">
                 <div className="left-div-adminUserCtl">
@@ -268,10 +322,7 @@ class adminUserCtl extends Component {
                                 
                             )}
                         </div>
-                        <div className="form-item-wrong-div-radiusConfigurationCtl" 
-                        style={{display:wrongMessage.passWrongMessage===""?"none":"block"}}>
-                                {wrongMessage.passWrongMessage}
-                        </div>
+                        {passMessageHtml}
                         <div className="clear-float-div-common" ></div >
                     </div>
 

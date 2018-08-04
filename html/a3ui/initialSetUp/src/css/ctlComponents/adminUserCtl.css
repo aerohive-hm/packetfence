@@ -59,6 +59,67 @@
     font-size: 12px;
 
 }
+.form-item-pass-score-div-radiusConfigurationCtl{
+    float:left;
+    margin-left:20px;
+    width:670px;
+    height:32px;
+}
+.form-item-pass-score-0-div-radiusConfigurationCtl{
+    float:left;
+    width:670px;
+    height:17px;
+    line-height: 17px;
+    color:#a8b7c7;
+    font-size: 12px;
+}
+.form-item-pass-score-1-div-radiusConfigurationCtl{
+    float:left;
+    width:670px;
+    height:17px;
+    line-height: 17px;
+    color:#ec0800;
+    font-size: 12px;
+
+}
+.form-item-pass-score-2-div-radiusConfigurationCtl{
+    float:left;
+    width:670px;
+    height:17px;
+    line-height: 17px;
+    color:#ffaf00;
+    font-size: 12px;
+
+}
+.form-item-pass-score-3-div-radiusConfigurationCtl{
+    float:left;
+    line-height: 32px;
+    color:#9ac251;
+    font-size: 12px;
+    margin-left:20px;
+    width:670px;
+    height:32px;
+}
+.form-item-pass-score-4-div-radiusConfigurationCtl{
+    float:left;
+    line-height: 32px;
+    color:#9ac251;
+    font-size: 12px;
+    margin-left:20px;
+    width:670px;
+    height:32px;
+    color:#00b700;
+
+}
+.form-item-pass-score-message-div-radiusConfigurationCtl{
+    float:left;
+    width:670px;
+    height:15px;
+    line-height: 15px;
+    color:#333333;
+    font-size: 12px;
+
+}
 
 .form-button-div-radiusConfigurationCtl{
     float:left;
