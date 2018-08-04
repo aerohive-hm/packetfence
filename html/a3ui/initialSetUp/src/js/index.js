@@ -10,6 +10,7 @@ import Util from "../libs/util";
 import * as mock from "../libs/mockData";
 import GetStartCtl from './ctlComponents/getStartCtl';
 import AdminUserCtl from './ctlComponents/adminUserCtl';
+import NetworksCtl from './ctlComponents/networksCtl';
 import Logo from "../libs/logo/js/logo";
 
 import en_GB from 'antd/lib/locale-provider/en_GB';
@@ -23,7 +24,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"adminUser",
+            show:"networks",
 
         };
     }
@@ -69,6 +70,13 @@ class App extends Component {
         }else if(show==="adminUser"){
             contentHtml=<div>
                 <AdminUserCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }
+        else if(show==="networks"){
+            contentHtml=<div>
+                <NetworksCtl 
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>
