@@ -1,28 +1,28 @@
 
-.global-div-adminUserCtl{
+.global-div-networksCtl{
     float:left;
     width:1280px;
 }
 
-.left-div-adminUserCtl{
+.left-div-networksCtl{
     float:left;
     width:234px;
 }
-.img-div-adminUserCtl{
+.img-div-networksCtl{
     float:left;
     margin-top:90px;
     width:234px;
     height:215px;
     
 }
-.img-img-adminUserCtl{
+.img-img-networksCtl{
     float:left;
     width:234px;
     height:215px;
     
 }
 
-.right-div-adminUserCtl{
+.right-div-networksCtl{
     float:left;
     margin-top:90px;
     margin-left:86px;
@@ -30,12 +30,12 @@
     height:300px;
 }
 
-.form-item-div-adminUserCtl{
+.form-item-div-radiusConfigurationCtl{
     float:left;
     width:960px;
     margin-top:10px;
 }
-.form-item-title-div-adminUserCtl{
+.form-item-title-div-radiusConfigurationCtl{
     float:left;
     width:960px;
     height:17px;
@@ -44,12 +44,12 @@
     font-weight: bold;
     font-size: 12px;
 }
-.form-item-input-div-adminUserCtl{
+.form-item-input-div-radiusConfigurationCtl{
     float:left;
     width:270px;
     height:32px;
 }
-.form-item-wrong-div-adminUserCtl{
+.form-item-wrong-div-radiusConfigurationCtl{
     float:left;
     margin-left:20px;
     width:670px;
@@ -59,13 +59,13 @@
     font-size: 12px;
 
 }
-.form-item-pass-score-div-adminUserCtl{
+.form-item-pass-score-div-radiusConfigurationCtl{
     float:left;
     margin-left:20px;
     width:670px;
     height:32px;
 }
-.form-item-pass-score-0-div-adminUserCtl{
+.form-item-pass-score-0-div-radiusConfigurationCtl{
     float:left;
     width:670px;
     height:17px;
@@ -73,7 +73,7 @@
     color:#a8b7c7;
     font-size: 12px;
 }
-.form-item-pass-score-1-div-adminUserCtl{
+.form-item-pass-score-1-div-radiusConfigurationCtl{
     float:left;
     width:670px;
     height:17px;
@@ -82,7 +82,7 @@
     font-size: 12px;
 
 }
-.form-item-pass-score-2-div-adminUserCtl{
+.form-item-pass-score-2-div-radiusConfigurationCtl{
     float:left;
     width:670px;
     height:17px;
@@ -91,7 +91,7 @@
     font-size: 12px;
 
 }
-.form-item-pass-score-3-div-adminUserCtl{
+.form-item-pass-score-3-div-radiusConfigurationCtl{
     float:left;
     line-height: 32px;
     color:#9ac251;
@@ -100,7 +100,7 @@
     width:670px;
     height:32px;
 }
-.form-item-pass-score-4-div-adminUserCtl{
+.form-item-pass-score-4-div-radiusConfigurationCtl{
     float:left;
     line-height: 32px;
     color:#9ac251;
@@ -111,7 +111,7 @@
     color:#00b700;
 
 }
-.form-item-pass-score-message-div-adminUserCtl{
+.form-item-pass-score-message-div-radiusConfigurationCtl{
     float:left;
     width:670px;
     height:15px;
@@ -121,27 +121,36 @@
 
 }
 
-.form-button-div-adminUserCtl{
+.form-button-div-radiusConfigurationCtl{
     float:left;
     width:270px;
     margin-top:10px;
 }
-.form-button-cancel-div-adminUserCtl{
+.form-button-cancel-div-radiusConfigurationCtl{
     float:right;
     margin-right:16px;
     width:78px;
     height:32px;
 }
-.form-button-next-div-adminUserCtl{
+.form-button-next-div-radiusConfigurationCtl{
     float:right;
     width:78px;
     height:32px;
 }
-.form-button-cancel-antd-button-adminUserCtl{
+.form-button-cancel-antd-button-radiusConfigurationCtl{
     width:78px;
     height:32px;
 }
-.form-button-next-antd-button-adminUserCtl{
+.form-button-next-antd-button-radiusConfigurationCtl{
     width:78px;
     height:32px;
+}
+
+
+.test-div-radiusConfigurationCtl{
+    float:left;
+    width:800px;
+    height:90px;
+    border: 1px solid red;
+
 }

@@ -227,50 +227,50 @@ class adminUserCtl extends Component {
         });
         let passMessageHtml;
         if(wrongMessage.passWrongMessage!==""){
-            passMessageHtml=<div className="form-item-wrong-div-adminUserCtl" >
+            passMessageHtml=<div className="form-item-wrong-div-radiusConfigurationCtl" >
                                 {wrongMessage.passWrongMessage}
                              </div>                           
         }else
         if(passScore===0){
-            passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
-                                <div className="form-item-pass-score-0-div-adminUserCtl" >
+            passMessageHtml=<div className="form-item-pass-score-div-radiusConfigurationCtl" >
+                                <div className="form-item-pass-score-0-div-radiusConfigurationCtl" >
                                     Very Weak
                                 </div>  
-                                <div className="form-item-pass-score-message-div-adminUserCtl" >
+                                <div className="form-item-pass-score-message-div-radiusConfigurationCtl" >
                                     Short keyboard patterns are easy to guess.
                                 </div> 
                                 <div className="clear-float-div-common" ></div > 
                              </div>                           
         }else
         if(passScore===1){
-            passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
-                                <div className="form-item-pass-score-1-div-adminUserCtl" >
+            passMessageHtml=<div className="form-item-pass-score-div-radiusConfigurationCtl" >
+                                <div className="form-item-pass-score-1-div-radiusConfigurationCtl" >
                                     Weak
                                 </div>  
-                                <div className="form-item-pass-score-message-div-adminUserCtl" >
+                                <div className="form-item-pass-score-message-div-radiusConfigurationCtl" >
                                     Repeats like "aaa" are easy to guess.
                                 </div> 
                                 <div className="clear-float-div-common" ></div > 
                              </div>                           
         }else
         if(passScore===2){
-            passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
-                                <div className="form-item-pass-score-2-div-adminUserCtl" >
+            passMessageHtml=<div className="form-item-pass-score-div-radiusConfigurationCtl" >
+                                <div className="form-item-pass-score-2-div-radiusConfigurationCtl" >
                                     Average
                                 </div>  
-                                <div className="form-item-pass-score-message-div-adminUserCtl" >
+                                <div className="form-item-pass-score-message-div-radiusConfigurationCtl" >
                                     Add another word or two. Uncommon words are better.
                                 </div> 
                                 <div className="clear-float-div-common" ></div > 
                              </div>                           
         }else
         if(passScore===3){
-            passMessageHtml=<div className="form-item-pass-score-3-div-adminUserCtl" >
+            passMessageHtml=<div className="form-item-pass-score-3-div-radiusConfigurationCtl" >
                                 Strong
                             </div>                            
         }else
         if(passScore===4){
-            passMessageHtml=<div className="form-item-pass-score-4-div-adminUserCtl" >
+            passMessageHtml=<div className="form-item-pass-score-4-div-radiusConfigurationCtl" >
                                 Very Strong
                             </div>                            
         }
@@ -290,11 +290,11 @@ class adminUserCtl extends Component {
                 <div className="right-div-adminUserCtl">
                     
                     <Form onSubmit={self.handleSubmit.bind(self)}>
-                    <div className="form-item-div-adminUserCtl">
-                        <div className="form-item-title-div-adminUserCtl">
+                    <div className="form-item-div-radiusConfigurationCtl">
+                        <div className="form-item-title-div-radiusConfigurationCtl">
                             Admin Email
                         </div>
-                        <div className="form-item-input-div-adminUserCtl">
+                        <div className="form-item-input-div-radiusConfigurationCtl">
                             {getFieldDecorator('user', {
                                 rules: [],
                             })(
@@ -304,18 +304,18 @@ class adminUserCtl extends Component {
                                 />
                             )}
                         </div>
-                        <div className="form-item-wrong-div-adminUserCtl" 
+                        <div className="form-item-wrong-div-radiusConfigurationCtl" 
                         style={{display:wrongMessage.userWrongMessage===""?"none":"block"}}>
                                 {wrongMessage.userWrongMessage}
                         </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
 
-                    <div className="form-item-div-adminUserCtl">
-                        <div className="form-item-title-div-adminUserCtl">
+                    <div className="form-item-div-radiusConfigurationCtl">
+                        <div className="form-item-title-div-radiusConfigurationCtl">
                             Password
                         </div>
-                        <div className="form-item-input-div-adminUserCtl">
+                        <div className="form-item-input-div-radiusConfigurationCtl">
                             {getFieldDecorator('pass', {
                                 rules: [],
                             })(
@@ -332,11 +332,11 @@ class adminUserCtl extends Component {
                         <div className="clear-float-div-common" ></div >
                     </div>
 
-                    <div className="form-item-div-adminUserCtl">
-                        <div className="form-item-title-div-adminUserCtl">
+                    <div className="form-item-div-radiusConfigurationCtl">
+                        <div className="form-item-title-div-radiusConfigurationCtl">
                             Confirm Password
                         </div>
-                        <div className="form-item-input-div-adminUserCtl">
+                        <div className="form-item-input-div-radiusConfigurationCtl">
                             {getFieldDecorator('passConfirm', {
                                 rules: [],
                             })(
@@ -347,24 +347,24 @@ class adminUserCtl extends Component {
                                 />
                             )}
                         </div>
-                        <div className="form-item-wrong-div-adminUserCtl" 
+                        <div className="form-item-wrong-div-radiusConfigurationCtl" 
                         style={{display:wrongMessage.passConfirmWrongMessage===""?"none":"block"}}>
                                 {wrongMessage.passConfirmWrongMessage}
                         </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
 
-                    <div className="form-button-div-adminUserCtl">
-                        <div className="form-button-next-div-adminUserCtl">
+                    <div className="form-button-div-radiusConfigurationCtl">
+                        <div className="form-button-next-div-radiusConfigurationCtl">
                             <Button 
                                 type="primary" 
-                                className="form-button-next-antd-button-adminUserCtl" 
+                                className="form-button-next-antd-button-radiusConfigurationCtl" 
                                 htmlType="submit" 
                             >NEXT</Button>
                         </div>
-                        <div className="form-button-cancel-div-adminUserCtl">
+                        <div className="form-button-cancel-div-radiusConfigurationCtl">
                             <Button 
-                                className="form-button-cancel-antd-button-adminUserCtl" 
+                                className="form-button-cancel-antd-button-radiusConfigurationCtl" 
                                 onClick={self.onClickCancel.bind(self)}
                             >CANCEL</Button>
                         </div>
