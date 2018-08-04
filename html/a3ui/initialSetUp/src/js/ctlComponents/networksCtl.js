@@ -18,6 +18,8 @@ import {i18nfr} from "../../i18n/ctlComponents/nls/fr/networksCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/networksCtl";
 
 import networksImg from "../../media/networks.png";
+import editNoImg from "../../media/editNo.png";
+import editYesImg from "../../media/editYes.png";
 
 
 
@@ -34,6 +36,8 @@ class networksCtl extends Component {
             enableClustering:true,
             loading:false,
             dataTable:[],
+            isEditing:false,
+            originalDescription:"",
         };
 
 
@@ -86,6 +90,7 @@ class networksCtl extends Component {
         for(let i=0;i<dataTable.length;i++){
             dataTable[i].key=dataTable[i].id;
             dataTable[i].vlan=dataTable[i].id;
+            dataTable[i].clicked="";
         }
         self.setState({
             dataTable: dataTable,
@@ -160,6 +165,54 @@ class networksCtl extends Component {
         
     }
 
+    onClickText= (index,column) => {
+        let self=this;
+        
+        if(self.state.isEditing===true){
+            return;
+        }
+        let dataCopy=self.state.dataTable;
+        dataCopy[index].clicked=column;
+        self.setState({
+            dataTable : dataCopy,
+            originalDescription:dataCopy[index][column],
+            isEditing:true,
+        });
+    }
+
+    onEdit=(index,column,e) =>{
+        let self=this;
+        let dataCopy=self.state.dataTable;
+        dataCopy[index][column]=e.target.value;
+        self.setState({ 
+            dataTable : dataCopy, 
+        });
+
+    }
+
+
+    onClickEditOk= (index) => {
+        let self=this;
+        let dataCopy=self.state.dataTable;
+        dataCopy[index].clicked="";
+        self.setState({
+            dataTable : dataCopy,
+            isEditing: false,
+        }) 
+    }
+
+    onClickEditNo= (index,column) => {
+        let self=this;
+
+        let dataCopy=self.state.dataTable;
+        dataCopy[index].clicked="";
+        dataCopy[index][column]=self.state.originalDescription;
+        self.setState({ 
+            dataTable : dataCopy,
+            isEditing:false,
+        });
+    }
+
 
     render() {
         const {wrongMessage,enableClustering,dataTable,loading} = this.state;
@@ -180,6 +233,35 @@ class networksCtl extends Component {
             title: "IP ADDRESS",
             dataIndex: 'ip_addr',
             key: 'ip_addr',
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        {
+                            dataTable[index].clicked==="ip_addr"?
+                            <div className=""  >
+                                <div className="description-edit-input-div-licenseInfoCtl">
+                                    <Input
+                                        value={text}
+                                        autoFocus
+                                        onChange={self.onEdit.bind(self,index,"ip_addr")}
+                                    />
+                                </div>
+                                <div className="description-edit-ok-div-licenseInfoCtl" onClick={self.onClickEditOk.bind(self,index)}>
+                                    <img className="description-edit-ok-img-licenseInfoCtl" src={editYesImg} />
+                                </div>
+                                <div className="description-edit-no-div-licenseInfoCtl" onClick={self.onClickEditNo.bind(self,index,"ip_addr")}>
+                                    <img className="description-edit-no-img-licenseInfoCtl" src={editNoImg} />
+                                </div>
+                                <div className="clear-float-div-common" ></div >
+                            </div>
+                            :
+                            <div className="description-text-edit-div-licenseInfoCtl" onClick={self.onClickText.bind(self,index,"ip_addr")} >
+                                {text}
+                            </div>
+                        }
+                    </div>
+                );
+            } 
         });
         columns.push({
             title:"NETMASK",

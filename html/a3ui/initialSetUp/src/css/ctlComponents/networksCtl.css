@@ -99,6 +99,43 @@
 
 
 
+.description-edit-input-div-licenseInfoCtl{
+    float:left;
+    width:114px;
+    height: 28px;
+}
+.description-edit-ok-div-licenseInfoCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:10px;
+    width:22px;
+    height: 22px;
+}
+.description-edit-ok-img-licenseInfoCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.description-edit-no-div-licenseInfoCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:10px;
+    width:22px;
+    height: 22px;
+}
+.description-edit-no-img-licenseInfoCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.description-text-edit-div-licenseInfoCtl{
+    cursor: pointer;
+    color:#2c69ff;
+}
 
 
 
