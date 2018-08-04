@@ -194,6 +194,12 @@ class adminUserCtl extends Component {
         
     }
 
+    onClickCancel = () => {
+        let self=this;
+        self.props.form.resetFields();
+        
+    }
+
     onChangePass=(e) =>{
         let self=this;
         console.log(zxcvbn(e.target.value).score);
@@ -359,6 +365,7 @@ class adminUserCtl extends Component {
                         <div className="form-button-cancel-div-radiusConfigurationCtl">
                             <Button 
                                 className="form-button-cancel-antd-button-radiusConfigurationCtl" 
+                                onClick={self.onClickCancel.bind(self)}
                             >CANCEL</Button>
                         </div>
                     </div>
