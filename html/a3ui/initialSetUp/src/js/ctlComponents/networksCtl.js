@@ -41,6 +41,7 @@ class networksCtl extends Component {
             dataTable:[],
             isEditing:false,
             originalDescription:"",
+            addVlanVisible:false,
         };
 
 
@@ -147,6 +148,7 @@ class networksCtl extends Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
+                console.log(values);
                 let hasWrongValue=false;
                 if(self.checkHostname(values.hostname)===false){
                     hasWrongValue=true;
@@ -228,7 +230,46 @@ class networksCtl extends Component {
 
     onClickAddVlan= (index) => {
         let self=this;
+        self.setState({ 
+            addVlanVisible:true,
+        });
 
+    }
+
+
+    onOkAddVlan = (e) => {
+        let self=this;
+        e.preventDefault();
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+
+                console.log(values);
+
+                // let hasWrongValue=false;
+                // if(self.checkHostname(values.hostname)===false){
+                //     hasWrongValue=true;
+                //     $("#hostname").focus();
+                // }
+                // if(hasWrongValue===true){
+                //     return;
+                // }
+
+                // self.setState({ 
+                //     addVlanVisible:false,
+                // });
+
+
+            }
+        });
+        
+    }
+
+
+    onCancelAddVlan= () => {
+        let self=this;
+        self.setState({ 
+            addVlanVisible:false,
+        });
 
     }
 
@@ -252,7 +293,7 @@ class networksCtl extends Component {
 
 
     render() {
-        const {wrongMessage,enableClustering,dataTable,loading} = this.state;
+        const {wrongMessage,enableClustering,dataTable,loading,addVlanVisible} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
@@ -538,9 +579,89 @@ class networksCtl extends Component {
                     <div className="clear-float-div-common" ></div >
                 </div>
 
+                <Modal 
+                    title="Add VLAN"
+                    visible={addVlanVisible}
+                    width={992}
+                    footer={null}
+                    onCancel={self.onCancelAddVlan.bind(self)}
+                >
+         
+                    <div className="modal-div-networksCtl">
+                        
+                        <Form onSubmit={self.onOkAddVlan.bind(self)}>
+                        <div className="modal-form-item-div-networksCtl" style={{marginTop:"0px"}}>
+                            <div className="modal-form-item-title-div-networksCtl">
+                                Admin Email
+                            </div>
+                            <div className="modal-form-item-input-div-networksCtl">
+                                {getFieldDecorator('user111111111', {
+                                    rules: [],
+                                })(
+                                    <Input 
+                                    style={{height:"32px"}}
+                                    //onBlur={self.onBlurCheckUser.bind(self)}
+                                    />
+                                )}
+                            </div>
+                            <div className="modal-form-item-wrong-div-networksCtl" 
+                            style={{display:wrongMessage.userWrongMessage===""?"none":"block"}}>
+                                    {wrongMessage.userWrongMessage}
+                            </div>
+                            <div className="clear-float-div-common" ></div >
+                        </div>
 
+
+                        <div className="modal-form-item-div-networksCtl">
+                            <div className="modal-form-item-title-div-networksCtl">
+                                Confirm Password
+                            </div>
+                            <div className="modal-form-item-input-div-networksCtl">
+                                {getFieldDecorator('passConfirm222222222222', {
+                                    rules: [],
+                                })(
+                                    <Input 
+                                    style={{height:"32px"}}
+                                    //onBlur={self.onBlurCheckPassConfirm.bind(self)}
+                                    
+                                    />
+                                )}
+                            </div>
+                            <div className="modal-form-item-wrong-div-networksCtl" 
+                            style={{display:wrongMessage.passConfirmWrongMessage===""?"none":"block"}}>
+                                    {wrongMessage.passConfirmWrongMessage}
+                            </div>
+                            <div className="clear-float-div-common" ></div >
+                        </div>
+
+                        <div className="modal-form-button-div-networksCtl">
+                            <div className="modal-form-button-next-div-networksCtl">
+                                <Button 
+                                    type="primary" 
+                                    className="modal-form-button-next-antd-button-networksCtl" 
+                                    htmlType="submit" 
+                                >NEXT</Button>
+                            </div>
+                            <div className="modal-form-button-cancel-div-networksCtl">
+                                <Button 
+                                    className="modal-form-button-cancel-antd-button-networksCtl" 
+                                    onClick={self.onCancelAddVlan.bind(self)}
+                                >CANCEL</Button>
+                            </div>
+                        </div>
+                        </Form>
+
+
+                
+                        <div className="clear-float-div-common" ></div >
+                    </div>
+            
+                </Modal>
                 <div className="clear-float-div-common" ></div >
             </Spin>
+
+
+            
             </div>
             
         )
