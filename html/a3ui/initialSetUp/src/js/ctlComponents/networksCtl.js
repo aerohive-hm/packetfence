@@ -226,6 +226,30 @@ class networksCtl extends Component {
         });
     }
 
+    onClickAddVlan= (index) => {
+        let self=this;
+
+
+    }
+
+    onClickRemoveVlan= (index) => {
+        let self=this;
+        Modal.confirm({
+            content: "Are you sure you want to do this?",
+            okText: 'Yes',
+            cancelText: 'No',
+            onOk() {
+                let dataCopy=self.state.dataTable;
+                dataCopy.splice(index,1);
+                self.setState({ 
+                    dataTable : dataCopy,
+                });
+            },
+            onCancel() {},
+        });
+
+    }
+
 
     render() {
         const {wrongMessage,enableClustering,dataTable,loading} = this.state;
@@ -406,22 +430,24 @@ class networksCtl extends Component {
             render: (text, record, index) => {
                 return (
                     text.indexOf("VLAN")===-1?
-                    <div className="vlan-add-div-networksCtl"  >
+                    <div className="vlan-add-div-networksCtl" onClick={self.onClickAddVlan.bind(self,index)}  >
                         <div className="vlan-add-img-div-networksCtl">
-                            <img src={addVlanImg} className="vlan-add-img-img-networksCtl" />
+                            +
                         </div>
                         <div className="vlan-add-text-div-networksCtl">
-                            {text}
+                            Add VLAN
                         </div>
+                        <div className="clear-float-div-common" ></div >
                     </div>
                     :
-                    <div className="vlan-remove-div-networksCtl">
+                    <div className="vlan-remove-div-networksCtl" onClick={self.onClickRemoveVlan.bind(self,index)}  >
                         <div className="vlan-remove-img-div-networksCtl">
-                            <img src={removeVlanImg} className="vlan-remove-img-img-networksCtl" />
+                            x
                         </div>
                         <div className="vlan-remove-text-div-networksCtl">
-                            {text}
+                            Remove VLAN
                         </div>
+                        <div className="clear-float-div-common" ></div >
                     </div>
                 );
             } 
