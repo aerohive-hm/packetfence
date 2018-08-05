@@ -97,43 +97,189 @@
     margin-top:6px;
 }
 
-
-
-.description-edit-input-div-licenseInfoCtl{
+.name-etho-div-networksCtl{
     float:left;
-    width:114px;
+    height: 28px;
+    line-height: 28px;
+}
+.name-vlan-div-networksCtl{
+    float:left;
     height: 28px;
 }
-.description-edit-ok-div-licenseInfoCtl{
+.name-vlan-blank-div-networksCtl{
+    float:left;
+    height: 28px;
+    width:20px;
+}
+.name-vlan-text-div-networksCtl{
+    float:left;
+    height: 28px;
+    line-height: 28px;
+}
+
+.ipAddr-edit-input-div-networksCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.ipAddr-edit-ok-div-networksCtl{
     float:left;
     margin-top: 3px;
-    margin-left:10px;
+    margin-left:4px;
     width:22px;
     height: 22px;
 }
-.description-edit-ok-img-licenseInfoCtl{
+.ipAddr-edit-ok-img-networksCtl{
     float:left;
     width:22px;
     height: 22px;
     border-radius: 5px;
     cursor: pointer;
 }
-.description-edit-no-div-licenseInfoCtl{
+.ipAddr-edit-no-div-networksCtl{
     float:left;
     margin-top: 3px;
-    margin-left:10px;
+    margin-left:4px;
     width:22px;
     height: 22px;
 }
-.description-edit-no-img-licenseInfoCtl{
+.ipAddr-edit-no-img-networksCtl{
     float:left;
     width:22px;
     height: 22px;
     border-radius: 5px;
     cursor: pointer;
 }
-.description-text-edit-div-licenseInfoCtl{
+.ipAddr-text-div-networksCtl{
     cursor: pointer;
+    color:#2c69ff;
+}
+
+
+.netmask-edit-input-div-networksCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.netmask-edit-ok-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.netmask-edit-ok-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.netmask-edit-no-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.netmask-edit-no-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.netmask-text-div-networksCtl{
+    cursor: pointer;
+    color:#2c69ff;
+}
+
+
+
+
+
+.vip-edit-input-div-networksCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.vip-edit-ok-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.vip-edit-ok-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.vip-edit-no-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.vip-edit-no-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.vip-text-div-networksCtl{
+    cursor: pointer;
+    color:#2c69ff;
+}
+
+
+.vlan-add-div-networksCtl{
+    float:left;
+    height: 28px;
+}
+.vlan-add-img-div-networksCtl{
+    float:left;
+    margin-top:6px;
+    height: 16px;
+    width:16px;
+}
+.vlan-add-img-img-networksCtl{
+    float:left;
+    height: 16px;
+    width:16px;
+}
+.vlan-add-text-div-networksCtl{
+    float:left;
+    margin-left: 6px;
+    height: 28px;
+    line-height: 28px;
+    color:#2c69ff;
+}
+
+.vlan-remove-div-networksCtl{
+    float:left;
+    height: 28px;
+}
+.vlan-remove-img-div-networksCtl{
+    float:left;
+    margin-top:4px;
+    height: 19px;
+    width:19px;
+}
+.vlan-remove-img-img-networksCtl{
+    float:left;
+    height: 19px;
+    width:19px;
+}
+.vlan-remove-text-div-networksCtl{
+    float:left;
+    margin-left: 6px;
+    height: 28px;
+    line-height: 28px;
     color:#2c69ff;
 }
 
@@ -150,12 +296,9 @@
 
 
 
-
-
-
 .form-button-div-networksCtl{
     float:left;
-    width:270px;
+    width:960px;
     margin-top:10px;
 }
 .form-button-cancel-div-networksCtl{

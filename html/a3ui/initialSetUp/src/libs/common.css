@@ -3,6 +3,19 @@
     clear:both;
 }
 
-.ant-form-explain{
-    float:left;
+.ant-table-thead > tr > th {
+    padding-top: 5px !important ;
+    padding-right: 8px !important ;
+    padding-bottom: 5px !important ;
+    padding-left: 8px !important ;
+}
+
+
+.ant-table-tbody > tr > td {
+    padding-top:6px !important ;
+    padding-bottom:6px !important ;
+}
+
+.ant-table-thead > tr > th{
+    color: #ffffff;
 }

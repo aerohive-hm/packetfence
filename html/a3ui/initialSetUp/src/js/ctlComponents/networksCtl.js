@@ -20,6 +20,9 @@ import {i18n} from "../../i18n/ctlComponents/nls/networksCtl";
 import networksImg from "../../media/networks.png";
 import editNoImg from "../../media/editNo.png";
 import editYesImg from "../../media/editYes.png";
+import addVlanImg from "../../media/addVlan.png";
+import removeVlanImg from "../../media/removeVlan.png";
+
 
 
 
@@ -89,7 +92,7 @@ class networksCtl extends Component {
         let dataTable=data.items;
         for(let i=0;i<dataTable.length;i++){
             dataTable[i].key=dataTable[i].id;
-            dataTable[i].vlan=dataTable[i].id;
+            dataTable[i].vlan=dataTable[i].name;
             dataTable[i].clicked="";
         }
         self.setState({
@@ -190,6 +193,16 @@ class networksCtl extends Component {
 
     }
 
+    onChangeSelect=(index,column,value) =>{
+        let self=this;
+        let dataCopy=self.state.dataTable;
+        dataCopy[index][column]=value;
+        self.setState({ 
+            dataTable : dataCopy, 
+        });
+
+    }
+
 
     onClickEditOk= (index) => {
         let self=this;
@@ -228,6 +241,22 @@ class networksCtl extends Component {
             title:"NAME",
             dataIndex: 'name',
             key: 'name',
+            render: (text, record, index) => {
+                return (
+                    text.indexOf("VLAN")===-1?
+                    <div className="name-etho-div-networksCtl"  >
+                        {text}
+                    </div>
+                    :
+                    <div className="name-vlan-div-networksCtl">
+                        <div className="name-vlan-blank-div-networksCtl">
+                        </div>
+                        <div className="name-vlan-text-div-networksCtl">
+                            {text}
+                        </div>
+                    </div>
+                );
+            } 
         });
         columns.push({
             title: "IP ADDRESS",
@@ -239,23 +268,23 @@ class networksCtl extends Component {
                         {
                             dataTable[index].clicked==="ip_addr"?
                             <div className=""  >
-                                <div className="description-edit-input-div-licenseInfoCtl">
+                                <div className="ipAddr-edit-input-div-networksCtl">
                                     <Input
                                         value={text}
                                         autoFocus
                                         onChange={self.onEdit.bind(self,index,"ip_addr")}
                                     />
                                 </div>
-                                <div className="description-edit-ok-div-licenseInfoCtl" onClick={self.onClickEditOk.bind(self,index)}>
-                                    <img className="description-edit-ok-img-licenseInfoCtl" src={editYesImg} />
+                                <div className="ipAddr-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index)}>
+                                    <img className="ipAddr-edit-ok-img-networksCtl" src={editYesImg} />
                                 </div>
-                                <div className="description-edit-no-div-licenseInfoCtl" onClick={self.onClickEditNo.bind(self,index,"ip_addr")}>
-                                    <img className="description-edit-no-img-licenseInfoCtl" src={editNoImg} />
+                                <div className="ipAddr-edit-no-div-networksCtl" onClick={self.onClickEditNo.bind(self,index,"ip_addr")}>
+                                    <img className="ipAddr-edit-no-img-networksCtl" src={editNoImg} />
                                 </div>
                                 <div className="clear-float-div-common" ></div >
                             </div>
                             :
-                            <div className="description-text-edit-div-licenseInfoCtl" onClick={self.onClickText.bind(self,index,"ip_addr")} >
+                            <div className="ipAddr-text-div-networksCtl" onClick={self.onClickText.bind(self,index,"ip_addr")} >
                                 {text}
                             </div>
                         }
@@ -267,28 +296,135 @@ class networksCtl extends Component {
             title:"NETMASK",
             dataIndex: 'netmask',
             key: 'netmask',
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        {
+                            dataTable[index].clicked==="netmask"?
+                            <div className=""  >
+                                <div className="netmask-edit-input-div-networksCtl">
+                                    <Input
+                                        value={text}
+                                        autoFocus
+                                        onChange={self.onEdit.bind(self,index,"netmask")}
+                                    />
+                                </div>
+                                <div className="netmask-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index)}>
+                                    <img className="netmask-edit-ok-img-networksCtl" src={editYesImg} />
+                                </div>
+                                <div className="netmask-edit-no-div-networksCtl" onClick={self.onClickEditNo.bind(self,index,"netmask")}>
+                                    <img className="netmask-edit-no-img-networksCtl" src={editNoImg} />
+                                </div>
+                                <div className="clear-float-div-common" ></div >
+                            </div>
+                            :
+                            <div className="netmask-text-div-networksCtl" onClick={self.onClickText.bind(self,index,"netmask")} >
+                                {text}
+                            </div>
+                        }
+                    </div>
+                );
+            } 
         });
         columns.push({
             title:"VIP",
             dataIndex: 'vip',
             key: 'vip',
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        {
+                            dataTable[index].clicked==="vip"?
+                            <div className=""  >
+                                <div className="vip-edit-input-div-networksCtl">
+                                    <Input
+                                        value={text}
+                                        autoFocus
+                                        onChange={self.onEdit.bind(self,index,"vip")}
+                                    />
+                                </div>
+                                <div className="vip-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index)}>
+                                    <img className="vip-edit-ok-img-networksCtl" src={editYesImg} />
+                                </div>
+                                <div className="vip-edit-no-div-networksCtl" onClick={self.onClickEditNo.bind(self,index,"vip")}>
+                                    <img className="vip-edit-no-img-networksCtl" src={editNoImg} />
+                                </div>
+                                <div className="clear-float-div-common" ></div >
+                            </div>
+                            :
+                            <div className="vip-text-div-networksCtl" onClick={self.onClickText.bind(self,index,"vip")} >
+                                {text}
+                            </div>
+                        }
+                    </div>
+                );
+            } 
         });
         columns.push({
             title:"TYPE",
             dataIndex: 'type',
             key: 'type',
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        <Select 
+                            value={text} 
+                            onChange={self.onChangeSelect.bind(self,index,"type")}
+                            style={{ width: 110 }} 
+                        >
+                            <Option value="management">management</Option>
+                            <Option value="registration">registration</Option>
+                        </Select>
+                    </div>
+                );
+            } 
         });
 
         columns.push({
             title: 'SERVICES',
             dataIndex: 'services',
             key: 'services',
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        <Select 
+                            value={text} 
+                            onChange={self.onChangeSelect.bind(self,index,"services")}
+                            style={{ width: 110 }} 
+                        >
+                            <Option value="portal">portal</Option>
+                        </Select>
+                    </div>
+                );
+            } 
         });
 
         columns.push({
             title: "VLAN",
             dataIndex: 'vlan',
             key: 'vlan',
+            render: (text, record, index) => {
+                return (
+                    text.indexOf("VLAN")===-1?
+                    <div className="vlan-add-div-networksCtl"  >
+                        <div className="vlan-add-img-div-networksCtl">
+                            <img src={addVlanImg} className="vlan-add-img-img-networksCtl" />
+                        </div>
+                        <div className="vlan-add-text-div-networksCtl">
+                            {text}
+                        </div>
+                    </div>
+                    :
+                    <div className="vlan-remove-div-networksCtl">
+                        <div className="vlan-remove-img-div-networksCtl">
+                            <img src={removeVlanImg} className="vlan-remove-img-img-networksCtl" />
+                        </div>
+                        <div className="vlan-remove-text-div-networksCtl">
+                            {text}
+                        </div>
+                    </div>
+                );
+            } 
         });
 
         
