@@ -11,6 +11,8 @@ import * as mock from "../libs/mockData";
 import GetStartCtl from './ctlComponents/getStartCtl';
 import AdminUserCtl from './ctlComponents/adminUserCtl';
 import NetworksCtl from './ctlComponents/networksCtl';
+import AerohiveCloudCtl from './ctlComponents/aerohiveCloudCtl';
+
 import Logo from "../libs/logo/js/logo";
 
 import en_GB from 'antd/lib/locale-provider/en_GB';
@@ -24,7 +26,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"networks",
+            show:"aerohiveCloud",
 
         };
     }
@@ -73,10 +75,15 @@ class App extends Component {
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>
-        }
-        else if(show==="networks"){
+        }else if(show==="networks"){
             contentHtml=<div>
                 <NetworksCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="aerohiveCloud"){
+            contentHtml=<div>
+                <AerohiveCloudCtl 
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>
