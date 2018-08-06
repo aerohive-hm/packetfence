@@ -1,0 +1,219 @@
+
+.global-div-licensingCtl{
+    float:left;
+    width:1280px;
+}
+
+.left-div-licensingCtl{
+    float:left;
+    width:234px;
+}
+.img-div-licensingCtl{
+    float:left;
+    margin-top:90px;
+    width:234px;
+    height:215px;
+    
+}
+.img-img-licensingCtl{
+    float:left;
+    width:234px;
+    height:215px;
+    
+}
+
+.right-div-licensingCtl{
+    float:left;
+    margin-top:90px;
+    margin-left:86px;
+    width:960px;
+}
+
+.thirty-day-trial-div-licensingCtl{
+    float:left;
+    width:400px;
+    height:319px;
+    background: #1774bc;
+}
+.thirty-day-trial-img-div-licensingCtl{
+    float:left;
+    width:40px;
+    height:40px;
+    margin-left:180px;
+    margin-top:30px;
+}
+.thirty-day-trial-img-img-licensingCtl{
+    float:left;
+    width:40px;
+    height:40px;
+}
+.thirty-day-trial-text-div-licensingCtl{
+    float:left;
+    width:400px;
+    height:50px;
+    line-height: 50px;
+    color: #ffffff;
+    text-align: center; 
+    font-size: 36px;
+    font-weight: bold;
+}
+.thirty-day-trial-button-div-licensingCtl{
+    float:left;
+    margin-top:30px;
+    width:311px;
+    height:69px;
+    line-height: 69px;
+    color: #1774bc;
+    text-align: center; 
+    background: #ffffff;
+    font-size: 18px;
+    margin-left:44px;
+    cursor: pointer;
+}
+
+
+
+
+
+.enter-entitlement-key-div-licensingCtl{
+    float:left;
+    width:400px;
+    height:319px;
+    background: #a8b7c7;
+}
+.enter-entitlement-key-img-div-licensingCtl{
+    float:left;
+    width:40px;
+    height:40px;
+    margin-left:180px;
+    margin-top:30px;
+}
+.enter-entitlement-key-img-img-licensingCtl{
+    float:left;
+    width:37px;
+    height:35px;
+}
+.enter-entitlement-key-text-div-licensingCtl{
+    float:left;
+    width:400px;
+    height:50px;
+    line-height: 50px;
+    color: #ffffff;
+    text-align: center; 
+    font-size: 36px;
+    font-weight: bold;
+}
+.enter-entitlement-key-button-div-licensingCtl{
+    float:left;
+    margin-top:30px;
+    width:311px;
+    height:69px;
+    line-height: 69px;
+    color: #a8b7c7;
+    text-align: center; 
+    background: #ffffff;
+    font-size: 18px;
+    margin-left:44px;
+    cursor: pointer;
+}
+
+
+
+
+
+.modal-div-licensingCtl{
+    width:477px;
+}
+
+.modal-form-item-div-licensingCtl{
+    float:left;
+    width:477px;
+}
+.modal-form-item-title-div-licensingCtl{
+    float:left;
+    width:51px;
+    height:32px;
+    line-height: 32px;
+    color:#333333;
+    font-size: 12px;
+}
+.modal-form-item-input-div-licensingCtl{
+    float:left;
+    width:426px;
+    height:32px;
+}
+
+.modal-form-item-wrong-div-licensingCtl{
+    float:left;
+    width:426px;
+    margin-left:51px;
+    height:16px;
+    line-height: 16px;
+    color:#f44336;
+    font-size: 12px;
+}
+.modal-form-button-div-licensingCtl{
+    float:left;
+    width:477px;
+}
+.modal-form-button-cancel-div-licensingCtl{
+    float:right;
+    margin-right:16px;
+    width:78px;
+    height:32px;
+}
+.modal-form-button-next-div-licensingCtl{
+    float:right;
+    width:78px;
+    height:32px;
+}
+.modal-form-button-cancel-antd-button-licensingCtl{
+    width:78px;
+    height:32px;
+}
+.modal-form-button-next-antd-button-licensingCtl{
+    width:78px;
+    height:32px;
+}
+
+
+.modal-eula-text-div-licensingCtl{
+    float:left;
+    width:477px;
+    height:323px;
+    word-break:break-all;
+    overflow-y:scroll;
+}
+.modal-eula-button-div-licensingCtl{
+    float:left;
+    width:477px;
+    margin-top:16px;
+    height: 68px;
+    background: #f7f9fb;
+}
+.modal-eula-checkbox-div-licensingCtl{
+    float:left;
+    width:14px;
+    height:14px;
+    margin-top:25px;
+}
+.modal-eula-checkbox-text-div-licensingCtl{
+    float:left;
+    height: 68px;
+    line-height: 68px;
+    color:#333333;
+    font-size: 12px;
+    margin-left:6px;
+
+}
+.modal-eula-submit-div-licensingCtl{
+    float:right;
+    margin-top:18px;
+    width:80px;
+    height:32px;
+}
+
+.modal-eula-submit-antd-button-licensingCtl{
+    width:80px;
+    height:32px;
+}
