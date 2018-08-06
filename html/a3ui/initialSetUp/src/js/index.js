@@ -12,6 +12,7 @@ import GetStartCtl from './ctlComponents/getStartCtl';
 import AdminUserCtl from './ctlComponents/adminUserCtl';
 import NetworksCtl from './ctlComponents/networksCtl';
 import AerohiveCloudCtl from './ctlComponents/aerohiveCloudCtl';
+import JoinClusterCtl from './ctlComponents/joinClusterCtl';
 
 import Logo from "../libs/logo/js/logo";
 
@@ -26,7 +27,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"aerohiveCloud",
+            show:"joinCluster",
 
         };
     }
@@ -84,6 +85,12 @@ class App extends Component {
         }else if(show==="aerohiveCloud"){
             contentHtml=<div>
                 <AerohiveCloudCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="joinCluster"){
+            contentHtml=<div>
+                <JoinClusterCtl 
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>
