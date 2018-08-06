@@ -123,25 +123,36 @@
 
 .form-button-div-aerohiveCloudCtl{
     float:left;
-    width:270px;
+    width:960px;
     margin-top:10px;
 }
-.form-button-cancel-div-aerohiveCloudCtl{
-    float:right;
-    margin-right:16px;
-    width:78px;
+.form-button-create-div-aerohiveCloudCtl{
+    float:left;
+    width:270px;
     height:32px;
 }
-.form-button-next-div-aerohiveCloudCtl{
-    float:right;
-    width:78px;
+.form-button-link-div-aerohiveCloudCtl{
+    float:left;
+    width:270px;
     height:32px;
 }
-.form-button-cancel-antd-button-aerohiveCloudCtl{
-    width:78px;
+.form-button-create-antd-button-aerohiveCloudCtl{
+    width:270px;
     height:32px;
 }
-.form-button-next-antd-button-aerohiveCloudCtl{
-    width:78px;
+.form-button-link-antd-button-aerohiveCloudCtl{
+    width:270px;
     height:32px;
+}
+.form-button-continue-div-aerohiveCloudCtl{
+    float:left;
+    margin-top:10px;
+    width:270px;
+    height:17px;
+    line-height:17px;
+    font-size: 12px;
+    color:#2c6aff;
+    text-align: center;
+    cursor: pointer;
+
 }

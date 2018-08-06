@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/aerohiveCloudCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/aerohiveCloudCtl";
 
-import adminUserImg from "../../media/adminUser.png";
+import aerohiveCloudImg from "../../media/aerohiveCloud.png";
 
 
 
@@ -29,9 +29,9 @@ class aerohiveCloudCtl extends Component {
         this.state = {
             i18n:{},
             wrongMessage:{
+                urlWrongMessage:"",
                 userWrongMessage:"",
                 passWrongMessage:"",
-                passConfirmWrongMessage:"",
                 
             },
             passScore:-1
@@ -61,6 +61,45 @@ class aerohiveCloudCtl extends Component {
 
     }
 
+   
+    onClickCreateAnAerohiveCloudAccount=()=>{
+        let self=this;
+        window.open("https://www.aerohive.com/cloud-networking");
+    }
+
+    onBlurCheckUrl(e){
+        let self=this;
+        self.checkUrl(e.target.value);
+    }
+
+    checkUrl=(url)=>{
+        let self=this;
+        let newWrongMessage=self.state.wrongMessage;
+
+        if(!url||url.toString().trim()===""){
+            newWrongMessage.urlWrongMessage="Cloud URL is required.";
+        }else{
+            newWrongMessage.urlWrongMessage="";
+        }
+
+
+        self.setState({
+            wrongMessage:newWrongMessage
+        })
+        if(newWrongMessage.urlWrongMessage===""){
+            $("#url").css({
+                "border":"1px solid #d9d9d9",
+            });
+            return true;
+        }else{
+            $("#url").css({
+                "border":"1px solid red",
+            });
+            
+            return false;
+        }
+    }
+
     onBlurCheckUser(e){
         let self=this;
         self.checkUser(e.target.value);
@@ -71,10 +110,7 @@ class aerohiveCloudCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!user||user.toString().trim()===""){
-            newWrongMessage.userWrongMessage="Email is required.";
-        }else
-        if(isEmail(user)===false){
-            newWrongMessage.userWrongMessage="Email format is incorrect.";
+            newWrongMessage.userWrongMessage="Cloud Admin User is required";
         }else{
             newWrongMessage.userWrongMessage="";
         }
@@ -130,52 +166,12 @@ class aerohiveCloudCtl extends Component {
         }
     }
 
-    onBlurCheckPassConfirm(e){
-        let self=this;
-        self.checkPassConfirm(e.target.value);
-    }
-
-    checkPassConfirm=(passConfirm)=>{
-        let self=this;
-        let newWrongMessage=self.state.wrongMessage;
-
-        if(!passConfirm||passConfirm.toString().trim()===""){
-            newWrongMessage.passConfirmWrongMessage="Confirm Password is required";
-        }else
-        if(passConfirm.toString().trim()!==($("#pass").val()?$("#pass").val().toString().trim():"")){
-            newWrongMessage.passConfirmWrongMessage="Password do not match";
-        }else{
-            newWrongMessage.passConfirmWrongMessage="";
-        }
-
-
-        self.setState({
-            wrongMessage:newWrongMessage
-        })
-        if(newWrongMessage.passConfirmWrongMessage===""){
-            $("#passConfirm").css({
-                "border":"1px solid #d9d9d9",
-            });
-            return true;
-        }else{
-            $("#passConfirm").css({
-                "border":"1px solid red",
-            });
-            
-            return false;
-        }
-    }
-
     handleSubmit = (e) => {
         let self=this;
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 let hasWrongValue=false;
-                if(self.checkPassConfirm(values.passConfirm)===false){
-                    hasWrongValue=true;
-                    $("#passConfirm").focus();
-                }
                 if(self.checkPass(values.pass)===false){
                     hasWrongValue=true;
                     $("#pass").focus();
@@ -183,6 +179,10 @@ class aerohiveCloudCtl extends Component {
                 if(self.checkUser(values.user)===false){
                     hasWrongValue=true;
                     $("#user").focus();
+                }
+                if(self.checkUrl(values.url)===false){
+                    hasWrongValue=true;
+                    $("#url").focus();
                 }
                 if(hasWrongValue===true){
                     return;
@@ -194,95 +194,25 @@ class aerohiveCloudCtl extends Component {
         
     }
 
-    onClickCancel = () => {
-        let self=this;
-        self.props.form.resetFields();
-        
-    }
-
-    onChangePass=(e) =>{
-        let self=this;
-        console.log(zxcvbn(e.target.value).score);
-        self.checkPass(e.target.value);
-        self.setState({
-            passScore:zxcvbn(e.target.value).score,
-        })
-
-
-
-    }
-
-
-
-
 
 
     render() {
-        const {wrongMessage,passScore} = this.state;
+        const {wrongMessage} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
         message.config({
             duration: 10,
         });
-        let passMessageHtml;
-        if(wrongMessage.passWrongMessage!==""){
-            passMessageHtml=<div className="form-item-wrong-div-aerohiveCloudCtl" >
-                                {wrongMessage.passWrongMessage}
-                             </div>                           
-        }else
-        if(passScore===0){
-            passMessageHtml=<div className="form-item-pass-score-div-aerohiveCloudCtl" >
-                                <div className="form-item-pass-score-0-div-aerohiveCloudCtl" >
-                                    Very Weak
-                                </div>  
-                                <div className="form-item-pass-score-message-div-aerohiveCloudCtl" >
-                                    Short keyboard patterns are easy to guess.
-                                </div> 
-                                <div className="clear-float-div-common" ></div > 
-                             </div>                           
-        }else
-        if(passScore===1){
-            passMessageHtml=<div className="form-item-pass-score-div-aerohiveCloudCtl" >
-                                <div className="form-item-pass-score-1-div-aerohiveCloudCtl" >
-                                    Weak
-                                </div>  
-                                <div className="form-item-pass-score-message-div-aerohiveCloudCtl" >
-                                    Repeats like "aaa" are easy to guess.
-                                </div> 
-                                <div className="clear-float-div-common" ></div > 
-                             </div>                           
-        }else
-        if(passScore===2){
-            passMessageHtml=<div className="form-item-pass-score-div-aerohiveCloudCtl" >
-                                <div className="form-item-pass-score-2-div-aerohiveCloudCtl" >
-                                    Average
-                                </div>  
-                                <div className="form-item-pass-score-message-div-aerohiveCloudCtl" >
-                                    Add another word or two. Uncommon words are better.
-                                </div> 
-                                <div className="clear-float-div-common" ></div > 
-                             </div>                           
-        }else
-        if(passScore===3){
-            passMessageHtml=<div className="form-item-pass-score-3-div-aerohiveCloudCtl" >
-                                Strong
-                            </div>                            
-        }else
-        if(passScore===4){
-            passMessageHtml=<div className="form-item-pass-score-4-div-aerohiveCloudCtl" >
-                                Very Strong
-                            </div>                            
-        }
         return (
             <div className="global-div-aerohiveCloudCtl">
                 <div className="left-div-aerohiveCloudCtl">
                     <Guidance 
-                        title={"Admin User"} 
+                        title={"Aerohive Cloud"} 
                         content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
                     />
                     <div className="img-div-aerohiveCloudCtl">
-                       <img src={adminUserImg} className="img-img-aerohiveCloudCtl" />
+                       <img src={aerohiveCloudImg} className="img-img-aerohiveCloudCtl" />
                     </div>
                     <div className="clear-float-div-common" ></div >
                 </div>
@@ -290,9 +220,33 @@ class aerohiveCloudCtl extends Component {
                 <div className="right-div-aerohiveCloudCtl">
                     
                     <Form onSubmit={self.handleSubmit.bind(self)}>
+
                     <div className="form-item-div-aerohiveCloudCtl">
                         <div className="form-item-title-div-aerohiveCloudCtl">
-                            Admin Email
+                            Cloud URL
+                        </div>
+                        <div className="form-item-input-div-aerohiveCloudCtl">
+                            {getFieldDecorator('url', {
+                                rules: [],
+                            })(
+                                <Input 
+                                style={{height:"32px"}}
+                                onBlur={self.onBlurCheckUrl.bind(self)}
+                                
+                                />
+                            )}
+                        </div>
+                        <div className="form-item-wrong-div-aerohiveCloudCtl" 
+                        style={{display:wrongMessage.urlWrongMessage===""?"none":"block"}}>
+                                {wrongMessage.urlWrongMessage}
+                        </div>
+                        <div className="clear-float-div-common" ></div >
+                    </div>
+
+
+                    <div className="form-item-div-aerohiveCloudCtl">
+                        <div className="form-item-title-div-aerohiveCloudCtl">
+                            Cloud Admin User
                         </div>
                         <div className="form-item-input-div-aerohiveCloudCtl">
                             {getFieldDecorator('user', {
@@ -322,53 +276,43 @@ class aerohiveCloudCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPass.bind(self)}
-                                onChange={self.onChangePass.bind(self)}
                                 />
 
                                 
-                            )}
-                        </div>
-                        {passMessageHtml}
-                        <div className="clear-float-div-common" ></div >
-                    </div>
-
-                    <div className="form-item-div-aerohiveCloudCtl">
-                        <div className="form-item-title-div-aerohiveCloudCtl">
-                            Confirm Password
-                        </div>
-                        <div className="form-item-input-div-aerohiveCloudCtl">
-                            {getFieldDecorator('passConfirm', {
-                                rules: [],
-                            })(
-                                <Input 
-                                style={{height:"32px"}}
-                                onBlur={self.onBlurCheckPassConfirm.bind(self)}
-                                
-                                />
                             )}
                         </div>
                         <div className="form-item-wrong-div-aerohiveCloudCtl" 
-                        style={{display:wrongMessage.passConfirmWrongMessage===""?"none":"block"}}>
-                                {wrongMessage.passConfirmWrongMessage}
+                        style={{display:wrongMessage.passWrongMessage===""?"none":"block"}}>
+                                {wrongMessage.passWrongMessage}
                         </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
 
+
+
                     <div className="form-button-div-aerohiveCloudCtl">
-                        <div className="form-button-next-div-aerohiveCloudCtl">
+                        <div className="form-button-link-div-aerohiveCloudCtl">
                             <Button 
                                 type="primary" 
-                                className="form-button-next-antd-button-aerohiveCloudCtl" 
+                                className="form-button-link-antd-button-aerohiveCloudCtl" 
                                 htmlType="submit" 
-                            >NEXT</Button>
-                        </div>
-                        <div className="form-button-cancel-div-aerohiveCloudCtl">
-                            <Button 
-                                className="form-button-cancel-antd-button-aerohiveCloudCtl" 
-                                onClick={self.onClickCancel.bind(self)}
-                            >CANCEL</Button>
+                            >LINK WITH AEROHIVE CLOUD ACCOUNT</Button>
                         </div>
                     </div>
+                    <div className="form-button-div-aerohiveCloudCtl">
+                        <div className="form-button-create-div-aerohiveCloudCtl">
+                            <Button 
+                                className="form-button-create-antd-button-aerohiveCloudCtl" 
+                                onClick={self.onClickCreateAnAerohiveCloudAccount.bind(self)}
+                                
+                            >CREATE AN AEROHIVE CLOUD ACCOUNT</Button>
+                        </div>
+                    </div>
+                    <div className="form-button-continue-div-aerohiveCloudCtl">
+                        Continue without an Aerohive Cloud Account
+                    </div>
+
+
 
                     </Form>
 
