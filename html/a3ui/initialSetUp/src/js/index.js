@@ -14,6 +14,7 @@ import NetworksCtl from './ctlComponents/networksCtl';
 import AerohiveCloudCtl from './ctlComponents/aerohiveCloudCtl';
 import JoinClusterCtl from './ctlComponents/joinClusterCtl';
 import LicensingCtl from './ctlComponents/licensingCtl';
+import StartingCtl from './ctlComponents/startingCtl';
 
 import Logo from "../libs/logo/js/logo";
 
@@ -28,7 +29,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"licensing",
+            show:"starting",
 
         };
     }
@@ -98,6 +99,12 @@ class App extends Component {
         }else if(show==="licensing"){
             contentHtml=<div>
                 <LicensingCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="starting"){
+            contentHtml=<div>
+                <StartingCtl 
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>
