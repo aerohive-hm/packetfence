@@ -85,7 +85,7 @@ class adminUserCtl extends Component {
         })
         if(newWrongMessage.userWrongMessage===""){
             $("#user").css({
-                "border":"1px solid #999999",
+                "border":"1px solid #d9d9d9",
             });
             return true;
         }else{
@@ -118,7 +118,7 @@ class adminUserCtl extends Component {
         })
         if(newWrongMessage.passWrongMessage===""){
             $("#pass").css({
-                "border":"1px solid #999999",
+                "border":"1px solid #d9d9d9",
             });
             return true;
         }else{
@@ -154,7 +154,7 @@ class adminUserCtl extends Component {
         })
         if(newWrongMessage.passConfirmWrongMessage===""){
             $("#passConfirm").css({
-                "border":"1px solid #999999",
+                "border":"1px solid #d9d9d9",
             });
             return true;
         }else{

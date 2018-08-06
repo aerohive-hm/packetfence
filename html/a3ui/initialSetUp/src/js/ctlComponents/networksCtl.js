@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isPositiveInteger} from "../../libs/util";     
 import '../../css/ctlComponents/networksCtl.css';
 import '../../libs/common.css';
 
@@ -35,6 +35,10 @@ class networksCtl extends Component {
             i18n:{},
             wrongMessage:{
                 hostnameWrongMessage:"",
+                nameWrongMessage:"",
+                ipAddrWrongMessage:"",
+                netmaskWrongMessage:"",
+                vipWrongMessage:"",
             },
             enableClustering:true,
             loading:false,
@@ -131,7 +135,7 @@ class networksCtl extends Component {
         })
         if(newWrongMessage.hostnameWrongMessage===""){
             $("#hostname").css({
-                "border":"1px solid #999999",
+                "border":"1px solid #d9d9d9",
             });
             return true;
         }else{
@@ -142,6 +146,201 @@ class networksCtl extends Component {
             return false;
         }
     }
+
+
+
+    onBlurCheckName(e){
+        let self=this;
+        self.checkName(e.target.value);
+    }
+
+    checkName=(name,type)=>{
+        let self=this;
+        let newWrongMessage=self.state.wrongMessage;
+
+        if(!name||name.toString().trim()===""){
+            newWrongMessage.nameWrongMessage="Name is required.";
+        }else
+        if(isPositiveInteger(name.toString().trim())===false){
+            newWrongMessage.nameWrongMessage="The value must be a positive number.";
+        }else{
+            newWrongMessage.nameWrongMessage="";
+        }
+
+        if(type==="table"){
+            if(newWrongMessage.nameWrongMessage!==""){
+                message.destroy();
+                message.error(newWrongMessage.nameWrongMessage);
+                newWrongMessage.nameWrongMessage="";
+                return false;
+            }else{
+                return true;
+            }
+
+        }else{
+            self.setState({
+                wrongMessage:newWrongMessage
+            })
+            if(newWrongMessage.nameWrongMessage===""){
+                $("#name").css({
+                    "border":"1px solid #d9d9d9",
+                });
+                return true;
+            }else{
+                $("#name").css({
+                    "border":"1px solid red",
+                });
+                
+                return false;
+            }
+        }
+
+
+
+    }
+
+    onBlurCheckIpAddr(e){
+        let self=this;
+        self.checkIpAddr(e.target.value);
+    }
+
+    checkIpAddr=(ipAddr,type)=>{
+        let self=this;
+        let newWrongMessage=self.state.wrongMessage;
+
+        if(!ipAddr||ipAddr.toString().trim()===""){
+            newWrongMessage.ipAddrWrongMessage="Ip Address is required.";
+        }else
+        if(isIp(ipAddr.toString().trim())===false){
+            newWrongMessage.ipAddrWrongMessage="Ip Address format is incorret.";
+        }else{
+            newWrongMessage.ipAddrWrongMessage="";
+        }
+
+        if(type==="table"){
+            if(newWrongMessage.ipAddrWrongMessage!==""){
+                message.destroy();
+                message.error(newWrongMessage.ipAddrWrongMessage);
+                newWrongMessage.ipAddrWrongMessage="";
+                return false;
+            }else{
+                return true;
+            }
+
+        }else{
+            self.setState({
+                wrongMessage:newWrongMessage
+            })
+            if(newWrongMessage.ipAddrWrongMessage===""){
+                $("#ip_addr").css({
+                    "border":"1px solid #d9d9d9",
+                });
+                return true;
+            }else{
+                $("#ip_addr").css({
+                    "border":"1px solid red",
+                });
+                
+                return false;
+            }
+        }
+    }
+
+    onBlurCheckNetmask(e){
+        let self=this;
+        self.checkNetmask(e.target.value);
+    }
+
+    checkNetmask=(netmask,type)=>{
+        let self=this;
+        let newWrongMessage=self.state.wrongMessage;
+
+        if(!netmask||netmask.toString().trim()===""){
+            newWrongMessage.netmaskWrongMessage="Netmask is required.";
+        }else
+        if(isIp(netmask.toString().trim())===false){
+            newWrongMessage.netmaskWrongMessage="Netmask format is incorret.";
+        }else{
+            newWrongMessage.netmaskWrongMessage="";
+        }
+
+        if(type==="table"){
+            if(newWrongMessage.netmaskWrongMessage!==""){
+                message.destroy();
+                message.error(newWrongMessage.netmaskWrongMessage);
+                newWrongMessage.netmaskWrongMessage="";
+                return false;
+            }else{
+                return true;
+            }
+
+        }else{
+            self.setState({
+                wrongMessage:newWrongMessage
+            })
+            if(newWrongMessage.netmaskWrongMessage===""){
+                $("#netmask").css({
+                    "border":"1px solid #d9d9d9",
+                });
+                return true;
+            }else{
+                $("#netmask").css({
+                    "border":"1px solid red",
+                });
+                
+                return false;
+            }
+        }
+    }
+
+
+    onBlurCheckVip(e){
+        let self=this;
+        self.checkVip(e.target.value);
+    }
+
+    checkVip=(vip,type)=>{
+        let self=this;
+        let newWrongMessage=self.state.wrongMessage;
+
+        if(!vip||vip.toString().trim()===""){
+            newWrongMessage.vipWrongMessage="Vip is required.";
+        }else
+        if(isIp(vip.toString().trim())===false){
+            newWrongMessage.vipWrongMessage="Vip format is incorret.";
+        }else{
+            newWrongMessage.vipWrongMessage="";
+        }
+
+        if(type==="table"){
+            if(newWrongMessage.vipWrongMessage!==""){
+                message.destroy();
+                message.error(newWrongMessage.vipWrongMessage);
+                newWrongMessage.vipWrongMessage="";
+                return false;
+            }else{
+                return true;
+            }
+
+        }else{
+            self.setState({
+                wrongMessage:newWrongMessage
+            })
+            if(newWrongMessage.vipWrongMessage===""){
+                $("#vip").css({
+                    "border":"1px solid #d9d9d9",
+                });
+                return true;
+            }else{
+                $("#vip").css({
+                    "border":"1px solid red",
+                });
+                
+                return false;
+            }
+        }
+    }
+
 
     handleSubmit = (e) => {
         let self=this;
@@ -190,6 +389,8 @@ class networksCtl extends Component {
         let dataCopy=self.state.dataTable;
         if(column==="name"){
             dataCopy[index][column]="VLAN"+e.target.value;
+        }else{
+            dataCopy[index][column]=e.target.value;
         }
         
         self.setState({ 
@@ -209,8 +410,22 @@ class networksCtl extends Component {
     }
 
 
-    onClickEditOk= (index) => {
+    onClickEditOk= (index,column) => {
         let self=this;
+
+        if(column==="name"&&self.checkName(self.state.dataTable[index].name.slice(4),"table")===false){
+            return;
+        }
+        if(column==="ip_addr"&&self.checkIpAddr(self.state.dataTable[index].ip_addr,"table")===false){
+            return;
+        }
+        if(column==="netmask"&&self.checkNetmask(self.state.dataTable[index].netmask,"table")===false){
+            return;
+        }
+        if(column==="vip"&&self.checkVip(self.state.dataTable[index].vip,"table")===false){
+            return;
+        }
+
         let dataCopy=self.state.dataTable;
         dataCopy[index].clicked="";
         self.setState({
@@ -233,6 +448,23 @@ class networksCtl extends Component {
 
     onClickAddVlan= (index) => {
         let self=this;
+        self.props.form.setFieldsValue({
+            name:"",
+            ip_addr:"",
+            netmask:"",
+            vip:"",
+            type:"management",
+            services:"portal",
+
+        })
+        $("#name,#ip_addr,#netmask,#vip").css({
+            "border":"1px solid #d9d9d9",
+        });
+        let wrongMessageCopy=self.state.wrongMessage;
+        wrongMessageCopy.nameWrongMessage="";
+        wrongMessageCopy.ipAddrWrongMessage="";
+        wrongMessageCopy.netmaskWrongMessage="";
+        wrongMessageCopy.vipWrongMessage="";
         self.setState({ 
             addVlanVisible:true,
         });
@@ -248,18 +480,30 @@ class networksCtl extends Component {
 
                 console.log(values);
 
-                // let hasWrongValue=false;
-                // if(self.checkHostname(values.hostname)===false){
-                //     hasWrongValue=true;
-                //     $("#hostname").focus();
-                // }
-                // if(hasWrongValue===true){
-                //     return;
-                // }
+                let hasWrongValue=false;
+                if(self.checkVip(values.vip)===false){
+                    hasWrongValue=true;
+                    $("#vip").focus();
+                }
+                if(self.checkNetmask(values.netmask)===false){
+                    hasWrongValue=true;
+                    $("#netmask").focus();
+                }
+                if(self.checkIpAddr(values.ip_addr)===false){
+                    hasWrongValue=true;
+                    $("#ip_addr").focus();
+                }
+                if(self.checkName(values.name)===false){
+                    hasWrongValue=true;
+                    $("#name").focus();
+                }
+                if(hasWrongValue===true){
+                    return;
+                }
 
-                // self.setState({ 
-                //     addVlanVisible:false,
-                // });
+                self.setState({ 
+                    addVlanVisible:false,
+                });
 
 
             }
@@ -321,7 +565,7 @@ class networksCtl extends Component {
                                     onChange={self.onEdit.bind(self,index,"name")}
                                 />
                             </div>
-                            <div className="name-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index)}>
+                            <div className="name-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index,"name")}>
                                 <img className="name-edit-ok-img-networksCtl" src={editYesImg} />
                             </div>
                             <div className="name-edit-no-div-networksCtl" onClick={self.onClickEditNo.bind(self,index,"name")}>
@@ -372,7 +616,7 @@ class networksCtl extends Component {
                                         onChange={self.onEdit.bind(self,index,"ip_addr")}
                                     />
                                 </div>
-                                <div className="ipAddr-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index)}>
+                                <div className="ipAddr-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index,"ip_addr")}>
                                     <img className="ipAddr-edit-ok-img-networksCtl" src={editYesImg} />
                                 </div>
                                 <div className="ipAddr-edit-no-div-networksCtl" onClick={self.onClickEditNo.bind(self,index,"ip_addr")}>
@@ -406,7 +650,7 @@ class networksCtl extends Component {
                                         onChange={self.onEdit.bind(self,index,"netmask")}
                                     />
                                 </div>
-                                <div className="netmask-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index)}>
+                                <div className="netmask-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index,"netmask")}>
                                     <img className="netmask-edit-ok-img-networksCtl" src={editYesImg} />
                                 </div>
                                 <div className="netmask-edit-no-div-networksCtl" onClick={self.onClickEditNo.bind(self,index,"netmask")}>
@@ -440,7 +684,7 @@ class networksCtl extends Component {
                                         onChange={self.onEdit.bind(self,index,"vip")}
                                     />
                                 </div>
-                                <div className="vip-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index)}>
+                                <div className="vip-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index,"vip")}>
                                     <img className="vip-edit-ok-img-networksCtl" src={editYesImg} />
                                 </div>
                                 <div className="vip-edit-no-div-networksCtl" onClick={self.onClickEditNo.bind(self,index,"vip")}>
@@ -614,7 +858,7 @@ class networksCtl extends Component {
                 <Modal 
                     title="Add VLAN"
                     visible={addVlanVisible}
-                    width={992}
+                    width={302}
                     footer={null}
                     onCancel={self.onCancelAddVlan.bind(self)}
                 >
@@ -624,21 +868,26 @@ class networksCtl extends Component {
                         <Form onSubmit={self.onOkAddVlan.bind(self)}>
                         <div className="modal-form-item-div-networksCtl" style={{marginTop:"0px"}}>
                             <div className="modal-form-item-title-div-networksCtl">
-                                Admin Email
+                                Name
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
-                                {getFieldDecorator('user111111111', {
-                                    rules: [],
-                                })(
-                                    <Input 
-                                    style={{height:"32px"}}
-                                    //onBlur={self.onBlurCheckUser.bind(self)}
-                                    />
-                                )}
+                                <div className="modal-form-item-name-vlan-div-networksCtl">
+                                    VLAN
+                                </div>
+                                <div className="modal-form-item-name-number-div-networksCtl">
+                                    {getFieldDecorator('name', {
+                                        rules: [],
+                                    })(
+                                        <Input 
+                                        style={{height:"32px"}}
+                                        onBlur={self.onBlurCheckName.bind(self)}
+                                        />
+                                    )}
+                                </div>
                             </div>
                             <div className="modal-form-item-wrong-div-networksCtl" 
-                            style={{display:wrongMessage.userWrongMessage===""?"none":"block"}}>
-                                    {wrongMessage.userWrongMessage}
+                            style={{color:wrongMessage.nameWrongMessage===""?"#ffffff":"#f44336"}}>
+                                    {wrongMessage.nameWrongMessage}
                             </div>
                             <div className="clear-float-div-common" ></div >
                         </div>
@@ -646,26 +895,115 @@ class networksCtl extends Component {
 
                         <div className="modal-form-item-div-networksCtl">
                             <div className="modal-form-item-title-div-networksCtl">
-                                Confirm Password
+                                Ip Address
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
-                                {getFieldDecorator('passConfirm222222222222', {
+                                {getFieldDecorator('ip_addr', {
                                     rules: [],
                                 })(
                                     <Input 
                                     style={{height:"32px"}}
-                                    //onBlur={self.onBlurCheckPassConfirm.bind(self)}
+                                    onBlur={self.onBlurCheckIpAddr.bind(self)}
                                     
                                     />
                                 )}
                             </div>
                             <div className="modal-form-item-wrong-div-networksCtl" 
-                            style={{display:wrongMessage.passConfirmWrongMessage===""?"none":"block"}}>
-                                    {wrongMessage.passConfirmWrongMessage}
+                            style={{color:wrongMessage.ipAddrWrongMessage===""?"#ffffff":"#f44336"}}>
+                                    {wrongMessage.ipAddrWrongMessage}
                             </div>
                             <div className="clear-float-div-common" ></div >
                         </div>
 
+                        <div className="modal-form-item-div-networksCtl">
+                            <div className="modal-form-item-title-div-networksCtl">
+                                Netmask
+                            </div>
+                            <div className="modal-form-item-input-div-networksCtl">
+                                {getFieldDecorator('netmask', {
+                                    rules: [],
+                                })(
+                                    <Input 
+                                    style={{height:"32px"}}
+                                    onBlur={self.onBlurCheckNetmask.bind(self)}
+                                    
+                                    />
+                                )}
+                            </div>
+                            <div className="modal-form-item-wrong-div-networksCtl" 
+                            style={{color:wrongMessage.netmaskWrongMessage===""?"#ffffff":"#f44336"}}>
+                                    {wrongMessage.netmaskWrongMessage}
+                            </div>
+                            <div className="clear-float-div-common" ></div >
+                        </div>
+
+                        <div className="modal-form-item-div-networksCtl">
+                            <div className="modal-form-item-title-div-networksCtl">
+                                Vip
+                            </div>
+                            <div className="modal-form-item-input-div-networksCtl">
+                                {getFieldDecorator('vip', {
+                                    rules: [],
+                                })(
+                                    <Input 
+                                    style={{height:"32px"}}
+                                    onBlur={self.onBlurCheckVip.bind(self)}
+                                    
+                                    />
+                                )}
+                            </div>
+                            <div className="modal-form-item-wrong-div-networksCtl" 
+                            style={{color:wrongMessage.vipWrongMessage===""?"#ffffff":"#f44336"}}>
+                                    {wrongMessage.vipWrongMessage}
+                            </div>
+                            <div className="clear-float-div-common" ></div >
+                        </div>
+
+
+                        <div className="modal-form-item-div-networksCtl">
+                            <div className="modal-form-item-title-div-networksCtl">
+                                Type
+                            </div>
+                            <div className="modal-form-item-input-div-networksCtl">
+                                {getFieldDecorator('type', {
+                                    rules: [],
+                                    initialValue:"management",
+                                })(
+
+                                    <Select 
+                                        option={{initialValue:"registration"}}
+                                        style={{ height: 32 }} 
+                                    >
+                                        <Option value="management" >management</Option>
+                                        <Option value="registration">registration</Option>
+                                    </Select>
+
+                                )}
+                            </div>
+                            <div className="modal-form-item-wrong-div-networksCtl">
+                            </div>
+                            <div className="clear-float-div-common" ></div >
+                        </div>
+                        <div className="modal-form-item-div-networksCtl">
+                            <div className="modal-form-item-title-div-networksCtl">
+                                Services
+                            </div>
+                            <div className="modal-form-item-input-div-networksCtl">
+                                {getFieldDecorator('services', {
+                                    rules: [],
+                                    initialValue:"portal",
+                                })(
+                                    <Select 
+                                        style={{ height: 32 }} 
+                                    >
+                                        <Option value="portal">portal</Option>
+                                    </Select>
+                                )}
+                            </div>
+                            <div className="modal-form-item-wrong-div-networksCtl">
+                            </div>
+                            <div className="clear-float-div-common" ></div >
+                        </div>
                         <div className="modal-form-button-div-networksCtl">
                             <div className="modal-form-button-next-div-networksCtl">
                                 <Button 

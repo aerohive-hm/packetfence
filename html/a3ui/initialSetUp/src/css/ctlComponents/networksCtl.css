@@ -377,17 +377,16 @@
 
 
 .modal-div-networksCtl{
-    width:960px;
+    width:270px;
 }
 
 .modal-form-item-div-networksCtl{
     float:left;
-    width:960px;
-    margin-top:10px;
+    width:270px;
 }
 .modal-form-item-title-div-networksCtl{
     float:left;
-    width:960px;
+    width:270px;
     height:17px;
     line-height: 17px;
     color:#333333;
@@ -399,20 +398,29 @@
     width:270px;
     height:32px;
 }
-.modal-form-item-wrong-div-networksCtl{
+.modal-form-item-name-vlan-div-networksCtl{
     float:left;
-    margin-left:20px;
-    width:670px;
+    font-size: 12px;
+    width:40px;
     height:32px;
     line-height: 32px;
+}
+.modal-form-item-name-number-div-networksCtl{
+    float:left;
+    width:230px;
+    height:32px;
+}
+.modal-form-item-wrong-div-networksCtl{
+    float:left;
+    width:270px;
+    height:16px;
+    line-height: 16px;
     color:#f44336;
     font-size: 12px;
-
 }
 .modal-form-button-div-networksCtl{
     float:left;
-    width:960px;
-    margin-top:10px;
+    width:270px;
 }
 .modal-form-button-cancel-div-networksCtl{
     float:right;

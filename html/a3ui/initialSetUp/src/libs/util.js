@@ -83,9 +83,15 @@ export function urlEncode(param, key, encode) {
   return paramStr;  
 }; 
     
+export function isIp(data){
+  var r = /^((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))$/;　　
+
+  return r.test(data.toString());
+
+}
 
 export function isPositiveInteger(data){
-  var r = /^\+?[1-9][0-9]*$/;　　
+  var r = /^[1-9][0-9]*$/;　　
 
   return r.test(data.toString());
 
