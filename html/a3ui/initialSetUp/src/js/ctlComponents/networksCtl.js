@@ -188,7 +188,10 @@ class networksCtl extends Component {
     onEdit=(index,column,e) =>{
         let self=this;
         let dataCopy=self.state.dataTable;
-        dataCopy[index][column]=e.target.value;
+        if(column==="name"){
+            dataCopy[index][column]="VLAN"+e.target.value;
+        }
+        
         self.setState({ 
             dataTable : dataCopy, 
         });
@@ -307,6 +310,33 @@ class networksCtl extends Component {
             dataIndex: 'name',
             key: 'name',
             render: (text, record, index) => {
+                let numberHtml;
+                if(dataTable[index].clicked==="name"){
+                    numberHtml=
+                        <div className="name-edit-div-networksCtl"  >
+                            <div className="name-edit-input-div-networksCtl">
+                                <Input
+                                    value={text.slice(4)}
+                                    autoFocus
+                                    onChange={self.onEdit.bind(self,index,"name")}
+                                />
+                            </div>
+                            <div className="name-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index)}>
+                                <img className="name-edit-ok-img-networksCtl" src={editYesImg} />
+                            </div>
+                            <div className="name-edit-no-div-networksCtl" onClick={self.onClickEditNo.bind(self,index,"name")}>
+                                <img className="name-edit-no-img-networksCtl" src={editNoImg} />
+                            </div>
+                            <div className="clear-float-div-common" ></div >
+                        </div>
+                }else{
+                    numberHtml=
+                        <div className="name-text-div-networksCtl" onClick={self.onClickText.bind(self,index,"name")} >
+                            {text.slice(4)}
+                        </div>
+                }
+
+
                 return (
                     text.indexOf("VLAN")===-1?
                     <div className="name-etho-div-networksCtl"  >
@@ -317,8 +347,10 @@ class networksCtl extends Component {
                         <div className="name-vlan-blank-div-networksCtl">
                         </div>
                         <div className="name-vlan-text-div-networksCtl">
-                            {text}
+                            VLAN
                         </div>
+                        {numberHtml}
+                        <div className="clear-float-div-common" ></div >
                     </div>
                 );
             } 
