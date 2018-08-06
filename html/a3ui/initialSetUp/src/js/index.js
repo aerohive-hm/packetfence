@@ -29,7 +29,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"starting",
+            show:"startingRegistration",
 
         };
     }
@@ -102,9 +102,17 @@ class App extends Component {
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>
-        }else if(show==="starting"){
+        }else if(show==="startingManagement"){
             contentHtml=<div>
                 <StartingCtl 
+                    title={"Initial setup complete!"}
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="startingRegistration"){
+            contentHtml=<div>
+                <StartingCtl 
+                    title={"Successfully joined cluster!"}
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>
