@@ -176,9 +176,15 @@
     height:32px;
 }
 
+.modal-eula-div-licensingCtl{
+    float:left;
+    width:513px;
+}
 
 .modal-eula-text-div-licensingCtl{
     float:left;
+    margin-left: 16px;
+    margin-top: 16px;
     width:477px;
     height:323px;
     word-break:break-all;
@@ -186,7 +192,7 @@
 }
 .modal-eula-button-div-licensingCtl{
     float:left;
-    width:477px;
+    width:513px;
     margin-top:16px;
     height: 68px;
     background: #f7f9fb;
@@ -196,6 +202,7 @@
     width:14px;
     height:14px;
     margin-top:25px;
+    margin-left: 16px;
 }
 .modal-eula-checkbox-text-div-licensingCtl{
     float:left;
@@ -209,6 +216,7 @@
 .modal-eula-submit-div-licensingCtl{
     float:right;
     margin-top:18px;
+    margin-right:16px;
     width:80px;
     height:32px;
 }

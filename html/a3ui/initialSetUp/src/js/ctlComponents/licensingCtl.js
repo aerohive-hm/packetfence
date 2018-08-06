@@ -34,7 +34,7 @@ class licensingCtl extends Component {
                 keyWrongMessage:"",
             },
             enterEntitlementKeyVisible:false,
-            endUserLicenseAgreementVisible:true,
+            endUserLicenseAgreementVisible:false,
             enableEndUserLicenseAgreement:false,
         };
 
@@ -294,6 +294,7 @@ class licensingCtl extends Component {
                     onCancel={self.onCancelEndUserLicenseAgreementVisible.bind(self)}
                     closable={false}
                     maskClosable={false}
+                    bodyStyle={{padding:"0px"}}
                 >
          
                     <div className="modal-div-licensingCtl">
@@ -312,11 +313,13 @@ class licensingCtl extends Component {
                             </div>
                             <div className="modal-eula-submit-div-licensingCtl">
                                 <Button 
+                                    disabled={enableEndUserLicenseAgreement===true?false:true}
                                     type="primary" 
                                     className="modal-eula-submit-antd-button-licensingCtl" 
                                     onClick={self.onCancelEndUserLicenseAgreementVisible.bind(self)}
                                 >CANCEL</Button>
                             </div>
+                            <div className="clear-float-div-common" ></div >
                         </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
