@@ -41,7 +41,7 @@ class joiningCtl extends Component {
         let self=this;
         self.getRightI18n();
 
-        let url = "/api/v1/configurator/services/status";
+        let url = "/a3/api/v1/configurator/cluster_status";
         let param={
         }
         let xCsrfToken="";
@@ -100,52 +100,30 @@ class joiningCtl extends Component {
 
     render() {
         const {loading,percentage} = this.state;
-        const {title} = this.props;
+        const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
         message.config({
             duration: 10,
         });
-     
-        let contentHtml;
-        if(loading===false){
-            contentHtml=<div className="right-content-div-licensingCtl">
-                            <div className="a3-started-successfully-div-licensingCtl">
-                                A3 has started successfully
-                            </div>
-                            <div className="go-to-div-licensingCtl">
-                                <Button 
-                                    type="primary" 
-                                    className="go-to-antd-button-networksCtl" 
-                                >GO TO ADMINISTRATION INTERFACE</Button>
-                            </div>
-                            <div className="clear-float-div-common" ></div >
-                        </div>
-        }else{
-            contentHtml=<div className="right-content-div-licensingCtl">
-                            <div className="a3-starting-up-div-licensingCtl">
-                                A3 services are now starting up...
-                            </div>
-                            <div className="progress-div-licensingCtl">
-                                <Progress percent={percentage} />
-                            </div>
-                            <div className="clear-float-div-common" ></div >
-                        </div>
-
-        }
 
         return (
             <div className="global-div-joiningCtl">
-                <div className="left-div-licensingCtl">
-                    <div className="img-div-licensingCtl">
-                       <img src={startingAndReadyImg} className="img-img-licensingCtl" />
+                <div className="left-div-joiningCtl">
+                    <div className="img-div-joiningCtl">
+                       <img src={startingAndReadyImg} className="img-img-joiningCtl" />
                     </div>
                 </div>
-                <div className="right-div-licensingCtl">
-                    <div className="right-title-div-licensingCtl">
-                        {title}
+                <div className="right-div-joiningCtl">
+                
+                    <div className="joining-cluster-div-joiningCtl">
+                        Joining cluster...
                     </div>
-                    {contentHtml}
+                    <div className="progress-div-joiningCtl">
+                        <Progress percent={percentage} />
+                    </div>
+            
+           
 
                     <div className="clear-float-div-common" ></div >
                 </div>

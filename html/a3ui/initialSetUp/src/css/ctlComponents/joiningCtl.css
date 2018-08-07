@@ -1,21 +1,21 @@
 
-.global-div-licensingCtl{
+.global-div-joiningCtl{
     float:left;
     width:1280px;
 }
 
-.left-div-licensingCtl{
+.left-div-joiningCtl{
     float:left;
     width:234px;
 }
-.img-div-licensingCtl{
+.img-div-joiningCtl{
     float:left;
     margin-top:400px;
     width:234px;
     height:215px;
     
 }
-.img-img-licensingCtl{
+.img-img-joiningCtl{
     float:left;
     width:234px;
     height:215px;
@@ -23,7 +23,7 @@
 }
 
 
-.right-div-licensingCtl{
+.right-div-joiningCtl{
     float:left;
     margin-top:90px;
     margin-left:256px;
@@ -31,24 +31,7 @@
     height:300px;
 }
 
-.right-title-div-licensingCtl{
-    float:left;
-    width:300px;
-    height:27px;
-    line-height: 27px;
-    color: #333333;
-    font-weight: bold;
-    text-align: center;
-    font-size: 20px;
-}
-
-.right-content-div-licensingCtl{
-    float:left;
-    width:300px;
-    margin-top:40px;
-    
-}
-.a3-started-successfully-div-licensingCtl{
+.joining-cluster-div-joiningCtl{
     float:left;
     width:300px;
     height:17px;
@@ -57,29 +40,7 @@
     text-align: center;
     font-size: 12px;
 }
-.go-to-div-licensingCtl{
-    float:left;
-    margin-top:13px;
-    width:300px;
-    height:32px;
-}
-.go-to-antd-button-networksCtl{
-    float:left;
-    width:300px;
-    height:32px;
-}
-
-
-.a3-starting-up-div-licensingCtl{
-    float:left;
-    width:300px;
-    height:17px;
-    line-height: 17px;
-    color: #333333;
-    text-align: center;
-    font-size: 12px;
-}
-.progress-div-licensingCtl{
+.progress-div-joiningCtl{
     float:left;
     margin-top:13px;
     width:300px;
