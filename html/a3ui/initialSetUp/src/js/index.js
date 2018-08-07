@@ -31,7 +31,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"networks",
+            show:"licensing,endUserLicenseAgreement",
 
         };
     }
@@ -98,9 +98,10 @@ class App extends Component {
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>
-        }else if(show==="licensing"){
+        }else if(show==="licensing"||show==="licensing,enterEntitlementKey"||show==="licensing,endUserLicenseAgreement"){
             contentHtml=<div>
                 <LicensingCtl 
+                    show={show}
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>

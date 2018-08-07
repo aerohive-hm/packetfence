@@ -45,6 +45,17 @@ class licensingCtl extends Component {
     componentDidMount() {
         let self=this;
         self.getRightI18n();
+        if(self.props.show==="licensing,enterEntitlementKey"){
+            self.setState({
+                enterEntitlementKeyVisible:true,
+            });
+        }
+        if(self.props.show==="licensing,endUserLicenseAgreement"){
+            self.setState({
+                endUserLicenseAgreementVisible:true,
+            });
+        }
+
     }
 
 
