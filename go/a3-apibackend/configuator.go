@@ -16,6 +16,9 @@ type UserInfo struct {
 	Pass string `json:"pass"`
 }
 
+func init() {
+	Register("configurator", HandleConfiguator)
+}
 func GetUserInfo(ctx context.Context) UserInfo {
 	userinfo := UserInfo{}
 	var webservices pfconfigdriver.PfConfWebservices
@@ -44,7 +47,7 @@ func AddUserInfoToJson(ctx context.Context) string {
 func HandleConfiguator(w http.ResponseWriter, r *http.Request, d HandlerData) {
 	//GET
 	if d.Method == "GET" {
-		if d.SubCmd == "adminuser" {
+		if d.SubCmd == "admin_user" {
 			ctx := r.Context()
 			jsonuser := AddUserInfoToJson(ctx)
 			fmt.Fprintf(w, string(jsonuser))

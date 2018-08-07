@@ -1,8 +1,7 @@
 package a3apibackend
 
 import (
-	//"encoding/json"
-	//"fmt"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -12,55 +11,47 @@ import (
 type HandlerData struct {
 	Method   string //get/post
 	Cmd      string //configurator
-	SubCmd   string //admin_user
+	SubCmd   string //adminuser
 	Header   string
 	UrlParam string /*/?aa=123&bb=abc*/
 	ReqData  string
 	RespData string
 }
 
-//define callback function
-type Callback func(w http.ResponseWriter, r *http.Request, d HandlerData)
+// m map[string]Callback
+var m = make(map[string]Callback)
 
-func HandleCallback(w http.ResponseWriter, r *http.Request, d HandlerData, callback Callback) {
-	callback(w, r, d)
+func Register(modename string, callback Callback) {
+	m[modename] = callback
 }
+
+type Callback func(w http.ResponseWriter, r *http.Request, d HandlerData)
 
 // parse http.request to handlerdata
 func ParseRequestToData(r *http.Request) HandlerData {
+
 	handlerdata := HandlerData{}
-	ParseRequestCmdToData(r, &handlerdata)
 	handlerdata.Method = r.Method
+	//r.URL.Path: /api/v1/cmd/subcmd
+	i := len(strings.Split(r.URL.Path, "/"))
+	if i > 4 {
+		handlerdata.Cmd = strings.Split(r.URL.Path, "/")[3]
+		handlerdata.SubCmd = strings.Split(r.URL.Path, "/")[4]
+	} else {
+		fmt.Println("it can't find cmd or subcmd in request url")
+	}
 	return handlerdata
-}
-
-func ParseRequestCmdToData(r *http.Request, handlerdata *HandlerData) {
-
-	if strings.Contains(r.URL.Path, "configuator/adminuser") {
-		handlerdata.Cmd = "configuator"
-		handlerdata.SubCmd = "adminuser"
-	}
-
-	if strings.Contains(r.URL.Path, "event/cluster/join") {
-		handlerdata.Cmd = "event"
-		handlerdata.SubCmd = "cluster/join"
-	}
-
-	//add others
-
 }
 
 func Handle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	handlerdata := ParseRequestToData(r)
 
-	if handlerdata.Cmd == "configuator" {
-		HandleCallback(w, r, handlerdata, HandleConfiguator)
+	handle, ok := m[handlerdata.Cmd]
+	if ok {
+		handle(w, r, handlerdata)
+	} else {
+		fmt.Println("it can not match handlefuc")
 	}
-	// add others
-	/*
-		if (handlerdata.Cmd == "event") {
-			HandleCallback(w, r, handlerdata, HandleEvent)
-		}
-	*/
+	return
 }
