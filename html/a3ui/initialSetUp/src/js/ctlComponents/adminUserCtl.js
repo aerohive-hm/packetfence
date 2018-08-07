@@ -171,6 +171,7 @@ class adminUserCtl extends Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
+                console.log(values);
                 let hasWrongValue=false;
                 if(self.checkPassConfirm(values.passConfirm)===false){
                     hasWrongValue=true;
