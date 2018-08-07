@@ -35,17 +35,11 @@ class clusterNetworkingCtl extends Component {
             i18n:{},
             wrongMessage:{
                 hostnameWrongMessage:"",
-                nameWrongMessage:"",
-                ipAddrWrongMessage:"",
-                netmaskWrongMessage:"",
-                vipWrongMessage:"",
             },
-            enableClustering:true,
             loading:false,
             dataTable:[],
             isEditing:false,
             originalDescription:"",
-            addVlanVisible:false,
         };
 
 
@@ -76,7 +70,7 @@ class clusterNetworkingCtl extends Component {
     getData= () => {
         let self=this;
 
-        let url= "/a3/api/v1/configurator/networks";
+        let url= "/api/v1/configurator/cluster/networks";
          
         let param={
         }
@@ -97,7 +91,6 @@ class clusterNetworkingCtl extends Component {
         let dataTable=data.items;
         for(let i=0;i<dataTable.length;i++){
             dataTable[i].key=dataTable[i].name;
-            dataTable[i].vlan=dataTable[i].name;
             dataTable[i].clicked="";
             dataTable[i].services=dataTable[i].services.split(",");
         }
@@ -108,12 +101,6 @@ class clusterNetworkingCtl extends Component {
     }
 
 
-    onChangeCheckbox=(e)=>{
-        let self=this;
-        this.setState({
-            enableClustering: e.target.checked,
-        });
-    }
 
     onBlurCheckHostname(e){
         let self=this;
@@ -146,63 +133,6 @@ class clusterNetworkingCtl extends Component {
             
             return false;
         }
-    }
-
-
-
-    onBlurCheckName(e){
-        let self=this;
-        self.checkName(e.target.value);
-    }
-
-    checkName=(name,type)=>{
-        let self=this;
-        let newWrongMessage=self.state.wrongMessage;
-
-        if(!name||name.toString().trim()===""){
-            newWrongMessage.nameWrongMessage="Name is required.";
-        }else
-        if(isPositiveInteger(name.toString().trim())===false){
-            newWrongMessage.nameWrongMessage="The value must be a positive number.";
-        }else{
-            newWrongMessage.nameWrongMessage="";
-        }
-
-        if(type==="table"){
-            if(newWrongMessage.nameWrongMessage!==""){
-                message.destroy();
-                message.error(newWrongMessage.nameWrongMessage);
-                newWrongMessage.nameWrongMessage="";
-                return false;
-            }else{
-                return true;
-            }
-
-        }else{
-            self.setState({
-                wrongMessage:newWrongMessage
-            })
-            if(newWrongMessage.nameWrongMessage===""){
-                $("#name").css({
-                    "border":"1px solid #d9d9d9",
-                });
-                return true;
-            }else{
-                $("#name").css({
-                    "border":"1px solid red",
-                });
-                
-                return false;
-            }
-        }
-
-
-
-    }
-
-    onBlurCheckIpAddr(e){
-        let self=this;
-        self.checkIpAddr(e.target.value);
     }
 
     checkIpAddr=(ipAddr,type)=>{
@@ -247,11 +177,6 @@ class clusterNetworkingCtl extends Component {
         }
     }
 
-    onBlurCheckNetmask(e){
-        let self=this;
-        self.checkNetmask(e.target.value);
-    }
-
     checkNetmask=(netmask,type)=>{
         let self=this;
         let newWrongMessage=self.state.wrongMessage;
@@ -286,54 +211,6 @@ class clusterNetworkingCtl extends Component {
                 return true;
             }else{
                 $("#netmask").css({
-                    "border":"1px solid red",
-                });
-                
-                return false;
-            }
-        }
-    }
-
-
-    onBlurCheckVip(e){
-        let self=this;
-        self.checkVip(e.target.value);
-    }
-
-    checkVip=(vip,type)=>{
-        let self=this;
-        let newWrongMessage=self.state.wrongMessage;
-
-        if(!vip||vip.toString().trim()===""){
-            newWrongMessage.vipWrongMessage="Vip is required.";
-        }else
-        if(isIp(vip.toString().trim())===false){
-            newWrongMessage.vipWrongMessage="Vip format is incorret.";
-        }else{
-            newWrongMessage.vipWrongMessage="";
-        }
-
-        if(type==="table"){
-            if(newWrongMessage.vipWrongMessage!==""){
-                message.destroy();
-                message.error(newWrongMessage.vipWrongMessage);
-                newWrongMessage.vipWrongMessage="";
-                return false;
-            }else{
-                return true;
-            }
-
-        }else{
-            self.setState({
-                wrongMessage:newWrongMessage
-            })
-            if(newWrongMessage.vipWrongMessage===""){
-                $("#vip").css({
-                    "border":"1px solid #d9d9d9",
-                });
-                return true;
-            }else{
-                $("#vip").css({
                     "border":"1px solid red",
                 });
                 
@@ -388,22 +265,8 @@ class clusterNetworkingCtl extends Component {
     onEdit=(index,column,e) =>{
         let self=this;
         let dataCopy=self.state.dataTable;
-        if(column==="name"){
-            dataCopy[index][column]="VLAN"+e.target.value;
-        }else{
-            dataCopy[index][column]=e.target.value;
-        }
+        dataCopy[index][column]=e.target.value;
         
-        self.setState({ 
-            dataTable : dataCopy, 
-        });
-
-    }
-
-    onChangeSelect=(index,column,value) =>{
-        let self=this;
-        let dataCopy=self.state.dataTable;
-        dataCopy[index][column]=value;
         self.setState({ 
             dataTable : dataCopy, 
         });
@@ -414,16 +277,10 @@ class clusterNetworkingCtl extends Component {
     onClickEditOk= (index,column) => {
         let self=this;
 
-        if(column==="name"&&self.checkName(self.state.dataTable[index].name.slice(4),"table")===false){
-            return;
-        }
         if(column==="ip_addr"&&self.checkIpAddr(self.state.dataTable[index].ip_addr,"table")===false){
             return;
         }
         if(column==="netmask"&&self.checkNetmask(self.state.dataTable[index].netmask,"table")===false){
-            return;
-        }
-        if(column==="vip"&&self.checkVip(self.state.dataTable[index].vip,"table")===false){
             return;
         }
 
@@ -447,101 +304,10 @@ class clusterNetworkingCtl extends Component {
         });
     }
 
-    onClickAddVlan= (index) => {
-        let self=this;
-        self.props.form.setFieldsValue({
-            name:"",
-            ip_addr:"",
-            netmask:"",
-            vip:"",
-            type:"MANAGEMENT",
-            services:["PORTAL"],
-
-        })
-        $("#name,#ip_addr,#netmask,#vip").css({
-            "border":"1px solid #d9d9d9",
-        });
-        let wrongMessageCopy=self.state.wrongMessage;
-        wrongMessageCopy.nameWrongMessage="";
-        wrongMessageCopy.ipAddrWrongMessage="";
-        wrongMessageCopy.netmaskWrongMessage="";
-        wrongMessageCopy.vipWrongMessage="";
-        self.setState({ 
-            addVlanVisible:true,
-        });
-
-    }
-
-
-    onOkAddVlan = (e) => {
-        let self=this;
-        e.preventDefault();
-        this.props.form.validateFields((err, values) => {
-            if (!err) {
-
-                console.log(values);
-
-                let hasWrongValue=false;
-                if(self.checkVip(values.vip)===false){
-                    hasWrongValue=true;
-                    $("#vip").focus();
-                }
-                if(self.checkNetmask(values.netmask)===false){
-                    hasWrongValue=true;
-                    $("#netmask").focus();
-                }
-                if(self.checkIpAddr(values.ip_addr)===false){
-                    hasWrongValue=true;
-                    $("#ip_addr").focus();
-                }
-                if(self.checkName(values.name)===false){
-                    hasWrongValue=true;
-                    $("#name").focus();
-                }
-                if(hasWrongValue===true){
-                    return;
-                }
-
-                self.setState({ 
-                    addVlanVisible:false,
-                });
-
-
-            }
-        });
-        
-    }
-
-
-    onCancelAddVlan= () => {
-        let self=this;
-        self.setState({ 
-            addVlanVisible:false,
-        });
-
-    }
-
-    onClickRemoveVlan= (index) => {
-        let self=this;
-        Modal.confirm({
-            content: "Are you sure you want to do this?",
-            okText: 'Yes',
-            cancelText: 'No',
-            onOk() {
-                let dataCopy=self.state.dataTable;
-                dataCopy.splice(index,1);
-                self.setState({ 
-                    dataTable : dataCopy,
-                });
-            },
-            onCancel() {},
-        });
-
-    }
 
 
     render() {
-        const {wrongMessage,enableClustering,dataTable,loading,addVlanVisible} = this.state;
+        const {wrongMessage,dataTable,loading} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
@@ -555,33 +321,6 @@ class clusterNetworkingCtl extends Component {
             dataIndex: 'name',
             key: 'name',
             render: (text, record, index) => {
-                let numberHtml;
-                if(dataTable[index].clicked==="name"){
-                    numberHtml=
-                        <div className="name-edit-div-clusterNetworkingCtl"  >
-                            <div className="name-edit-input-div-clusterNetworkingCtl">
-                                <Input
-                                    value={text.slice(4)}
-                                    autoFocus
-                                    onChange={self.onEdit.bind(self,index,"name")}
-                                />
-                            </div>
-                            <div className="name-edit-ok-div-clusterNetworkingCtl" onClick={self.onClickEditOk.bind(self,index,"name")}>
-                                <img className="name-edit-ok-img-clusterNetworkingCtl" src={editYesImg} />
-                            </div>
-                            <div className="name-edit-no-div-clusterNetworkingCtl" onClick={self.onClickEditNo.bind(self,index,"name")}>
-                                <img className="name-edit-no-img-clusterNetworkingCtl" src={editNoImg} />
-                            </div>
-                            <div className="clear-float-div-common" ></div >
-                        </div>
-                }else{
-                    numberHtml=
-                        <div className="name-text-div-clusterNetworkingCtl" onClick={self.onClickText.bind(self,index,"name")} >
-                            {text.slice(4)}
-                        </div>
-                }
-
-
                 return (
                     text.indexOf("VLAN")===-1?
                     <div className="name-etho-div-clusterNetworkingCtl"  >
@@ -594,7 +333,9 @@ class clusterNetworkingCtl extends Component {
                         <div className="name-vlan-text-div-clusterNetworkingCtl">
                             VLAN
                         </div>
-                        {numberHtml}
+                        <div className="name-text-div-clusterNetworkingCtl">
+                            {text.slice(4)}
+                        </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
                 );
@@ -672,35 +413,6 @@ class clusterNetworkingCtl extends Component {
             title:"VIP",
             dataIndex: 'vip',
             key: 'vip',
-            render: (text, record, index) => {
-                return (
-                    <div>
-                        {
-                            dataTable[index].clicked==="vip"?
-                            <div className=""  >
-                                <div className="vip-edit-input-div-clusterNetworkingCtl">
-                                    <Input
-                                        value={text}
-                                        autoFocus
-                                        onChange={self.onEdit.bind(self,index,"vip")}
-                                    />
-                                </div>
-                                <div className="vip-edit-ok-div-clusterNetworkingCtl" onClick={self.onClickEditOk.bind(self,index,"vip")}>
-                                    <img className="vip-edit-ok-img-clusterNetworkingCtl" src={editYesImg} />
-                                </div>
-                                <div className="vip-edit-no-div-clusterNetworkingCtl" onClick={self.onClickEditNo.bind(self,index,"vip")}>
-                                    <img className="vip-edit-no-img-clusterNetworkingCtl" src={editNoImg} />
-                                </div>
-                                <div className="clear-float-div-common" ></div >
-                            </div>
-                            :
-                            <div className="vip-text-div-clusterNetworkingCtl" onClick={self.onClickText.bind(self,index,"vip")} >
-                                {text}
-                            </div>
-                        }
-                    </div>
-                );
-            } 
         });
         columns.push({
             title:"TYPE",
@@ -711,8 +423,8 @@ class clusterNetworkingCtl extends Component {
                     <div>
                         <Select 
                             value={text} 
-                            onChange={self.onChangeSelect.bind(self,index,"type")}
                             style={{ width: 110 }} 
+                            disabled
                         >
                             <Option value="MANAGEMENT">Management</Option>
                             <Option value="REGISTRATION">Registration</Option>
@@ -734,9 +446,9 @@ class clusterNetworkingCtl extends Component {
                     <div>
                         <Select 
                             value={text} 
-                            onChange={self.onChangeSelect.bind(self,index,"services")}
                             style={{ width: 110 }} 
                             mode="multiple"
+                            disabled
                         >
                             <Option value="PORTAL">Portal</Option>
                             <Option value="RADIUS">Radius</Option>
@@ -745,38 +457,7 @@ class clusterNetworkingCtl extends Component {
                 );
             } 
         });
-
-        columns.push({
-            title: "VLAN",
-            dataIndex: 'vlan',
-            key: 'vlan',
-            render: (text, record, index) => {
-                return (
-                    text.indexOf("VLAN")===-1?
-                    <div className="vlan-add-div-clusterNetworkingCtl" onClick={self.onClickAddVlan.bind(self,index)}  >
-                        <div className="vlan-add-img-div-clusterNetworkingCtl">
-                            +
-                        </div>
-                        <div className="vlan-add-text-div-clusterNetworkingCtl">
-                            Add VLAN
-                        </div>
-                        <div className="clear-float-div-common" ></div >
-                    </div>
-                    :
-                    <div className="vlan-remove-div-clusterNetworkingCtl" onClick={self.onClickRemoveVlan.bind(self,index)}  >
-                        <div className="vlan-remove-img-div-clusterNetworkingCtl">
-                            x
-                        </div>
-                        <div className="vlan-remove-text-div-clusterNetworkingCtl">
-                            Remove VLAN
-                        </div>
-                        <div className="clear-float-div-common" ></div >
-                    </div>
-                );
-            } 
-        });
-
-        
+  
         return (
             <div className="global-div-clusterNetworkingCtl">
             <Spin spinning={loading}>
@@ -818,18 +499,6 @@ class clusterNetworkingCtl extends Component {
                     <div className="interfaces-div-clusterNetworkingCtl">
                         interfaces
                     </div>
-                    <div className="enable-clustering-div-clusterNetworkingCtl">
-                        <div className="enable-clustering-checkbox-div-clusterNetworkingCtl">
-                            <Checkbox 
-                                value={enableClustering}
-                                onChange={self.onChangeCheckbox.bind(self)}
-                            ></Checkbox>
-                        </div>
-                        <div className="enable-clustering-text-div-clusterNetworkingCtl">
-                            Enable clustering
-                        </div>
-                        <div className="clear-float-div-common" ></div >
-                    </div>
 
                     <div className="table-div-clusterNetworkingCtl">
                         <Table 
@@ -860,189 +529,8 @@ class clusterNetworkingCtl extends Component {
 
                     <div className="clear-float-div-common" ></div >
                 </div>
-
-                <Modal 
-                    title="Add VLAN"
-                    visible={addVlanVisible}
-                    width={302}
-                    footer={null}
-                    onCancel={self.onCancelAddVlan.bind(self)}
-                >
-         
-                    <div className="modal-div-clusterNetworkingCtl">
-                        
-                        <Form onSubmit={self.onOkAddVlan.bind(self)}>
-                        <div className="modal-form-item-div-clusterNetworkingCtl" style={{marginTop:"0px"}}>
-                            <div className="modal-form-item-title-div-clusterNetworkingCtl">
-                                Name
-                            </div>
-                            <div className="modal-form-item-input-div-clusterNetworkingCtl">
-                                <div className="modal-form-item-name-vlan-div-clusterNetworkingCtl">
-                                    VLAN
-                                </div>
-                                <div className="modal-form-item-name-number-div-clusterNetworkingCtl">
-                                    {getFieldDecorator('name', {
-                                        rules: [],
-                                    })(
-                                        <Input 
-                                        style={{height:"32px"}}
-                                        onBlur={self.onBlurCheckName.bind(self)}
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                            <div className="modal-form-item-wrong-div-clusterNetworkingCtl" 
-                            style={{color:wrongMessage.nameWrongMessage===""?"#ffffff":"#f44336"}}>
-                                    {wrongMessage.nameWrongMessage}
-                            </div>
-                            <div className="clear-float-div-common" ></div >
-                        </div>
-
-
-                        <div className="modal-form-item-div-clusterNetworkingCtl">
-                            <div className="modal-form-item-title-div-clusterNetworkingCtl">
-                                Ip Address
-                            </div>
-                            <div className="modal-form-item-input-div-clusterNetworkingCtl">
-                                {getFieldDecorator('ip_addr', {
-                                    rules: [],
-                                })(
-                                    <Input 
-                                    style={{height:"32px"}}
-                                    onBlur={self.onBlurCheckIpAddr.bind(self)}
-                                    
-                                    />
-                                )}
-                            </div>
-                            <div className="modal-form-item-wrong-div-clusterNetworkingCtl" 
-                            style={{color:wrongMessage.ipAddrWrongMessage===""?"#ffffff":"#f44336"}}>
-                                    {wrongMessage.ipAddrWrongMessage}
-                            </div>
-                            <div className="clear-float-div-common" ></div >
-                        </div>
-
-                        <div className="modal-form-item-div-clusterNetworkingCtl">
-                            <div className="modal-form-item-title-div-clusterNetworkingCtl">
-                                Netmask
-                            </div>
-                            <div className="modal-form-item-input-div-clusterNetworkingCtl">
-                                {getFieldDecorator('netmask', {
-                                    rules: [],
-                                })(
-                                    <Input 
-                                    style={{height:"32px"}}
-                                    onBlur={self.onBlurCheckNetmask.bind(self)}
-                                    
-                                    />
-                                )}
-                            </div>
-                            <div className="modal-form-item-wrong-div-clusterNetworkingCtl" 
-                            style={{color:wrongMessage.netmaskWrongMessage===""?"#ffffff":"#f44336"}}>
-                                    {wrongMessage.netmaskWrongMessage}
-                            </div>
-                            <div className="clear-float-div-common" ></div >
-                        </div>
-
-                        <div className="modal-form-item-div-clusterNetworkingCtl">
-                            <div className="modal-form-item-title-div-clusterNetworkingCtl">
-                                Vip
-                            </div>
-                            <div className="modal-form-item-input-div-clusterNetworkingCtl">
-                                {getFieldDecorator('vip', {
-                                    rules: [],
-                                })(
-                                    <Input 
-                                    style={{height:"32px"}}
-                                    onBlur={self.onBlurCheckVip.bind(self)}
-                                    
-                                    />
-                                )}
-                            </div>
-                            <div className="modal-form-item-wrong-div-clusterNetworkingCtl" 
-                            style={{color:wrongMessage.vipWrongMessage===""?"#ffffff":"#f44336"}}>
-                                    {wrongMessage.vipWrongMessage}
-                            </div>
-                            <div className="clear-float-div-common" ></div >
-                        </div>
-
-
-                        <div className="modal-form-item-div-clusterNetworkingCtl">
-                            <div className="modal-form-item-title-div-clusterNetworkingCtl">
-                                Type
-                            </div>
-                            <div className="modal-form-item-input-div-clusterNetworkingCtl">
-                                {getFieldDecorator('type', {
-                                    rules: [],
-                                    initialValue:"MANAGEMENT",
-                                })(
-
-                                    <Select 
-                                        option={{initialValue:"MANAGEMENT"}}
-                                        style={{ height: 32 }} 
-                                    >
-                                        <Option value="MANAGEMENT" >Management</Option>
-                                        <Option value="REGISTRATION">Registration</Option>
-                                        <Option value="ISOLATION" >Isolation</Option>
-                                        <Option value="NONE" >None</Option>
-                                        <Option value="OTHER" >Other</Option>
-                                    </Select>
-
-                                )}
-                            </div>
-                            <div className="modal-form-item-wrong-div-clusterNetworkingCtl">
-                            </div>
-                            <div className="clear-float-div-common" ></div >
-                        </div>
-                        <div className="modal-form-item-div-clusterNetworkingCtl">
-                            <div className="modal-form-item-title-div-clusterNetworkingCtl">
-                                Services
-                            </div>
-                            <div className="modal-form-item-input-div-clusterNetworkingCtl">
-                                {getFieldDecorator('services', {
-                                    rules: [],
-                                    initialValue:["PORTAL"],
-                                })(
-                                    <Select 
-                                        mode="multiple"
-                                        style={{ height: 32 }} 
-                                    >
-                                        <Option value="PORTAL">Portal</Option>
-                                        <Option value="RADIUS">Radius</Option>
-                                    </Select>
-                                )}
-                            </div>
-                            <div className="modal-form-item-wrong-div-clusterNetworkingCtl">
-                            </div>
-                            <div className="clear-float-div-common" ></div >
-                        </div>
-                        <div className="modal-form-button-div-clusterNetworkingCtl">
-                            <div className="modal-form-button-next-div-clusterNetworkingCtl">
-                                <Button 
-                                    type="primary" 
-                                    className="modal-form-button-next-antd-button-clusterNetworkingCtl" 
-                                    htmlType="submit" 
-                                >NEXT</Button>
-                            </div>
-                            <div className="modal-form-button-cancel-div-clusterNetworkingCtl">
-                                <Button 
-                                    className="modal-form-button-cancel-antd-button-clusterNetworkingCtl" 
-                                    onClick={self.onCancelAddVlan.bind(self)}
-                                >CANCEL</Button>
-                            </div>
-                        </div>
-                        </Form>
-
-
-                
-                        <div className="clear-float-div-common" ></div >
-                    </div>
-            
-                </Modal>
                 <div className="clear-float-div-common" ></div >
             </Spin>
-
-
-            
             </div>
             
         )
