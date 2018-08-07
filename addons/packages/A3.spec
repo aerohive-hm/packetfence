@@ -1320,6 +1320,8 @@ fi
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Service.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/User.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Violation.pm
+%dir                    /usr/local/pf/html/a3ui
+                        /usr/local/pf/html/a3ui/*
                         /usr/local/pf/lib
 %exclude                /usr/local/pf/lib/pfconfig*
 %config(noreplace)      /usr/local/pf/lib/pf/floatingdevice/custom.pm
