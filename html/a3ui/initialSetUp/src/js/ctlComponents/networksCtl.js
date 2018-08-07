@@ -96,13 +96,17 @@ class networksCtl extends Component {
         let self=this;
         let dataTable=data.items;
         for(let i=0;i<dataTable.length;i++){
-            dataTable[i].key=dataTable[i].id;
+            dataTable[i].key=dataTable[i].name;
             dataTable[i].vlan=dataTable[i].name;
             dataTable[i].clicked="";
+            dataTable[i].services=dataTable[i].services.split(",");
         }
         self.setState({
             dataTable: dataTable,
             loading : false,
+        },function(){
+            console.log("console.log(self.state.dataTable);");
+            console.log(self.state.dataTable);
         }); 
     }
 
@@ -400,6 +404,7 @@ class networksCtl extends Component {
     }
 
     onChangeSelect=(index,column,value) =>{
+        console.log(value);
         let self=this;
         let dataCopy=self.state.dataTable;
         dataCopy[index][column]=value;
@@ -453,8 +458,8 @@ class networksCtl extends Component {
             ip_addr:"",
             netmask:"",
             vip:"",
-            type:"management",
-            services:"portal",
+            type:"MANAGEMENT",
+            services:["PORTAL"],
 
         })
         $("#name,#ip_addr,#netmask,#vip").css({
@@ -713,8 +718,11 @@ class networksCtl extends Component {
                             onChange={self.onChangeSelect.bind(self,index,"type")}
                             style={{ width: 110 }} 
                         >
-                            <Option value="management">management</Option>
-                            <Option value="registration">registration</Option>
+                            <Option value="MANAGEMENT">Management</Option>
+                            <Option value="REGISTRATION">Registration</Option>
+                            <Option value="ISOLATION">Isolation</Option>
+                            <Option value="NONE">None</Option>
+                            <Option value="OTHER">Other</Option>
                         </Select>
                     </div>
                 );
@@ -732,8 +740,10 @@ class networksCtl extends Component {
                             value={text} 
                             onChange={self.onChangeSelect.bind(self,index,"services")}
                             style={{ width: 110 }} 
+                            mode="multiple"
                         >
-                            <Option value="portal">portal</Option>
+                            <Option value="PORTAL">Portal</Option>
+                            <Option value="RADIUS">Radius</Option>
                         </Select>
                     </div>
                 );
@@ -967,15 +977,18 @@ class networksCtl extends Component {
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('type', {
                                     rules: [],
-                                    initialValue:"management",
+                                    initialValue:"MANAGEMENT",
                                 })(
 
                                     <Select 
-                                        option={{initialValue:"registration"}}
+                                        option={{initialValue:"MANAGEMENT"}}
                                         style={{ height: 32 }} 
                                     >
-                                        <Option value="management" >management</Option>
-                                        <Option value="registration">registration</Option>
+                                        <Option value="MANAGEMENT" >Management</Option>
+                                        <Option value="REGISTRATION">Registration</Option>
+                                        <Option value="ISOLATION" >Isolation</Option>
+                                        <Option value="NONE" >None</Option>
+                                        <Option value="OTHER" >Other</Option>
                                     </Select>
 
                                 )}
@@ -991,12 +1004,14 @@ class networksCtl extends Component {
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('services', {
                                     rules: [],
-                                    initialValue:"portal",
+                                    initialValue:["PORTAL"],
                                 })(
                                     <Select 
+                                        mode="multiple"
                                         style={{ height: 32 }} 
                                     >
-                                        <Option value="portal">portal</Option>
+                                        <Option value="PORTAL">Portal</Option>
+                                        <Option value="RADIUS">Radius</Option>
                                     </Select>
                                 )}
                             </div>
