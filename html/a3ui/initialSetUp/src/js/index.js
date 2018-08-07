@@ -11,6 +11,7 @@ import * as mock from "../libs/mockData";
 import GetStartCtl from './ctlComponents/getStartCtl';
 import AdminUserCtl from './ctlComponents/adminUserCtl';
 import NetworksCtl from './ctlComponents/networksCtl';
+import ClusterNetworkingCtl from './ctlComponents/clusterNetworkingCtl';
 import AerohiveCloudCtl from './ctlComponents/aerohiveCloudCtl';
 import JoinClusterCtl from './ctlComponents/joinClusterCtl';
 import LicensingCtl from './ctlComponents/licensingCtl';
@@ -120,6 +121,12 @@ class App extends Component {
         }else if(show==="joining"){
             contentHtml=<div>
                 <JoiningCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="clusterNetworking"){
+            contentHtml=<div>
+                <ClusterNetworkingCtl 
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>

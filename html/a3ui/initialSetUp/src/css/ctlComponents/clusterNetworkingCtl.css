@@ -1,0 +1,443 @@
+
+.global-div-clusterNetworkingCtl{
+    float:left;
+    width:1280px;
+}
+
+.left-div-clusterNetworkingCtl{
+    float:left;
+    width:234px;
+}
+.img-div-clusterNetworkingCtl{
+    float:left;
+    margin-top:90px;
+    width:234px;
+    height:215px;
+    
+}
+.img-img-clusterNetworkingCtl{
+    float:left;
+    width:234px;
+    height:215px;
+    
+}
+
+.right-div-clusterNetworkingCtl{
+    float:left;
+    margin-top:90px;
+    margin-left:86px;
+    width:960px;
+    height:300px;
+}
+
+.form-item-div-clusterNetworkingCtl{
+    float:left;
+    width:960px;
+    margin-top:10px;
+}
+.form-item-title-div-clusterNetworkingCtl{
+    float:left;
+    width:960px;
+    height:17px;
+    line-height: 17px;
+    color:#333333;
+    font-weight: bold;
+    font-size: 12px;
+}
+.form-item-input-div-clusterNetworkingCtl{
+    float:left;
+    width:270px;
+    height:32px;
+}
+.form-item-wrong-div-clusterNetworkingCtl{
+    float:left;
+    margin-left:20px;
+    width:670px;
+    height:32px;
+    line-height: 32px;
+    color:#f44336;
+    font-size: 12px;
+
+}
+
+
+.interfaces-div-clusterNetworkingCtl{
+    float:left;
+    width:960px;
+    margin-top:20px;
+    height:17px;
+    line-height: 17px;
+    color:#333333;
+    font-weight: bold;
+    font-size: 12px;
+}
+.enable-clustering-div-clusterNetworkingCtl{
+    float:left;
+    width:960px;
+    height:20px;
+    margin-top: 4px;
+}
+.enable-clustering-checkbox-div-clusterNetworkingCtl{
+    float:left;
+    width:16px;
+    height:20px;
+}
+.enable-clustering-text-div-clusterNetworkingCtl{
+    float:left;
+    height:20px;
+    color:#333333;
+    font-size: 12px;
+    line-height: 20px;
+    margin-left: 10px;
+}
+
+.table-div-clusterNetworkingCtl{
+    float:left;
+    width:960px;
+    margin-top:6px;
+}
+
+.name-etho-div-clusterNetworkingCtl{
+    float:left;
+    height: 28px;
+    line-height: 28px;
+}
+.name-vlan-div-clusterNetworkingCtl{
+    float:left;
+    height: 28px;
+}
+.name-vlan-blank-div-clusterNetworkingCtl{
+    float:left;
+    height: 28px;
+    width:20px;
+}
+.name-vlan-text-div-clusterNetworkingCtl{
+    float:left;
+    height: 28px;
+    line-height: 28px;
+}
+
+
+.name-edit-div-clusterNetworkingCtl{
+    float:left;
+    height: 28px;
+    margin-left:4px;  
+}
+.name-edit-input-div-clusterNetworkingCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.name-edit-ok-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.name-edit-ok-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.name-edit-no-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.name-edit-no-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.name-text-div-clusterNetworkingCtl{
+    float:left;
+    height:28px;
+    line-height: 28px;
+    cursor: pointer;
+    color:#2c69ff;
+}
+
+
+
+
+
+.ipAddr-edit-input-div-clusterNetworkingCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.ipAddr-edit-ok-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.ipAddr-edit-ok-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.ipAddr-edit-no-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.ipAddr-edit-no-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.ipAddr-text-div-clusterNetworkingCtl{
+    cursor: pointer;
+    color:#2c69ff;
+}
+
+
+.netmask-edit-input-div-clusterNetworkingCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.netmask-edit-ok-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.netmask-edit-ok-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.netmask-edit-no-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.netmask-edit-no-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.netmask-text-div-clusterNetworkingCtl{
+    cursor: pointer;
+    color:#2c69ff;
+}
+
+
+
+
+
+.vip-edit-input-div-clusterNetworkingCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.vip-edit-ok-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.vip-edit-ok-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.vip-edit-no-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.vip-edit-no-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.vip-text-div-clusterNetworkingCtl{
+    cursor: pointer;
+    color:#2c69ff;
+}
+
+
+.vlan-add-div-clusterNetworkingCtl{
+    float:left;
+    height: 28px;
+    cursor: pointer;
+}
+.vlan-add-img-div-clusterNetworkingCtl{
+    float:left;
+    margin-top:4px;
+    height: 21px;
+    width:21px;
+    border: 2px solid #54698d;
+    color:#54698d;
+    border-radius: 10px;
+    padding-left:5px;
+    line-height: 16px;
+
+}
+.vlan-add-img-img-clusterNetworkingCtl{
+    float:left;
+    height: 16px;
+    width:16px;
+}
+.vlan-add-text-div-clusterNetworkingCtl{
+    float:left;
+    margin-left: 6px;
+    height: 28px;
+    line-height: 28px;
+    color:#2c69ff;
+
+}
+
+.vlan-remove-div-clusterNetworkingCtl{
+    float:left;
+    height: 28px;
+    cursor: pointer;
+}
+.vlan-remove-img-div-clusterNetworkingCtl{
+    float:left;
+    margin-top:4px;
+    height: 21px;
+    width:21px;
+    border: 2px solid #54698d;
+    color:#54698d;
+    border-radius: 10px;
+    padding-left:6px;
+    line-height: 14px;
+}
+.vlan-remove-img-img-clusterNetworkingCtl{
+    float:left;
+    height: 19px;
+    width:19px;
+}
+.vlan-remove-text-div-clusterNetworkingCtl{
+    float:left;
+    margin-left: 6px;
+    height: 28px;
+    line-height: 28px;
+    color:#2c69ff;
+}
+
+.form-button-div-clusterNetworkingCtl{
+    float:left;
+    width:960px;
+    margin-top:10px;
+}
+.form-button-cancel-div-clusterNetworkingCtl{
+    float:right;
+    margin-right:16px;
+    width:78px;
+    height:32px;
+}
+.form-button-next-div-clusterNetworkingCtl{
+    float:right;
+    width:78px;
+    height:32px;
+}
+.form-button-cancel-antd-button-clusterNetworkingCtl{
+    width:78px;
+    height:32px;
+}
+.form-button-next-antd-button-clusterNetworkingCtl{
+    width:78px;
+    height:32px;
+}
+
+
+
+
+.modal-div-clusterNetworkingCtl{
+    width:270px;
+}
+
+.modal-form-item-div-clusterNetworkingCtl{
+    float:left;
+    width:270px;
+}
+.modal-form-item-title-div-clusterNetworkingCtl{
+    float:left;
+    width:270px;
+    height:17px;
+    line-height: 17px;
+    color:#333333;
+    font-weight: bold;
+    font-size: 12px;
+}
+.modal-form-item-input-div-clusterNetworkingCtl{
+    float:left;
+    width:270px;
+    height:32px;
+}
+.modal-form-item-name-vlan-div-clusterNetworkingCtl{
+    float:left;
+    font-size: 12px;
+    width:40px;
+    height:32px;
+    line-height: 32px;
+}
+.modal-form-item-name-number-div-clusterNetworkingCtl{
+    float:left;
+    width:230px;
+    height:32px;
+}
+.modal-form-item-wrong-div-clusterNetworkingCtl{
+    float:left;
+    width:270px;
+    height:16px;
+    line-height: 16px;
+    color:#f44336;
+    font-size: 12px;
+}
+.modal-form-button-div-clusterNetworkingCtl{
+    float:left;
+    width:270px;
+}
+.modal-form-button-cancel-div-clusterNetworkingCtl{
+    float:right;
+    margin-right:16px;
+    width:78px;
+    height:32px;
+}
+.modal-form-button-next-div-clusterNetworkingCtl{
+    float:right;
+    width:78px;
+    height:32px;
+}
+.modal-form-button-cancel-antd-button-clusterNetworkingCtl{
+    width:78px;
+    height:32px;
+}
+.modal-form-button-next-antd-button-clusterNetworkingCtl{
+    width:78px;
+    height:32px;
+}
