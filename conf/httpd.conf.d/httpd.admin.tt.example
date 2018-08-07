@@ -316,21 +316,9 @@ SetEnvIf Request_URI "netdata" is_netdata
       #AH_MODIFICATION
       <Location /a3>
           Header edit Location ^/(.*) /a3/$1
-          Header edit Location http:\/\/.*\/View /a3/View
+          Header edit Location http:\/\/.* /a3
           RequestHeader unset Accept-Encoding
           RequestHeader append X-Forwarded-For-A3 "127.0.0.1"
-
-          # Debian 7 has an older version of mod_proxy_html
-          <IfDefine debian>
-            [% IF apache_version == "2.4" %]
-            ProxyHTMLEnable On
-            [% ELSE %]
-            SetOutputFilter proxy-html
-            [% END %]
-          </IfDefine>
-          <IfDefine rhel>
-            ProxyHTMLEnable On
-          </IfDefine>
 
           ProxyHTMLInterp On
           ProxyHTMLURLMap http://127.0.0.1/ /a3/ l

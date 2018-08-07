@@ -97,9 +97,8 @@ func (h A3apiHandler) handleGetEvent(w http.ResponseWriter, r *http.Request, p h
 func (h A3apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	//	ctx := r.Context()
 
-	w.Header().Set("Content-Type", "application/json")
-
 	if handle, params, _ := h.router.Lookup(r.Method, r.URL.Path); handle != nil {
+		w.Header().Set("Content-Type", "application/json")
 		handle(w, r, params)
 		// TODO handle errors
 		return 0, nil
