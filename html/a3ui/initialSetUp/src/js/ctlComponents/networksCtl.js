@@ -668,40 +668,44 @@ class networksCtl extends Component {
                 );
             } 
         });
-        columns.push({
-            title:"VIP",
-            dataIndex: 'vip',
-            key: 'vip',
-            render: (text, record, index) => {
-                return (
-                    <div>
-                        {
-                            dataTable[index].clicked==="vip"?
-                            <div className=""  >
-                                <div className="vip-edit-input-div-networksCtl">
-                                    <Input
-                                        value={text}
-                                        autoFocus
-                                        onChange={self.onEdit.bind(self,index,"vip")}
-                                    />
+
+        if(enableClustering===true){
+            columns.push({
+                title:"VIP",
+                dataIndex: 'vip',
+                key: 'vip',
+                render: (text, record, index) => {
+                    return (
+                        <div>
+                            {
+                                dataTable[index].clicked==="vip"?
+                                <div className=""  >
+                                    <div className="vip-edit-input-div-networksCtl">
+                                        <Input
+                                            value={text}
+                                            autoFocus
+                                            onChange={self.onEdit.bind(self,index,"vip")}
+                                        />
+                                    </div>
+                                    <div className="vip-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index,"vip")}>
+                                        <img className="vip-edit-ok-img-networksCtl" src={editYesImg} />
+                                    </div>
+                                    <div className="vip-edit-no-div-networksCtl" onClick={self.onClickEditNo.bind(self,index,"vip")}>
+                                        <img className="vip-edit-no-img-networksCtl" src={editNoImg} />
+                                    </div>
+                                    <div className="clear-float-div-common" ></div >
                                 </div>
-                                <div className="vip-edit-ok-div-networksCtl" onClick={self.onClickEditOk.bind(self,index,"vip")}>
-                                    <img className="vip-edit-ok-img-networksCtl" src={editYesImg} />
+                                :
+                                <div className="vip-text-div-networksCtl" onClick={self.onClickText.bind(self,index,"vip")} >
+                                    {text}
                                 </div>
-                                <div className="vip-edit-no-div-networksCtl" onClick={self.onClickEditNo.bind(self,index,"vip")}>
-                                    <img className="vip-edit-no-img-networksCtl" src={editNoImg} />
-                                </div>
-                                <div className="clear-float-div-common" ></div >
-                            </div>
-                            :
-                            <div className="vip-text-div-networksCtl" onClick={self.onClickText.bind(self,index,"vip")} >
-                                {text}
-                            </div>
-                        }
-                    </div>
-                );
-            } 
-        });
+                            }
+                        </div>
+                    );
+                } 
+            });
+        }
+
         columns.push({
             title:"TYPE",
             dataIndex: 'type',
@@ -821,7 +825,7 @@ class networksCtl extends Component {
                     <div className="enable-clustering-div-networksCtl">
                         <div className="enable-clustering-checkbox-div-networksCtl">
                             <Checkbox 
-                                value={enableClustering}
+                                checked={enableClustering}
                                 onChange={self.onChangeCheckbox.bind(self)}
                             ></Checkbox>
                         </div>
