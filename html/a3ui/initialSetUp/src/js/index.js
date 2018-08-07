@@ -10,6 +10,14 @@ import Util from "../libs/util";
 import * as mock from "../libs/mockData";
 import GetStartCtl from './ctlComponents/getStartCtl';
 import AdminUserCtl from './ctlComponents/adminUserCtl';
+import NetworksCtl from './ctlComponents/networksCtl';
+import ClusterNetworkingCtl from './ctlComponents/clusterNetworkingCtl';
+import AerohiveCloudCtl from './ctlComponents/aerohiveCloudCtl';
+import JoinClusterCtl from './ctlComponents/joinClusterCtl';
+import LicensingCtl from './ctlComponents/licensingCtl';
+import StartingCtl from './ctlComponents/startingCtl';
+import JoiningCtl from './ctlComponents/joiningCtl';
+
 import Logo from "../libs/logo/js/logo";
 
 import en_GB from 'antd/lib/locale-provider/en_GB';
@@ -23,7 +31,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"adminUser",
+            show:"clusterNetworking",
 
         };
     }
@@ -69,6 +77,56 @@ class App extends Component {
         }else if(show==="adminUser"){
             contentHtml=<div>
                 <AdminUserCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="networks"){
+            contentHtml=<div>
+                <NetworksCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="aerohiveCloud"){
+            contentHtml=<div>
+                <AerohiveCloudCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="joinCluster"){
+            contentHtml=<div>
+                <JoinClusterCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="licensing"){
+            contentHtml=<div>
+                <LicensingCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="startingManagement"){
+            contentHtml=<div>
+                <StartingCtl 
+                    title={"Initial setup complete!"}
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="startingRegistration"){
+            contentHtml=<div>
+                <StartingCtl 
+                    title={"Successfully joined cluster!"}
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="joining"){
+            contentHtml=<div>
+                <JoiningCtl 
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="clusterNetworking"){
+            contentHtml=<div>
+                <ClusterNetworkingCtl 
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>

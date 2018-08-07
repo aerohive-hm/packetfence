@@ -1,28 +1,28 @@
 
-.global-div-adminUserCtl{
+.global-div-aerohiveCloudCtl{
     float:left;
     width:1280px;
 }
 
-.left-div-adminUserCtl{
+.left-div-aerohiveCloudCtl{
     float:left;
     width:234px;
 }
-.img-div-adminUserCtl{
+.img-div-aerohiveCloudCtl{
     float:left;
     margin-top:90px;
     width:234px;
     height:215px;
     
 }
-.img-img-adminUserCtl{
+.img-img-aerohiveCloudCtl{
     float:left;
     width:234px;
     height:215px;
     
 }
 
-.right-div-adminUserCtl{
+.right-div-aerohiveCloudCtl{
     float:left;
     margin-top:90px;
     margin-left:86px;
@@ -30,12 +30,12 @@
     height:300px;
 }
 
-.form-item-div-adminUserCtl{
+.form-item-div-aerohiveCloudCtl{
     float:left;
     width:960px;
     margin-top:10px;
 }
-.form-item-title-div-adminUserCtl{
+.form-item-title-div-aerohiveCloudCtl{
     float:left;
     width:960px;
     height:17px;
@@ -44,12 +44,12 @@
     font-weight: bold;
     font-size: 12px;
 }
-.form-item-input-div-adminUserCtl{
+.form-item-input-div-aerohiveCloudCtl{
     float:left;
     width:270px;
     height:32px;
 }
-.form-item-wrong-div-adminUserCtl{
+.form-item-wrong-div-aerohiveCloudCtl{
     float:left;
     margin-left:20px;
     width:670px;
@@ -59,13 +59,13 @@
     font-size: 12px;
 
 }
-.form-item-pass-score-div-adminUserCtl{
+.form-item-pass-score-div-aerohiveCloudCtl{
     float:left;
     margin-left:20px;
     width:670px;
     height:32px;
 }
-.form-item-pass-score-0-div-adminUserCtl{
+.form-item-pass-score-0-div-aerohiveCloudCtl{
     float:left;
     width:670px;
     height:17px;
@@ -73,7 +73,7 @@
     color:#a8b7c7;
     font-size: 12px;
 }
-.form-item-pass-score-1-div-adminUserCtl{
+.form-item-pass-score-1-div-aerohiveCloudCtl{
     float:left;
     width:670px;
     height:17px;
@@ -82,7 +82,7 @@
     font-size: 12px;
 
 }
-.form-item-pass-score-2-div-adminUserCtl{
+.form-item-pass-score-2-div-aerohiveCloudCtl{
     float:left;
     width:670px;
     height:17px;
@@ -91,7 +91,7 @@
     font-size: 12px;
 
 }
-.form-item-pass-score-3-div-adminUserCtl{
+.form-item-pass-score-3-div-aerohiveCloudCtl{
     float:left;
     line-height: 32px;
     color:#9ac251;
@@ -100,7 +100,7 @@
     width:670px;
     height:32px;
 }
-.form-item-pass-score-4-div-adminUserCtl{
+.form-item-pass-score-4-div-aerohiveCloudCtl{
     float:left;
     line-height: 32px;
     color:#9ac251;
@@ -111,7 +111,7 @@
     color:#00b700;
 
 }
-.form-item-pass-score-message-div-adminUserCtl{
+.form-item-pass-score-message-div-aerohiveCloudCtl{
     float:left;
     width:670px;
     height:15px;
@@ -121,27 +121,38 @@
 
 }
 
-.form-button-div-adminUserCtl{
+.form-button-div-aerohiveCloudCtl{
     float:left;
-    width:270px;
+    width:960px;
     margin-top:10px;
 }
-.form-button-cancel-div-adminUserCtl{
-    float:right;
-    margin-right:16px;
-    width:78px;
+.form-button-create-div-aerohiveCloudCtl{
+    float:left;
+    width:270px;
     height:32px;
 }
-.form-button-next-div-adminUserCtl{
-    float:right;
-    width:78px;
+.form-button-link-div-aerohiveCloudCtl{
+    float:left;
+    width:270px;
     height:32px;
 }
-.form-button-cancel-antd-button-adminUserCtl{
-    width:78px;
+.form-button-create-antd-button-aerohiveCloudCtl{
+    width:270px;
     height:32px;
 }
-.form-button-next-antd-button-adminUserCtl{
-    width:78px;
+.form-button-link-antd-button-aerohiveCloudCtl{
+    width:270px;
     height:32px;
+}
+.form-button-continue-div-aerohiveCloudCtl{
+    float:left;
+    margin-top:10px;
+    width:270px;
+    height:17px;
+    line-height:17px;
+    font-size: 12px;
+    color:#2c6aff;
+    text-align: center;
+    cursor: pointer;
+
 }
