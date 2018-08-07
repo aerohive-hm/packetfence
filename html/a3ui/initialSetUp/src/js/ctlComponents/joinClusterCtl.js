@@ -8,33 +8,32 @@ const Option = Select.Option;
 const FormItem = Form.Item;
 
 import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail} from "../../libs/util";     
-import '../../css/ctlComponents/aerohiveCloudCtl.css';
+import '../../css/ctlComponents/joinClusterCtl.css';
 import '../../libs/common.css';
 
 import * as mock from "../../libs/mockData";
 import Guidance from "../../libs/guidance/js/guidance";
 import $ from 'jquery';
-import {i18nfr} from "../../i18n/ctlComponents/nls/fr/aerohiveCloudCtl";
-import {i18n} from "../../i18n/ctlComponents/nls/aerohiveCloudCtl";
+import {i18nfr} from "../../i18n/ctlComponents/nls/fr/joinClusterCtl";
+import {i18n} from "../../i18n/ctlComponents/nls/joinClusterCtl";
 
-import aerohiveCloudImg from "../../media/aerohiveCloud.png";
+import joinClusterImg from "../../media/joinCluster.png";
 
 
 
 const {Component} = React;
 
-class aerohiveCloudCtl extends Component {
+class joinClusterCtl extends Component {
     constructor(props) {
         super(props);
         this.state = {
             i18n:{},
             wrongMessage:{
-                urlWrongMessage:"",
-                userWrongMessage:"",
-                passWrongMessage:"",
+                primaryServerWrongMessage:"",
+                adminWrongMessage:"",
+                passwdWrongMessage:"",
                 
             },
-            passScore:-1
         };
 
 
@@ -61,38 +60,37 @@ class aerohiveCloudCtl extends Component {
 
     }
 
-   
-    onClickCreateAnAerohiveCloudAccount=()=>{
+    onClickCancel = () => {
         let self=this;
-        window.open("https://www.aerohive.com/cloud-networking");
+        self.props.form.resetFields();
+        
+    }
+    onBlurCheckPrimaryServer(e){
+        let self=this;
+        self.checkPrimaryServer(e.target.value);
     }
 
-    onBlurCheckUrl(e){
-        let self=this;
-        self.checkUrl(e.target.value);
-    }
-
-    checkUrl=(url)=>{
+    checkPrimaryServer=(primaryServer)=>{
         let self=this;
         let newWrongMessage=self.state.wrongMessage;
 
-        if(!url||url.toString().trim()===""){
-            newWrongMessage.urlWrongMessage="Cloud URL is required.";
+        if(!primaryServer||primaryServer.toString().trim()===""){
+            newWrongMessage.primaryServerWrongMessage="Cluster Primary is required.";
         }else{
-            newWrongMessage.urlWrongMessage="";
+            newWrongMessage.primaryServerWrongMessage="";
         }
 
 
         self.setState({
             wrongMessage:newWrongMessage
         })
-        if(newWrongMessage.urlWrongMessage===""){
-            $("#url").css({
+        if(newWrongMessage.primaryServerWrongMessage===""){
+            $("#primary_server").css({
                 "border":"1px solid #d9d9d9",
             });
             return true;
         }else{
-            $("#url").css({
+            $("#primary_server").css({
                 "border":"1px solid red",
             });
             
@@ -100,32 +98,32 @@ class aerohiveCloudCtl extends Component {
         }
     }
 
-    onBlurCheckUser(e){
+    onBlurCheckAdmin(e){
         let self=this;
-        self.checkUser(e.target.value);
+        self.checkAdmin(e.target.value);
     }
 
-    checkUser=(user)=>{
+    checkAdmin=(admin)=>{
         let self=this;
         let newWrongMessage=self.state.wrongMessage;
 
-        if(!user||user.toString().trim()===""){
-            newWrongMessage.userWrongMessage="Cloud Admin User is required";
+        if(!admin||admin.toString().trim()===""){
+            newWrongMessage.adminWrongMessage="Cluster Admin is required";
         }else{
-            newWrongMessage.userWrongMessage="";
+            newWrongMessage.adminWrongMessage="";
         }
 
 
         self.setState({
             wrongMessage:newWrongMessage
         })
-        if(newWrongMessage.userWrongMessage===""){
-            $("#user").css({
+        if(newWrongMessage.adminWrongMessage===""){
+            $("#admin").css({
                 "border":"1px solid #d9d9d9",
             });
             return true;
         }else{
-            $("#user").css({
+            $("#admin").css({
                 "border":"1px solid red",
             });
             
@@ -133,32 +131,32 @@ class aerohiveCloudCtl extends Component {
         }
     }
 
-    onBlurCheckPass(e){
+    onBlurCheckPasswd(e){
         let self=this;
-        self.checkPass(e.target.value);
+        self.checkPasswd(e.target.value);
     }
 
-    checkPass=(pass)=>{
+    checkPasswd=(passwd)=>{
         let self=this;
         let newWrongMessage=self.state.wrongMessage;
 
-        if(!pass||pass.toString().trim()===""){
-            newWrongMessage.passWrongMessage="Password is required";
+        if(!passwd||passwd.toString().trim()===""){
+            newWrongMessage.passwdWrongMessage="Admin Password is required";
         }else{
-            newWrongMessage.passWrongMessage="";
+            newWrongMessage.passwdWrongMessage="";
         }
 
 
         self.setState({
             wrongMessage:newWrongMessage
         })
-        if(newWrongMessage.passWrongMessage===""){
-            $("#pass").css({
+        if(newWrongMessage.passwdWrongMessage===""){
+            $("#passwd").css({
                 "border":"1px solid #d9d9d9",
             });
             return true;
         }else{
-            $("#pass").css({
+            $("#passwd").css({
                 "border":"1px solid red",
             });
             
@@ -172,17 +170,17 @@ class aerohiveCloudCtl extends Component {
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 let hasWrongValue=false;
-                if(self.checkPass(values.pass)===false){
+                if(self.checkPasswd(values.passwd)===false){
                     hasWrongValue=true;
-                    $("#pass").focus();
+                    $("#passwd").focus();
                 }
-                if(self.checkUser(values.user)===false){
+                if(self.checkAdmin(values.admin)===false){
                     hasWrongValue=true;
-                    $("#user").focus();
+                    $("#admin").focus();
                 }
-                if(self.checkUrl(values.url)===false){
+                if(self.checkPrimaryServer(values.primary_server)===false){
                     hasWrongValue=true;
-                    $("#url").focus();
+                    $("#primary_server").focus();
                 }
                 if(hasWrongValue===true){
                     return;
@@ -205,111 +203,105 @@ class aerohiveCloudCtl extends Component {
             duration: 10,
         });
         return (
-            <div className="global-div-aerohiveCloudCtl">
-                <div className="left-div-aerohiveCloudCtl">
+            <div className="global-div-joinClusterCtl">
+                <div className="left-div-joinClusterCtl">
                     <Guidance 
-                        title={"Aerohive Cloud"} 
+                        title={"Join Cluster"} 
                         content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
                     />
-                    <div className="img-div-aerohiveCloudCtl">
-                       <img src={aerohiveCloudImg} className="img-img-aerohiveCloudCtl" />
+                    <div className="img-div-joinClusterCtl">
+                       <img src={joinClusterImg} className="img-img-joinClusterCtl" />
                     </div>
                     <div className="clear-float-div-common" ></div >
                 </div>
 
-                <div className="right-div-aerohiveCloudCtl">
+                <div className="right-div-joinClusterCtl">
                     
                     <Form onSubmit={self.handleSubmit.bind(self)}>
 
-                    <div className="form-item-div-aerohiveCloudCtl">
-                        <div className="form-item-title-div-aerohiveCloudCtl">
-                            Cloud URL
+                    <div className="form-item-div-joinClusterCtl">
+                        <div className="form-item-title-div-joinClusterCtl">
+                            Cluster Primary
                         </div>
-                        <div className="form-item-input-div-aerohiveCloudCtl">
-                            {getFieldDecorator('url', {
+                        <div className="form-item-input-div-joinClusterCtl">
+                            {getFieldDecorator('primary_server', {
                                 rules: [],
                             })(
                                 <Input 
                                 style={{height:"32px"}}
-                                onBlur={self.onBlurCheckUrl.bind(self)}
+                                onBlur={self.onBlurCheckPrimaryServer.bind(self)}
                                 
                                 />
                             )}
                         </div>
-                        <div className="form-item-wrong-div-aerohiveCloudCtl" 
-                        style={{display:wrongMessage.urlWrongMessage===""?"none":"block"}}>
-                                {wrongMessage.urlWrongMessage}
+                        <div className="form-item-wrong-div-joinClusterCtl" 
+                        style={{display:wrongMessage.primaryServerWrongMessage===""?"none":"block"}}>
+                                {wrongMessage.primaryServerWrongMessage}
                         </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
 
 
-                    <div className="form-item-div-aerohiveCloudCtl">
-                        <div className="form-item-title-div-aerohiveCloudCtl">
-                            Cloud Admin User
+                    <div className="form-item-div-joinClusterCtl">
+                        <div className="form-item-title-div-joinClusterCtl">
+                            Cluster Admin
                         </div>
-                        <div className="form-item-input-div-aerohiveCloudCtl">
-                            {getFieldDecorator('user', {
+                        <div className="form-item-input-div-joinClusterCtl">
+                            {getFieldDecorator('admin', {
                                 rules: [],
                             })(
                                 <Input 
                                 style={{height:"32px"}}
-                                onBlur={self.onBlurCheckUser.bind(self)}
+                                onBlur={self.onBlurCheckAdmin.bind(self)}
                                 />
                             )}
                         </div>
-                        <div className="form-item-wrong-div-aerohiveCloudCtl" 
-                        style={{display:wrongMessage.userWrongMessage===""?"none":"block"}}>
-                                {wrongMessage.userWrongMessage}
+                        <div className="form-item-wrong-div-joinClusterCtl" 
+                        style={{display:wrongMessage.adminWrongMessage===""?"none":"block"}}>
+                                {wrongMessage.adminWrongMessage}
                         </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
 
-                    <div className="form-item-div-aerohiveCloudCtl">
-                        <div className="form-item-title-div-aerohiveCloudCtl">
-                            Password
+                    <div className="form-item-div-joinClusterCtl">
+                        <div className="form-item-title-div-joinClusterCtl">
+                            Admin Password
                         </div>
-                        <div className="form-item-input-div-aerohiveCloudCtl">
-                            {getFieldDecorator('pass', {
+                        <div className="form-item-input-div-joinClusterCtl">
+                            {getFieldDecorator('passwd', {
                                 rules: [],
                             })(
                                 <Input 
                                 style={{height:"32px"}}
-                                onBlur={self.onBlurCheckPass.bind(self)}
+                                onBlur={self.onBlurCheckPasswd.bind(self)}
                                 />
 
                                 
                             )}
                         </div>
-                        <div className="form-item-wrong-div-aerohiveCloudCtl" 
-                        style={{display:wrongMessage.passWrongMessage===""?"none":"block"}}>
-                                {wrongMessage.passWrongMessage}
+                        <div className="form-item-wrong-div-joinClusterCtl" 
+                        style={{display:wrongMessage.passwdWrongMessage===""?"none":"block"}}>
+                                {wrongMessage.passwdWrongMessage}
                         </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
 
 
 
-                    <div className="form-button-div-aerohiveCloudCtl">
-                        <div className="form-button-link-div-aerohiveCloudCtl">
+                    <div className="form-button-div-joinClusterCtl">
+                        <div className="form-button-next-div-joinClusterCtl">
                             <Button 
                                 type="primary" 
-                                className="form-button-link-antd-button-aerohiveCloudCtl" 
+                                className="form-button-next-antd-button-joinClusterCtl" 
                                 htmlType="submit" 
-                            >LINK WITH AEROHIVE CLOUD ACCOUNT</Button>
+                            >NEXT</Button>
                         </div>
-                    </div>
-                    <div className="form-button-div-aerohiveCloudCtl">
-                        <div className="form-button-create-div-aerohiveCloudCtl">
+                        <div className="form-button-cancel-div-joinClusterCtl">
                             <Button 
-                                className="form-button-create-antd-button-aerohiveCloudCtl" 
-                                onClick={self.onClickCreateAnAerohiveCloudAccount.bind(self)}
-                                
-                            >CREATE AN AEROHIVE CLOUD ACCOUNT</Button>
+                                className="form-button-cancel-antd-button-joinClusterCtl" 
+                                onClick={self.onClickCancel.bind(self)}
+                            >CANCEL</Button>
                         </div>
-                    </div>
-                    <div className="form-button-continue-div-aerohiveCloudCtl">
-                        Continue without an Aerohive Cloud Account
                     </div>
 
 
@@ -329,7 +321,7 @@ class aerohiveCloudCtl extends Component {
 }
 
 
-export default Form.create()(aerohiveCloudCtl);
+export default Form.create()(joinClusterCtl);
 
 
 
