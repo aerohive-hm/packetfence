@@ -104,9 +104,6 @@ class networksCtl extends Component {
         self.setState({
             dataTable: dataTable,
             loading : false,
-        },function(){
-            console.log("console.log(self.state.dataTable);");
-            console.log(self.state.dataTable);
         }); 
     }
 
@@ -404,7 +401,6 @@ class networksCtl extends Component {
     }
 
     onChangeSelect=(index,column,value) =>{
-        console.log(value);
         let self=this;
         let dataCopy=self.state.dataTable;
         dataCopy[index][column]=value;
