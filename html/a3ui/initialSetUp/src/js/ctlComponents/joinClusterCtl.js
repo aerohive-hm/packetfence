@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp} from "../../libs/util";     
 import '../../css/ctlComponents/joinClusterCtl.css';
 import '../../libs/common.css';
 
@@ -76,6 +76,9 @@ class joinClusterCtl extends Component {
 
         if(!primaryServer||primaryServer.toString().trim()===""){
             newWrongMessage.primaryServerWrongMessage="Cluster Primary is required.";
+        }else
+        if(isIp(primaryServer.toString().trim())===false){
+            newWrongMessage.primaryServerWrongMessage="Cluster Primary is incorret.";
         }else{
             newWrongMessage.primaryServerWrongMessage="";
         }
@@ -109,6 +112,9 @@ class joinClusterCtl extends Component {
 
         if(!admin||admin.toString().trim()===""){
             newWrongMessage.adminWrongMessage="Cluster Admin is required";
+        }else
+        if(isEmail(admin.toString().trim())===false){
+            newWrongMessage.adminWrongMessage="Email format is incorret.";
         }else{
             newWrongMessage.adminWrongMessage="";
         }
