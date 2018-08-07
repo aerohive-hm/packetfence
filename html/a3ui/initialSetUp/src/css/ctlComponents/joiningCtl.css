@@ -1,21 +1,21 @@
 
-.global-div-startingCtl{
+.global-div-licensingCtl{
     float:left;
     width:1280px;
 }
 
-.left-div-startingCtl{
+.left-div-licensingCtl{
     float:left;
     width:234px;
 }
-.img-div-startingCtl{
+.img-div-licensingCtl{
     float:left;
     margin-top:400px;
     width:234px;
     height:215px;
     
 }
-.img-img-startingCtl{
+.img-img-licensingCtl{
     float:left;
     width:234px;
     height:215px;
@@ -23,7 +23,7 @@
 }
 
 
-.right-div-startingCtl{
+.right-div-licensingCtl{
     float:left;
     margin-top:90px;
     margin-left:256px;
@@ -31,7 +31,7 @@
     height:300px;
 }
 
-.right-title-div-startingCtl{
+.right-title-div-licensingCtl{
     float:left;
     width:300px;
     height:27px;
@@ -42,13 +42,13 @@
     font-size: 20px;
 }
 
-.right-content-div-startingCtl{
+.right-content-div-licensingCtl{
     float:left;
     width:300px;
     margin-top:40px;
     
 }
-.a3-started-successfully-div-startingCtl{
+.a3-started-successfully-div-licensingCtl{
     float:left;
     width:300px;
     height:17px;
@@ -57,20 +57,20 @@
     text-align: center;
     font-size: 12px;
 }
-.go-to-div-startingCtl{
+.go-to-div-licensingCtl{
     float:left;
     margin-top:13px;
     width:300px;
     height:32px;
 }
-.go-to-antd-button-startingCtl{
+.go-to-antd-button-networksCtl{
     float:left;
     width:300px;
     height:32px;
 }
 
 
-.a3-starting-up-div-startingCtl{
+.a3-starting-up-div-licensingCtl{
     float:left;
     width:300px;
     height:17px;
@@ -79,7 +79,7 @@
     text-align: center;
     font-size: 12px;
 }
-.progress-div-startingCtl{
+.progress-div-licensingCtl{
     float:left;
     margin-top:13px;
     width:300px;

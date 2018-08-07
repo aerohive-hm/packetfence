@@ -15,6 +15,7 @@ import AerohiveCloudCtl from './ctlComponents/aerohiveCloudCtl';
 import JoinClusterCtl from './ctlComponents/joinClusterCtl';
 import LicensingCtl from './ctlComponents/licensingCtl';
 import StartingCtl from './ctlComponents/startingCtl';
+import JoiningCtl from './ctlComponents/joiningCtl';
 
 import Logo from "../libs/logo/js/logo";
 
@@ -29,7 +30,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"startingRegistration",
+            show:"joining",
 
         };
     }
@@ -113,6 +114,12 @@ class App extends Component {
             contentHtml=<div>
                 <StartingCtl 
                     title={"Successfully joined cluster!"}
+                    changeStatus={self.changeStatus.bind(self)} 
+                />
+            </div>
+        }else if(show==="joining"){
+            contentHtml=<div>
+                <JoiningCtl 
                     changeStatus={self.changeStatus.bind(self)} 
                 />
             </div>

@@ -8,14 +8,14 @@ const Option = Select.Option;
 const FormItem = Form.Item;
 
 import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail} from "../../libs/util";     
-import '../../css/ctlComponents/startingCtl.css';
+import '../../css/ctlComponents/joiningCtl.css';
 import '../../libs/common.css';
 
 import * as mock from "../../libs/mockData";
 import Guidance from "../../libs/guidance/js/guidance";
 import $ from 'jquery';
-import {i18nfr} from "../../i18n/ctlComponents/nls/fr/startingCtl";
-import {i18n} from "../../i18n/ctlComponents/nls/startingCtl";
+import {i18nfr} from "../../i18n/ctlComponents/nls/fr/joiningCtl";
+import {i18n} from "../../i18n/ctlComponents/nls/joiningCtl";
 
 import startingAndReadyImg from "../../media/startingAndReady.png";
 
@@ -23,7 +23,7 @@ import startingAndReadyImg from "../../media/startingAndReady.png";
 
 const {Component} = React;
 
-class startingCtl extends Component {
+class joiningCtl extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -109,24 +109,24 @@ class startingCtl extends Component {
      
         let contentHtml;
         if(loading===false){
-            contentHtml=<div className="right-content-div-startingCtl">
-                            <div className="a3-started-successfully-div-startingCtl">
+            contentHtml=<div className="right-content-div-licensingCtl">
+                            <div className="a3-started-successfully-div-licensingCtl">
                                 A3 has started successfully
                             </div>
-                            <div className="go-to-div-startingCtl">
+                            <div className="go-to-div-licensingCtl">
                                 <Button 
                                     type="primary" 
-                                    className="go-to-antd-button-startingCtl" 
+                                    className="go-to-antd-button-networksCtl" 
                                 >GO TO ADMINISTRATION INTERFACE</Button>
                             </div>
                             <div className="clear-float-div-common" ></div >
                         </div>
         }else{
-            contentHtml=<div className="right-content-div-startingCtl">
-                            <div className="a3-starting-up-div-startingCtl">
+            contentHtml=<div className="right-content-div-licensingCtl">
+                            <div className="a3-starting-up-div-licensingCtl">
                                 A3 services are now starting up...
                             </div>
-                            <div className="progress-div-startingCtl">
+                            <div className="progress-div-licensingCtl">
                                 <Progress percent={percentage} />
                             </div>
                             <div className="clear-float-div-common" ></div >
@@ -135,14 +135,14 @@ class startingCtl extends Component {
         }
 
         return (
-            <div className="global-div-startingCtl">
-                <div className="left-div-startingCtl">
-                    <div className="img-div-startingCtl">
-                       <img src={startingAndReadyImg} className="img-img-startingCtl" />
+            <div className="global-div-joiningCtl">
+                <div className="left-div-licensingCtl">
+                    <div className="img-div-licensingCtl">
+                       <img src={startingAndReadyImg} className="img-img-licensingCtl" />
                     </div>
                 </div>
-                <div className="right-div-startingCtl">
-                    <div className="right-title-div-startingCtl">
+                <div className="right-div-licensingCtl">
+                    <div className="right-title-div-licensingCtl">
                         {title}
                     </div>
                     {contentHtml}
@@ -161,7 +161,7 @@ class startingCtl extends Component {
 }
 
 
-export default Form.create()(startingCtl);
+export default Form.create()(joiningCtl);
 
 
 
