@@ -142,9 +142,7 @@ class licensingCtl extends Component {
 
     onCancelEnterEntitlementKey= () => {
         let self=this;
-        self.setState({ 
-            enterEntitlementKeyVisible:false,
-        });
+        self.props.form.resetFields();
 
     }
 
@@ -246,6 +244,8 @@ class licensingCtl extends Component {
                     width={513}
                     footer={null}
                     onCancel={self.onCancelEnterEntitlementKey.bind(self)}
+                    closable={false}
+                    maskClosable={false}
                 >
          
                     <div className="modal-div-licensingCtl">
