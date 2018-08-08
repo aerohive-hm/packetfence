@@ -31,8 +31,19 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"licensing,endUserLicenseAgreement",
-
+            show:"networks",
+            // getStart
+            // adminUser
+            // networks
+            // aerohiveCloud
+            // joinCluster
+            // licensing
+            // licensing,enterEntitlementKey
+            // licensing,endUserLicenseAgreement
+            // startingManagement
+            // startingRegistration
+            // joining
+            // clusterNetworking
         };
     }
 
