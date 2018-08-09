@@ -52,11 +52,12 @@ func Entry() {
 	*/
 	for {
 		select {
-		case <-cfg_channel:
+		case <- cfg_channel:
 			updateConnStatus(AMA_STATUS_INIT)
+			fmt.Println("read the channel")
 			//to do, remove the token, reload the config file
 			loopConnect()
-			fmt.Println("read the channel")
+			
 		default:
 			fmt.Println("into the default")
 			time.Sleep(5 * time.Second)
