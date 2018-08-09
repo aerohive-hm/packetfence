@@ -7,10 +7,10 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/log"
-	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
+	//"github.com/inverse-inc/packetfence/go/pfconfigdriver"
 )
 
-type UserInfo struct {
+type userInfo struct {
 	Id   string `json:"id"`
 	User string `json:"user"`
 	Pass string `json:"pass"`
@@ -19,40 +19,30 @@ type UserInfo struct {
 func init() {
 	Register("configurator", HandleConfiguator)
 }
-func GetUserInfo(ctx context.Context) UserInfo {
-	userinfo := UserInfo{}
-	var webservices pfconfigdriver.PfConfWebservices
 
-	webservices.PfconfigNS = "config::Pf"
-	webservices.PfconfigMethod = "hash_element"
-	webservices.PfconfigHashNS = "webservices"
-	pfconfigdriver.FetchDecodeSocket(ctx, &webservices)
+func HandleGetAdminUser(w http.ResponseWriter, ctx context.Context) {
+	var userinfo userInfo
+	var config PfConfWebservices
 
-	userinfo.Id = webservices.PfconfigHashNS
-	userinfo.User = webservices.User
-	userinfo.Pass = webservices.Pass
-	return userinfo
-}
-
-func AddUserInfoToJson(ctx context.Context) string {
-	userinfo := GetUserInfo(ctx)
-
+	config.GetPfConfSub(ctx, &config.Webservices)
+	userinfo.Id = "webservices"
+	userinfo.User = config.Webservices.User
+	userinfo.Pass = config.Webservices.Pass
 	jsonuser, err := json.Marshal(userinfo)
 	if err != nil {
 		log.LoggerWContext(ctx).Info("marshal user error")
 	}
-	return string(jsonuser)
+	fmt.Fprintf(w, string(jsonuser))
 }
 
 func HandleConfiguator(w http.ResponseWriter, r *http.Request, d HandlerData) {
+	ctx := r.Context()
 	//GET
 	if d.Method == "GET" {
 		if d.SubCmd == "admin_user" {
-			ctx := r.Context()
-			jsonuser := AddUserInfoToJson(ctx)
-			fmt.Fprintf(w, string(jsonuser))
+			HandleGetAdminUser(w, ctx)
 		}
-	}
 
+	}
 	//POST
 }
