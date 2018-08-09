@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isPositiveInteger} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isPositiveInteger,isHostname} from "../../libs/util";     
 import '../../css/ctlComponents/networksCtl.css';
 import '../../libs/common.css';
 
@@ -126,6 +126,9 @@ class networksCtl extends Component {
 
         if(!hostname||hostname.toString().trim()===""){
             newWrongMessage.hostnameWrongMessage="Host Name is required.";
+        }else
+        if(isHostname(hostname.toString().trim())===false){
+            newWrongMessage.hostnameWrongMessage="invalid Host Name.";
         }else{
             newWrongMessage.hostnameWrongMessage="";
         }
