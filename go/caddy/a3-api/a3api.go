@@ -12,6 +12,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 	//	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
 	"github.com/julienschmidt/httprouter"
+	"github.com/inverse-inc/packetfence/go/ama/amac"
 )
 
 func init() {
@@ -51,7 +52,8 @@ func setup(c *caddy.Controller) error {
 	})
 
 	log.LoggerWContext(ctx).Info("a3-api setup success.")
-
+    fmt.Println("before frontend.Entry")
+    go amac.Entry()
 	return nil
 }
 
