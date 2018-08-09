@@ -50,25 +50,6 @@ type A3OnboardingInfo struct {
 	Data   A3OnboardingData   `json:"data"`
 }
 
-/*
-func init() {
-	fmt.Println("Start register event handle")
-	Register("event", HandleEvent)
-}
-
-func HandleEvent(w http.ResponseWriter, r *http.Request, d HandlerData) {
-	fmt.Println("Start handle event ...")
-	if d.Method == "GET" {
-		if d.SubCmd == "onboarding" {
-			ctx := r.Context()
-			jsonData := AddOnboardingInfoToJson(ctx)
-			fmt.Fprintf(w, string(jsonData))
-		}
-
-	}
-}
-*/
-
 func (a3Data *A3OnboardingInfo) FetchAndConvertA3InfoToJson(ctx context.Context) ([]byte, error) {
 	onboardingInfo := GetOnboardingInfo(ctx)
 	fmt.Println("onboardingInfo:\n", onboardingInfo)
@@ -83,7 +64,7 @@ func (a3Data *A3OnboardingInfo) FetchAndConvertA3InfoToJson(ctx context.Context)
 
 func GetOnboardingInfo(ctx context.Context) A3OnboardingInfo {
 	onboardInfo := A3OnboardingInfo{}
-
+	//Todo: onboarding info should be got from A3 system, instead of hard code.
 	var generalConf pfconfigdriver.PfConfGeneral
 	generalConf.PfconfigMethod = "hash_element"
 	generalConf.PfconfigNS = "config::Pf"

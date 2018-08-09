@@ -1,3 +1,27 @@
+//Package a3apibackend implements handling multiple REST API, They are:
+/*
+*	/a3/api/v1/configurator/admin_user
+*	/a3/api/v1/configurator/networks
+*	/a3/api/v1/configurator/cluster/networks
+*	/a3/api/v1/configurator/cluster/join
+*	/a3/api/v1/configurator/cluster/status
+*
+*	/a3/api/v1/configuration/interface
+*	/a3/api/v1/configuration/cloud
+*	/a3/api/v1/configuration/license
+*	/a3/api/v1/configuration/cluster
+*
+*	/a3/api/v1/event/onboarding
+*	/a3/api/v1/event/cluster/join
+*	/a3/api/v1/event/cluster/sync
+*	/a3/api/v1/event/cluster/remove
+*
+*	/a3/api/v1/services/a3/status
+*	/a3/api/v1/services/ama/info
+*	/a3/api/v1/service/ama/operation
+*
+*	/a3/api/v1/cluster/ama/info
+ */
 package a3apibackend
 
 import (
