@@ -63,7 +63,7 @@ type A3OnboardingData struct {
         Msgtype         string        `json:"msgType"`
         MacAddress      string        `json:"macAddress"`
         IpMode          string        `json:"ipMode"`
-        IpAddress       string        `json:"ipaddress"`
+        IpAddress       string        `json:"ipAddress"`
         Netmask         string        `json:"netmask"`
         DefaultGateway  string        `json:"defaultGateway"`
         SoftwareVersion string        `json:"softwareVersion"`
@@ -78,7 +78,7 @@ type A3OnboardingHeader struct {
         SystemID   string `json:"systemId"`
         ClusterID  string `json:"clusterId"`
         Hostname   string `json:"hostname"`
-        SequenceID string `json:"sequenceId"`
+        MessageID string `json:"messageId"`
 }
 
 type A3OnboardingInfo struct {
@@ -90,22 +90,22 @@ func GetOnboardingInfo() A3OnboardingInfo {
         onboardInfo := A3OnboardingInfo{}
 
 
-        onboardInfo.Header.Hostname = "fake-for-demo"
-        onboardInfo.Header.SystemID = "47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9B72"
+        onboardInfo.Header.Hostname = "fake-for-demo1"
+        onboardInfo.Header.SystemID = "47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BCC"
         onboardInfo.Header.ClusterID = "1C45299D-DB95-4C7F-A787-219C327971BA"
-        onboardInfo.Header.SequenceID = "a738c4da-e5ae-43e0-957a-25d3363e0100"
+        onboardInfo.Header.MessageID = "a738c4da-e5ae-43e0-957a-25d3363e0100"
 
         onboardInfo.Data.Msgtype = "connect"
-        onboardInfo.Data.MacAddress = "0019770004B0"
+        onboardInfo.Data.MacAddress = "0019770004CC"
         onboardInfo.Data.IpMode = "DHCP"
-        onboardInfo.Data.IpAddress = "10.16.0.1"
+        onboardInfo.Data.IpAddress = "10.16.0.3"
         onboardInfo.Data.Netmask = "255.255.255.0"
         onboardInfo.Data.DefaultGateway = "10.16.0.254"
         onboardInfo.Data.SoftwareVersion = "2.0"
         onboardInfo.Data.SystemUptime = 1532942958060
         onboardInfo.Data.Vip = "10.16.0.11"
         onboardInfo.Data.ClusterHostName = "A3-Cluster-1"
-        onboardInfo.Data.ClusterPrimary = true
+        onboardInfo.Data.ClusterPrimary = false
 
         interfaceOne := A3Interface{"ETH0", "null", "10.16.0.1", "10.16.0.11", "255.255.255.0", "MANAGEMENT", []string{}, "ETH0"}
         interfaceTwo := A3Interface{"ETH0", "10", "10.16.0.2", "10.16.0.12", "255.255.255.0", "REGISTRATION", []string{"PORTAL"}, "ETH0 VLAN 10"}
@@ -141,7 +141,7 @@ func Connect_to_rdc() int {
 		fmt.Println(string(data))
 		reader := bytes.NewReader(data)
 
-		request, err := http.NewRequest("POST", "http://10.155.22.93:8882/rest/v1/report/syn/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9B72", reader)
+		request, err := http.NewRequest("POST", "http://10.155.22.93:8882/rest/v1/report/syn/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BCC", reader)
 		if err != nil {
 			fmt.Println(err.Error())
 			return -1

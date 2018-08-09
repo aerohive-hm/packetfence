@@ -57,7 +57,7 @@ func Entry() {
 					timeout_cout++
 				}
 			}
-			request, err := http.NewRequest("GET", "http://10.155.100.17:8000/rest/v1/poll/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9B72", nil)
+			request, err := http.NewRequest("GET", "http://10.155.22.93:8882/rest/v1/poll/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9B72", nil)
 			if err != nil {
 				panic(err)
 			}
