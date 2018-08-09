@@ -1,10 +1,10 @@
 package amac
 
 import (
-	//"flag"
-	//"fmt"
-	//"github.com/larspensjo/config"
-	//"log"
+//"flag"
+//"fmt"
+//"github.com/larspensjo/config"
+//"log"
 )
 
 //const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
@@ -15,54 +15,51 @@ var (
 	//Cfg        *config.Config
 
 	//create channel to store messages
-	Msg_channel = make(chan []byte, 4096)
+	msg_channel = make(chan []byte, 4096)
 
 	//create map, the key field is string, the value field is string
-	Topic = make(map[string]string)
+	//Topic = make(map[string]string)
 
 	//package variable to store the URL of HM
-	Token_url string
-	Vhmid_url string
-	Username  string
-
-	Vhmid_str string
-	Rdc_url   string
+	token_url string
+	vhmid_url string
+	username  string
 )
 
 func init() {
-/*
-	var err error
+	/*
+		var err error
 
-	//begin: analyse the configuration file
-	flag.Parse()
-	Cfg, err = config.ReadDefault(*ConfigFile)
-	if err != nil {
-		log.Fatalf("Fail to find", *ConfigFile, err)
-		return
-	}
+		//begin: analyse the configuration file
+		flag.Parse()
+		Cfg, err = config.ReadDefault(*ConfigFile)
+		if err != nil {
+			log.Fatalf("Fail to find", *ConfigFile, err)
+			return
+		}
 
-	//Initialized topic from the configuration
-	if Cfg.HasSection("gdc_rdc_info") {
-		section, err := Cfg.SectionOptions("gdc_rdc_info")
-		if err == nil {
-			for _, v := range section {
-				options, err := Cfg.String("gdc_rdc_info", v)
-				if err == nil {
-					Topic[v] = options
+		//Initialized topic from the configuration
+		if Cfg.HasSection("gdc_rdc_info") {
+			section, err := Cfg.SectionOptions("gdc_rdc_info")
+			if err == nil {
+				for _, v := range section {
+					options, err := Cfg.String("gdc_rdc_info", v)
+					if err == nil {
+						Topic[v] = options
+					}
 				}
 			}
 		}
-	}
-	//END: Analyse the configuration file
+		//END: Analyse the configuration file
 
-	Token_url = fmt.Sprintf("%s%s", Topic["gdc_url"], Topic["token_path"])
-	Vhmid_url = fmt.Sprintf("%s%s", Topic["gdc_url"], Topic["vhmid_path"])
-	Username = Topic["username"]
+		Token_url = fmt.Sprintf("%s%s", Topic["gdc_url"], Topic["token_path"])
+		Vhmid_url = fmt.Sprintf("%s%s", Topic["gdc_url"], Topic["vhmid_path"])
+		Username = Topic["username"]
 
-	//Vhmid_str = Topic["vhmid"]
-	//Rdc_url = Topic["rdc_url"]
+		//Vhmid_str = Topic["vhmid"]
+		//Rdc_url = Topic["rdc_url"]
 	*/
-	Token_url = "https://a-cloud.aerohive.com/oauth/cookietoken"
-	Vhmid_url = "https://a-cloud.aerohive.com/services/acct/selectvhm"
-	Username = "juanli@aerohive.com"
+	token_url = "https://a-cloud.aerohive.com/oauth/cookietoken"
+	vhmid_url = "https://a-cloud.aerohive.com/services/acct/selectvhm"
+	username = "juanli@aerohive.com"
 }
