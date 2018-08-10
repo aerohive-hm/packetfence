@@ -251,14 +251,6 @@ func fetchVhmid(s string) int {
 
 		vhmid_str = fmt.Sprintf("%d", vhmres.Data.OwnerId)
 		rdcUrl = vhmres.Data.Location
-		//Cfg.AddOption("gdc_rdc_info", "vhmid", vhmid)
-		//Cfg.AddOption("gdc_rdc_info", "rdc_url", vhmres.Data.Location)
-		//Cfg.WriteFile("config.txt", 0600, "save the rdc url and vhmid")
-		/*
-			Must update the Cfg varibal after AddOption, otherwise multiple write
-			will lost the original fields
-		*/
-		//Cfg, err = std_config.ReadDefault(*ConfigFile)
 
 		resp.Body.Close()
 		return 0
@@ -276,7 +268,6 @@ func connetToGdc() int {
 	if err != 0 {
 		return -1
 	}
-
 	return 0
 }
 

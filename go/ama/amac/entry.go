@@ -161,22 +161,4 @@ func keepaliveToRdc() {
 		//Dispatch the data from keepalive_reponse
 		//go AMA_dispatcher()
 	}
-
 }
-
-/*
-func AMA_dispatcher() {
-	var i int = 0
-	var msg []byte
-
-	fmt.Println("print value in dispatcher() ")
-	for {
-		i++
-		fmt.Println("begin read i=%d ", i)
-		msg = <-start.Msg_channel
-		fmt.Println(string(msg))
-		fmt.Println("end read i=%d ", i)
-
-	}
-}
-*/
