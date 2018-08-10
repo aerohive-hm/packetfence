@@ -53,8 +53,10 @@ func setup(c *caddy.Controller) error {
 	})
 
 	log.LoggerWContext(ctx).Info("a3-api setup success.")
-    fmt.Println("before frontend.Entry")
+	
+    //Create a goroutine for the frontend component
     go amac.Entry()
+    
 	return nil
 }
 
