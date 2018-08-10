@@ -1,4 +1,4 @@
-//Package a3apibackend implements handling multiple REST API, They are:
+//Package apibackend implements handling multiple REST API, They are:
 /*
 *	/a3/api/v1/configurator/admin_user
 *	/a3/api/v1/configurator/networks
@@ -22,7 +22,7 @@
 *
 *	/a3/api/v1/cluster/ama/info
  */
-package a3apibackend
+package apibackend
 
 import (
 	"fmt"
