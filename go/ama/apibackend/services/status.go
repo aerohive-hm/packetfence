@@ -3,4 +3,4 @@
  *    /a3/api/v1/services/a3/status
  */
 
-package a3Services
+package services

@@ -2,7 +2,7 @@
 /*
  *	/a3/api/v1/event/onboarding
  */
-package a3Event
+package event
 
 import (
 	"context"
@@ -50,7 +50,8 @@ type A3OnboardingInfo struct {
 	Data   A3OnboardingData   `json:"data"`
 }
 
-func (a3Data *A3OnboardingInfo) FetchAndConvertA3InfoToJson(ctx context.Context) ([]byte, error) {
+//Fetch and Convert A3 onboarding infomation To Json
+func (a3Data *A3OnboardingInfo) GetMethodHandle(ctx context.Context) ([]byte, error) {
 	onboardingInfo := GetOnboardingInfo(ctx)
 	fmt.Println("onboardingInfo:\n", onboardingInfo)
 
