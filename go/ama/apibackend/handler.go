@@ -1,4 +1,4 @@
-//Package a3apibackend implements handling multiple REST API, They are:
+//Package apibackend implements handling multiple REST API, They are:
 /*
 *	/a3/api/v1/configurator/admin_user
 *	/a3/api/v1/configurator/networks
@@ -22,13 +22,13 @@
 *
 *	/a3/api/v1/cluster/ama/info
  */
-package a3apibackend
+package apibackend
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
+	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -42,40 +42,38 @@ type HandlerData struct {
 	RespData string
 }
 
-// m map[string]Callback
-var m = make(map[string]Callback)
-
-func Register(modename string, callback Callback) {
-	m[modename] = callback
-}
+var mhandle = make(map[string]Callback)
 
 type Callback func(w http.ResponseWriter, r *http.Request, d HandlerData)
 
+func Register(handlersub string, callback Callback) {
+	mhandle[handlersub] = callback
+}
+
 // parse http.request to handlerdata
 func ParseRequestToData(r *http.Request) HandlerData {
-
+	ctx := r.Context()
 	handlerdata := HandlerData{}
 	handlerdata.Method = r.Method
-	//r.URL.Path: /api/v1/cmd/subcmd
-	i := len(strings.Split(r.URL.Path, "/"))
+	i := len(strings.Split(r.URL.Path, "/")) //r.URL.Path: /api/v1/cmd/subcmd
 	if i > 4 {
 		handlerdata.Cmd = strings.Split(r.URL.Path, "/")[3]
 		handlerdata.SubCmd = strings.Split(r.URL.Path, "/")[4]
 	} else {
-		fmt.Println("it can't find cmd or subcmd in request url")
+		log.LoggerWContext(ctx).Error("Error can not find cmd in url")
 	}
 	return handlerdata
 }
 
 func Handle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	ctx := r.Context()
+	d := ParseRequestToData(r)
 
-	handlerdata := ParseRequestToData(r)
-
-	handle, ok := m[handlerdata.Cmd]
+	handle, ok := mhandle[d.Cmd]
 	if ok {
-		handle(w, r, handlerdata)
+		handle(w, r, d)
 	} else {
-		fmt.Println("it can not match handlefuc")
+		log.LoggerWContext(ctx).Error("Error can not find handlesub")
 	}
 	return
 }

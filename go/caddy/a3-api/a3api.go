@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"net/http"
 	//	"net/url"
-	"github.com/inverse-inc/packetfence/go/a3-apibackend"
+	"github.com/inverse-inc/packetfence/go/ama/apibackend"
 	"github.com/inverse-inc/packetfence/go/caddy/caddy"
 	"github.com/inverse-inc/packetfence/go/caddy/caddy/caddyhttp/httpserver"
 	"github.com/inverse-inc/packetfence/go/log"
 	//	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
-	"github.com/julienschmidt/httprouter"
 	"github.com/inverse-inc/packetfence/go/ama/amac"
+	"github.com/julienschmidt/httprouter"
 )
 
 func init() {
@@ -52,8 +52,10 @@ func setup(c *caddy.Controller) error {
 	})
 
 	log.LoggerWContext(ctx).Info("a3-api setup success.")
-    fmt.Println("before frontend.Entry")
+	
+    //Create a goroutine for the frontend component
     go amac.Entry()
+    
 	return nil
 }
 

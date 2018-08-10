@@ -2,20 +2,20 @@
 /*
  *	/a3/api/v1/event/...
  */
-package a3apibackend
+package apibackend
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/inverse-inc/packetfence/go/ama/apibackend/a3Event"
+	"github.com/inverse-inc/packetfence/go/ama/apibackend/event"
 	"github.com/inverse-inc/packetfence/go/log"
 	"net/http"
 )
 
 type A3EventHandler interface {
-	FetchAndConvertA3InfoToJson(ctx context.Context) ([]byte, error)
-	//Todo: Handle POST method
+	GetMethodHandle(ctx context.Context) ([]byte, error)
+	//Todo:PostMethodHandle()
 }
 
 func init() {
@@ -27,6 +27,7 @@ func HandleEvent(w http.ResponseWriter, r *http.Request, d HandlerData) {
 	if d.Method == "GET" {
 		jsonData, err := handleGetMethod(r, d)
 		if err != nil {
+			fmt.Println(err)
 			//log.LoggerWContext(ctx).Error("Error while handling GET method for A3 event:" + err.Error())
 			return
 		}
@@ -44,7 +45,7 @@ func handleGetMethod(r *http.Request, d HandlerData) ([]byte, error) {
 	var eventHandler A3EventHandler
 	switch d.SubCmd {
 	case "onboarding":
-		eventHandler = new(a3Event.A3OnboardingInfo)
+		eventHandler = new(event.A3OnboardingInfo)
 
 	//Todo: For other subcmd handle, add here
 
@@ -53,7 +54,7 @@ func handleGetMethod(r *http.Request, d HandlerData) ([]byte, error) {
 		err := errors.New("Unsupport subcmd for GET method")
 		return nil, err
 	}
-	jsonData, err := eventHandler.FetchAndConvertA3InfoToJson(ctx)
+	jsonData, err := eventHandler.GetMethodHandle(ctx)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Error while handling GET method for subcmd %s:", d.SubCmd)
 		return nil, err
