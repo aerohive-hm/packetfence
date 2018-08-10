@@ -13,17 +13,16 @@ var (
 	//Setting the configuration file
 	//ConfigFile = flag.String("configfile", "config.txt", "General configuration file")
 	//Cfg        *config.Config
-
-	//create channel to store messages
-	msg_channel = make(chan []byte, 4096)
-
 	//create map, the key field is string, the value field is string
 	//Topic = make(map[string]string)
 
 	//package variable to store the URL of HM
-	token_url string
-	vhmid_url string
-	username  string
+	gdcUrl   string
+	rdcUrl   string
+	tokenUrl string
+	vhmidUrl string
+	userName string
+	password string
 )
 
 func init() {
@@ -59,7 +58,9 @@ func init() {
 		//Vhmid_str = Topic["vhmid"]
 		//Rdc_url = Topic["rdc_url"]
 	*/
-	token_url = "https://a-cloud.aerohive.com/oauth/cookietoken"
-	vhmid_url = "https://a-cloud.aerohive.com/services/acct/selectvhm"
-	username = "juanli@aerohive.com"
+	gdcUrl = "https://a-cloud.aerohive.com"
+	tokenUrl = "https://a-cloud.aerohive.com/oauth/cookietoken"
+	vhmidUrl = "https://a-cloud.aerohive.com/services/acct/selectvhm"
+	userName = "juanli@aerohive.com"
+	password = "Aerohive123"
 }

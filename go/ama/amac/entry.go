@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"sync"
 	"time"
+	"unsafe"
 )
 
 const (
@@ -14,14 +15,31 @@ const (
 	AMA_STATUS_CONNECTED = 1
 	AMA_STATUS_UNKNOWN   = 100
 )
+const (
+	gdcConfigChange   = 1
+	ifConfigChange    = 2
+	licenseInfoChange = 3
+)
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
 var (
-	cfg_channel        = make(chan bool, 1)
 	ama_connect_status = AMA_STATUS_INIT
 	m                  = new(sync.RWMutex)
-	timeout_cout       uint64
+	timeoutCount       uint64
+	//create channel to store messages from UI
+	msgChannel = make(chan []byte, 4096)
 )
+
+type msgFromUi struct {
+	msgType int
+	data    string
+}
+
+type SliceMock struct {
+	addr uintptr
+	len  int
+	cap  int
+}
 
 func updateConnStatus(status int) {
 	m.Lock()
@@ -37,53 +55,78 @@ func readConnStatus() int {
 }
 
 func Entry() {
+	var msg []byte
 	/*
-		try to connet to GDC and RDC, the func will not return
+		try to connet to GDC and RDC, the loopConnect() will not return
 		unless connected successfully
 	*/
-	loopConnect()
+	if (len(vhmidUrl) != 0) && (len(userName) != 0) && (len(password) != 0) {
+		loopConnect()
+	}
 
-	//start a goroutine for sending the keepalive
+	//start a goroutine, sending the keepalive only when the status is connected
 	go keepaliveToRdc()
 
 	/*
 		Read the channel to monitor the configuration change from UI
-		If config change, change the connect status to init and remove the token
+		If config change, change the connect status to init and reconnect
+		to GDC
 	*/
 	for {
 		select {
-		case <- cfg_channel:
-			updateConnStatus(AMA_STATUS_INIT)
-			fmt.Println("read the channel")
-			//to do, remove the token, reload the config file
-			loopConnect()
-			
+		case msg = <-msgChannel:
+			handleMsgFromUi(msg)
+
 		default:
-			fmt.Println("into the default")
 			time.Sleep(5 * time.Second)
 		}
 	}
 
 }
 
+/*
+	Handling the message from web UI, such as items about GDC change,
+	network info change, or license info changes
+*/
+func handleMsgFromUi(message []byte) {
+	var msg *msgFromUi = *(**msgFromUi)(unsafe.Pointer(&message))
+	fmt.Println("msg.msgType", msg.msgType)
+	fmt.Println("msg.data", msg.data)
+	switch msg.msgType {
+	case gdcConfigChange:
+		updateConnStatus(AMA_STATUS_INIT)
+		fmt.Println("read the channel")
+		//to do, get the latest config info
+		loopConnect()
+		break
+	case ifConfigChange:
+		break
+	case licenseInfoChange:
+		break
+	default:
+		fmt.Println("unexpected message")
+	}
+}
+
 func keepaliveToRdc() {
-	// create a timer for heartbeat
+	// create a ticker for heartbeat
 	ticker := time.NewTicker(10 * time.Second)
-	timeout_cout := 0
+	timeoutCount = 0
+
 	for _ = range ticker.C {
 		/*
-			check the timeout_cout of keepalive, if hearbeat fails,
+			check the timeoutCount of keepalive, if hearbeat fails,
 			need to re-onboarding
 		*/
-		if timeout_cout >= KEEPALIVE_TIMEOUT_COUNT_MAX {
+		if timeoutCount >= KEEPALIVE_TIMEOUT_COUNT_MAX {
 			updateConnStatus(AMA_STATUS_INIT)
 			result := connectToRdc()
 			if result == 0 {
 				updateConnStatus(AMA_STATUS_CONNECTED)
-				timeout_cout = 0
+				timeoutCount = 0
 			} else {
-				timeout_cout++
-				fmt.Printf("keepaliveToRdc, timeout_cout:%d\n", timeout_cout)
+				timeoutCount++
+				fmt.Printf("keepaliveToRdc, timeout_cout:%d\n", timeoutCount)
 				//Onboarding fail, not send keepalive
 				continue
 			}
@@ -92,8 +135,9 @@ func keepaliveToRdc() {
 		if readConnStatus() != AMA_STATUS_CONNECTED {
 			continue
 		}
+		//msgChannel <- data
 		fmt.Println("sending the keepalive")
-		request, err := http.NewRequest("GET", "http://10.155.22.93:8883/rest/v1/poll/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", nil)
+		request, err := http.NewRequest("GET", "http://10.155.100.17:8000/rest/v1/poll/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", nil)
 		if err != nil {
 			panic(err)
 		}
@@ -104,13 +148,14 @@ func keepaliveToRdc() {
 
 		resp, result := client.Do(request)
 		if result != nil {
-			timeout_cout++
+			timeoutCount++
 			continue
 		}
-		timeout_cout = 0
+		timeoutCount = 0
 		body, _ := ioutil.ReadAll(resp.Body)
 		fmt.Println(string(body))
 		fmt.Println(resp.Status)
+		//To do, handle the response, new token may be included in this message
 		resp.Body.Close()
 
 		//Dispatch the data from keepalive_reponse

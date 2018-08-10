@@ -13,10 +13,6 @@ import (
 	"time"
 )
 
-//import (
-//std_config "github.com/larspensjo/config"
-//)
-
 var (
 	//Init the transport structure
 	tr = &http.Transport{
@@ -31,7 +27,6 @@ var (
 	//Store the token to avoid multiple IO
 	token_str string
 	vhmid_str string
-	rdc_url   string
 )
 
 type response struct {
@@ -120,7 +115,7 @@ func connectToRdc() int {
 		fmt.Println(string(data))
 		reader := bytes.NewReader(data)
 
-		request, err := http.NewRequest("POST", "http://10.155.22.93:8882/rest/v1/report/syn/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
+		request, err := http.NewRequest("POST", "http://10.155.100.17:8000/rest/v1/report/syn/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
 		if err != nil {
 			fmt.Println(err.Error())
 			return -1
@@ -181,15 +176,15 @@ func updateToken(s string) {
 //Fetch the token from GDC
 func fetchToken() string {
 	//check url if NULL
-	if len(token_url) == 0 {
+	if len(tokenUrl) == 0 {
 		return ""
 	}
-	body := fmt.Sprintf("grant_type=password&client_id=browser&client_secret=secret&username=%s&password=Aerohive123", username)
+	body := fmt.Sprintf("grant_type=password&client_id=browser&client_secret=secret&username=%s&password=%s", userName, password)
 
 	fmt.Println("token is null,begin to fetch the token")
 
 	for {
-		request, err := http.NewRequest("POST", token_url, strings.NewReader(body))
+		request, err := http.NewRequest("POST", tokenUrl, strings.NewReader(body))
 		if err != nil {
 			fmt.Println(err.Error())
 			return ""
@@ -199,6 +194,7 @@ func fetchToken() string {
 		resp, err := client.Do(request)
 		if err != nil {
 			fmt.Println(err.Error())
+			//to do, using log instead of PrintIn
 			fmt.Println("GDC is down\n")
 			return ""
 		}
@@ -227,12 +223,12 @@ func fetchVhmid(s string) int {
 		The vhmid bind with username/password, Vhmid_str variable should be
 		updated when username changes
 	*/
-	if len(vhmid_url) == 0 {
+	if len(vhmidUrl) == 0 {
 		return -1
 	}
-	fmt.Printf("begin to fetch the vhmid, token:%s, vhmid_url:%s\n", s, vhmid_url)
+	fmt.Printf("begin to fetch the vhmid, token:%s, vhmid_url:%s\n", s, vhmidUrl)
 	for {
-		request, err := http.NewRequest("GET", vhmid_url, nil)
+		request, err := http.NewRequest("GET", vhmidUrl, nil)
 		if err != nil {
 			fmt.Println(err.Error())
 			return -1
@@ -254,7 +250,7 @@ func fetchVhmid(s string) int {
 		json.Unmarshal([]byte(body), &vhmres)
 
 		vhmid_str = fmt.Sprintf("%d", vhmres.Data.OwnerId)
-		rdc_url = vhmres.Data.Location
+		rdcUrl = vhmres.Data.Location
 		//Cfg.AddOption("gdc_rdc_info", "vhmid", vhmid)
 		//Cfg.AddOption("gdc_rdc_info", "rdc_url", vhmres.Data.Location)
 		//Cfg.WriteFile("config.txt", 0600, "save the rdc url and vhmid")
@@ -271,7 +267,6 @@ func fetchVhmid(s string) int {
 
 //Connect to GDC, get the token and vhmid
 func connetToGdc() int {
-
 	token := fetchToken()
 	if token == "" {
 		return -1
@@ -305,7 +300,7 @@ func loopConnect() {
 	}
 
 	//Create a timer to connect the GDC and RDC
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(10 * time.Second)
 	for _ = range ticker.C {
 		result := connectToGdcRdc()
 		if result == 0 {
