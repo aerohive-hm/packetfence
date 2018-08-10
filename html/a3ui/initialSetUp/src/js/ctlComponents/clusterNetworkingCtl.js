@@ -419,19 +419,16 @@ class clusterNetworkingCtl extends Component {
             dataIndex: 'type',
             key: 'type',
             render: (text, record, index) => {
+                let typeObject={
+                    MANAGEMENT:"Management",
+                    REGISTRATION:"Registration",
+                    ISOLATION:"Isolation",
+                    NONE:"None",
+                    OTHER:"Other",
+                }
                 return (
                     <div>
-                        <Select 
-                            value={text} 
-                            style={{ width: 110 }} 
-                            disabled
-                        >
-                            <Option value="MANAGEMENT">Management</Option>
-                            <Option value="REGISTRATION">Registration</Option>
-                            <Option value="ISOLATION">Isolation</Option>
-                            <Option value="NONE">None</Option>
-                            <Option value="OTHER">Other</Option>
-                        </Select>
+                        {typeObject[text]}
                     </div>
                 );
             } 
@@ -442,17 +439,21 @@ class clusterNetworkingCtl extends Component {
             dataIndex: 'services',
             key: 'services',
             render: (text, record, index) => {
+                let servicesObject={
+                    PORTAL:"Portal",
+                    RADIUS:"RADIUS",
+                }
+                let servicesHtml="";
+                for(let i=0;i<text.length;i++){
+                    if(i===0){
+                        servicesHtml=servicesHtml+servicesObject[text[i]];
+                    }else{
+                        servicesHtml=servicesHtml+", "+servicesObject[text[i]];
+                    }
+                }
                 return (
                     <div>
-                        <Select 
-                            value={text} 
-                            style={{ width: 110 }} 
-                            mode="multiple"
-                            disabled
-                        >
-                            <Option value="PORTAL">Portal</Option>
-                            <Option value="RADIUS">Radius</Option>
-                        </Select>
+                        {servicesHtml}
                     </div>
                 );
             } 

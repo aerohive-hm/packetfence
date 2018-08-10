@@ -203,7 +203,7 @@ class adminUserCtl extends Component {
 
     onChangePass=(e) =>{
         let self=this;
-        console.log(zxcvbn(e.target.value).score);
+        console.log(zxcvbn(e.target.value));
         self.checkPass(e.target.value);
         self.setState({
             passScore:zxcvbn(e.target.value).score,
