@@ -2,18 +2,17 @@ package a3api
 
 import (
 	"context"
-	"encoding/json"
 	//	"errors"
 	"fmt"
 	"net/http"
 	//	"net/url"
-
+	"github.com/inverse-inc/packetfence/go/ama/apibackend"
 	"github.com/inverse-inc/packetfence/go/caddy/caddy"
 	"github.com/inverse-inc/packetfence/go/caddy/caddy/caddyhttp/httpserver"
 	"github.com/inverse-inc/packetfence/go/log"
 	//	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
-	"github.com/julienschmidt/httprouter"
 	"github.com/inverse-inc/packetfence/go/ama/amac"
+	"github.com/julienschmidt/httprouter"
 )
 
 func init() {
@@ -64,38 +63,12 @@ func buildA3apiHandler(ctx context.Context) (A3apiHandler, error) {
 	A3api := A3apiHandler{}
 
 	router := httprouter.New()
-	router.POST("/api/v1/event", A3api.handlePostEvent)
-	router.GET("/api/v1/event", A3api.handleGetEvent)
+	router.POST("/api/v1/*filepath", a3apibackend.Handle)
+	router.GET("/api/v1/*filepath", a3apibackend.Handle)
 
 	A3api.router = router
 
 	return A3api, nil
-}
-
-func (h A3apiHandler) handlePostEvent(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	ctx := r.Context()
-
-	var test struct {
-		code string
-		msg  string
-	}
-
-	err := json.NewDecoder(r.Body).Decode(&test)
-
-	if err != nil {
-		msg := fmt.Sprintf("Error while decoding payload: %s", err)
-		log.LoggerWContext(ctx).Error(msg)
-		http.Error(w, fmt.Sprint(err), http.StatusBadRequest)
-		return
-	}
-
-	log.LoggerWContext(ctx).Info("get POST event success.")
-}
-
-func (h A3apiHandler) handleGetEvent(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	ctx := r.Context()
-
-	log.LoggerWContext(ctx).Info("get GET event success")
 }
 
 func (h A3apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
