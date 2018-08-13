@@ -32,8 +32,8 @@ Readonly::Scalar my $A3_BASE_DIR                  => '/usr/local/pf';
 Readonly::Scalar my $A3_DB_DIR                    => "$A3_BASE_DIR/db";
 Readonly::Scalar my $A3_BIN_DIR                   => "$A3_BASE_DIR/bin";
 Readonly::Scalar my $A3_CONF_DIR                  => "$A3_BASE_DIR/conf";
-Readonly::Scalar my $PF_MON_CONF                  => '$A3_CONF_DIR/pfmon.conf';
-Readonly::Scalar my $PF_CLUSTER_CONF              => '$A3_CONF_DIR/cluster.conf';
+Readonly::Scalar my $PF_MON_CONF                  => "$A3_CONF_DIR/pfmon.conf";
+Readonly::Scalar my $PF_CLUSTER_CONF              => "$A3_CONF_DIR/cluster.conf";
 Readonly::Scalar my $A3_DBINFO_FILE               => "$A3_CONF_DIR/dbinfo.A3";
 Readonly::Scalar my $A3_LOG_DIR                   => "$A3_BASE_DIR/logs";
 Readonly::Scalar my $A3_CLUSTER_UPDATE_LOG_FILE   => "$A3_LOG_DIR/a3_cluster_update.log";
@@ -271,7 +271,7 @@ sub post_update {
                        "$CAT_BIN $A3_CONF_DIR/pf-release > $A3_CONF_DIR/currently-at");
 
   foreach my $cmd (@post_cmd_list) {
-    if (call_system_cmd("$cmd >> $A3_CLUSTER_UPDATE_LOG_FILE 2>&1") != 0) {
+    if (call_system("$cmd >> $A3_CLUSTER_UPDATE_LOG_FILE 2>&1") != 0) {
       A3_Die("Post-update processing failed, please investigate!");
     }
   }
@@ -315,11 +315,12 @@ The last node  in cluster node file is the one to be update first
 
 sub get_first_node_update {
   my $node_ip;
-  open my $fh, "<", $PF_CLUSTER_CONF or A3_Die("Unable to find cluster file ".$!);;
+  open my $fh, "<", $PF_CLUSTER_CONF or A3_Die("Unable to find cluster file $PF_CLUSTER_CONF".$!);;
   while (<$fh>) {
     chomp;
-    next if /^(management_ip)=(.*)/;
-    $node_ip = $2; 
+    if ($_ =~ /^(management_ip)=(.*)/) {
+      $node_ip = $2; 
+    }
   }
   close $fh;
   _commit_cluster_update_log("The first node to be update is $node_ip\n");
@@ -338,13 +339,15 @@ sub get_remains_nodes_update {
   open my $fh, "<", $PF_CLUSTER_CONF or A3_Die("Unable to find cluster file ".$!);;
   while (<$fh>) {
     chomp;
-    next if /^(management_ip)=(.*)/;
-    $node_ip = $2; 
-    push @nodes_ip, $node_ip;  
+    if ($_ =~ /^(management_ip)=(.*)/) {
+      $node_ip = $2; 
+      push @nodes_ip, $node_ip;  
+    }
   }
   close $fh;
-  # pop the last one as it will be the first node to be updated
+  # pop the last and first one(it is management IP) as it will be the first node to be updated
   pop @nodes_ip;
+  shift @nodes_ip;
   _commit_cluster_update_log("The remaining nodes to be update are @nodes_ip\n");
   return @nodes_ip;
 }
@@ -354,13 +357,15 @@ sub get_first_node_hostname {
   my $ret = `$NODE_BIN|awk '{print \$2}'`;
   my @hosts = (split /\n/, $ret);
   my $first_host = pop @hosts;
+  _commit_cluster_update_log("The first node to update hostname is $first_host\n");
   return $first_host; 
 }
 
-sub get_remains_node_hostname {
+sub get_remains_nodes_hostname {
   my $ret = `$NODE_BIN|awk '{print \$2}'`;
   my @hosts = (split /\n/, $ret);
   pop @hosts;
+  _commit_cluster_update_log("The remaining nodes to update hostname are @hosts\n");
   return @hosts; 
 }
 
