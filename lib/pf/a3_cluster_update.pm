@@ -30,17 +30,32 @@ Readonly::Scalar my $BIN_DIR                      => '/usr/bin';
 Readonly::Scalar my $YUM_BIN                      => "$BIN_DIR/yum";
 Readonly::Scalar my $A3_BASE_DIR                  => '/usr/local/pf';
 Readonly::Scalar my $A3_DB_DIR                    => "$A3_BASE_DIR/db";
+Readonly::Scalar my $A3_BIN_DIR                   => "$A3_BASE_DIR/bin";
 Readonly::Scalar my $A3_CONF_DIR                  => "$A3_BASE_DIR/conf";
 Readonly::Scalar my $PF_MON_CONF                  => '$A3_CONF_DIR/pfmon.conf';
 Readonly::Scalar my $PF_CLUSTER_CONF              => '$A3_CONF_DIR/cluster.conf';
+Readonly::Scalar my $A3_DBINFO_FILE               => "$A3_CONF_DIR/dbinfo.A3";
 Readonly::Scalar my $A3_LOG_DIR                   => "$A3_BASE_DIR/logs";
 Readonly::Scalar my $A3_CLUSTER_UPDATE_LOG_FILE   => "$A3_LOG_DIR/a3_cluster_update.log";
 Readonly::Scalar my $NODE_BIN 			  => "$A3_BASE_DIR/bin/cluster/node";
 Readonly::Scalar my $A3_UPDATE_PATH_FILE          => "$A3_DB_DIR/a3-update-path";
 Readonly::Scalar my $A3_BK_VER_FILE               => "/tmp/a3_bk_ver_file";
+Readonly::Scalar my $PFCMD_BIN                    => "$A3_BIN_DIR/pfcmd";
+Readonly::Scalar my $SYSTEMCTL_BIN                => "$BIN_DIR/systemctl";
+Readonly::Scalar my $MYSQL_BIN                    => "$BIN_DIR/mysql";
+Readonly::Scalar my $MYSQLDUMP_BIN                => "$BIN_DIR/mysqldump";
+Readonly::Scalar my $AWK_BIN              	  => "$BIN_DIR/awk";
+Readonly::Scalar my $SED_BIN              	  => "$BIN_DIR/sed";
+Readonly::Scalar my $TEE_BIN              	  => "$BIN_DIR/tee";
+Readonly::Scalar my $CAT_BIN                      => "$BIN_DIR/cat";
+Readonly::Scalar my $CP_BIN                       => "$BIN_DIR/cp";
+Readonly::Scalar my $CURL_BIN                     => "$BIN_DIR/curl";
+Readonly::Scalar my $GREP_BIN                     => "$BIN_DIR/grep";
+Readonly::Scalar my $HEAD_BIN                     => "$BIN_DIR/head";
 
 open(UPDATE_CLUSTER_LOG,   '>>', $A3_CLUSTER_UPDATE_LOG_FILE)   || die "Unable to open update log file";
 my $a3_pkg = 'A3';
+my $a3_db = 'A3';
 
 =head2 disable_cluster_check
 
@@ -128,12 +143,12 @@ sub update_system_app {
   #backup previous A3 version
   open my $fh, ">", "$A3_BK_VER_FILE";
   my $bk_ver = pf::version::version_get_current();
-  print $fh "bk_version=$pre_ver";
+  print $fh "bk_version=$bk_ver";
   close $fh;
   open CMD, '-|',  "$YUM_BIN list $a3_pkg*    \\
                   | $SED_BIN '1,/Available/d' \\
                   | $AWK_BIN '{print \$1}'    \\
-                  | $TEE_BIN -a $A3_UPDATE_LOG_FILE" or die $@;
+                  | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE" or die $@;
   while (<CMD>) {
     chomp($_);
     push @all_pkgs, $_;
@@ -144,7 +159,7 @@ sub update_system_app {
   $cmd .= " -y";
   _commit_cluster_update_log("Update pkg cmd is $cmd");
 
-  if (call_system("$cmd >> $A3_CLUSTER_UPDATE_LOG_FILE 2>&1") != 0) {
+  if (call_system_cmd("$cmd >> $A3_CLUSTER_UPDATE_LOG_FILE 2>&1") != 0) {
     A3_Warn("Unable to update A3 packages, attempting to rollback changes");
   }
   
@@ -166,8 +181,22 @@ sub get_to_version {
   return $to_version;
 }
 
+sub _check_db_schema_file {
+  my @update_path_list = @_;
+  my @db_schema_files;
+  for (0..$#update_path_list-1) {
+    push @db_schema_files, "a3-upgrade-".$update_path_list[$_]."-".$update_path_list[$_+1].".sql";
+  }
+  _commit_cluster_update_log('The database schema files that need to be applied are ' . join(',',@db_schema_files));
+  foreach (@db_schema_files) {
+    if (! -e $A3_DB_DIR."/".$_) {
+      A3_Die("The database schema migration script for $_ does not exist, fatal!!");
+    }
+  }
+  return @db_schema_files;
+}
 
-sub generate_update_patch_list {
+sub _generate_update_patch_list {
   my $to_version = get_to_version();
   my $current_version;
   my @update_path_list;
@@ -177,7 +206,7 @@ sub generate_update_patch_list {
     <$fh>;
   };
   my $prev_version = (split /=/, $content)[1];
-  _commit_cluster_update_log("A3 back version is $pre_version and A3 target update version is $to_version");
+  _commit_cluster_update_log("A3 back version is $prev_version and A3 target update version is $to_version");
   
   open my $fh, '<', "$A3_UPDATE_PATH_FILE" or die "Unable to locate update path file, $!";
   my $count = 0;
@@ -199,13 +228,59 @@ sub generate_update_patch_list {
       push @update_path_list, $_;
     }
   }
-  print 'The update path list is ' . join(',',@update_path_list);
+  #print 'The update path list is ' . join(',',@update_path_list);
   _commit_cluster_update_log('The update path is ' . join(',',@update_path_list));
+  return @update_path_list;
+}
+
+
+sub _get_db_password {
+  my $password;
+
+  open DBINFO, "<", $A3_DBINFO_FILE || die "Unable to find the database information file";
+
+  while (<DBINFO>) {
+    if ($_ =~ /^dbroot_pass=(.*)$/) {
+      $password = $1;
+      last;
+    }
+  }
+
+  close DBINFO;
+
+  return $password;
+}
+
+sub apply_db_update_schema {
+  my @update_path_list = _generate_update_patch_list();
+  my @db_schema_files = _check_db_schema_file(@update_path_list);
+  my $passwd = _get_db_password();
+  foreach my $db_file (@db_schema_files) {
+    my $ret = `$MYSQL_BIN -u root -p$passwd $a3_db < $A3_DB_DIR/$db_file 2>&1`;
+    if ($ret =~ /ERROR/i) {
+      A3_Warn("Unable to apply database schema update $db_file: failed with error message \"$ret\"!");
+    }
+  }
+  _commit_cluster_update_log("Finished applying database schema updates!");
+}
+
+sub post_update {
+  my @post_cmd_list = ("$PFCMD_BIN fixpermissions",
+                       "$PFCMD_BIN pfconfig clear_backend",
+                       "$SYSTEMCTL_BIN restart packetfence-config",
+                       "$CAT_BIN $A3_CONF_DIR/pf-release > $A3_CONF_DIR/currently-at");
+
+  foreach my $cmd (@post_cmd_list) {
+    if (call_system("$cmd >> $A3_CLUSTER_UPDATE_LOG_FILE 2>&1") != 0) {
+      A3_Die("Post-update processing failed, please investigate!");
+    }
+  }
+
 }
 
 sub remote_api_call_get {
   my ($IP, $URI, $data) = @_;
-  my $url = "http://$IP/".$URL;
+  my $url = "http://$IP/".$URI;
   my $client = REST::Client->new();
   $client->addHeader('Content-Type', 'application/json');
   $client->addHeader('charset', 'UTF-8');
@@ -219,7 +294,7 @@ sub remote_api_call_get {
 
 sub remote_api_call_post {
   my ($IP, $URI, $data) = @_;
-  my $url = "http://$IP/".$URL;
+  my $url = "http://$IP/".$URI;
   my $client = REST::Client->new();
   $client->addHeader('Content-Type', 'application/json');
   $client->addHeader('charset', 'UTF-8');
@@ -259,7 +334,7 @@ The remaining nodes in cluster need to be updated
 =cut
 
 sub get_remains_nodes_update {
-  my @nodes_ip, $node_ip;
+  my (@nodes_ip, $node_ip);
   open my $fh, "<", $PF_CLUSTER_CONF or A3_Die("Unable to find cluster file ".$!);;
   while (<$fh>) {
     chomp;
@@ -289,6 +364,10 @@ sub get_remains_node_hostname {
   return @hosts; 
 }
 
+sub test {
+
+  print "[ok]";
+}
 
 
 
