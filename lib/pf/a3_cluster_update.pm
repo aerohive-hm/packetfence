@@ -271,7 +271,7 @@ sub post_update {
                        "$CAT_BIN $A3_CONF_DIR/pf-release > $A3_CONF_DIR/currently-at");
 
   foreach my $cmd (@post_cmd_list) {
-    if (call_system("$cmd >> $A3_CLUSTER_UPDATE_LOG_FILE 2>&1") != 0) {
+    if (call_system_cmd("$cmd >> $A3_CLUSTER_UPDATE_LOG_FILE 2>&1") != 0) {
       A3_Die("Post-update processing failed, please investigate!");
     }
   }
