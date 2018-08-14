@@ -1,26 +1,19 @@
 package apibackend
 
 import (
-	"context"
-	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/configurator"
-	"github.com/inverse-inc/packetfence/go/log"
 )
 
-type A3ConfiguatorHandler interface {
-	//Todo: Handle GET method
-	HandleGetAdminUserMethod(ctx context.Context) ([]byte, error)
-	//Todo: Handle POST method
-
-}
-
 func init() {
-	Register("configurator", HandleConfiguator)
+	sections = map[string]interface{}{
+		"admin_user": configurator.AdminUserNew,
+	}
+	Register("configurator", sections)
 }
 
+/*
 func HandleConfiguator(w http.ResponseWriter, r *http.Request, d HandlerData) {
 	if d.Method == "GET" {
 		jsonData, err := handleConfiguatorGetMethod(r, d)
@@ -58,3 +51,4 @@ func handleConfiguatorGetMethod(r *http.Request, d HandlerData) ([]byte, error) 
 	}
 	return jsonData, nil
 }
+*/
