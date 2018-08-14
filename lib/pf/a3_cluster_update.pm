@@ -56,6 +56,7 @@ Readonly::Scalar my $HEAD_BIN                     => "$BIN_DIR/head";
 open(UPDATE_CLUSTER_LOG,   '>>', $A3_CLUSTER_UPDATE_LOG_FILE)   || die "Unable to open update log file";
 my $a3_pkg = 'A3';
 my $a3_db = 'A3';
+my $node_port = 9432;
 
 =head2 disable_cluster_check
 
@@ -67,7 +68,7 @@ sub disable_cluster_check {
   open PFMON, ">", $PF_MON_CONF or die "Unable to open pf monitor file!";
 
   print PFMON "[cluster_check]\n";
-  print PFMON "status=disabled";
+  print PFMON "status=disabled\n";
 
   close PFMON;
 }
@@ -139,13 +140,16 @@ sub call_system_cmd_with_output {
 
 sub update_system_app {
   my @all_pkgs;
+  call_system_cmd("$YUM_BIN clean all >/dev/null; $YUM_BIN makecache fast >/dev/null");
   my $cmd = "$YUM_BIN update ";
   #backup previous A3 version
   open my $fh, ">", "$A3_BK_VER_FILE";
   my $bk_ver = pf::version::version_get_current();
-  print $fh "bk_version=$bk_ver";
+  print $fh "bk_version=$bk_ver"."|";
+  my $to_ver = get_to_version();
+  print $fh "to_version=$to_ver\n";
   close $fh;
-  open CMD, '-|',  "$YUM_BIN list $a3_pkg*    \\
+  open CMD, '-|',  "$YUM_BIN list \'$a3_pkg*\'    \\
                   | $SED_BIN '1,/Available/d' \\
                   | $AWK_BIN '{print \$1}'    \\
                   | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE" or die $@;
@@ -197,15 +201,15 @@ sub _check_db_schema_file {
 }
 
 sub _generate_update_patch_list {
-  my $to_version = get_to_version();
-  my $current_version;
   my @update_path_list;
   my $content = do {
-    open my $fh, '<', "$A3_BK_VER_FILE"  or die '...';
+    open my $fh, '<', "$A3_BK_VER_FILE"  or die 'Error in open backup version file';
     local $/;
     <$fh>;
   };
-  my $prev_version = (split /=/, $content)[1];
+  my $prev_version = (split /=/, (split /\|/, $content)[0])[1];
+  my $to_version = (split /=/, (split /\|/, $content)[1])[1];
+  chomp $to_version;
   _commit_cluster_update_log("A3 back version is $prev_version and A3 target update version is $to_version");
   
   open my $fh, '<', "$A3_UPDATE_PATH_FILE" or die "Unable to locate update path file, $!";
@@ -271,7 +275,7 @@ sub post_update {
                        "$CAT_BIN $A3_CONF_DIR/pf-release > $A3_CONF_DIR/currently-at");
 
   foreach my $cmd (@post_cmd_list) {
-    if (call_system("$cmd >> $A3_CLUSTER_UPDATE_LOG_FILE 2>&1") != 0) {
+    if (call_system_cmd("$cmd >> $A3_CLUSTER_UPDATE_LOG_FILE 2>&1") != 0) {
       A3_Die("Post-update processing failed, please investigate!");
     }
   }
@@ -280,7 +284,7 @@ sub post_update {
 
 sub remote_api_call_get {
   my ($IP, $URI, $data) = @_;
-  my $url = "http://$IP/".$URI;
+  my $url = "http://$IP:$node_port/".$URI;
   my $client = REST::Client->new();
   $client->addHeader('Content-Type', 'application/json');
   $client->addHeader('charset', 'UTF-8');
@@ -294,7 +298,7 @@ sub remote_api_call_get {
 
 sub remote_api_call_post {
   my ($IP, $URI, $data) = @_;
-  my $url = "http://$IP/".$URI;
+  my $url = "http://$IP:$node_port/".$URI;
   my $client = REST::Client->new();
   $client->addHeader('Content-Type', 'application/json');
   $client->addHeader('charset', 'UTF-8');
@@ -313,9 +317,9 @@ The last node  in cluster node file is the one to be update first
 
 =cut
 
-sub get_first_node_update {
+sub get_first_node_ip_update {
   my $node_ip;
-  open my $fh, "<", $PF_CLUSTER_CONF or A3_Die("Unable to find cluster file $PF_CLUSTER_CONF".$!);;
+  open my $fh, "<", $PF_CLUSTER_CONF or A3_Die("Unable to find cluster file $PF_CLUSTER_CONF".$!);
   while (<$fh>) {
     chomp;
     if ($_ =~ /^(management_ip)=(.*)/) {
@@ -334,9 +338,9 @@ The remaining nodes in cluster need to be updated
 
 =cut
 
-sub get_remains_nodes_update {
+sub get_remains_nodes_ip_update {
   my (@nodes_ip, $node_ip);
-  open my $fh, "<", $PF_CLUSTER_CONF or A3_Die("Unable to find cluster file ".$!);;
+  open my $fh, "<", $PF_CLUSTER_CONF or A3_Die("Unable to find cluster file ".$!);
   while (<$fh>) {
     chomp;
     if ($_ =~ /^(management_ip)=(.*)/) {
@@ -352,6 +356,28 @@ sub get_remains_nodes_update {
   return @nodes_ip;
 }
 
+=head2 get_all_nodes_ip_update
+
+All nodes in cluster need to be updated
+
+=cut
+
+sub get_all_nodes_ip_update {
+  my (@nodes_ip, $node_ip);
+  open my $fh, "<", $PF_CLUSTER_CONF or A3_Die("Unable to find cluster file ".$!);
+  while (<$fh>) {
+    chomp;
+    if ($_ =~ /^(management_ip)=(.*)/) {
+      $node_ip = $2; 
+      push @nodes_ip, $node_ip;  
+    }
+  }
+  close $fh;
+  # shift the lfirst one(it is management IP) as it will be the first node to be updated
+  shift @nodes_ip;
+  _commit_cluster_update_log("The remaining nodes to be update are @nodes_ip\n");
+  return @nodes_ip;
+}
 
 sub get_first_node_hostname {
   my $ret = `$NODE_BIN|awk '{print \$2}'`;
