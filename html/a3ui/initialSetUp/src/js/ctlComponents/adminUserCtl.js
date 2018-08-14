@@ -34,7 +34,7 @@ class adminUserCtl extends Component {
                 passConfirmWrongMessage:"",
                 
             },
-            passScore:-1
+            passScore:{},
         };
 
 
@@ -206,7 +206,7 @@ class adminUserCtl extends Component {
         console.log(zxcvbn(e.target.value));
         self.checkPass(e.target.value);
         self.setState({
-            passScore:zxcvbn(e.target.value).score,
+            passScore:zxcvbn(e.target.value),
         })
 
 
@@ -232,45 +232,45 @@ class adminUserCtl extends Component {
                                 {wrongMessage.passWrongMessage}
                              </div>                           
         }else
-        if(passScore===0){
+        if(passScore.score===0){
             passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
                                 <div className="form-item-pass-score-0-div-adminUserCtl" >
                                     Very Weak
                                 </div>  
                                 <div className="form-item-pass-score-message-div-adminUserCtl" >
-                                    Short keyboard patterns are easy to guess.
+                                    {passScore.feedback.warning===""?passScore.feedback.suggestions[0]:passScore.feedback.warning}
                                 </div> 
                                 <div className="clear-float-div-common" ></div > 
                              </div>                           
         }else
-        if(passScore===1){
+        if(passScore.score===1){
             passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
                                 <div className="form-item-pass-score-1-div-adminUserCtl" >
                                     Weak
                                 </div>  
                                 <div className="form-item-pass-score-message-div-adminUserCtl" >
-                                    Repeats like "aaa" are easy to guess.
+                                    {passScore.feedback.warning===""?passScore.feedback.suggestions[0]:passScore.feedback.warning}
                                 </div> 
                                 <div className="clear-float-div-common" ></div > 
                              </div>                           
         }else
-        if(passScore===2){
+        if(passScore.score===2){
             passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
                                 <div className="form-item-pass-score-2-div-adminUserCtl" >
                                     Average
                                 </div>  
                                 <div className="form-item-pass-score-message-div-adminUserCtl" >
-                                    Add another word or two. Uncommon words are better.
+                                    {passScore.feedback.warning===""?passScore.feedback.suggestions[0]:passScore.feedback.warning}
                                 </div> 
                                 <div className="clear-float-div-common" ></div > 
                              </div>                           
         }else
-        if(passScore===3){
+        if(passScore.score===3){
             passMessageHtml=<div className="form-item-pass-score-3-div-adminUserCtl" >
                                 Strong
                             </div>                            
         }else
-        if(passScore===4){
+        if(passScore.score===4){
             passMessageHtml=<div className="form-item-pass-score-4-div-adminUserCtl" >
                                 Very Strong
                             </div>                            
