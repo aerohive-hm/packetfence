@@ -213,10 +213,10 @@ class networksCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!ipAddr||ipAddr.toString().trim()===""){
-            newWrongMessage.ipAddrWrongMessage="Ip Address is required.";
+            newWrongMessage.ipAddrWrongMessage="IP address is required.";
         }else
         if(isIp(ipAddr.toString().trim())===false){
-            newWrongMessage.ipAddrWrongMessage="Ip Address format is incorret.";
+            newWrongMessage.ipAddrWrongMessage="IP address format is incorrect.";
         }else{
             newWrongMessage.ipAddrWrongMessage="";
         }
@@ -263,7 +263,7 @@ class networksCtl extends Component {
             newWrongMessage.netmaskWrongMessage="Netmask is required.";
         }else
         if(isIp(netmask.toString().trim())===false){
-            newWrongMessage.netmaskWrongMessage="Netmask format is incorret.";
+            newWrongMessage.netmaskWrongMessage="Netmask format is incorrect.";
         }else{
             newWrongMessage.netmaskWrongMessage="";
         }
@@ -308,10 +308,10 @@ class networksCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!vip||vip.toString().trim()===""){
-            newWrongMessage.vipWrongMessage="Vip is required.";
+            newWrongMessage.vipWrongMessage="VIP is required.";
         }else
         if(isIp(vip.toString().trim())===false){
-            newWrongMessage.vipWrongMessage="Vip format is incorret.";
+            newWrongMessage.vipWrongMessage="VIP format is incorrect.";
         }else{
             newWrongMessage.vipWrongMessage="";
         }
