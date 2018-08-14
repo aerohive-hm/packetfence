@@ -102,3 +102,10 @@ export function isEmail(data){　
   return r.test(data.toString().trim());
 
 }
+
+
+export function isHostname(data){　
+  var r = /^[!@#$%^&*\(\)~\-+=_\]\[\.;\\\/'`A-Za-z\d]*$/;
+  return r.test(data.toString().trim());
+
+}
