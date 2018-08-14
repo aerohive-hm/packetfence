@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isPositiveInteger} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isPositiveInteger,isHostname} from "../../libs/util";     
 import '../../css/ctlComponents/networksCtl.css';
 import '../../libs/common.css';
 
@@ -86,13 +86,13 @@ class networksCtl extends Component {
         })
 
         // new RequestApi('get',url,param,xCsrfToken,(data)=>{
-        //     self.getTureData(data);
+        //     self.getTrueData(data);
         // });
 
-        self.getTureData(mock.networks);
+        self.getTrueData(mock.networks);
     }
 
-    getTureData= (data) => {
+    getTrueData= (data) => {
         let self=this;
         let dataTable=data.items;
         for(let i=0;i<dataTable.length;i++){
@@ -126,6 +126,9 @@ class networksCtl extends Component {
 
         if(!hostname||hostname.toString().trim()===""){
             newWrongMessage.hostnameWrongMessage="Host Name is required.";
+        }else
+        if(isHostname(hostname.toString().trim())===false){
+            newWrongMessage.hostnameWrongMessage="invalid Host Name.";
         }else{
             newWrongMessage.hostnameWrongMessage="";
         }
@@ -210,10 +213,10 @@ class networksCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!ipAddr||ipAddr.toString().trim()===""){
-            newWrongMessage.ipAddrWrongMessage="Ip Address is required.";
+            newWrongMessage.ipAddrWrongMessage="IP address is required.";
         }else
         if(isIp(ipAddr.toString().trim())===false){
-            newWrongMessage.ipAddrWrongMessage="Ip Address format is incorret.";
+            newWrongMessage.ipAddrWrongMessage="IP address format is incorrect.";
         }else{
             newWrongMessage.ipAddrWrongMessage="";
         }
@@ -260,7 +263,7 @@ class networksCtl extends Component {
             newWrongMessage.netmaskWrongMessage="Netmask is required.";
         }else
         if(isIp(netmask.toString().trim())===false){
-            newWrongMessage.netmaskWrongMessage="Netmask format is incorret.";
+            newWrongMessage.netmaskWrongMessage="Netmask format is incorrect.";
         }else{
             newWrongMessage.netmaskWrongMessage="";
         }
@@ -305,10 +308,10 @@ class networksCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!vip||vip.toString().trim()===""){
-            newWrongMessage.vipWrongMessage="Vip is required.";
+            newWrongMessage.vipWrongMessage="VIP is required.";
         }else
         if(isIp(vip.toString().trim())===false){
-            newWrongMessage.vipWrongMessage="Vip format is incorret.";
+            newWrongMessage.vipWrongMessage="VIP format is incorrect.";
         }else{
             newWrongMessage.vipWrongMessage="";
         }
@@ -743,7 +746,7 @@ class networksCtl extends Component {
                             mode="multiple"
                         >
                             <Option value="PORTAL">Portal</Option>
-                            <Option value="RADIUS">Radius</Option>
+                            <Option value="RADIUS">RADIUS</Option>
                         </Select>
                     </div>
                 );
@@ -1011,7 +1014,7 @@ class networksCtl extends Component {
                                         style={{ height: 32 }} 
                                     >
                                         <Option value="PORTAL">Portal</Option>
-                                        <Option value="RADIUS">Radius</Option>
+                                        <Option value="RADIUS">RADIUS</Option>
                                     </Select>
                                 )}
                             </div>

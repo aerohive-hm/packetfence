@@ -80,13 +80,13 @@ class clusterNetworkingCtl extends Component {
         })
 
         // new RequestApi('get',url,param,xCsrfToken,(data)=>{
-        //     self.getTureData(data);
+        //     self.getTrueData(data);
         // });
 
-        self.getTureData(mock.networks);
+        self.getTrueData(mock.networks);
     }
 
-    getTureData= (data) => {
+    getTrueData= (data) => {
         let self=this;
         let dataTable=data.items;
         for(let i=0;i<dataTable.length;i++){
@@ -140,10 +140,10 @@ class clusterNetworkingCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!ipAddr||ipAddr.toString().trim()===""){
-            newWrongMessage.ipAddrWrongMessage="Ip Address is required.";
+            newWrongMessage.ipAddrWrongMessage="IP address is required.";
         }else
         if(isIp(ipAddr.toString().trim())===false){
-            newWrongMessage.ipAddrWrongMessage="Ip Address format is incorret.";
+            newWrongMessage.ipAddrWrongMessage="IP address format is incorrect.";
         }else{
             newWrongMessage.ipAddrWrongMessage="";
         }
@@ -185,7 +185,7 @@ class clusterNetworkingCtl extends Component {
             newWrongMessage.netmaskWrongMessage="Netmask is required.";
         }else
         if(isIp(netmask.toString().trim())===false){
-            newWrongMessage.netmaskWrongMessage="Netmask format is incorret.";
+            newWrongMessage.netmaskWrongMessage="Netmask format is incorrect.";
         }else{
             newWrongMessage.netmaskWrongMessage="";
         }
@@ -419,19 +419,16 @@ class clusterNetworkingCtl extends Component {
             dataIndex: 'type',
             key: 'type',
             render: (text, record, index) => {
+                let typeObject={
+                    MANAGEMENT:"Management",
+                    REGISTRATION:"Registration",
+                    ISOLATION:"Isolation",
+                    NONE:"None",
+                    OTHER:"Other",
+                }
                 return (
                     <div>
-                        <Select 
-                            value={text} 
-                            style={{ width: 110 }} 
-                            disabled
-                        >
-                            <Option value="MANAGEMENT">Management</Option>
-                            <Option value="REGISTRATION">Registration</Option>
-                            <Option value="ISOLATION">Isolation</Option>
-                            <Option value="NONE">None</Option>
-                            <Option value="OTHER">Other</Option>
-                        </Select>
+                        {typeObject[text]}
                     </div>
                 );
             } 
@@ -442,17 +439,21 @@ class clusterNetworkingCtl extends Component {
             dataIndex: 'services',
             key: 'services',
             render: (text, record, index) => {
+                let servicesObject={
+                    PORTAL:"Portal",
+                    RADIUS:"RADIUS",
+                }
+                let servicesHtml="";
+                for(let i=0;i<text.length;i++){
+                    if(i===0){
+                        servicesHtml=servicesHtml+servicesObject[text[i]];
+                    }else{
+                        servicesHtml=servicesHtml+", "+servicesObject[text[i]];
+                    }
+                }
                 return (
                     <div>
-                        <Select 
-                            value={text} 
-                            style={{ width: 110 }} 
-                            mode="multiple"
-                            disabled
-                        >
-                            <Option value="PORTAL">Portal</Option>
-                            <Option value="RADIUS">Radius</Option>
-                        </Select>
+                        {servicesHtml}
                     </div>
                 );
             } 

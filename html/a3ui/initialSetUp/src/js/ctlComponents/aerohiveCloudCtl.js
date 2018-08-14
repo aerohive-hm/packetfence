@@ -37,7 +37,6 @@ class aerohiveCloudCtl extends Component {
             passScore:-1
         };
 
-
     }
     
 
@@ -64,7 +63,12 @@ class aerohiveCloudCtl extends Component {
    
     onClickCreateAnAerohiveCloudAccount=()=>{
         let self=this;
-        window.open("https://www.aerohive.com/cloud-networking");
+
+        const url = {
+            cloudNetworking:"https://www.aerohive.com/cloud-networking",
+        }
+
+        window.open(url.cloudNetworking);
     }
 
     onBlurCheckUrl(e){
