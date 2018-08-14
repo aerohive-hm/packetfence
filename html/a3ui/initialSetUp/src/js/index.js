@@ -31,7 +31,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"adminUser",
+            show:"aerohiveCloud",
             // getStart
             // adminUser
             // networks
