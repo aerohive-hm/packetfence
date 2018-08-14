@@ -8,8 +8,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
+	"net/http"
 )
 
 type A3Interface struct {
@@ -50,8 +52,19 @@ type A3OnboardingInfo struct {
 	Data   A3OnboardingData   `json:"data"`
 }
 
+type OnBoarding struct {
+	crud.Crud
+}
+
+func OnBoardingNew() *OnBoarding {
+	onBoarding := new(OnBoarding)
+	onBoarding.Add("GET", GetMethodHandle)
+	return onBoarding
+}
+
 //Fetch and Convert A3 onboarding infomation To Json
-func (a3Data *A3OnboardingInfo) GetMethodHandle(ctx context.Context) ([]byte, error) {
+func GetMethodHandle(r *http.Request, d crud.HandlerData) ([]byte, error) {
+	var ctx = r.Context()
 	onboardingInfo := GetOnboardingInfo(ctx)
 	fmt.Println("onboardingInfo:\n", onboardingInfo)
 

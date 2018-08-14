@@ -2,17 +2,14 @@ package a3api
 
 import (
 	"context"
-	//	"errors"
 	"fmt"
-	"net/http"
-	//	"net/url"
+	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend"
 	"github.com/inverse-inc/packetfence/go/caddy/caddy"
 	"github.com/inverse-inc/packetfence/go/caddy/caddy/caddyhttp/httpserver"
 	"github.com/inverse-inc/packetfence/go/log"
-	//	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
-	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
 )
 
 func init() {

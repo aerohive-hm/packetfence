@@ -4,22 +4,34 @@
 package configurator
 
 import (
-	"context"
 	"encoding/json"
+	"net/http"
 
+	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/fetch"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
-type AdminUserInfo struct {
+type adminUserInfo struct {
 	Id   string `json:"id"`
 	User string `json:"user"`
 	Pass string `json:"pass"`
 }
 
-func (a3Data *AdminUserInfo) HandleGetAdminUserMethod(ctx context.Context) ([]byte, error) {
-	var adminuserinfo AdminUserInfo
+type AdminUser struct {
+	crud.Crud
+}
+
+func AdminUserNew() *AdminUser {
+	admin := new(AdminUser)
+	admin.Add("GET", handleGetAdminUserMethod)
+	return admin
+}
+
+func handleGetAdminUserMethod(r *http.Request, d crud.HandlerData) ([]byte, error) {
+	var adminuserinfo adminUserInfo
 	var config fetch.PfConfWebservices
+	var ctx = r.Context()
 	config.GetPfConfSub(ctx, &config.Webservices)
 	adminuserinfo.Id = "webservices"
 	adminuserinfo.User = config.Webservices.User

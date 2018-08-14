@@ -5,26 +5,33 @@
 package apibackend
 
 import (
-	"context"
-	"errors"
-	"fmt"
+	//	"context"
+	//	"errors"
+	//	"fmt"
+	//	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/event"
-	"github.com/inverse-inc/packetfence/go/log"
-	"net/http"
+	//	"github.com/inverse-inc/packetfence/go/log"
+	//	"net/http"
 )
 
+/*
 type A3EventHandler interface {
 	GetMethodHandle(ctx context.Context) ([]byte, error)
 	//Todo:PostMethodHandle()
 }
+*/
 
 func init() {
-	Register("event", HandleEvent)
+	sections := map[string]interface{}{
+		"onboarding": event.OnBoardingNew,
+	}
+	Register("event", sections)
 }
 
-func HandleEvent(w http.ResponseWriter, r *http.Request, d HandlerData) {
+/*
+func HandleEvent(w http.ResponseWriter, r *http.Request, d crud.HandlerData) {
 	fmt.Println("Start handle event ...")
-	if d.Method == "GET" {
+	if r.Method == "GET" {
 		jsonData, err := handleGetMethod(r, d)
 		if err != nil {
 			fmt.Println(err)
@@ -32,15 +39,15 @@ func HandleEvent(w http.ResponseWriter, r *http.Request, d HandlerData) {
 			return
 		}
 		fmt.Fprintf(w, string(jsonData))
-	} else if d.Method == "POST" {
+	} else if r.Method == "POST" {
 		//jsonData, err := handlePostMethod(ctx, d)
 		//Todo: How to handle POST method for A3 event
 	} else {
-		fmt.Println("Can't handle unsupported method:%s", d.Method)
+		fmt.Println("Can't handle unsupported method:%s", r.Method)
 	}
 }
 
-func handleGetMethod(r *http.Request, d HandlerData) ([]byte, error) {
+func handleGetMethod(r *http.Request, d crud.HandlerData) ([]byte, error) {
 	ctx := r.Context()
 	var eventHandler A3EventHandler
 	switch d.SubCmd {
@@ -61,3 +68,4 @@ func handleGetMethod(r *http.Request, d HandlerData) ([]byte, error) {
 	}
 	return jsonData, nil
 }
+*/
