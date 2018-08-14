@@ -52,10 +52,10 @@ func setup(c *caddy.Controller) error {
 	})
 
 	log.LoggerWContext(ctx).Info("a3-api setup success.")
-	
-    //Create a goroutine for the frontend component
-    go amac.Entry()
-    
+
+	//Create a goroutine for the frontend component
+	go amac.Entry()
+
 	return nil
 }
 
@@ -63,8 +63,8 @@ func buildA3apiHandler(ctx context.Context) (A3apiHandler, error) {
 	A3api := A3apiHandler{}
 
 	router := httprouter.New()
-	router.POST("/api/v1/*filepath", a3apibackend.Handle)
-	router.GET("/api/v1/*filepath", a3apibackend.Handle)
+	router.POST("/api/v1/*filepath", apibackend.Handle)
+	router.GET("/api/v1/*filepath", apibackend.Handle)
 
 	A3api.router = router
 

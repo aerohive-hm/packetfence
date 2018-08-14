@@ -7,7 +7,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/inverse-inc/packetfence/go/ama/apibackend/fetch"
+	"github.com/inverse-inc/packetfence/go/ama/fetch"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 

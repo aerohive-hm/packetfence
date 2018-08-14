@@ -1,4 +1,4 @@
-package a3apibackend
+package apibackend
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/inverse-inc/packetfence/go/ama/apibackend/a3Configurator"
+	"github.com/inverse-inc/packetfence/go/ama/apibackend/configurator"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
