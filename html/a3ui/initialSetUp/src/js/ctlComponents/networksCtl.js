@@ -86,13 +86,13 @@ class networksCtl extends Component {
         })
 
         // new RequestApi('get',url,param,xCsrfToken,(data)=>{
-        //     self.getTureData(data);
+        //     self.getTrueData(data);
         // });
 
-        self.getTureData(mock.networks);
+        self.getTrueData(mock.networks);
     }
 
-    getTureData= (data) => {
+    getTrueData= (data) => {
         let self=this;
         let dataTable=data.items;
         for(let i=0;i<dataTable.length;i++){
