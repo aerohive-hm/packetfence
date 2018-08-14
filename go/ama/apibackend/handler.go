@@ -25,8 +25,8 @@
 package apibackend
 
 import (
+	"fmt"
 	"net/http"
-	"reflect"
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
@@ -34,13 +34,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type Sections map[string]interface{}
+var mHandler = make(map[string]crud.Sections)
 
-var mHandler = make(map[string]Sections)
-
-type A3ApiHandler func(w http.ResponseWriter, r *http.Request, d crud.HandlerData)
-
-func Register(Cmd string, sections Sections) {
+func Register(Cmd string, sections crud.Sections) {
 	mHandler[Cmd] = sections
 }
 
@@ -52,7 +48,8 @@ func ParseRequestToData(r *http.Request) (handlerData crud.HandlerData) {
 		handlerData.Cmd = strings.Split(r.URL.Path, "/")[3]
 		handlerData.SubCmd = strings.Split(r.URL.Path, "/")[4]
 	} else {
-		log.LoggerWContext(ctx).Error("Error can not find cmd in url")
+		log.LoggerWContext(ctx).Error(fmt.Sprintf(
+			"Can not find cmd in url = %s", r.URL.Path))
 	}
 	return handlerData
 }
@@ -63,32 +60,19 @@ func Handle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	section, ok := mHandler[d.Cmd]
 	if !ok {
-		log.LoggerWContext(ctx).Error("Error can not find handlesub")
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Can not find subCmd"+
+			"for d.Cmd = %s", d.Cmd))
 		return
 	}
+
 	func() {
-		cmd, ok := section[d.SubCmd]
+		New, ok := section[d.SubCmd]
 		if !ok {
-			log.LoggerWContext(ctx).Error("Can not find handler of section.")
-			return
+			log.LoggerWContext(ctx).Error(fmt.Sprintln("no handle of " +
+				d.SubCmd + " found."))
 		}
-		f := reflect.ValueOf(cmd)
-		obj := f.Call(nil)
-		obj.Processor(w, r, d)
-		//cmd().Processor(w, r, d)
+		cmd := New(ctx)
+		cmd.Processor(w, r, d)
 		return
 	}()
 }
-
-/*
-func SubCmdHandler(w http.ResponseWriter, r *http.Request, d crud.HandlerData) {
-    ctx := r.Context()
-    cmdNew, ok := sections[d.SubCmd]
-    if !ok {
-        log.LoggerWContext(ctx).Error("Can not find handler of section.")
-        return
-    }
-    section().Processor(w, r, d)
-    return
-}
-*/

@@ -4,6 +4,7 @@
 package configurator
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -22,8 +23,9 @@ type AdminUser struct {
 	crud.Crud
 }
 
-func AdminUserNew() *AdminUser {
+func AdminUserNew(ctx context.Context) crud.SectionCmd {
 	admin := new(AdminUser)
+	admin.New()
 	admin.Add("GET", handleGetAdminUserMethod)
 	return admin
 }

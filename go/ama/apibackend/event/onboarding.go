@@ -56,14 +56,14 @@ type OnBoarding struct {
 	crud.Crud
 }
 
-func OnBoardingNew() *OnBoarding {
+func OnBoardingNew(ctx context.Context) crud.SectionCmd {
 	onBoarding := new(OnBoarding)
-	onBoarding.Add("GET", GetMethodHandle)
+	onBoarding.Add("GET", getMethodHandle)
 	return onBoarding
 }
 
 //Fetch and Convert A3 onboarding infomation To Json
-func GetMethodHandle(r *http.Request, d crud.HandlerData) ([]byte, error) {
+func getMethodHandle(r *http.Request, d crud.HandlerData) ([]byte, error) {
 	var ctx = r.Context()
 	onboardingInfo := GetOnboardingInfo(ctx)
 	fmt.Println("onboardingInfo:\n", onboardingInfo)
