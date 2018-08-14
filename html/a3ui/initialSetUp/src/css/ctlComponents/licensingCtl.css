@@ -187,8 +187,17 @@
     margin-top: 16px;
     width:477px;
     height:323px;
-    word-break:break-all;
     overflow-y:scroll;
+}
+.modal-eula-margin-top-16-text-div-licensingCtl{
+    float:left;
+    margin-top: 16px;
+    width:450px;
+}
+.modal-eula-margin-top-0-text-div-licensingCtl{
+    float:left;
+    margin-top: 0px;
+    width:450px;
 }
 .modal-eula-button-div-licensingCtl{
     float:left;

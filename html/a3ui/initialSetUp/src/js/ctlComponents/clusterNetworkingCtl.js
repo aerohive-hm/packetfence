@@ -465,7 +465,7 @@ class clusterNetworkingCtl extends Component {
                 <div className="left-div-clusterNetworkingCtl">
                     <Guidance 
                         title={"Networks"} 
-                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
+                        content={["Please confirm the information in the table at right. If there is an error in IP or netmask you may change it here."]} 
                     />
                     <div className="img-div-clusterNetworkingCtl">
                        <img src={networksImg} className="img-img-clusterNetworkingCtl" />

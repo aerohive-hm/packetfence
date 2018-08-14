@@ -211,10 +211,18 @@ class aerohiveCloudCtl extends Component {
         return (
             <div className="global-div-aerohiveCloudCtl">
                 <div className="left-div-aerohiveCloudCtl">
-                    <Guidance 
-                        title={"Aerohive Cloud"} 
-                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
-                    />
+                    <div className="guidance-div-aerohiveCloudCtl">
+                        <div className="guidance-title-div-aerohiveCloudCtl">
+                            Aerohive Cloud
+                        </div>
+                        <div className="guidance-content-div-aerohiveCloudCtl">
+                            If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter the credentials at right and select, "<strong>Link with Aerohive Cloud Account</strong>". 
+                        </div>
+                        <div className="guidance-content-div-aerohiveCloudCtl">
+                            If this is your organizations first exposure to Aerohive, please select the button entitled, "<strong>Create an Aerohive Cloud Account</strong>" at right and follow the instructions. You will return here when you are done to complete the process.
+                        </div>
+                        <div className="clear-float-div-common" ></div >
+                    </div>
                     <div className="img-div-aerohiveCloudCtl">
                        <img src={aerohiveCloudImg} className="img-img-aerohiveCloudCtl" />
                     </div>

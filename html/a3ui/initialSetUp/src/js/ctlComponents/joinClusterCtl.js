@@ -213,7 +213,7 @@ class joinClusterCtl extends Component {
                 <div className="left-div-joinClusterCtl">
                     <Guidance 
                         title={"Join Cluster"} 
-                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
+                        content={["To have this instance of A3 join an A3 Cluster, please enter the the Primary Cluster's IP address and Adminstrator credentials."]} 
                     />
                     <div className="img-div-joinClusterCtl">
                        <img src={joinClusterImg} className="img-img-joinClusterCtl" />

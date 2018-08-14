@@ -22,15 +22,22 @@ class guidance extends Component {
 
     render(){
         const {title,content} = this.props;
+        
+        let contentHtml=[];
+        for(let i=0;i<content.length;i++){
+            contentHtml.push(
+                <div className="guidance-content-div-guidance">
+                    {content[i]}
+                </div>
+            );
+        }
         return(
 
             <div className="guidance-div-guidance">
                 <div className="guidance-title-div-guidance">
                     {title}
                 </div>
-                <div className="guidance-content-div-guidance">
-                    {content}
-                </div>
+                {contentHtml}
                 <div className="clear-float-div-common" ></div >
             </div>
 

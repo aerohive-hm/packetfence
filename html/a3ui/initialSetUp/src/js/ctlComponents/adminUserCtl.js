@@ -279,8 +279,8 @@ class adminUserCtl extends Component {
             <div className="global-div-adminUserCtl">
                 <div className="left-div-adminUserCtl">
                     <Guidance 
-                        title={"Admin User"} 
-                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
+                        title={"Welcome to A3!"} 
+                        content={["Please add your primary administrator's login credentials here and select a strong password. It is advisable to consider an email alias if a team of individuals will be administering this system."]} 
                     />
                     <div className="img-div-adminUserCtl">
                        <img src={adminUserImg} className="img-img-adminUserCtl" />

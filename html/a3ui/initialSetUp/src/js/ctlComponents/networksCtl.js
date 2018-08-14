@@ -789,8 +789,8 @@ class networksCtl extends Component {
             <Spin spinning={loading}>
                 <div className="left-div-networksCtl">
                     <Guidance 
-                        title={"Networks"} 
-                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
+                        title={"Instructions"} 
+                        content={["On this page, you can configure the network interfaces detected on your system.","Don't worry, you can always come back to this step if you change your mind.","Enable all the physical interfaces you want to use for A3. If you use VLAN enforcement, specify which VLAN is dedicated to your registration, isolation, and management subnets. You must always have at least one management subnet."]} 
                     />
                     <div className="img-div-networksCtl">
                        <img src={networksImg} className="img-img-networksCtl" />
