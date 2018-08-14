@@ -746,7 +746,7 @@ class networksCtl extends Component {
                             mode="multiple"
                         >
                             <Option value="PORTAL">Portal</Option>
-                            <Option value="RADIUS">Radius</Option>
+                            <Option value="RADIUS">RADIUS</Option>
                         </Select>
                     </div>
                 );
@@ -1014,7 +1014,7 @@ class networksCtl extends Component {
                                         style={{ height: 32 }} 
                                     >
                                         <Option value="PORTAL">Portal</Option>
-                                        <Option value="RADIUS">Radius</Option>
+                                        <Option value="RADIUS">RADIUS</Option>
                                     </Select>
                                 )}
                             </div>
