@@ -57,7 +57,7 @@ app.post("/node/syscall", function(req, res){
     var cmd = req.body.cmd;
     var opts = req.body.opts;
     var others = req.body.others;
-    res.setTimeout(1000000);
+    res.setTimeout(3600000);
     audit_log("the cmd to run is "+cmd+ " "+opts);
     system_call(cmd, opts).then(function(resolve){
         res.json({'cmd': '1',
