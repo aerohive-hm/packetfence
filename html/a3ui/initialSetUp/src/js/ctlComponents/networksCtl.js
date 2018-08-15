@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/networksCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/networksCtl";
 
-import networksImg from "../../media/networks.png";
+import networksImg from "../../media/networks.svg";
 import editNoImg from "../../media/editNo.png";
 import editYesImg from "../../media/editYes.png";
 import addVlanImg from "../../media/addVlan.png";

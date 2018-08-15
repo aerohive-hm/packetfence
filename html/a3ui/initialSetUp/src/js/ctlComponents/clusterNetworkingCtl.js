@@ -17,11 +17,12 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/clusterNetworkingCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/clusterNetworkingCtl";
 
-import networksImg from "../../media/networks.png";
 import editNoImg from "../../media/editNo.png";
 import editYesImg from "../../media/editYes.png";
 import addVlanImg from "../../media/addVlan.png";
 import removeVlanImg from "../../media/removeVlan.png";
+
+import networksImg from "../../media/networks.svg";
 
 
 
@@ -467,9 +468,10 @@ class clusterNetworkingCtl extends Component {
                         title={"Networks"} 
                         content={["Please confirm the information in the table at right. If there is an error in IP or netmask you may change it here."]} 
                     />
-                    <div className="img-div-clusterNetworkingCtl">
-                       <img src={networksImg} className="img-img-clusterNetworkingCtl" />
+                    <div className="img-div-clusterNetworkingCtl">  
+                       <img src={networksImg} className="img-img-clusterNetworkingCtl" /> 
                     </div>
+
                     <div className="clear-float-div-common" ></div >
                 </div>
 

@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/joinClusterCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/joinClusterCtl";
 
-import joinClusterImg from "../../media/joinCluster.png";
+import joinClusterImg from "../../media/joinCluster.svg";
 
 
 

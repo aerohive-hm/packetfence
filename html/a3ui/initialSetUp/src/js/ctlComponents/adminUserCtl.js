@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/adminUserCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/adminUserCtl";
 
-import adminUserImg from "../../media/adminUser.png";
+import adminUserImg from "../../media/adminUser.svg";
 
 
 

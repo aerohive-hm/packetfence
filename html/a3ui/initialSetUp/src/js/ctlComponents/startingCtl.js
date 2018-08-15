@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/startingCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/startingCtl";
 
-import startingAndReadyImg from "../../media/startingAndReady.png";
+import startingAndReadyImg from "../../media/startingAndReady.svg";
 
 
 

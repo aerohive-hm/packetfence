@@ -15,8 +15,9 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/getStartCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/getStartCtl";
 
+import newDeploymentLogoImg1 from "../../media/deployment-icon.svg";
 import newDeploymentLogoImg from "../../media/newDeploymentLogo.png";
-import joinClusterBackgroundLogo from "../../media/joinClusterBackgroundLogo.png";
+import joinClusterBackgroundLogo from "../../media/joinClusterBackgroundLogo.svg";
 
 const {Component} = React;
 
@@ -61,7 +62,7 @@ class getStartCtl extends Component {
             <div className="global-div-getStartCtl">
                 <div className="new-deployment-div-getStartCtl">
                     <div className="new-deployment-logo-div-getStartCtl">
-                        <img src={newDeploymentLogoImg} className="new-deployment-logo-img-getStartCtl" />
+                        <img src={newDeploymentLogoImg1} className="new-deployment-logo-img-getStartCtl" />
                     </div>
                     <div className="new-deployment-new-div-getStartCtl">
                         NEW

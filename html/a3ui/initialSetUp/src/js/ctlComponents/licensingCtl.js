@@ -17,9 +17,9 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/licensingCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/licensingCtl";
 
-import licensingImg from "../../media/licensing.png";
-import thirtyDayTrialImg from "../../media/thirtyDayTrial.png";
-import enterEntitlementKeyImg from "../../media/enterEntitlementKey.png";
+import licensingImg from "../../media/licensing.svg";
+import thirtyDayTrialImg from "../../media/thirtyDayTrial.svg";
+import enterEntitlementKeyImg from "../../media/enterEntitlementKey.svg";
 
 
 

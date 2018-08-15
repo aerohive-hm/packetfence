@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/aerohiveCloudCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/aerohiveCloudCtl";
 
-import aerohiveCloudImg from "../../media/aerohiveCloud.png";
+import aerohiveCloudImg from "../../media/aerohiveCloud.svg";
 
 
 
