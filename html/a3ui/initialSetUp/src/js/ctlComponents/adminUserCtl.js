@@ -73,7 +73,7 @@ class adminUserCtl extends Component {
         if(!user||user.toString().trim()===""){
             newWrongMessage.userWrongMessage="Email is required.";
         }else
-        if(isEmail(user)===false){
+        if(isEmail(user.toString().trim())===false){
             newWrongMessage.userWrongMessage="Email format is incorrect.";
         }else{
             newWrongMessage.userWrongMessage="";
@@ -302,6 +302,7 @@ class adminUserCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckUser.bind(self)}
+                                maxLength={254}
                                 />
                             )}
                         </div>
@@ -324,6 +325,7 @@ class adminUserCtl extends Component {
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPass.bind(self)}
                                 onChange={self.onChangePass.bind(self)}
+                                maxLength={254}
                                 />
 
                                 

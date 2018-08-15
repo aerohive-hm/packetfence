@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isUrl} from "../../libs/util";     
 import '../../css/ctlComponents/aerohiveCloudCtl.css';
 import '../../libs/common.css';
 
@@ -82,6 +82,9 @@ class aerohiveCloudCtl extends Component {
 
         if(!url||url.toString().trim()===""){
             newWrongMessage.urlWrongMessage="Cloud URL is required.";
+        }else
+        if(isUrl(url.toString().trim())===false){
+            newWrongMessage.urlWrongMessage='Cloud URL must start with "https://".';
         }else{
             newWrongMessage.urlWrongMessage="";
         }
@@ -115,6 +118,9 @@ class aerohiveCloudCtl extends Component {
 
         if(!user||user.toString().trim()===""){
             newWrongMessage.userWrongMessage="Cloud Admin User is required";
+        }else
+        if(isEmail(user.toString().trim())===false){
+            newWrongMessage.userWrongMessage="Cloud Admin User format is incorrect.";
         }else{
             newWrongMessage.userWrongMessage="";
         }
@@ -244,6 +250,7 @@ class aerohiveCloudCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckUrl.bind(self)}
+                                maxLength={254}
                                 
                                 />
                             )}
@@ -267,6 +274,7 @@ class aerohiveCloudCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckUser.bind(self)}
+                                maxLength={1000}
                                 />
                             )}
                         </div>
@@ -288,6 +296,7 @@ class aerohiveCloudCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPass.bind(self)}
+                                maxLength={254}
                                 />
 
                                 

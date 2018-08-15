@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isPositiveInteger,isHostname} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isPositiveInteger,isHostname,isVlan} from "../../libs/util";     
 import '../../css/ctlComponents/networksCtl.css';
 import '../../libs/common.css';
 
@@ -99,7 +99,7 @@ class networksCtl extends Component {
             dataTable[i].key=dataTable[i].name;
             dataTable[i].vlan=dataTable[i].name;
             dataTable[i].clicked="";
-            dataTable[i].services=dataTable[i].services.split(",");
+            dataTable[i].services=dataTable[i].services===""?[]:dataTable[i].services.split(",");
         }
         self.setState({
             dataTable: dataTable,
@@ -165,8 +165,8 @@ class networksCtl extends Component {
         if(!name||name.toString().trim()===""){
             newWrongMessage.nameWrongMessage="Name is required.";
         }else
-        if(isPositiveInteger(name.toString().trim())===false){
-            newWrongMessage.nameWrongMessage="The value must be a positive number.";
+        if(isVlan(name.toString().trim())===false){
+            newWrongMessage.nameWrongMessage="Name must be between 2 and 4094.";
         }else{
             newWrongMessage.nameWrongMessage="";
         }
@@ -812,6 +812,7 @@ class networksCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckHostname.bind(self)}
+                                maxLength={254}
                                 />
                             )}
                         </div>

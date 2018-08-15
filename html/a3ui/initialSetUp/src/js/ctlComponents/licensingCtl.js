@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isEntitlementkey} from "../../libs/util";     
 import '../../css/ctlComponents/licensingCtl.css';
 import '../../libs/common.css';
 
@@ -92,7 +92,10 @@ class licensingCtl extends Component {
 
         if(!key||key.toString().trim()===""){
             newWrongMessage.keyWrongMessage="Entitlement key is required.";
-        }else{
+        }else
+        if(isEntitlementkey(key.toString().trim())===false){
+            newWrongMessage.keyWrongMessage="Entitlement key format is incorrect.";
+        }else{    
             newWrongMessage.keyWrongMessage="";
         }
 
