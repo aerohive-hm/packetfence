@@ -26,6 +26,7 @@ package apibackend
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -41,23 +42,28 @@ func Register(Cmd string, sections crud.Sections) {
 }
 
 // parse http.request to handlerdata
-func ParseRequestToData(r *http.Request) (handlerData crud.HandlerData) {
-	ctx := r.Context()
+func ParseRequestToData(r *http.Request) (handlerData crud.HandlerData, err error) {
+	handlerData.ReqData, err = ioutil.ReadAll(r.Body)
+	if err != nil {
+		return handlerData, err
+	}
 	i := len(strings.Split(r.URL.Path, "/")) //r.URL.Path: /api/v1/cmd/subcmd
 	if i > 4 {
 		handlerData.Cmd = strings.Split(r.URL.Path, "/")[3]
 		handlerData.SubCmd = strings.Split(r.URL.Path, "/")[4]
 	} else {
-		log.LoggerWContext(ctx).Error(fmt.Sprintf(
-			"Can not find cmd in url = %s", r.URL.Path))
+		fmt.Errorf("Can not find cmd in url = %s", r.URL.Path)
 	}
-	return handlerData
+	return handlerData, err
 }
 
 func Handle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	ctx := r.Context()
-	d := ParseRequestToData(r)
-
+	d, err := ParseRequestToData(r)
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return
+	}
 	section, ok := mHandler[d.Cmd]
 	if !ok {
 		log.LoggerWContext(ctx).Error(fmt.Sprintf("Can not find subCmd"+

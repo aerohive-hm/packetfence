@@ -8,7 +8,9 @@ import (
 func init() {
 	sections := crud.Sections{
 		"admin_user":       configurator.AdminUserNew,
-		"cluster/networks": configurator.NetworksCmdNew,
+		"networks":         configurator.NetworksNew,
+		"interface":        configurator.InterfaceNew,
+		"cluster/networks": configurator.NetworksNew,
 	}
 	Register("configurator", sections)
 }

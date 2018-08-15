@@ -63,7 +63,7 @@ func OnBoardingNew(ctx context.Context) crud.SectionCmd {
 }
 
 //Fetch and Convert A3 onboarding infomation To Json
-func getMethodHandle(r *http.Request, d crud.HandlerData) ([]byte, error) {
+func getMethodHandle(r *http.Request, d crud.HandlerData) []byte {
 	var ctx = r.Context()
 	onboardingInfo := GetOnboardingInfo(ctx)
 	fmt.Println("onboardingInfo:\n", onboardingInfo)
@@ -71,9 +71,9 @@ func getMethodHandle(r *http.Request, d crud.HandlerData) ([]byte, error) {
 	jsonData, err := json.Marshal(onboardingInfo)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
-		return nil, err
+		return []byte(err.Error())
 	}
-	return jsonData, nil
+	return jsonData
 }
 
 func GetOnboardingInfo(ctx context.Context) A3OnboardingInfo {
