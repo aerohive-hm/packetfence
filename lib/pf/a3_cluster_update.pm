@@ -22,6 +22,7 @@ use REST::Client;
 use JSON;
 use File::Slurp;
 use Data::Dumper;
+use pf::config qw(%Config);
 
 our ( @ISA, @EXPORT_OK );
 @ISA = qw(Exporter);
@@ -57,6 +58,7 @@ Readonly::Scalar my $HEAD_BIN                     => "$BIN_DIR/head";
 open(UPDATE_CLUSTER_LOG,   '>>', $A3_CLUSTER_UPDATE_LOG_FILE)   || die "Unable to open update log file";
 my $a3_pkg = 'A3';
 my $a3_db = 'A3';
+my $db_user = 'A3';
 my $node_port = 9432;
 
 =head2 disable_cluster_check
@@ -242,16 +244,8 @@ sub _generate_update_patch_list {
 sub _get_db_password {
   my $password;
 
-  open DBINFO, "<", $A3_DBINFO_FILE || die "Unable to find the database information file";
-
-  while (<DBINFO>) {
-    if ($_ =~ /^dbroot_pass=(.*)$/) {
-      $password = $1;
-      last;
-    }
-  }
-
-  close DBINFO;
+  $password = $Config{database}->{pass};
+  chomp $password;
 
   return $password;
 }
@@ -261,7 +255,7 @@ sub apply_db_update_schema {
   my @db_schema_files = _check_db_schema_file(@update_path_list);
   my $passwd = _get_db_password();
   foreach my $db_file (@db_schema_files) {
-    my $ret = `$MYSQL_BIN -u root -p$passwd $a3_db < $A3_DB_DIR/$db_file 2>&1`;
+    my $ret = `$MYSQL_BIN -u $db_user -p$passwd $a3_db < $A3_DB_DIR/$db_file 2>&1`;
     if ($ret =~ /ERROR/i) {
       A3_Warn("Unable to apply database schema update $db_file: failed with error message \"$ret\"!");
     }
@@ -396,11 +390,10 @@ sub get_remains_nodes_hostname {
   return @hosts; 
 }
 
-sub test {
-
-  print "[ok]";
+sub delete_mysql_db_files {
+  my $db_folder = "/var/lib/mysql/"
+  call_system_cmd("rm -rf $db_folder/*");
 }
-
 
 
 =head1 AUTHOR
