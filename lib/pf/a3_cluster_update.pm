@@ -21,6 +21,7 @@ use Exporter;
 use REST::Client;
 use JSON;
 use File::Slurp;
+use Data::Dumper;
 
 our ( @ISA, @EXPORT_OK );
 @ISA = qw(Exporter);
@@ -299,14 +300,14 @@ sub remote_api_call_get {
 sub remote_api_call_post {
   my ($IP, $URI, $data) = @_;
   my $url = "http://$IP:$node_port/".$URI;
-  my $client = REST::Client->new();
+  my $client = REST::Client->new({timeout=>3600});
   $client->addHeader('Content-Type', 'application/json');
   $client->addHeader('charset', 'UTF-8');
   $client->addHeader('Accept', 'application/json'); 
   my $json_data = encode_json($data);
   $client->POST($url, $json_data);
   if( $client->responseCode() ne '200' ){
-    A3_Warn("Unable to call remote with $url for $data");
+    A3_Warn("Unable to call remote with $url for ".Dumper($data));
   }
 
 }
