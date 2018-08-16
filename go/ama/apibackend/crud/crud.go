@@ -13,7 +13,7 @@ type HandlerData struct {
 	SubCmd   string //adminuser
 	Header   string
 	UrlParam string /*/?aa=123&bb=abc*/
-	ReqData  string
+	ReqData  []byte
 	RespData string
 }
 
@@ -25,11 +25,13 @@ type SectionCmd interface {
 	Processor(w http.ResponseWriter, r *http.Request, d HandlerData)
 }
 
+const PostOK = `{"code": "ok"}`
+
 type Crud struct {
 	handlers map[string]CrudSubHandler
 }
 
-type CrudSubHandler func(r *http.Request, d HandlerData) ([]byte, error)
+type CrudSubHandler func(r *http.Request, d HandlerData) []byte
 
 func (crud *Crud) New() {
 	crud.handlers = make(map[string]CrudSubHandler)
@@ -49,12 +51,6 @@ func (crud *Crud) Processor(w http.ResponseWriter, r *http.Request, d HandlerDat
 		return
 	}
 
-	jsonData, err := handler(r, d)
-	if err != nil {
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("Error while handling %s"+
-			"method for subcmd %s:", r.Method, d.SubCmd))
-		return
-	}
-
+	jsonData := handler(r, d)
 	fmt.Fprintf(w, string(jsonData))
 }

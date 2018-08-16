@@ -13,7 +13,7 @@ type Iface struct {
 	Master  string // phy iface of vlan interface
 	Active  string
 	HwAddr  string
-	Vlan    int
+	Vlan    string
 	IpAddr  string
 	IpMode  string // DHCP or Static
 	NetMask string
@@ -140,41 +140,52 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 		return nil, -1
 	}
 
-	re := `(\d+):\s([\w\.]+)(?:\@([^:]+))?.+\sstate\s(\S+).+ether\s(\S+)`
+	re := `(\d+):\s([\w]+)(?:\.([\d]+))?(?:\@([^:]+))?.+\sstate\s(\S+).+ether\s(\S+)`
 	r := regexp.MustCompile(re)
 	ret := r.FindAllStringSubmatch(out, -1)
 
-	addIface := func(ifname string, val []string) (item Iface, rc int) {
+	addIface := func(ifname string, val []string) (item Iface, err error) {
 		item.Ifidx, err = strconv.Atoi(val[1])
 		if err != nil {
-			panic(err)
+			return Iface{}, err
 		}
-		item.Name = val[2]
-		item.Master = val[3]
-		item.Active = val[4]
-		item.HwAddr = val[5]
-		return item, 0
+		if val[3] == "" {
+			item.Name = val[2]
+		} else {
+			item.Name = val[2] + "." + val[3]
+		}
+		item.Vlan = val[3]
+		item.Master = val[4]
+		item.Active = val[5]
+		item.HwAddr = val[6]
+		return item, nil
 	}
 
-	updateIface := func(item *Iface, val []string) {
+	updateIface := func(item *Iface, val []string) error {
 		cmd = ipcmd["addr"] + " " + item.Name
 		out, err = ExecShell(cmd)
 		if err != nil {
-			fmt.Println("exec error, cmd = " + cmd)
-			return
+			return err
 		}
 		re = `\binet (([^\/]+)\/\d+)`
 		r := regexp.MustCompile(re)
 		str := r.FindStringSubmatch(out)
 		if len(str) == 0 {
-			return
+			return err
 		}
 		item.IpAddr = str[2]
+		return nil
 	}
 
 	for _, v := range ret {
-		item, _ := addIface(ifname, v)
-		updateIface(&item, v)
+		item, err := addIface(ifname, v)
+		if err != nil {
+			continue
+		}
+		err = updateIface(&item, v)
+		if err != nil {
+			continue
+		}
 		list = append(list, item)
 	}
 
