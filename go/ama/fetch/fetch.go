@@ -20,10 +20,25 @@ type PfConfWebservices struct {
 
 type PfConfGeneral struct {
 	Comm
-	General pfconfigdriver.PfConfWebservices
+	General pfconfigdriver.PfConfGeneral
 }
 
 type PfConfCaptivePortal struct {
 	Comm
-	CaptivePortal pfconfigdriver.PfConfWebservices
+	CaptivePortal pfconfigdriver.PfConfCaptivePortal
+}
+
+type PfConfFencing struct {
+	Comm
+	Fencing pfconfigdriver.PfConfFencing
+}
+
+type PfConfDatabase struct {
+	Comm
+	Database pfconfigdriver.PfConfDatabase
+}
+
+type ManagementNetwork struct {
+	Comm
+	Network pfconfigdriver.ManagementNetwork
 }
