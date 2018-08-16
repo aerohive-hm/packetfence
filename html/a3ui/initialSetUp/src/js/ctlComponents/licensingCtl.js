@@ -154,7 +154,7 @@ class licensingCtl extends Component {
         let self=this;
 
         let xCsrfToken="";
-        let url= "/a3/api/v1/configuration/license";
+        let url= "/a3/api/v1/configurator/license";
         
         let param={
             trial:"0",
@@ -181,7 +181,7 @@ class licensingCtl extends Component {
         let self=this;
 
         let xCsrfToken="";
-        let url= "/a3/api/v1/configuration/license";
+        let url= "/a3/api/v1/configurator/license";
         
         let param={
             trial:"1",

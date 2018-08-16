@@ -222,10 +222,10 @@ class aerohiveCloudCtl extends Component {
                             {self.state.i18n.aerohiveCloud}
                         </div>
                         <div className="guidance-content-div-aerohiveCloudCtl">
-                            {self.state.i18n.alreadyHasAnAerohiveCloudAccount}<strong>{self.state.i18n.linkWithAerohiveCloudAccount}</strong>{self.state.i18n.quotationAndFull} 
+                            {self.state.i18n.alreadyHasAnAerohiveCloudAccount1}<strong>{self.state.i18n.alreadyHasAnAerohiveCloudAccount2}</strong>{self.state.i18n.alreadyHasAnAerohiveCloudAccount3} 
                         </div>
                         <div className="guidance-content-div-aerohiveCloudCtl">
-                            If this is your organizations first exposure to Aerohive, please select the button entitled, "<strong>Create an Aerohive Cloud Account</strong>" at right and follow the instructions. You will return here when you are done to complete the process.
+                            {self.state.i18n.firstExposureToAerohive1}<strong>{self.state.i18n.firstExposureToAerohive2}</strong>{self.state.i18n.firstExposureToAerohive3}
                         </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
@@ -241,7 +241,7 @@ class aerohiveCloudCtl extends Component {
 
                     <div className="form-item-div-aerohiveCloudCtl">
                         <div className="form-item-title-div-aerohiveCloudCtl">
-                            Cloud URL
+                            {self.state.i18n.cloudUrl}
                         </div>
                         <div className="form-item-input-div-aerohiveCloudCtl">
                             {getFieldDecorator('url', {

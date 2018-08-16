@@ -5,14 +5,23 @@ export let i18n ={
 	"cloudAdminUserFormatIsIncorrect": "Cloud Admin User format is incorrect.",
 	"passwordIsRequired": "Password is required.",
 	"aerohiveCloud": "Aerohive Cloud",
-	"alreadyHasAnAerohiveCloudAccount": 'If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter the credentials at right and select, "',
+	"alreadyHasAnAerohiveCloudAccount1": 'If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter the credentials at right and select, "',
 	
-	"linkWithAerohiveCloudAccount": "Link with Aerohive Cloud Account",
-	"quotationAndFull": '".',
+	"alreadyHasAnAerohiveCloudAccount2": "Link with Aerohive Cloud Account",
+	"alreadyHasAnAerohiveCloudAccount3": '".',
+	
+	"firstExposureToAerohive1": 'If this is your organizations first exposure to Aerohive, please select the button entitled, "',
+	"firstExposureToAerohive2": "Create an Aerohive Cloud Account",
+	
+	"firstExposureToAerohive3": '" at right and follow the instructions. You will return here when you are done to complete the process.',
+	
+	"cloudUrl": "Cloud URL",
+	
+	
 	
 }
 
 
 //self.state.i18n.quotationAndFull
 
-//{self.state.i18n.quotationAndFull}
+//{self.state.i18n.cloudUrl}
