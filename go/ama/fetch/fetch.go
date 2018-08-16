@@ -1,3 +1,5 @@
+/*fetch.go implements get pfconfig date by unified method */
+
 package fetch
 
 import (
