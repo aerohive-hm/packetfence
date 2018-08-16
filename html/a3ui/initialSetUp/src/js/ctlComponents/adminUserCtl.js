@@ -268,7 +268,7 @@ class adminUserCtl extends Component {
         if(passScore.score===1){
             passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
                                 <div className="form-item-pass-score-1-div-adminUserCtl" >
-                                    Weak
+                                    {self.state.i18n.weak}
                                 </div>  
                                 <div className="form-item-pass-score-message-div-adminUserCtl" >
                                     {passScore.feedback.warning===""?passScore.feedback.suggestions[0]:passScore.feedback.warning}
@@ -279,7 +279,7 @@ class adminUserCtl extends Component {
         if(passScore.score===2){
             passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
                                 <div className="form-item-pass-score-2-div-adminUserCtl" >
-                                    Average
+                                    {self.state.i18n.average}
                                 </div>  
                                 <div className="form-item-pass-score-message-div-adminUserCtl" >
                                     {passScore.feedback.warning===""?passScore.feedback.suggestions[0]:passScore.feedback.warning}
@@ -289,20 +289,20 @@ class adminUserCtl extends Component {
         }else
         if(passScore.score===3){
             passMessageHtml=<div className="form-item-pass-score-3-div-adminUserCtl" >
-                                Strong
+                                {self.state.i18n.strong}
                             </div>                            
         }else
         if(passScore.score===4){
             passMessageHtml=<div className="form-item-pass-score-4-div-adminUserCtl" >
-                                Very Strong
+                                {self.state.i18n.veryStrong}
                             </div>                            
         }
         return (
             <div className="global-div-adminUserCtl">
                 <div className="left-div-adminUserCtl">
                     <Guidance 
-                        title={"Welcome to A3!"} 
-                        content={["Please add your primary administrator's login credentials here and select a strong password. It is advisable to consider an email alias if a team of individuals will be administering this system."]} 
+                        title={self.state.i18n.welcomeToA3} 
+                        content={[self.state.i18n.welcomeToA3Message]} 
                     />
                     <div className="img-div-adminUserCtl">
                        <img src={adminUserImg} className="img-img-adminUserCtl" />
@@ -315,7 +315,7 @@ class adminUserCtl extends Component {
                     <Form onSubmit={self.handleSubmit.bind(self)}>
                     <div className="form-item-div-adminUserCtl">
                         <div className="form-item-title-div-adminUserCtl">
-                            Admin Email
+                            {self.state.i18n.adminEmail}
                         </div>
                         <div className="form-item-input-div-adminUserCtl">
                             {getFieldDecorator('user', {
@@ -337,7 +337,7 @@ class adminUserCtl extends Component {
 
                     <div className="form-item-div-adminUserCtl">
                         <div className="form-item-title-div-adminUserCtl">
-                            Password
+                            {self.state.i18n.password}
                         </div>
                         <div className="form-item-input-div-adminUserCtl">
                             {getFieldDecorator('pass', {
@@ -359,7 +359,7 @@ class adminUserCtl extends Component {
 
                     <div className="form-item-div-adminUserCtl">
                         <div className="form-item-title-div-adminUserCtl">
-                            Confirm Password
+                            {self.state.i18n.confirmPassword}
                         </div>
                         <div className="form-item-input-div-adminUserCtl">
                             {getFieldDecorator('passConfirm', {
@@ -385,13 +385,13 @@ class adminUserCtl extends Component {
                                 type="primary" 
                                 className="form-button-next-antd-button-adminUserCtl" 
                                 htmlType="submit" 
-                            >NEXT</Button>
+                            >{self.state.i18n.next}</Button>
                         </div>
                         <div className="form-button-cancel-div-adminUserCtl">
                             <Button 
                                 className="form-button-cancel-antd-button-adminUserCtl" 
                                 onClick={self.onClickCancel.bind(self)}
-                            >CANCEL</Button>
+                            >{self.state.i18n.cancel}</Button>
                         </div>
                     </div>
 
