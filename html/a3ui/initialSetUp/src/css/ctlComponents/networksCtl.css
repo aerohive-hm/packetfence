@@ -296,19 +296,14 @@
 .vlan-add-img-div-networksCtl{
     float:left;
     margin-top:4px;
-    height: 21px;
-    width:21px;
-    border: 2px solid #54698d;
-    color:#54698d;
-    border-radius: 10px;
-    padding-left:5px;
-    line-height: 16px;
+    height: 20px;
+    width:20px;
 
 }
 .vlan-add-img-img-networksCtl{
     float:left;
-    height: 16px;
-    width:16px;
+    height: 20px;
+    width:20px;
 }
 .vlan-add-text-div-networksCtl{
     float:left;
@@ -327,18 +322,13 @@
 .vlan-remove-img-div-networksCtl{
     float:left;
     margin-top:4px;
-    height: 21px;
-    width:21px;
-    border: 2px solid #54698d;
-    color:#54698d;
-    border-radius: 10px;
-    padding-left:6px;
-    line-height: 14px;
+    height: 20px;
+    width:20px;
 }
 .vlan-remove-img-img-networksCtl{
     float:left;
-    height: 19px;
-    width:19px;
+    height: 20px;
+    width:20px;
 }
 .vlan-remove-text-div-networksCtl{
     float:left;

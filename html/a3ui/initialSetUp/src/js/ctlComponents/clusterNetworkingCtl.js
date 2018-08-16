@@ -17,10 +17,8 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/clusterNetworkingCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/clusterNetworkingCtl";
 
-import editNoImg from "../../media/editNo.png";
-import editYesImg from "../../media/editYes.png";
-import addVlanImg from "../../media/addVlan.png";
-import removeVlanImg from "../../media/removeVlan.png";
+import editNoImg from "../../media/editNo.svg";
+import editYesImg from "../../media/editYes.svg";
 
 import networksImg from "../../media/networks.svg";
 

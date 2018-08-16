@@ -18,13 +18,11 @@ import {i18nfr} from "../../i18n/ctlComponents/nls/fr/networksCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/networksCtl";
 
 import networksImg from "../../media/networks.svg";
-import editNoImg from "../../media/editNo.png";
-import editYesImg from "../../media/editYes.png";
-import addVlanImg from "../../media/addVlan.png";
-import removeVlanImg from "../../media/removeVlan.png";
 
-
-
+import editNoImg from "../../media/editNo.svg";
+import editYesImg from "../../media/editYes.svg";
+import addVlanImg from "../../media/addVlan.svg";
+import removeVlanImg from "../../media/removeVlan.svg";
 
 const {Component} = React;
 
@@ -762,7 +760,7 @@ class networksCtl extends Component {
                     text.indexOf("VLAN")===-1?
                     <div className="vlan-add-div-networksCtl" onClick={self.onClickAddVlan.bind(self,index)}  >
                         <div className="vlan-add-img-div-networksCtl">
-                            +
+                            <img className="vlan-add-img-img-networksCtl" src={addVlanImg} />
                         </div>
                         <div className="vlan-add-text-div-networksCtl">
                             Add VLAN
@@ -772,7 +770,7 @@ class networksCtl extends Component {
                     :
                     <div className="vlan-remove-div-networksCtl" onClick={self.onClickRemoveVlan.bind(self,index)}  >
                         <div className="vlan-remove-img-div-networksCtl">
-                            x
+                            <img className="vlan-remove-img-img-networksCtl" src={removeVlanImg} />
                         </div>
                         <div className="vlan-remove-text-div-networksCtl">
                             Remove VLAN
