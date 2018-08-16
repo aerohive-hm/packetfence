@@ -1,4 +1,13 @@
 export let i18n ={
-	"getStart": "getStart",
+	"emailIsRequired": "Email is required.",
+	"emailFormatIsIncorrect": "Email format is incorrect.",
+	"passwordIsRequired": "Password is required.",
+	"confirmPasswordIsRequired": "Confirm Password is required.",
+	"passwordDoNotMatch": "Password do not match.",
 	
 }
+
+
+//self.state.i18n.passwordDoNotMatch
+
+//{self.state.i18n.passwordDoNotMatch}

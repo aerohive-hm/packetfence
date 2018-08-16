@@ -71,10 +71,10 @@ class adminUserCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!user||user.toString().trim()===""){
-            newWrongMessage.userWrongMessage="Email is required.";
+            newWrongMessage.userWrongMessage=self.state.i18n.emailIsRequired;
         }else
         if(isEmail(user.toString().trim())===false){
-            newWrongMessage.userWrongMessage="Email format is incorrect.";
+            newWrongMessage.userWrongMessage=self.state.i18n.emailFormatIsIncorrect;
         }else{
             newWrongMessage.userWrongMessage="";
         }
@@ -107,7 +107,7 @@ class adminUserCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!pass||pass.toString().trim()===""){
-            newWrongMessage.passWrongMessage="Password is required";
+            newWrongMessage.passWrongMessage=self.state.i18n.passwordIsRequired;
         }else{
             newWrongMessage.passWrongMessage="";
         }
@@ -140,10 +140,10 @@ class adminUserCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!passConfirm||passConfirm.toString().trim()===""){
-            newWrongMessage.passConfirmWrongMessage="Confirm Password is required";
+            newWrongMessage.passConfirmWrongMessage=self.state.i18n.confirmPasswordIsRequired;
         }else
         if(passConfirm.toString().trim()!==($("#pass").val()?$("#pass").val().toString().trim():"")){
-            newWrongMessage.passConfirmWrongMessage="Password do not match";
+            newWrongMessage.passConfirmWrongMessage=self.state.i18n.passwordDoNotMatch;
         }else{
             newWrongMessage.passConfirmWrongMessage="";
         }
