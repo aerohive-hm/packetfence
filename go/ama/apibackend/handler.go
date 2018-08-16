@@ -47,10 +47,10 @@ func ParseRequestToData(r *http.Request) (handlerData crud.HandlerData, err erro
 	if err != nil {
 		return handlerData, err
 	}
-	i := len(strings.Split(r.URL.Path, "/")) //r.URL.Path: /api/v1/cmd/subcmd
-	if i > 4 {
-		handlerData.Cmd = strings.Split(r.URL.Path, "/")[3]
-		handlerData.SubCmd = strings.Split(r.URL.Path, "/")[4]
+	sections := strings.Split(r.URL.Path, "/") //r.URL.Path: /api/v1/cmd/subcmd
+	if len(sections) > 4 {
+		handlerData.Cmd = sections[3]
+		handlerData.SubCmd = strings.Join(sections[4:], "")
 	} else {
 		fmt.Errorf("Can not find cmd in url = %s", r.URL.Path)
 	}
@@ -64,10 +64,11 @@ func Handle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return
 	}
+
 	section, ok := mHandler[d.Cmd]
 	if !ok {
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("Can not find subCmd"+
-			"for d.Cmd = %s", d.Cmd))
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Can not find subCmd of %s",
+			d.SubCmd))
 		return
 	}
 

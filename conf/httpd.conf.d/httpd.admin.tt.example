@@ -317,7 +317,6 @@ SetEnvIf Request_URI "netdata" is_netdata
       <Location /a3>
           Header edit Location ^/(.*) /a3/$1
           Header edit Location http:\/\/.* /a3
-          RequestHeader unset Accept-Encoding
           RequestHeader append X-Forwarded-For-A3 "127.0.0.1"
 
           ProxyHTMLInterp On
