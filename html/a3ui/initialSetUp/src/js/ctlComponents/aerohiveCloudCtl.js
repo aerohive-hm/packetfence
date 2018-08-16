@@ -81,10 +81,10 @@ class aerohiveCloudCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!url||url.toString().trim()===""){
-            newWrongMessage.urlWrongMessage="Cloud URL is required.";
+            newWrongMessage.urlWrongMessage=self.state.i18n.cloudUrlIsRequired;
         }else
         if(isUrl(url.toString().trim())===false){
-            newWrongMessage.urlWrongMessage='Cloud URL must start with "https://".';
+            newWrongMessage.urlWrongMessage=self.state.i18n.cloudUrlMustStartWith;
         }else{
             newWrongMessage.urlWrongMessage="";
         }
@@ -117,10 +117,10 @@ class aerohiveCloudCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!user||user.toString().trim()===""){
-            newWrongMessage.userWrongMessage="Cloud Admin User is required";
+            newWrongMessage.userWrongMessage=self.state.i18n.cloudAdminUserIsRequired;
         }else
         if(isEmail(user.toString().trim())===false){
-            newWrongMessage.userWrongMessage="Cloud Admin User format is incorrect.";
+            newWrongMessage.userWrongMessage=self.state.i18n.cloudAdminUserFormatIsIncorrect;
         }else{
             newWrongMessage.userWrongMessage="";
         }
@@ -153,7 +153,7 @@ class aerohiveCloudCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!pass||pass.toString().trim()===""){
-            newWrongMessage.passWrongMessage="Password is required";
+            newWrongMessage.passWrongMessage=self.state.i18n.passwordIsRequired;
         }else{
             newWrongMessage.passWrongMessage="";
         }
@@ -219,10 +219,10 @@ class aerohiveCloudCtl extends Component {
                 <div className="left-div-aerohiveCloudCtl">
                     <div className="guidance-div-aerohiveCloudCtl">
                         <div className="guidance-title-div-aerohiveCloudCtl">
-                            Aerohive Cloud
+                            {self.state.i18n.aerohiveCloud}
                         </div>
                         <div className="guidance-content-div-aerohiveCloudCtl">
-                            If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter the credentials at right and select, "<strong>Link with Aerohive Cloud Account</strong>". 
+                            {self.state.i18n.alreadyHasAnAerohiveCloudAccount}<strong>Link with Aerohive Cloud Account</strong>". 
                         </div>
                         <div className="guidance-content-div-aerohiveCloudCtl">
                             If this is your organizations first exposure to Aerohive, please select the button entitled, "<strong>Create an Aerohive Cloud Account</strong>" at right and follow the instructions. You will return here when you are done to complete the process.
