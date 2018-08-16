@@ -198,9 +198,12 @@ class adminUserCtl extends Component {
                 }
 
                 new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
-
-
-                },(error)=>{
+                    if(data.code==="ok"){
+                        self.props.changeStatus("networks");
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
 
                 }) 
 
