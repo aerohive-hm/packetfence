@@ -56,17 +56,24 @@ function system_call(cmd, opts) {
 app.post("/node/syscall", function(req, res){
     var cmd = req.body.cmd;
     var opts = req.body.opts;
-    var others = req.body.others;
+    var method = req.body.method;
     res.setTimeout(3600000);
     audit_log("the cmd to run is "+cmd+ " "+opts);
-    system_call(cmd, opts).then(function(resolve){
-        res.json({'cmd': '1',
-                  'opts': '2',
-                  'return': 'SUCESS'});
-      }).catch(function(rej){
-        res.status(501);
-        res.json({'return':rej});
-      });
+    if (method == "async") {
+        audit_log("here");
+        spawn(cmd,opts);
+        res.json({'ok':'ss'});
+    }
+    else {
+        system_call(cmd, opts).then(function(resolve){
+            res.json({'cmd': '1',
+                      'opts': '2',
+                      'return': 'SUCESS'});
+          }).catch(function(rej){
+            res.status(501);
+            res.json({'return':rej});
+          });
+    }
 });
 
 

@@ -391,8 +391,13 @@ sub get_remains_nodes_hostname {
 }
 
 sub delete_mysql_db_files {
-  my $db_folder = "/var/lib/mysql/"
+  my $db_folder = "/var/lib/mysql/";
   call_system_cmd("rm -rf $db_folder/*");
+}
+
+sub kill_force_cluster {
+   my $process = 'mysqld';
+   call_system_cmd("pkill -9 $process");
 }
 
 
