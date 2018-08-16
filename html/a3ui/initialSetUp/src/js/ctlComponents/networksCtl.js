@@ -546,7 +546,7 @@ class networksCtl extends Component {
 
 
                 let xCsrfToken="";
-                let url= "/a3/api/v1/configuration/interface";
+                let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
                     "name":"VLAN"+values.name.toString().trim(),
