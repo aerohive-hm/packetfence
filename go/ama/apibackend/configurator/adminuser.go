@@ -39,7 +39,7 @@ func writeAdminToDb(user,password,table string) error{
 	db, err := db.DbFromConfig(ctx) 
 		
 	/* replace is better than insert because it does not need to check if pid exsit or not */
-	prepare := fmt.Sprintf("replace into password(pid,password,valid_from,expiration,access_level )values(?,?,?,?,?)")
+	prepare := fmt.Sprintf("replace into %s(pid,password,valid_from,expiration,access_level )values(?,?,?,?,?)",table)
 	
 	timeStr:=time.Now().Format("2006-01-02 15:04:05")
 	expiration := "2038-01-01 00:00:00"
@@ -48,7 +48,13 @@ func writeAdminToDb(user,password,table string) error{
 		return err
 	}
 	stmt.Exec(user,password,timeStr,expiration,"ALL")
-	 
+	
+	prepare = fmt.Sprintf("replace into person(pid)values(?)")
+	stmt, err = db.Prepare(prepare)
+	if err != nil {		
+		return err
+	} 
+	stmt.Exec(user)
     defer stmt.Close()
 	defer db.Close()
 	return nil
