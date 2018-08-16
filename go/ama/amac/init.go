@@ -16,9 +16,9 @@ var (
 )
 
 func init() {
-	gdcUrl = "https://a-cloud.aerohive.com"
-	tokenUrl = "https://a-cloud.aerohive.com/oauth/cookietoken"
-	vhmidUrl = "https://a-cloud.aerohive.com/services/acct/selectvhm"
-	userName = "juanli@aerohive.com"
-	password = "Aerohive123"
+	gdcUrl = "https://10.155.100.17/acct-webapp"
+	tokenUrl = "https://10.155.100.17/acct-webapp/oauth/cookietoken"
+	vhmidUrl = "https://10.155.100.17/acct-webapp/services/acct/selectvhm"
+	userName = "admin%40cust001.com"
+	password = "aerohive"
 }
