@@ -101,9 +101,14 @@ class networksCtl extends Component {
             dataTable[i].services=dataTable[i].services===""?[]:dataTable[i].services.split(",");
         }
         self.setState({
+            enableClustering:data.cluster_enable,
             dataTable: dataTable,
             loading : false,
         }); 
+        self.props.form.resetFields();
+        self.props.form.setFieldsValue({
+            hostname:data.hostname,
+        });
     }
 
 
