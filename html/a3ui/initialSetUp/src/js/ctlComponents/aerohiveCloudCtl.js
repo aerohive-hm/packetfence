@@ -222,7 +222,7 @@ class aerohiveCloudCtl extends Component {
                             {self.state.i18n.aerohiveCloud}
                         </div>
                         <div className="guidance-content-div-aerohiveCloudCtl">
-                            {self.state.i18n.alreadyHasAnAerohiveCloudAccount}<strong>Link with Aerohive Cloud Account</strong>". 
+                            {self.state.i18n.alreadyHasAnAerohiveCloudAccount}<strong>{self.state.i18n.linkWithAerohiveCloudAccount}</strong>{self.state.i18n.quotationAndFull} 
                         </div>
                         <div className="guidance-content-div-aerohiveCloudCtl">
                             If this is your organizations first exposure to Aerohive, please select the button entitled, "<strong>Create an Aerohive Cloud Account</strong>" at right and follow the instructions. You will return here when you are done to complete the process.

@@ -7,9 +7,12 @@ export let i18n ={
 	"aerohiveCloud": "Aerohive Cloud",
 	"alreadyHasAnAerohiveCloudAccount": 'If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter the credentials at right and select, "',
 	
+	"linkWithAerohiveCloudAccount": "Link with Aerohive Cloud Account",
+	"quotationAndFull": '".',
+	
 }
 
 
-//self.state.i18n.passwordIsRequired
+//self.state.i18n.quotationAndFull
 
-//{self.state.i18n.alreadyHasAnAerohiveCloudAccount}
+//{self.state.i18n.quotationAndFull}

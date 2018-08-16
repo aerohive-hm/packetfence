@@ -33,6 +33,7 @@ class licensingCtl extends Component {
             wrongMessage:{
                 keyWrongMessage:"",
             },
+            key:"",
             enterEntitlementKeyVisible:false,
             endUserLicenseAgreementVisible:false,
             enableEndUserLicenseAgreement:false,
@@ -149,11 +150,52 @@ class licensingCtl extends Component {
 
     }
 
-    onCancelEndUserLicenseAgreementVisible= () => {
+    onSubmitEndUserLicenseAgreementVisible= () => {
         let self=this;
-        self.setState({ 
-            endUserLicenseAgreementVisible:false,
-        });
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configuration/license";
+        
+        let param={
+            trial:"0",
+            eula_accept:true,
+            key:self.state.key,
+        }
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                self.setState({ 
+                    endUserLicenseAgreementVisible:false,
+                });
+                self.props.changeStatus("aerohiveCloud");
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
+        }) 
+
+    }
+
+    onClickStartThirtyDaysTrial= () => {
+        let self=this;
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configuration/license";
+        
+        let param={
+            trial:"1",
+        }
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                self.props.changeStatus("aerohiveCloud");
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
+        }) 
 
     }
 
@@ -208,7 +250,9 @@ class licensingCtl extends Component {
                         <div className="thirty-day-trial-text-div-licensingCtl">
                             TRIAL
                         </div>
-                        <div className="thirty-day-trial-button-div-licensingCtl">
+                        <div className="thirty-day-trial-button-div-licensingCtl"
+                            onClick={self.onClickStartThirtyDaysTrial.bind(self)}
+                        >
                             START A 30-DAY TRIAL PERIOD
                         </div>
                 
@@ -305,7 +349,6 @@ class licensingCtl extends Component {
                     visible={endUserLicenseAgreementVisible}
                     width={513}
                     footer={null}
-                    onCancel={self.onCancelEndUserLicenseAgreementVisible.bind(self)}
                     closable={false}
                     maskClosable={false}
                     bodyStyle={{padding:"0px"}}
@@ -493,8 +536,8 @@ class licensingCtl extends Component {
                                     disabled={enableEndUserLicenseAgreement===true?false:true}
                                     type="primary" 
                                     className="modal-eula-submit-antd-button-licensingCtl" 
-                                    onClick={self.onCancelEndUserLicenseAgreementVisible.bind(self)}
-                                >CANCEL</Button>
+                                    onClick={self.onSubmitEndUserLicenseAgreementVisible.bind(self)}
+                                >SUBMIT</Button>
                             </div>
                             <div className="clear-float-div-common" ></div >
                         </div>
