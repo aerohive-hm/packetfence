@@ -40,8 +40,7 @@ class startingCtl extends Component {
     componentDidMount() {
         let self=this;
         self.getRightI18n();
-
-        let url = "/api/v1/configurator/services/status";
+        let url = "/a3/api/v1/configurator/services/status";
         let param={
         }
         let xCsrfToken="";

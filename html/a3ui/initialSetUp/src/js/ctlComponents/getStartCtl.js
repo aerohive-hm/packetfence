@@ -52,12 +52,14 @@ class getStartCtl extends Component {
 
     onClickNewDeployment= () => {
         let self=this;
+        self.props.changeStatus("adminUser");
         
 
     }
 
     onClickJoinCluster= () => {
         let self=this;
+        self.props.changeStatus("joinCluster");
         
 
     }
