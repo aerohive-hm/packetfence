@@ -68,7 +68,8 @@ module.exports = {
 	filename: 'static/js/initialSetUp.js',
     chunkFilename: 'static/js/initialSetUp.chunk.js',
     // We inferred the "public path" (such as / or /my-project) from homepage.
-    publicPath: publicPath
+    //publicPath: publicPath
+    publicPath: "/a3/configurator/"
   },
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
