@@ -18,6 +18,12 @@ type A3Interface struct {
 	Service     []string `json:"service"`
 	Description string   `json:"description"`
 }
+type A3License struct {
+	LicensedCapacity	uint16 	`json:"licensedCapacity"`
+	CurrentUsedCapacity	uint16	`json:"currentUsedCapacity"`
+	AverageUsedCapacity	uint16	`json:"averageUsedCapacity"`
+	NextExpirationDate	uint64	`json:"nextExpirationDate"`
+}
 
 type A3OnboardingData struct {
 	Msgtype         string        `json:"msgtype"`
@@ -32,13 +38,14 @@ type A3OnboardingData struct {
 	ClusterHostName string        `json:"clusterHostName"`
 	ClusterPrimary  bool          `json:"clusterPrimary"`
 	Interfaces      []A3Interface `json:"interfaces"`
+	License			A3License		`json:"license"`
 }
 
 type A3OnboardingHeader struct {
 	SystemID   string `json:"systemId"`
 	ClusterID  string `json:"clusterId"`
 	Hostname   string `json:"hostname"`
-	SequenceID string `json:"sequenceId"`
+	MessageID string `json:"messageId"`
 }
 
 type A3OnboardingInfo struct {
@@ -89,6 +96,12 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		break
 	}
 
+	//Fetch license info, not hard code, need todo
+	onboardingData.License.LicensedCapacity = 5
+	onboardingData.License.CurrentUsedCapacity = 3
+	onboardingData.License.AverageUsedCapacity = 2
+	onboardingData.License.NextExpirationDate = 4102415999000
+
 	return
 }
 
@@ -102,14 +115,14 @@ func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 	return
 }
 
-var ctxGlobal = log.LoggerNewContext(context.Background())
+var contextOnboard = log.LoggerNewContext(context.Background())
 
 func GetOnboardingInfo(ctx context.Context) A3OnboardingInfo {
 	var context context.Context
 	onboardInfo := A3OnboardingInfo{}
 
 	if ctx == nil {
-		context = ctxGlobal
+		context = contextOnboard
 	} else {
 		context = ctx
 	}
