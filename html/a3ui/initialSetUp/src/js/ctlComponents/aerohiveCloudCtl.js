@@ -307,7 +307,7 @@ class aerohiveCloudCtl extends Component {
 
                     <div className="form-item-div-aerohiveCloudCtl">
                         <div className="form-item-title-div-aerohiveCloudCtl">
-                            Cloud Admin User
+                            {self.state.i18n.cloudAdminUser}
                         </div>
                         <div className="form-item-input-div-aerohiveCloudCtl">
                             {getFieldDecorator('user', {
@@ -329,7 +329,7 @@ class aerohiveCloudCtl extends Component {
 
                     <div className="form-item-div-aerohiveCloudCtl">
                         <div className="form-item-title-div-aerohiveCloudCtl">
-                            Password
+                            {self.state.i18n.password}
                         </div>
                         <div className="form-item-input-div-aerohiveCloudCtl">
                             {getFieldDecorator('pass', {
@@ -359,7 +359,7 @@ class aerohiveCloudCtl extends Component {
                                 type="primary" 
                                 className="form-button-link-antd-button-aerohiveCloudCtl" 
                                 htmlType="submit" 
-                            >LINK WITH AEROHIVE CLOUD ACCOUNT</Button>
+                            >{self.state.i18n.linkWithAerohiveCloudAccount}</Button>
                         </div>
                     </div>
                     <div className="form-button-div-aerohiveCloudCtl">

@@ -16,7 +16,9 @@ export let i18n ={
 	"firstExposureToAerohive3": '" at right and follow the instructions. You will return here when you are done to complete the process.',
 	
 	"cloudUrl": "Cloud URL",
-	
+	"cloudAdminUser": "Cloud Admin User",
+	"password": "Password",
+	"linkWithAerohiveCloudAccount": "LINK WITH AEROHIVE CLOUD ACCOUNT",
 	
 	
 }
@@ -24,4 +26,14 @@ export let i18n ={
 
 //self.state.i18n.quotationAndFull
 
-//{self.state.i18n.cloudUrl}
+//{self.state.i18n.linkWithAerohiveCloudAccount}
+
+
+
+
+
+
+
+
+
+
