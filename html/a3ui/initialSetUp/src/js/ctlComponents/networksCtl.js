@@ -597,10 +597,33 @@ class networksCtl extends Component {
             cancelText: 'No',
             onOk() {
                 let dataCopy=self.state.dataTable;
-                dataCopy.splice(index,1);
-                self.setState({ 
-                    dataTable : dataCopy,
-                });
+
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configuratorion/interface";
+                
+                let param={
+                    name:dataCopy[index].name,
+                    ip_addr:dataCopy[index].ip_addr,
+                    netmask:dataCopy[index].netmask,
+                    vip:dataCopy[index].vip,
+                    type:dataCopy[index].type,
+                    services:dataCopy[index].services.join(","),
+
+                }
+
+                new RequestApi('delete',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        dataCopy.splice(index,1);
+                        self.setState({ 
+                            dataTable : dataCopy,
+                        });
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
+
             },
             onCancel() {},
         });
@@ -1016,7 +1039,9 @@ class networksCtl extends Component {
                             <div className="clear-float-div-common" ></div >
                         </div>
 
-                        <div className="modal-form-item-div-networksCtl">
+                        <div className="modal-form-item-div-networksCtl" 
+                            style={{display:enableClustering===true?"block":"none"}}
+                        >
                             <div className="modal-form-item-title-div-networksCtl">
                                 Vip
                             </div>
