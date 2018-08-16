@@ -49,6 +49,19 @@ class getStartCtl extends Component {
         })
 
     }
+
+    onClickNewDeployment= () => {
+        let self=this;
+        
+
+    }
+
+    onClickJoinCluster= () => {
+        let self=this;
+        
+
+    }
+
     render() {
         const {} = this.state;
         const {} = this.props;
@@ -72,7 +85,7 @@ class getStartCtl extends Component {
                     <div className="new-deployment-explain-div-getStartCtl">
                         Set up a new cluster or standalone
                     </div>
-                    <div className="new-deployment-button-div-getStartCtl">
+                    <div className="new-deployment-button-div-getStartCtl" onClick={self.onClickNewDeployment.bind(self)}>
                         GET STARTED
                     </div>
                     <div className="clear-float-div-common" ></div >
@@ -90,7 +103,7 @@ class getStartCtl extends Component {
                     <div className="join-cluster-explain-div-getStartCtl">
                         Join an existing cluster
                     </div>
-                    <div className="join-cluster-button-div-getStartCtl">
+                    <div className="join-cluster-button-div-getStartCtl" onClick={self.onClickJoinCluster.bind(self)}>
                         GET STARTED
                     </div>
                     <div className="clear-float-div-common" ></div >

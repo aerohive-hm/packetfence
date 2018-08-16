@@ -31,7 +31,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"licensing",
+            show:"getStart",
             // getStart
             // adminUser
             // networks
