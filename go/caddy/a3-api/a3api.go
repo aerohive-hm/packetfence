@@ -10,6 +10,9 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	//	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
+	"github.com/inverse-inc/packetfence/go/ama/amac"
+
 )
 
 func init() {
@@ -43,15 +46,19 @@ func setup(c *caddy.Controller) error {
 		return err
 	}
 
+	/*
+		Create a goroutine for the frontend component, frontend
+		goroutine must be started before the cloud integration
+		setup flow
+	*/
+	go amac.Entry(ctx)
+
 	httpserver.GetConfig(c).AddMiddleware(func(next httpserver.Handler) httpserver.Handler {
 		A3api.Next = next
 		return A3api
 	})
 
 	log.LoggerWContext(ctx).Info("a3-api setup success.")
-
-	//Create a goroutine for the frontend component
-	go amac.Entry()
 
 	return nil
 }

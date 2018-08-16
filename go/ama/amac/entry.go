@@ -2,7 +2,10 @@ package amac
 
 import (
 	//"crypto/x509"
+	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
 	"net/http"
 	"sync"
@@ -11,14 +14,17 @@ import (
 )
 
 const (
-	AMA_STATUS_INIT      = 0
-	AMA_STATUS_CONNECTED = 1
-	AMA_STATUS_UNKNOWN   = 100
+	AMA_STATUS_INIT           = 0
+	AMA_STATUS_CONNECING_GDC  = 1
+	AMA_STATUS_CONNECING_RDC  = 2
+	AMA_STATUS_ONBOARDING_SUC = 3
+	AMA_STATUS_UNKNOWN        = 100
 )
 const (
 	gdcConfigChange   = 1
-	ifConfigChange    = 2
+	networkChange     = 2
 	licenseInfoChange = 3
+	disconnet         = 4
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -41,31 +47,42 @@ type SliceMock struct {
 	cap  int
 }
 
+type KeepAliveResFromRdc struct {
+	Header A3CommonHeader    `json:"header"`
+	Data   map[string]string `json:"data"`
+}
+
 func updateConnStatus(status int) {
 	m.Lock()
 	ama_connect_status = status
 	m.Unlock()
 }
 
-func readConnStatus() int {
+//The UI damon will call this API, so it is public
+func GetConnStatus() int {
 	m.RLock()
 	status := ama_connect_status
 	m.RUnlock()
 	return status
 }
 
-func Entry() {
+/*
+	Entry function for the front end component
+*/
+func Entry(ctx context.Context) {
 	var msg []byte
-	/*
-		try to connet to GDC and RDC, the loopConnect() will not return
-		unless connected successfully
-	*/
-	if (len(vhmidUrl) != 0) && (len(userName) != 0) && (len(password) != 0) {
-		loopConnect()
-	}
 
+	//To do, code for the later version
+	/*
+		    //check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
+			if (enbale the cloud integration = true) {
+				result := connectToRdcWithoutPara(ctx)
+				//loopConnect()
+			}
+	*/
+	loopConnect(ctx)
 	//start a goroutine, sending the keepalive only when the status is connected
-	go keepaliveToRdc()
+	go keepaliveToRdc(ctx)
 
 	/*
 		Read the channel to monitor the configuration change from UI
@@ -75,54 +92,70 @@ func Entry() {
 	for {
 		select {
 		case msg = <-msgChannel:
-			handleMsgFromUi(msg)
+			handleMsgFromUi(ctx, msg)
 
 		default:
-			time.Sleep(5 * time.Second)
+			status := GetConnStatus()
+			if status == AMA_STATUS_ONBOARDING_SUC {
+				time.Sleep(5 * time.Second)
+			} else {
+				time.Sleep(1 * time.Second)
+			}
 		}
 	}
-
 }
 
 /*
 	Handling the message from web UI, such as items about GDC change,
 	network info change, or license info changes
 */
-func handleMsgFromUi(message []byte) {
+func handleMsgFromUi(ctx context.Context, message []byte) {
 	var msg *msgFromUi = *(**msgFromUi)(unsafe.Pointer(&message))
 	fmt.Println("msg.msgType", msg.msgType)
 	fmt.Println("msg.data", msg.data)
 	switch msg.msgType {
+	/*
+	   This type handles changes to the following parameters:
+	   GDC URL/username/password, and enable the cloud integration
+	*/
 	case gdcConfigChange:
-		updateConnStatus(AMA_STATUS_INIT)
-		fmt.Println("read the channel")
+		updateConnStatus(AMA_STATUS_CONNECING_GDC)
 		//to do, get the latest config info
-		loopConnect()
-		break
-	case ifConfigChange:
-		break
+		loopConnect(ctx)
+
+	case networkChange:
+
 	case licenseInfoChange:
-		break
+
+	case disconnet:
+		updateConnStatus(AMA_STATUS_INIT)
 	default:
-		fmt.Println("unexpected message")
+		log.LoggerWContext(ctx).Error("unexpected message from UI")
 	}
 }
 
-func keepaliveToRdc() {
+//Sending keepalive packets after onboarding successfully
+func keepaliveToRdc(ctx context.Context) {
+
 	// create a ticker for heartbeat
 	ticker := time.NewTicker(10 * time.Second)
 	timeoutCount = 0
 
 	for _ = range ticker.C {
 		/*
+			To do, check if disable the connect to cloud, if disable,
+			not send the keepalive
+		*/
+
+		/*
 			check the timeoutCount of keepalive, if hearbeat fails,
 			need to re-onboarding
 		*/
 		if timeoutCount >= KEEPALIVE_TIMEOUT_COUNT_MAX {
-			updateConnStatus(AMA_STATUS_INIT)
-			result := connectToRdc()
+			updateConnStatus(AMA_STATUS_CONNECING_RDC)
+			result := connectToRdcWithoutPara(ctx)
 			if result == 0 {
-				updateConnStatus(AMA_STATUS_CONNECTED)
+				updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
 				timeoutCount = 0
 			} else {
 				timeoutCount++
@@ -132,18 +165,18 @@ func keepaliveToRdc() {
 			}
 		}
 		//Check the connect status, if not connected, do nothing
-		if readConnStatus() != AMA_STATUS_CONNECTED {
+		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
 			continue
 		}
 		//msgChannel <- data
 		fmt.Println("sending the keepalive")
-		request, err := http.NewRequest("GET", "http://10.155.100.17:8000/rest/v1/poll/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", nil)
+		request, err := http.NewRequest("GET", "http://10.155.100.17:8008/rest/v1/poll/1234567", nil)
 		if err != nil {
 			panic(err)
 		}
 
-		//增加header选项
-		request.Header.Add("x-auth-token", "juanlitest")
+		//Add header option
+		request.Header.Add("X-A3-Auth-Token", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
 
 		resp, result := client.Do(request)
@@ -155,28 +188,34 @@ func keepaliveToRdc() {
 		body, _ := ioutil.ReadAll(resp.Body)
 		fmt.Println(string(body))
 		fmt.Println(resp.Status)
-		//To do, handle the response, new token may be included in this message
+
+		//Dispatch the data coming with keepalive reponses
+		dispathMsgFromRdc(ctx, []byte(body))
 		resp.Body.Close()
-
-		//Dispatch the data from keepalive_reponse
-		//go AMA_dispatcher()
 	}
-
 }
 
 /*
-func AMA_dispatcher() {
-	var i int = 0
-	var msg []byte
-
-	fmt.Println("print value in dispatcher() ")
-	for {
-		i++
-		fmt.Println("begin read i=%d ", i)
-		msg = <-start.Msg_channel
-		fmt.Println(string(msg))
-		fmt.Println("end read i=%d ", i)
-
-	}
-}
+	Handling the data coming with the keepalive responses, now only
+	process the RDC token update messages, there will be configuration
+	messages from HM in the future
 */
+func dispathMsgFromRdc(ctx context.Context, message []byte) {
+	keepAliveResp := make([]KeepAliveResFromRdc, 0)
+
+	err := json.Unmarshal(message, &keepAliveResp)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("keepaliveToRdc: json Unmarshal fail")
+		return
+	}
+
+	//go through the slice
+	for _, resMsg := range keepAliveResp {
+		if resMsg.Data["msgType"] == "amac_token" {
+			//RDC token need to write file, if process restart we can read it
+			updateRdcToken(ctx, resMsg.Data["token"])
+			rdcTokenStr = resMsg.Data["token"]
+		}
+	}
+	return
+}
