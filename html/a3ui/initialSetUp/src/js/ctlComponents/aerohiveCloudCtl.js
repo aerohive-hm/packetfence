@@ -199,8 +199,50 @@ class aerohiveCloudCtl extends Component {
                 }
 
 
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configurator/cloud";
+                
+                let param={
+                    url:values.url,
+                    user:values.user,
+                    pass:values.pass,
+                }
+
+                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        self.props.changeStatus("startingManagement");
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
+
+
             }
         });
+        
+    }
+
+    onClickContinueWithoutAnAerohiveCloudAccount= () => {
+        let self=this;
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/cloud";
+        
+        let param={
+            url:"",
+        }
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                self.props.changeStatus("startingManagement");
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
+        }) 
         
     }
 
@@ -329,7 +371,9 @@ class aerohiveCloudCtl extends Component {
                             >CREATE AN AEROHIVE CLOUD ACCOUNT</Button>
                         </div>
                     </div>
-                    <div className="form-button-continue-div-aerohiveCloudCtl">
+                    <div className="form-button-continue-div-aerohiveCloudCtl"
+                        onClick={self.onClickContinueWithoutAnAerohiveCloudAccount.bind(self)}
+                    >
                         Continue without an Aerohive Cloud Account
                     </div>
 
