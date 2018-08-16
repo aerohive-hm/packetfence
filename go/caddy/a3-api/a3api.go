@@ -11,8 +11,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	//	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
-	"github.com/inverse-inc/packetfence/go/ama/amac"
-
 )
 
 func init() {
