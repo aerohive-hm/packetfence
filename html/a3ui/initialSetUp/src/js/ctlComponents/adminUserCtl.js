@@ -189,6 +189,25 @@ class adminUserCtl extends Component {
                     return;
                 }
 
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configurator/admin_user";
+                
+                let param={
+                    user:values.user,
+                    pass:values.pass,
+                }
+
+                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+
+
+                },(error)=>{
+
+                }) 
+
+
+
+
+
 
             }
         });
@@ -235,7 +254,7 @@ class adminUserCtl extends Component {
         if(passScore.score===0){
             passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
                                 <div className="form-item-pass-score-0-div-adminUserCtl" >
-                                    Very Weak
+                                    {self.state.i18n.veryWeak}
                                 </div>  
                                 <div className="form-item-pass-score-message-div-adminUserCtl" >
                                     {passScore.feedback.warning===""?passScore.feedback.suggestions[0]:passScore.feedback.warning}
