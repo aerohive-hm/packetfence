@@ -46,27 +46,33 @@ class startingCtl extends Component {
         }
         let xCsrfToken="";
 
-        // self.setState({
-        //     loading:true,
-        // }) 
+        self.setState({
+            loading:true,
+        }) 
 
-        // this.timer = setInterval(()=>{
+        this.timer = setInterval(()=>{
 
-        //     RequestApi('get',url,param,xCsrfToken,(data)=>{
-        //         if(data.percentage==="100"){
-        //             clearInterval(self.timer);
-        //             self.setState({
-        //                 percentage : 0,
-        //                 loading:false,
-        //             })
-        //         }else{
-        //             self.setState({
-        //                 percentage : parseInt(data.percentage),
-        //             }) 
-        //         }  
-        //     });
+            RequestApi('get',url,param,xCsrfToken,(data)=>{
+                if(data.code==="ok"){
+                    if(data.percentage==="100"){
+                        clearInterval(self.timer);
+                        self.setState({
+                            percentage : 0,
+                            loading:false,
+                        })
+                    }else{
+                        self.setState({
+                            percentage : parseInt(data.percentage),
+                        }) 
+                    }  
+                }else{
+                    message.destroy();
+                    message.error(data.msg);
+                }
 
-        // },3000)
+            });
+
+        },3000)
 
 
     }
