@@ -78,14 +78,16 @@ echo "Building the RPMs"
 echo "*****************"
 if [ "$BUILD_TYPE" == "RELEASE" ]; then
   export BUILD_TYPE=RELEASE
+  export RELEASE_BUILD = 1
 else
   export BUILD_TYPE=DEV
+  export RELEASE_BUILD = 0
 fi
   
 if [ -n "$PASSPHRASE" ]; then
   $CURRENT_DIR/a3-rpm-build-expect.sh $VERSION $DIST $DATE $BUILD_DIR $PASSPHRASE
 else
-  /usr/bin/rpmbuild -ba --define "ver $VERSION" --define 'snapshot 1' --define "dist $DIST" --define "rev 0.$DATE" $BUILD_DIR/SPECS/A3.spec 1>/dev/null
+  /usr/bin/rpmbuild -ba --define "ver $VERSION" --define 'snapshot 1' --define "dist $DIST" --define "rev 0.$DATE" --define "release_build $RELEASE_BUILD" $BUILD_DIR/SPECS/A3.spec 1>/dev/null
 fi
 
 if [[ "$?" != "0" ]]; then
