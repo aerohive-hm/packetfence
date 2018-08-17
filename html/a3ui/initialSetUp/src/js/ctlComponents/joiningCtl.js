@@ -117,7 +117,7 @@ class joiningCtl extends Component {
                 <div className="right-div-joiningCtl">
                 
                     <div className="joining-cluster-div-joiningCtl">
-                        Joining cluster...
+                        {self.state.i18n.joiningCluster}
                     </div>
                     <div className="progress-div-joiningCtl">
                         <Progress percent={percentage} />

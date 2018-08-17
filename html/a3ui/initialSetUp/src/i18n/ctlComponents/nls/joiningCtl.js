@@ -1,4 +1,4 @@
 export let i18n ={
-	"getStart": "getStart",
+	"joiningCluster": "Joining cluster...",
 	
 }
