@@ -19,14 +19,12 @@ export let i18n ={
 	"cloudAdminUser": "Cloud Admin User",
 	"password": "Password",
 	"linkWithAerohiveCloudAccount": "LINK WITH AEROHIVE CLOUD ACCOUNT",
+	"createAnAerohiveCloudAccount": "CREATE AN AEROHIVE CLOUD ACCOUNT",
+	"continueWithoutAnAerohiveCloudAccount": "Continue without an Aerohive Cloud Account",
 	
 	
 }
 
-
-//self.state.i18n.quotationAndFull
-
-//{self.state.i18n.linkWithAerohiveCloudAccount}
 
 
 

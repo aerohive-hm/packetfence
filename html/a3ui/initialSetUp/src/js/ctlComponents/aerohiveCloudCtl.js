@@ -368,13 +368,13 @@ class aerohiveCloudCtl extends Component {
                                 className="form-button-create-antd-button-aerohiveCloudCtl" 
                                 onClick={self.onClickCreateAnAerohiveCloudAccount.bind(self)}
                                 
-                            >CREATE AN AEROHIVE CLOUD ACCOUNT</Button>
+                            >{self.state.i18n.createAnAerohiveCloudAccount}</Button>
                         </div>
                     </div>
                     <div className="form-button-continue-div-aerohiveCloudCtl"
                         onClick={self.onClickContinueWithoutAnAerohiveCloudAccount.bind(self)}
                     >
-                        Continue without an Aerohive Cloud Account
+                        {self.state.i18n.continueWithoutAnAerohiveCloudAccount}
                     </div>
 
 
