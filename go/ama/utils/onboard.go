@@ -19,10 +19,10 @@ type A3Interface struct {
 	Description string   `json:"description"`
 }
 type A3License struct {
-	LicensedCapacity	uint16 	`json:"licensedCapacity"`
-	CurrentUsedCapacity	uint16	`json:"currentUsedCapacity"`
-	AverageUsedCapacity	uint16	`json:"averageUsedCapacity"`
-	NextExpirationDate	uint64	`json:"nextExpirationDate"`
+	LicensedCapacity    uint16 `json:"licensedCapacity"`
+	CurrentUsedCapacity uint16 `json:"currentUsedCapacity"`
+	AverageUsedCapacity uint16 `json:"averageUsedCapacity"`
+	NextExpirationDate  uint64 `json:"nextExpirationDate"`
 }
 
 type A3OnboardingData struct {
@@ -33,18 +33,18 @@ type A3OnboardingData struct {
 	Netmask         string        `json:"netmask"`
 	DefaultGateway  string        `json:"defaultGateway"`
 	SoftwareVersion string        `json:"softwareVersion"`
-	SystemUptime    uint64        `json:"systemUpTime"`
+	SystemUptime    int64         `json:"systemUpTime"`
 	Vip             string        `json:"vip"`
 	ClusterHostName string        `json:"clusterHostName"`
 	ClusterPrimary  bool          `json:"clusterPrimary"`
 	Interfaces      []A3Interface `json:"interfaces"`
-	License			A3License		`json:"license"`
+	License         A3License     `json:"license"`
 }
 
 type A3OnboardingHeader struct {
-	SystemID   string `json:"systemId"`
-	ClusterID  string `json:"clusterId"`
-	Hostname   string `json:"hostname"`
+	SystemID  string `json:"systemId"`
+	ClusterID string `json:"clusterId"`
+	Hostname  string `json:"hostname"`
 	MessageID string `json:"messageId"`
 }
 
@@ -79,8 +79,8 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	onboardingData.Msgtype = "connect"
 	//onboardingData.IpMode = "Todo"
 	//onboardingData.DefaultGateway = "Todo"
-	//onboardingData.SoftwareVersion = "Todo"
-	//onboardingData.SystemUptime = Todo
+	onboardingData.SoftwareVersion = GetA3Version()
+	onboardingData.SystemUptime = GetSysUptime()
 	//onboardingData.ClusterHostName = "Todo"
 	//onboardingData.ClusterPrimary = "Todo"
 	managementIface, errint := GetIfaceList("eth0")
