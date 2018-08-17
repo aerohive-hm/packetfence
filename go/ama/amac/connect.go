@@ -13,6 +13,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 )
 
 var (
@@ -111,7 +112,7 @@ func GetTokenReq(systemId string) A3TokenReqToRdc {
 
 	return tokenReqToRdcInfo
 }
-
+/*
 func GetOnboardingInfo() A3OnboardingInfo {
 	onboardInfo := A3OnboardingInfo{}
 
@@ -141,7 +142,7 @@ func GetOnboardingInfo() A3OnboardingInfo {
 
 	return onboardInfo
 }
-
+*/
 /*
 	This function needs to be called in the absence of RDC token
 	or RDC token expires
@@ -179,13 +180,66 @@ func reqTokenFromOtherNodes(ctx context.Context) int {
 */
 func onbordingToRdc(ctx context.Context) int {
 	for {
-		node_info := GetOnboardingInfo()
+		node_info := utils.GetOnboardingInfo(ctx)
 		data, _ := json.Marshal(node_info)
 		fmt.Println(string(data))
 		reader := bytes.NewReader(data)
 
 		fmt.Println("begin to send onboarding request to RDC")
-		request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
+		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
+		request, err := http.NewRequest("POST", "http://10.155.22.33:8882/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			return -1
+		}
+
+		//Add header option, the tokenStr is from RDC now
+		request.Header.Add("X-A3-Auth-Token", rdcTokenStr)
+		request.Header.Set("Content-Type", "application/json")
+		resp, err := client.Do(request)
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			fmt.Println("RDC is down")
+			return -1
+		}
+
+		body, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println("receive the response ", resp.Status)
+		fmt.Println(string(body))
+		statusCode := resp.StatusCode
+		resp.Body.Close()
+		/*
+			statusCode = 401 means authenticate fail, need to request valid RDC token
+			from the other nodes
+		*/
+		if statusCode == 401 {
+			result := reqTokenFromOtherNodes(ctx)
+			//result == 0 means get the token, try to onboarding again
+			if result == 0 {
+				continue
+			} else {
+				//not get the token, return and wait for the event from UI or other nodes
+				return result
+			}
+		}
+		return 0
+	}
+	return 0
+}
+
+/*
+	This function is used to send update message if network/license changes
+*/
+func updateMsgToRdc(ctx context.Context) int {
+	for {
+		node_info := utils.GetIntChgInfo(ctx)
+		data, _ := json.Marshal(node_info)
+		fmt.Println(string(data))
+		reader := bytes.NewReader(data)
+
+		fmt.Println("begin to send initerface change to RDC")
+		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
+		request, err := http.NewRequest("POST", "http://10.155.22.33:8882/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
@@ -317,6 +371,7 @@ func connectToRdcWithPara(ctx context.Context) int {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return -1
 	}
+	updateMsgToRdc(ctx)
 	return 0
 }
 
@@ -325,7 +380,7 @@ func readRdcToken(ctx context.Context) string {
 		return rdcTokenStr
 	}
 
-	file, error := os.OpenFile("./ama/amac/token.txt", os.O_RDWR|os.O_CREATE, 0600)
+	file, error := os.OpenFile("./token.txt", os.O_RDWR|os.O_CREATE, 0600)
 	if error != nil {
 		fmt.Println(error)
 	}
@@ -337,7 +392,7 @@ func readRdcToken(ctx context.Context) string {
 }
 
 func updateRdcToken(ctx context.Context, s string) {
-	file, error := os.OpenFile("./ama/amac/token.txt", os.O_RDWR|os.O_CREATE, 0600)
+	file, error := os.OpenFile("./token.txt", os.O_RDWR|os.O_CREATE, 0600)
 	if error != nil {
 		fmt.Println(error)
 		return

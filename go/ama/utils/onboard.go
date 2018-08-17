@@ -9,21 +9,27 @@ import (
 )
 
 type A3Interface struct {
-	Parent      string   `json:"Parent"`
+	Parent      string   `json:"parent"`
 	Vlan        string   `json:"vlan"`
-	IpAddress   string   `json:"ipaddress"`
+	IpAddress   string   `json:"ipAddress"`
 	Vip         string   `json:"vip"`
 	Netmask     string   `json:"netmask"`
 	Type        string   `json:"type"`
-	Service     []string `json:"service"`
+	Service     []string `json:"services"`
 	Description string   `json:"description"`
+}
+type A3License struct {
+	LicensedCapacity	int 	`json:"licensedCapacity"`
+	CurrentUsedCapacity	int	`json:"currentUsedCapacity"`
+	AverageUsedCapacity	int	`json:"averageUsedCapacity"`
+	NextExpirationDate	uint64	`json:"nextExpirationDate"`
 }
 
 type A3OnboardingData struct {
-	Msgtype         string        `json:"msgtype"`
+	Msgtype         string        `json:"msgType"`
 	MacAddress      string        `json:"macAddress"`
 	IpMode          string        `json:"ipMode"`
-	IpAddress       string        `json:"ipaddress"`
+	IpAddress       string        `json:"ipAddress"`
 	Netmask         string        `json:"netmask"`
 	DefaultGateway  string        `json:"defaultGateway"`
 	SoftwareVersion string        `json:"softwareVersion"`
@@ -32,13 +38,14 @@ type A3OnboardingData struct {
 	ClusterHostName string        `json:"clusterHostName"`
 	ClusterPrimary  bool          `json:"clusterPrimary"`
 	Interfaces      []A3Interface `json:"interfaces"`
+	License			A3License		`json:"license"`
 }
 
 type A3OnboardingHeader struct {
 	SystemID   string `json:"systemId"`
 	ClusterID  string `json:"clusterId"`
 	Hostname   string `json:"hostname"`
-	SequenceID string `json:"sequenceId"`
+	MessageID string `json:"messageId"`
 }
 
 type A3OnboardingInfo struct {
@@ -89,6 +96,12 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		break
 	}
 
+	//Fetch license info, not hard code, need todo
+	onboardingData.License.LicensedCapacity = 5
+	onboardingData.License.CurrentUsedCapacity = 3
+	onboardingData.License.AverageUsedCapacity = 2
+	onboardingData.License.NextExpirationDate = 4102415999000
+
 	return
 }
 
@@ -102,14 +115,14 @@ func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 	return
 }
 
-var ctxGlobal = log.LoggerNewContext(context.Background())
+var contextOnboard = log.LoggerNewContext(context.Background())
 
 func GetOnboardingInfo(ctx context.Context) A3OnboardingInfo {
 	var context context.Context
 	onboardInfo := A3OnboardingInfo{}
 
 	if ctx == nil {
-		context = ctxGlobal
+		context = contextOnboard
 	} else {
 		context = ctx
 	}
