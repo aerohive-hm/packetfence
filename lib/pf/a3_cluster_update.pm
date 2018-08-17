@@ -243,9 +243,16 @@ sub _generate_update_patch_list {
 
 sub _get_db_password {
   my $password;
+  open DBINFO, "<", $A3_DBINFO_FILE || die "Unable to find the database information file";
 
-  $password = $Config{database}->{pass};
-  chomp $password;
+  while (<DBINFO>) {
+    if ($_ =~ /^dbroot_pass=(.*)$/) {
+      $password = $1;
+      last;
+    }
+  }
+
+  close DBINFO;
 
   return $password;
 }
