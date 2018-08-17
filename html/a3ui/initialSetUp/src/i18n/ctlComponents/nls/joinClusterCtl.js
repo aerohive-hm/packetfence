@@ -1,4 +1,36 @@
 export let i18n ={
-	"getStart": "getStart",
+	"clusterPrimaryIsRequired": "Cluster Primary is required.",
+	"clusterPrimaryMustStartWith": 'Cluster Primary must start with "https://".',
+	"clusterAdminIsRequired": "Cluster Admin is required.",
+	"emailFormatIsIncorret": "Email format is incorret.",
+	"adminPasswordIsRequired": "Admin Password is required.",
+	"joinCluster": "Join Cluster",
+	"joinClusterMessage": "To have this instance of A3 join an A3 Cluster, please enter the the Primary Cluster's IP address and Adminstrator credentials.",
+	"clusterPrimary": "Cluster Primary",
+	"clusterAdmin": "Cluster Admin",
+	"adminPassword": "Admin Password",
+	"next": "NEXT",
+	"cancel": "CANCEL",
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

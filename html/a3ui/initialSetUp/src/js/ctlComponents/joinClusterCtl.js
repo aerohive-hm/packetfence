@@ -75,10 +75,10 @@ class joinClusterCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!primaryServer||primaryServer.toString().trim()===""){
-            newWrongMessage.primaryServerWrongMessage="Cluster Primary is required.";
+            newWrongMessage.primaryServerWrongMessage=self.state.i18n.clusterPrimaryIsRequired;
         }else
         if(isUrl(primaryServer.toString().trim())===false){
-            newWrongMessage.primaryServerWrongMessage='Cluster Primary must start with "https://".';
+            newWrongMessage.primaryServerWrongMessage=self.state.i18n.clusterPrimaryMustStartWith;
         }else{
             newWrongMessage.primaryServerWrongMessage="";
         }
@@ -111,10 +111,10 @@ class joinClusterCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!admin||admin.toString().trim()===""){
-            newWrongMessage.adminWrongMessage="Cluster Admin is required.";
+            newWrongMessage.adminWrongMessage=self.state.i18n.clusterAdminIsRequired;
         }else
         if(isEmail(admin.toString().trim())===false){
-            newWrongMessage.adminWrongMessage="Email format is incorret.";
+            newWrongMessage.adminWrongMessage=self.state.i18n.emailFormatIsIncorret;
         }else{
             newWrongMessage.adminWrongMessage="";
         }
@@ -147,7 +147,7 @@ class joinClusterCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!passwd||passwd.toString().trim()===""){
-            newWrongMessage.passwdWrongMessage="Admin Password is required";
+            newWrongMessage.passwdWrongMessage=self.state.i18n.adminPasswordIsRequired;
         }else{
             newWrongMessage.passwdWrongMessage="";
         }
@@ -212,8 +212,8 @@ class joinClusterCtl extends Component {
             <div className="global-div-joinClusterCtl">
                 <div className="left-div-joinClusterCtl">
                     <Guidance 
-                        title={"Join Cluster"} 
-                        content={["To have this instance of A3 join an A3 Cluster, please enter the the Primary Cluster's IP address and Adminstrator credentials."]} 
+                        title={self.state.i18n.joinCluster} 
+                        content={[self.state.i18n.joinClusterMessage]} 
                     />
                     <div className="img-div-joinClusterCtl">
                        <img src={joinClusterImg} className="img-img-joinClusterCtl" />
@@ -227,7 +227,7 @@ class joinClusterCtl extends Component {
 
                     <div className="form-item-div-joinClusterCtl">
                         <div className="form-item-title-div-joinClusterCtl">
-                            Cluster Primary
+                            {self.state.i18n.clusterPrimary}
                         </div>
                         <div className="form-item-input-div-joinClusterCtl">
                             {getFieldDecorator('primary_server', {
@@ -251,7 +251,7 @@ class joinClusterCtl extends Component {
 
                     <div className="form-item-div-joinClusterCtl">
                         <div className="form-item-title-div-joinClusterCtl">
-                            Cluster Admin
+                            {self.state.i18n.clusterAdmin}
                         </div>
                         <div className="form-item-input-div-joinClusterCtl">
                             {getFieldDecorator('admin', {
@@ -273,7 +273,7 @@ class joinClusterCtl extends Component {
 
                     <div className="form-item-div-joinClusterCtl">
                         <div className="form-item-title-div-joinClusterCtl">
-                            Admin Password
+                            {self.state.i18n.adminPassword}
                         </div>
                         <div className="form-item-input-div-joinClusterCtl">
                             {getFieldDecorator('passwd', {
@@ -303,13 +303,13 @@ class joinClusterCtl extends Component {
                                 type="primary" 
                                 className="form-button-next-antd-button-joinClusterCtl" 
                                 htmlType="submit" 
-                            >NEXT</Button>
+                            >{self.state.i18n.next}</Button>
                         </div>
                         <div className="form-button-cancel-div-joinClusterCtl">
                             <Button 
                                 className="form-button-cancel-antd-button-joinClusterCtl" 
                                 onClick={self.onClickCancel.bind(self)}
-                            >CANCEL</Button>
+                            >{self.state.i18n.cancel}</Button>
                         </div>
                     </div>
 
