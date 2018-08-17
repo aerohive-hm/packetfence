@@ -78,10 +78,10 @@ echo "Building the RPMs"
 echo "*****************"
 if [ "$BUILD_TYPE" == "RELEASE" ]; then
   export BUILD_TYPE=RELEASE
-  export RELEASE_BUILD = 1
+  export RELEASE_BUILD=1
 else
   export BUILD_TYPE=DEV
-  export RELEASE_BUILD = 0
+  export RELEASE_BUILD=0
 fi
   
 if [ -n "$PASSPHRASE" ]; then
