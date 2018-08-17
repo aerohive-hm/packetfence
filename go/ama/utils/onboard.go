@@ -9,27 +9,27 @@ import (
 )
 
 type A3Interface struct {
-	Parent      string   `json:"Parent"`
+	Parent      string   `json:"parent"`
 	Vlan        string   `json:"vlan"`
-	IpAddress   string   `json:"ipaddress"`
+	IpAddress   string   `json:"ipAddress"`
 	Vip         string   `json:"vip"`
 	Netmask     string   `json:"netmask"`
 	Type        string   `json:"type"`
-	Service     []string `json:"service"`
+	Service     []string `json:"services"`
 	Description string   `json:"description"`
 }
 type A3License struct {
-	LicensedCapacity	uint16 	`json:"licensedCapacity"`
-	CurrentUsedCapacity	uint16	`json:"currentUsedCapacity"`
-	AverageUsedCapacity	uint16	`json:"averageUsedCapacity"`
+	LicensedCapacity	int 	`json:"licensedCapacity"`
+	CurrentUsedCapacity	int	`json:"currentUsedCapacity"`
+	AverageUsedCapacity	int	`json:"averageUsedCapacity"`
 	NextExpirationDate	uint64	`json:"nextExpirationDate"`
 }
 
 type A3OnboardingData struct {
-	Msgtype         string        `json:"msgtype"`
+	Msgtype         string        `json:"msgType"`
 	MacAddress      string        `json:"macAddress"`
 	IpMode          string        `json:"ipMode"`
-	IpAddress       string        `json:"ipaddress"`
+	IpAddress       string        `json:"ipAddress"`
 	Netmask         string        `json:"netmask"`
 	DefaultGateway  string        `json:"defaultGateway"`
 	SoftwareVersion string        `json:"softwareVersion"`
