@@ -79,16 +79,16 @@ class getStartCtl extends Component {
                         <img src={newDeploymentLogoImg} className="new-deployment-logo-img-getStartCtl" />
                     </div>
                     <div className="new-deployment-new-div-getStartCtl">
-                        NEW
+                        {self.state.i18n.new}
                     </div>
                     <div className="new-deployment-deployment-div-getStartCtl">
-                        DEPLOYMENT
+                        {self.state.i18n.deployment}
                     </div>
                     <div className="new-deployment-explain-div-getStartCtl">
-                        Set up a new cluster or standalone
+                        {self.state.i18n.setUpANewClusterOrStandalone}
                     </div>
                     <div className="new-deployment-button-div-getStartCtl" onClick={self.onClickNewDeployment.bind(self)}>
-                        GET STARTED
+                        {self.state.i18n.getStarted}
                     </div>
                     <div className="clear-float-div-common" ></div >
                 </div>
@@ -97,16 +97,16 @@ class getStartCtl extends Component {
                         <img src={joinClusterLogoImg} className="join-cluster-logo-img-getStartCtl" />
                     </div>
                     <div className="join-cluster-new-div-getStartCtl">
-                        JOIN
+                        {self.state.i18n.join}
                     </div>
                     <div className="join-cluster-deployment-div-getStartCtl">
-                        CLUSTER
+                        {self.state.i18n.cluster}
                     </div>
                     <div className="join-cluster-explain-div-getStartCtl">
-                        Join an existing cluster
+                        {self.state.i18n.joinAnExistingCluster}
                     </div>
                     <div className="join-cluster-button-div-getStartCtl" onClick={self.onClickJoinCluster.bind(self)}>
-                        GET STARTED
+                        {self.state.i18n.getStarted}
                     </div>
                     <div className="clear-float-div-common" ></div >
                 </div>

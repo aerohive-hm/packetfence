@@ -1,4 +1,33 @@
 export let i18n ={
-	"getStart": "getStart",
+	"new": "NEW",
+	"deployment": "DEPLOYMENT",
+	"setUpANewClusterOrStandalone": "Set up a new cluster or standalone",
+	"getStarted": "GET STARTED",
+	"join": "JOIN",
+	"cluster": "CLUSTER",
+	"joinAnExistingCluster": "Join an existing cluster",
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
