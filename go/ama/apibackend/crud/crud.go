@@ -54,3 +54,7 @@ func (crud *Crud) Processor(w http.ResponseWriter, r *http.Request, d HandlerDat
 	jsonData := handler(r, d)
 	fmt.Fprintf(w, string(jsonData))
 }
+
+func FormPostRely(code string, msg string) []byte {
+	return []byte(fmt.Sprintf(`"code":"%s", "msg":"%s"`, code, msg))
+}
