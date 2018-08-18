@@ -82,20 +82,19 @@ func handleGetAdminUserMethod(r *http.Request, d crud.HandlerData) []byte {
 func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	admin := new(AdminUserInfo)
-	code := "ok"
+	code := "fail"
 	err := json.Unmarshal(d.ReqData, admin)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("unmarshal error:" + err.Error())
-		code = "fail"
 		goto END
 	}
 
 	err = writeAdminToDb(admin.User, admin.Pass, "password")
 	if err != nil {
 		log.LoggerWContext(ctx).Error("write db error:" + err.Error())
-		code = "fail"
 		goto END
 	}
+	code = "ok"
 
 END:
 	crud.FormPostRely(code, err.Error())

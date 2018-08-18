@@ -56,5 +56,8 @@ func (crud *Crud) Processor(w http.ResponseWriter, r *http.Request, d HandlerDat
 }
 
 func FormPostRely(code string, msg string) []byte {
+	if code == "ok" {
+		return []byte(PostOK)
+	}
 	return []byte(fmt.Sprintf(`{"code":"%s", "msg":"%s"}`, code, msg))
 }
