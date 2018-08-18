@@ -58,7 +58,7 @@ Readonly::Scalar my $HEAD_BIN                     => "$BIN_DIR/head";
 open(UPDATE_CLUSTER_LOG,   '>>', $A3_CLUSTER_UPDATE_LOG_FILE)   || die "Unable to open update log file";
 my $a3_pkg = 'A3';
 my $a3_db = 'A3';
-my $db_user = 'A3';
+my $db_user = 'root';
 my $node_port = 9432;
 
 =head2 disable_cluster_check
