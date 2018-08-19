@@ -54,6 +54,11 @@ Readonly::Scalar my $CP_BIN                       => "$BIN_DIR/cp";
 Readonly::Scalar my $CURL_BIN                     => "$BIN_DIR/curl";
 Readonly::Scalar my $GREP_BIN                     => "$BIN_DIR/grep";
 Readonly::Scalar my $HEAD_BIN                     => "$BIN_DIR/head";
+Readonly::Scalar my $PING_BIN                     => "$BIN_DIR/ping";
+Readonly::Scalar my $SORT_BIN                     => "$BIN_DIR/sort";
+Readonly::Scalar my $UNIQ_BIN                     => "$BIN_DIR/uniq";
+
+Readonly::Scalar my $CENTOS_BASE                  => 'mirrorlist.centos.org';
 
 open(UPDATE_CLUSTER_LOG,   '>>', $A3_CLUSTER_UPDATE_LOG_FILE)   || die "Unable to open update log file";
 my $a3_pkg = 'A3';
@@ -138,6 +143,44 @@ sub call_system_cmd_with_output {
     
   _commit_cluster_update_log("call_system invoked with \"$cmd\" ends");
 
+}
+
+=head2
+ 
+yum health check
+
+=cut
+
+sub check_yum_connectivity {
+
+  if (call_system("$PING_BIN -c 3 $CENTOS_BASE >/dev/null 2>&1") != 0){
+    _commit_cluster_update_log("Unable to connect to CentOS base yum repository!");
+    return 1;
+  }
+
+  my @repo_hosts = `$YUM_BIN repolist -v                               \\
+                  | $GREP_BIN -E Repo-baseurl.*aerohive                \\
+                  | $AWK_BIN -F' : ' '{print \$2}'                     \\
+                  | $SED_BIN -r 's/^(https?:\\/\\/[^/]+)\\/.*\$/\\1/g' \\
+                  | $SORT_BIN                                          \\
+                  | $UNIQ_BIN`;
+
+  _commit_cluster_update_log("Found update servers: " . join(',', @repo_hosts));
+
+  foreach my $host (@repo_hosts) {
+    chomp $host;
+    _commit_cluster_update_log("Checking connectivity to $host");
+
+    my $status = `$CURL_BIN -s -I -m 60 -w %{http_code} -o /dev/null $host`;
+
+    if ($status < 200 || $status >= 400) {
+      _commit_cluster_update_log("Unable to connect to update server $host");
+
+      print "Connect to Aerohive A3 yum repository at $host failed!\n";
+      return 1;
+
+    }
+  }
 }
 
 
