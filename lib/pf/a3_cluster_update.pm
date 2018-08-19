@@ -153,7 +153,7 @@ yum health check
 
 sub check_yum_connectivity {
 
-  if (call_system("$PING_BIN -c 3 $CENTOS_BASE >/dev/null 2>&1") != 0){
+  if (call_system_cmd("$PING_BIN -c 3 $CENTOS_BASE >/dev/null 2>&1") != 0){
     _commit_cluster_update_log("Unable to connect to CentOS base yum repository!");
     return 1;
   }
@@ -180,6 +180,20 @@ sub check_yum_connectivity {
       return 1;
 
     }
+  }
+  return 0;
+}
+
+=head2
+
+overall health check
+
+=cut
+
+sub health_check {
+  my $ret = check_yum_connectivity();
+  if ($ret == 1) {
+    print "Error=Yum connectivity check failed";
   }
 }
 
@@ -351,8 +365,10 @@ sub remote_api_call_post {
   my $json_data = encode_json($data);
   $client->POST($url, $json_data);
   if( $client->responseCode() ne '200' ){
-    A3_Warn("Unable to call remote with $url for ".Dumper($data));
+     _commit_cluster_update_log("Unable to call remote with $url for ".Dumper($data));
+     return 1;
   }
+  return 0;
 
 }
 

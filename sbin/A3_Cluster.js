@@ -34,11 +34,15 @@ function system_call(cmd, opts) {
     return new Promise(function(resolve, reject){
         var proc = spawn(cmd,opts);
         proc.stdout.on('data', function(data){
+	   data = data.toString();
+           if (data.match(/Error=/)) {
+              reject("Error in execute "+cmd+opts);
+           }
 	   audit_log(data);
          });
         proc.stdout.on('end', function(data){
 	   audit_log('[--end executing spawn-- ]');
-	   resolve('OK');
+	   resolve('Sucess');
          });
         /*
 	proc.stderr.on('data', function(data){
@@ -60,18 +64,16 @@ app.post("/node/syscall", function(req, res){
     res.setTimeout(3600000);
     audit_log("the cmd to run is "+cmd+ " "+opts);
     if (method == "async") {
-        audit_log("here");
+        audit_log("async call");
         spawn(cmd,opts);
-        res.json({'ok':'ss'});
+        res.json({'msg':'Sucess'});
     }
     else {
         system_call(cmd, opts).then(function(resolve){
-            res.json({'cmd': '1',
-                      'opts': '2',
-                      'return': 'SUCESS'});
+            res.json({'msg': 'Sucess'});
           }).catch(function(rej){
             res.status(501);
-            res.json({'return':rej});
+            res.json({'msg':rej});
           });
     }
 });
