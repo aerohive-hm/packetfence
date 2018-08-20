@@ -11,7 +11,9 @@ import (
 
 func init() {
 	sections := crud.Sections{
-		"onboarding": event.OnBoardingNew,
+		"onboarding":  event.OnBoardingNew,
+		"clusterjoin": event.ClusterJoinNew,
+		"clustersync": event.ClusterSyncNew,
 	}
 	Register("event", sections)
 }
