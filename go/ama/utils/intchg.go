@@ -1,8 +1,9 @@
+//intchg.go implements geting interface changed info.
 package utils
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -11,13 +12,13 @@ type A3IntChgHeader struct {
 }
 
 type A3IntChgData struct {
-	MsgType	string 	`json:"msgType"`
-	Interfaces      []A3Interface `json:"interfaces"`
+	MsgType    string        `json:"msgType"`
+	Interfaces []A3Interface `json:"interfaces"`
 }
 
 type A3IntChgInfo struct {
-	Header 	A3IntChgHeader	`json:"header"`
-	Data 	A3IntChgData	`json:"data"`
+	Header A3IntChgHeader `json:"header"`
+	Data   A3IntChgData   `json:"data"`
 }
 
 func (intChgData *A3IntChgData) GetValue() {
@@ -38,8 +39,8 @@ func (intChgData *A3IntChgData) GetValue() {
 		a3Interface.Netmask = iface.NetMask
 		a3Interface.Vip = iface.Vip
 		//a3Interface.Type = "Todo"
-		//a3Interface.Service = "Todo"
-		a3Interface.Description = iface.Name + " VLAN " + iface.Vlan
+		a3Interface.Service = []string{}
+		//a3Interface.Description = iface.Name + " VLAN " + iface.Vlan
 		intChgData.Interfaces = append(intChgData.Interfaces, *a3Interface)
 	}
 
