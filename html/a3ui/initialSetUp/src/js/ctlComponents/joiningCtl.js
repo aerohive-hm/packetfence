@@ -46,27 +46,29 @@ class joiningCtl extends Component {
         }
         let xCsrfToken="";
 
-        // self.setState({
-        //     loading:true,
-        // }) 
+        self.setState({
+            loading:true,
+        }) 
 
-        // this.timer = setInterval(()=>{
+        this.timer = setInterval(()=>{
 
-        //     RequestApi('get',url,param,xCsrfToken,(data)=>{
-        //         if(data.percentage==="100"){
-        //             clearInterval(self.timer);
-        //             self.setState({
-        //                 percentage : 0,
-        //                 loading:false,
-        //             })
-        //         }else{
-        //             self.setState({
-        //                 percentage : parseInt(data.percentage),
-        //             }) 
-        //         }  
-        //     });
+            RequestApi('get',url,param,xCsrfToken,(data)=>{
+                if(data.percentage==="100"){
+                    clearInterval(self.timer);
+                    self.setState({
+                        percentage : 0,
+                        loading:false,
+                    },function(){
+                        self.props.changeStatus("startingRegistration");
+                    })
+                }else{
+                    self.setState({
+                        percentage : parseInt(data.percentage),
+                    }) 
+                }  
+            });
 
-        // },3000)
+        },3000)
 
 
     }
