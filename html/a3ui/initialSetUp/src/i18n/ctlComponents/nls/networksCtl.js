@@ -29,18 +29,22 @@ export let i18n ={
 	"addVlan": "Add VLAN",
 	"removeVlan": "Remove VLAN",
 	"instructions": "Instructions",
-	"instructionsMessage": "On this page, you can configure the network interfaces detected on your system.","Don't worry, you can always come back to this step if you change your mind.","Enable all the physical interfaces you want to use for A3. If you use VLAN enforcement, specify which VLAN is dedicated to your registration, isolation, and management subnets. You must always have at least one management subnet.",
+	"instructionsMessage1": "On this page, you can configure the network interfaces detected on your system.",
+	"instructionsMessage2": "Don't worry, you can always come back to this step if you change your mind.",
+	"instructionsMessage3": "Enable all the physical interfaces you want to use for A3. If you use VLAN enforcement, specify which VLAN is dedicated to your registration, isolation, and management subnets. You must always have at least one management subnet.",
 	"hostName": "Host Name",
 	"interfaces": "interfaces",
 	"enableClustering": "Enable clustering",
 	"next": "NEXT",
+	"cancel": "CANCEL",
+	"modalName": "Name",
+	"modalIpAddress": "Ip Address",
+	"modalNetmask": "Netmask",
+	"modalType": "Type",
+	"modalServices": "Services",
 	
 }
 
-
-//{self.state.i18n.next}
-
-//self.state.i18n.instructionsMessage
 
 
 

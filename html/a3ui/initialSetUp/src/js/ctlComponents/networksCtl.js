@@ -872,7 +872,7 @@ class networksCtl extends Component {
                 <div className="left-div-networksCtl">
                     <Guidance 
                         title={self.state.i18n.instructions} 
-                        content={[self.state.i18n.instructionsMessage]} 
+                        content={[self.state.i18n.instructionsMessage1,self.state.i18n.instructionsMessage2,self.state.i18n.instructionsMessage3]} 
                     />
                     <div className="img-div-networksCtl">
                        <img src={networksImg} className="img-img-networksCtl" />
@@ -941,7 +941,7 @@ class networksCtl extends Component {
                             <Button 
                                 className="form-button-cancel-antd-button-networksCtl" 
                                 onClick={self.onClickCancel.bind(self)}
-                            >CANCEL</Button>
+                            >{self.state.i18n.cancel}</Button>
                         </div>
                     </div>
 
@@ -952,7 +952,7 @@ class networksCtl extends Component {
                 </div>
 
                 <Modal 
-                    title="Add VLAN"
+                    title={self.state.i18n.addVlan}
                     visible={addVlanVisible}
                     width={302}
                     footer={null}
@@ -964,11 +964,11 @@ class networksCtl extends Component {
                         <Form onSubmit={self.onOkAddVlan.bind(self)}>
                         <div className="modal-form-item-div-networksCtl" style={{marginTop:"0px"}}>
                             <div className="modal-form-item-title-div-networksCtl">
-                                Name
+                                {self.state.i18n.modalName}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 <div className="modal-form-item-name-vlan-div-networksCtl">
-                                    VLAN
+                                    {self.state.i18n.vlan}
                                 </div>
                                 <div className="modal-form-item-name-number-div-networksCtl">
                                     {getFieldDecorator('name', {
@@ -991,7 +991,7 @@ class networksCtl extends Component {
 
                         <div className="modal-form-item-div-networksCtl">
                             <div className="modal-form-item-title-div-networksCtl">
-                                Ip Address
+                                {self.state.i18n.modalIpAddress}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('ip_addr', {
@@ -1013,7 +1013,7 @@ class networksCtl extends Component {
 
                         <div className="modal-form-item-div-networksCtl">
                             <div className="modal-form-item-title-div-networksCtl">
-                                Netmask
+                                {self.state.i18n.modalNetmask}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('netmask', {
@@ -1037,7 +1037,7 @@ class networksCtl extends Component {
                             style={{display:enableClustering===true?"block":"none"}}
                         >
                             <div className="modal-form-item-title-div-networksCtl">
-                                Vip
+                                {self.state.i18n.vip}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('vip', {
@@ -1060,7 +1060,7 @@ class networksCtl extends Component {
 
                         <div className="modal-form-item-div-networksCtl">
                             <div className="modal-form-item-title-div-networksCtl">
-                                Type
+                                {self.state.i18n.modalType}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('type', {
@@ -1072,11 +1072,11 @@ class networksCtl extends Component {
                                         option={{initialValue:"MANAGEMENT"}}
                                         style={{ height: 32 }} 
                                     >
-                                        <Option value="MANAGEMENT" >Management</Option>
-                                        <Option value="REGISTRATION">Registration</Option>
-                                        <Option value="ISOLATION" >Isolation</Option>
-                                        <Option value="NONE" >None</Option>
-                                        <Option value="OTHER" >Other</Option>
+                                        <Option value="MANAGEMENT" >{self.state.i18n.management}</Option>
+                                        <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
+                                        <Option value="ISOLATION" >{self.state.i18n.isolation}</Option>
+                                        <Option value="NONE" >{self.state.i18n.none}</Option>
+                                        <Option value="OTHER" >{self.state.i18n.other}</Option>
                                     </Select>
 
                                 )}
@@ -1087,7 +1087,7 @@ class networksCtl extends Component {
                         </div>
                         <div className="modal-form-item-div-networksCtl">
                             <div className="modal-form-item-title-div-networksCtl">
-                                Services
+                                {self.state.i18n.modalServices}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('services', {
@@ -1098,8 +1098,8 @@ class networksCtl extends Component {
                                         mode="multiple"
                                         style={{ height: 32 }} 
                                     >
-                                        <Option value="PORTAL">Portal</Option>
-                                        <Option value="RADIUS">RADIUS</Option>
+                                        <Option value="PORTAL">{self.state.i18n.portal}</Option>
+                                        <Option value="RADIUS">{self.state.i18n.radius}</Option>
                                     </Select>
                                 )}
                             </div>
@@ -1113,13 +1113,13 @@ class networksCtl extends Component {
                                     type="primary" 
                                     className="modal-form-button-next-antd-button-networksCtl" 
                                     htmlType="submit" 
-                                >NEXT</Button>
+                                >{self.state.i18n.next}</Button>
                             </div>
                             <div className="modal-form-button-cancel-div-networksCtl">
                                 <Button 
                                     className="modal-form-button-cancel-antd-button-networksCtl" 
                                     onClick={self.onCancelAddVlan.bind(self)}
-                                >CANCEL</Button>
+                                >{self.state.i18n.cancel}</Button>
                             </div>
                         </div>
                         </Form>

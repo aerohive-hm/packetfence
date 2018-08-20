@@ -231,7 +231,7 @@ class licensingCtl extends Component {
                 <div className="left-div-licensingCtl">
                     <Guidance 
                         title={self.state.i18n.licensing} 
-                        content={[self.state.i18n.licensingMessage]} 
+                        content={[self.state.i18n.licensingMessage1,self.state.i18n.licensingMessage2]} 
                     />
                     <div className="img-div-licensingCtl">
                        <img src={licensingImg} className="img-img-licensingCtl" />
