@@ -30,7 +30,7 @@ var (
 	//Store the token to avoid multiple IO
 	gdcTokenStr string
 	rdcTokenStr string
-	vhmid_str   string
+	VhmidStr   string
 )
 
 type response struct {
@@ -482,7 +482,7 @@ func fetchVhmidFromGdc(ctx context.Context, s string) int {
 
 		json.Unmarshal([]byte(body), &vhmres)
 
-		vhmid_str = fmt.Sprintf("%d", vhmres.Data.OwnerId)
+		VhmidStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
 		rdcUrl = vhmres.Data.Location
 		//To do, save the vhmid and rdcurl to config file and synchronize to cluster member
 
