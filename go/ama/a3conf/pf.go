@@ -1,33 +1,48 @@
 package a3config
 
 import (
-	"fmt"
-	//"regexp"
+//	"fmt"
+//"regexp"
 )
 
 var pfPath = ConfRoot + "/" + pfConf
 
-func PfCommit(sections Section) {
-	conf := new(A3Conf)
-	conf.LoadCfg(pfPath)
-
-	return tt.Commit(sections)
+func UpdateEmail(email string) error {
+	section := Section{
+		"alerting": {
+			"emailaddr": email,
+		},
+	}
+	return pfCommit(section)
 }
 
-func PfRead(sectionId string) Section {
-	conf := new(A3Conf)
-	conf.LoadCfg(pfPath)
-	conf.Read(id)
-	return conf.sections
+func UpdateHostname(hostname string) error {
+	section := Section{
+		"general": {
+			"hostname": hostname,
+		},
+	}
+	return pfCommit(section)
 }
 
-func GetHostname() {
+func GetHostname() string {
+	section := pfRead("general")
+	if section == nil {
+		return ""
+	}
+	return section["general"]["hostname"]
 }
 
-func UpdateHostname() {
+func GetWebServices() Section {
+	return pfRead("webservices")
 }
 
 func UpdateIface() {
+
 }
-func ReadIface() {
+func ReadIface(ifname string) Section {
+	if ifname != "all" {
+		return pfRead(ifname)
+	}
+	return nil
 }

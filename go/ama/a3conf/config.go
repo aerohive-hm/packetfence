@@ -91,3 +91,26 @@ func (conf *A3Conf) Read(sectionId string) {
 	}
 	return
 }
+
+func pfCommit(sections Section) error {
+	conf := new(A3Conf)
+	err := conf.LoadCfg(pfPath)
+	if err != nil {
+		return err
+	}
+
+	return conf.Commit(sections)
+}
+
+func pfRead(sectionId string) Section {
+	conf := new(A3Conf)
+	err := conf.LoadCfg(pfPath)
+	if err != nil {
+		return nil
+	}
+	conf.Read(sectionId)
+	if conf.sections == nil {
+		return nil
+	}
+	return conf.sections
+}

@@ -11,8 +11,8 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/inverse-inc/packetfence/go/ama/a3conf"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/fetch"
 	"github.com/inverse-inc/packetfence/go/db"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -85,18 +85,24 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 	code := "fail"
 	err := json.Unmarshal(d.ReqData, admin)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("unmarshal error:" + err.Error())
+		log.LoggerWContext(ctx).Error("unmarshal error: " + err.Error())
 		goto END
 	}
 
 	err = writeAdminToDb(admin.User, admin.Pass, "password")
 	if err != nil {
-		log.LoggerWContext(ctx).Error("write db error:" + err.Error())
+		log.LoggerWContext(ctx).Error("write db error: " + err.Error())
 		goto END
 	}
+
+	err = a3config.UpdateEmail()
+	if err != nil {
+		log.LoggerWContext(ctx).Error("write conf error: " + err.Error())
+		goto END
+	}
+
 	code = "ok"
 
 END:
-	crud.FormPostRely(code, err.Error())
-	return []byte(crud.PostOK)
+	return crud.FormPostRely(code, err.Error())
 }
