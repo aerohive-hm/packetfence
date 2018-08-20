@@ -2,10 +2,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { LocaleProvider } from 'antd';
-import { Tabs,message ,Button,Tree } from 'antd';
+import { Tabs,message ,Button,Tree,Spin } from 'antd';
 const TreeNode = Tree.TreeNode;
 import '../css/index.css';
-import Util from "../libs/util";
+import {RequestApi} from "../libs/util";
 
 import * as mock from "../libs/mockData";
 import GetStartCtl from './ctlComponents/getStartCtl';
@@ -31,7 +31,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
-            show:"clusterNetworking",
+            show:"getStart",
             // getStart
             // adminUser
             // networks
@@ -50,6 +50,7 @@ class App extends Component {
     componentDidMount() {
         let self=this;
         self.getRightI18n();
+        self.getStep();
     }
 
     getRightI18n= () => {
@@ -67,6 +68,30 @@ class App extends Component {
 
     }
 
+
+
+    getStep= () => {
+        let self=this;
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/step";
+         
+        let param={
+        }
+        
+        self.setState({
+            loading : true,
+        })
+
+        new RequestApi('get',url,param,xCsrfToken,(data)=>{
+            self.setState({
+                loading : true,
+                show:data.step,
+            })
+        });
+
+    }
+
     changeStatus(show){
         let self=this;
         self.setState({
@@ -75,7 +100,7 @@ class App extends Component {
     }
 
     render() {
-        const {i18n,show} = this.state;
+        const {i18n,show,loading} = this.state;
         let self=this;
 
         let contentHtml;
@@ -147,10 +172,12 @@ class App extends Component {
         return (
             <LocaleProvider locale={i18n}>
             <div className="app-div-index">
+                <Spin spinning={loading}>
                 <Logo />
                 <div className="content-div-index" >
                     {contentHtml}
                 </div>
+                </Spin>
             </div>
             </LocaleProvider>
 
