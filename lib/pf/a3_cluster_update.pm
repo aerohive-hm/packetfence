@@ -193,7 +193,7 @@ overall health check
 sub health_check {
   my $ret = check_yum_connectivity();
   if ($ret == 1) {
-    print "Error=Yum connectivity check failed";
+    exit 1;
   }
 }
 

@@ -35,23 +35,28 @@ function system_call(cmd, opts) {
         var proc = spawn(cmd,opts);
         proc.stdout.on('data', function(data){
 	   data = data.toString();
-           if (data.match(/Error=/)) {
-              reject("Error in execute "+cmd+opts);
-           }
 	   audit_log(data);
          });
         proc.stdout.on('end', function(data){
 	   audit_log('[--end executing spawn-- ]');
-	   resolve('Sucess');
+	   //resolve('Sucess');
          });
-        /*
-	proc.stderr.on('data', function(data){
+	proc.stderr.on('error', function(data){
 	  reject(data);
-	});*/
+	});
+        proc.on('close', (code) => {
+	   audit_log('we got return code for cmd '+cmd+opts+' is ['+code+']');
+           if (code == 0) {
+                resolve("Sucess to execute cmd "+cmd+opts);
+           }else {
+                reject("Failed to execute cmd "+cmd+opts);
+           }
+        });
+        /*
 	proc.on('error', function(err) {
 	   audit_log(err);
 	   reject(err);
-        });
+        });*/
 
     });
 }
@@ -70,8 +75,10 @@ app.post("/node/syscall", function(req, res){
     }
     else {
         system_call(cmd, opts).then(function(resolve){
+	    audit_log(resolve);
             res.json({'msg': 'Sucess'});
           }).catch(function(rej){
+	    audit_log(rej);
             res.status(501);
             res.json({'msg':rej});
           });
