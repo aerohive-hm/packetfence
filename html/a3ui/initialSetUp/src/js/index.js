@@ -85,7 +85,7 @@ class App extends Component {
 
         new RequestApi('get',url,param,xCsrfToken,(data)=>{
             self.setState({
-                loading : true,
+                loading : false,
                 show:data.step,
             })
         });
