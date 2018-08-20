@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	//  "github.com/inverse-inc/packetfence/go/ama/fetch"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 

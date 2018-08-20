@@ -5,15 +5,13 @@ import (
 //"regexp"
 )
 
-var pfPath = ConfRoot + "/" + pfConf
-
 func UpdateEmail(email string) error {
 	section := Section{
 		"alerting": {
 			"emailaddr": email,
 		},
 	}
-	return pfCommit(section)
+	return A3Commit("PF", section)
 }
 
 func UpdateHostname(hostname string) error {
@@ -22,11 +20,11 @@ func UpdateHostname(hostname string) error {
 			"hostname": hostname,
 		},
 	}
-	return pfCommit(section)
+	return A3Commit("PF", section)
 }
 
 func GetHostname() string {
-	section := pfRead("general")
+	section := A3Read("PF", "general")
 	if section == nil {
 		return ""
 	}
@@ -34,7 +32,7 @@ func GetHostname() string {
 }
 
 func GetWebServices() Section {
-	return pfRead("webservices")
+	return A3Read("PF", "webservices")
 }
 
 func UpdateIface() {
@@ -42,7 +40,7 @@ func UpdateIface() {
 }
 func ReadIface(ifname string) Section {
 	if ifname != "all" {
-		return pfRead(ifname)
+		return A3Read("PF", ifname)
 	}
 	return nil
 }

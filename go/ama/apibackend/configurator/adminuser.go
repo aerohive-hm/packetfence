@@ -65,13 +65,16 @@ func writeAdminToDb(user, password, table string) error {
 }
 
 func handleGetAdminUserMethod(r *http.Request, d crud.HandlerData) []byte {
-	var adminuserinfo AdminUserInfo
-	var config fetch.PfConfWebservices
+	var admin AdminUserInfo
 	var ctx = r.Context()
-	config.GetPfConfSub(ctx, &config.Webservices)
-	//adminuserinfo.Id = "webservices"
-	adminuserinfo.User = config.Webservices.User
-	jsonData, err := json.Marshal(adminuserinfo)
+	section := a3config.GetWebServices()
+	if section == nil {
+		log.LoggerWContext(ctx).Error("Can't find Admin User.")
+		return []byte("")
+	}
+	admin.User = section["webservices"]["user"]
+	admin.Pass = section["webservices"]["pass"]
+	jsonData, err := json.Marshal(admin)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		return []byte(err.Error())
@@ -89,13 +92,15 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
+	log.LoggerWContext(ctx).Error("czhong: write to DB.")
 	err = writeAdminToDb(admin.User, admin.Pass, "password")
 	if err != nil {
 		log.LoggerWContext(ctx).Error("write db error: " + err.Error())
 		goto END
 	}
 
-	err = a3config.UpdateEmail()
+	log.LoggerWContext(ctx).Error(fmt.Sprintln("email:", admin.User))
+	err = a3config.UpdateEmail(admin.User)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("write conf error: " + err.Error())
 		goto END
@@ -104,5 +109,9 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 	code = "ok"
 
 END:
-	return crud.FormPostRely(code, err.Error())
+	var ret = ""
+	if err != nil {
+		ret = err.Error()
+	}
+	return crud.FormPostRely(code, ret)
 }

@@ -5,14 +5,14 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-const (
-	ConfRoot = "/usr/local/pf/conf"
+const ConfRoot = "/usr/local/pf/conf"
 
-	pfConf       = "pf.conf"
-	pfConfDef    = "pf.conf.defaults"
-	networksConf = "networks.conf"
-	clusterConf  = "cluster.conf"
-)
+var ConfDict = map[string]string{
+	"PF":       "pf.conf",
+	"PFD":      "pf.conf.defaults",
+	"NETWORKS": "networks.conf",
+	"CLUSTER":  "cluster.conf",
+}
 
 type keyHash map[string]string
 type Section map[string]keyHash
@@ -43,7 +43,7 @@ func (conf *A3Conf) upSection() {
 	}
 }
 
-func (conf *A3Conf) LoadCfg(path string) error {
+func (conf *A3Conf) loadCfg(path string) error {
 	cfg, err := ini.Load(path)
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func (conf *A3Conf) LoadCfg(path string) error {
 	return nil
 }
 
-func (conf *A3Conf) Commit(sections Section) error {
+func (conf *A3Conf) save(sections Section) error {
 	conf.sections = sections
 	conf.upSection()
 
@@ -83,7 +83,7 @@ func readAllSections(conf *A3Conf) {
 
 }
 
-func (conf *A3Conf) Read(sectionId string) {
+func (conf *A3Conf) readSection(sectionId string) {
 	if sectionId == "all" {
 		readAllSections(conf)
 	} else {
@@ -92,23 +92,23 @@ func (conf *A3Conf) Read(sectionId string) {
 	return
 }
 
-func pfCommit(sections Section) error {
+func A3Commit(key string, sections Section) error {
 	conf := new(A3Conf)
-	err := conf.LoadCfg(pfPath)
+	err := conf.loadCfg(ConfRoot + "/" + ConfDict[key])
 	if err != nil {
 		return err
 	}
 
-	return conf.Commit(sections)
+	return conf.save(sections)
 }
 
-func pfRead(sectionId string) Section {
+func A3Read(key string, sectionId string) Section {
 	conf := new(A3Conf)
-	err := conf.LoadCfg(pfPath)
+	err := conf.loadCfg(ConfRoot + "/" + ConfDict[key])
 	if err != nil {
 		return nil
 	}
-	conf.Read(sectionId)
+	conf.readSection(sectionId)
 	if conf.sections == nil {
 		return nil
 	}
