@@ -69,6 +69,7 @@ class clusterNetworkingCtl extends Component {
     getData= () => {
         let self=this;
 
+        let xCsrfToken="";
         let url= "/api/v1/configurator/cluster/networks";
          
         let param={
@@ -78,11 +79,11 @@ class clusterNetworkingCtl extends Component {
             loading : true,
         })
 
-        // new RequestApi('get',url,param,xCsrfToken,(data)=>{
-        //     self.getTrueData(data);
-        // });
+        new RequestApi('get',url,param,xCsrfToken,(data)=>{
+            self.getTrueData(data);
+        });
 
-        self.getTrueData(mock.networks);
+        //self.getTrueData(mock.networks);
     }
 
     getTrueData= (data) => {
@@ -91,12 +92,17 @@ class clusterNetworkingCtl extends Component {
         for(let i=0;i<dataTable.length;i++){
             dataTable[i].key=dataTable[i].name;
             dataTable[i].clicked="";
-            dataTable[i].services=dataTable[i].services.split(",");
+            dataTable[i].services=dataTable[i].services===""?[]:dataTable[i].services.split(",");
         }
         self.setState({
             dataTable: dataTable,
             loading : false,
         }); 
+        self.props.form.resetFields();
+        self.props.form.setFieldsValue({
+            hostname:data.hostname,
+        });
+
     }
 
 
@@ -218,6 +224,23 @@ class clusterNetworkingCtl extends Component {
         }
     }
 
+    getItems= () => {
+        let self=this;
+        let items=[];
+        for(let i=0;i<self.state.dataTable.length;i++){
+            items.push({
+                id:self.state.dataTable[i].id,
+                name:self.state.dataTable[i].name,
+                ip_addr:self.state.dataTable[i].ip_addr,
+                netmask:self.state.dataTable[i].netmask,
+                vip:self.state.dataTable[i].vip,
+                type:self.state.dataTable[i].type,
+                services:self.state.dataTable[i].services.join(","),
+            });
+        }
+        return items;
+    }
+
 
     handleSubmit = (e) => {
         let self=this;
@@ -234,6 +257,23 @@ class clusterNetworkingCtl extends Component {
                     return;
                 }
 
+                let xCsrfToken="";
+                let url= "/api/v1/configurator/cluster/networks";
+                
+                let param={
+                    hostname:values.hostname,
+                    itmes:self.getItems(),
+                }
+
+                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        self.props.changeStatus("joining");
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
 
             }
         });
@@ -283,12 +323,37 @@ class clusterNetworkingCtl extends Component {
             return;
         }
 
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/interface";
+
         let dataCopy=self.state.dataTable;
-        dataCopy[index].clicked="";
-        self.setState({
-            dataTable : dataCopy,
-            isEditing: false,
+        
+        let param={
+            "name":dataCopy[index].name,
+            "ip_addr":dataCopy[index].ip_addr,
+            "netmask":dataCopy[index].netmask,
+            "vip":dataCopy[index].vip,
+            "type":dataCopy[index].type,
+            "services":dataCopy[index].services.join(","),
+        }
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                dataCopy[index].clicked="";
+                self.setState({
+                    dataTable : dataCopy,
+                    isEditing: false,
+                }) 
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
         }) 
+
+
+
     }
 
     onClickEditNo= (index,column) => {

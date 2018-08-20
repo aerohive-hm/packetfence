@@ -193,6 +193,29 @@ class joinClusterCtl extends Component {
                 }
 
 
+
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configurator/cluster/join";
+                
+                let param={
+                    "primary_server":values.primary_server,
+                    "admin":values.admin,
+                    "passwd":values.passwd,
+
+                }
+
+                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        self.props.changeStatus("clusterNetworking");
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
+
+
+
             }
         });
         

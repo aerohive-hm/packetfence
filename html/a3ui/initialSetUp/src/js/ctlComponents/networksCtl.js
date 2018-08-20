@@ -469,12 +469,35 @@ class networksCtl extends Component {
             return;
         }
 
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/interface";
+
         let dataCopy=self.state.dataTable;
-        dataCopy[index].clicked="";
-        self.setState({
-            dataTable : dataCopy,
-            isEditing: false,
+        
+        let param={
+            "name":dataCopy[index].name,
+            "ip_addr":dataCopy[index].ip_addr,
+            "netmask":dataCopy[index].netmask,
+            "vip":dataCopy[index].vip,
+            "type":dataCopy[index].type,
+            "services":dataCopy[index].services.join(","),
+        }
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                dataCopy[index].clicked="";
+                self.setState({
+                    dataTable : dataCopy,
+                    isEditing: false,
+                }) 
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
         }) 
+
     }
 
     onClickEditNo= (index,column) => {
