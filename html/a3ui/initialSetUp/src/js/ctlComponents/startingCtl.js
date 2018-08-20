@@ -116,20 +116,20 @@ class startingCtl extends Component {
         if(loading===false){
             contentHtml=<div className="right-content-div-startingCtl">
                             <div className="a3-started-successfully-div-startingCtl">
-                                A3 has started successfully
+                                {self.state.i18n.a3HasStartedSuccessfully}
                             </div>
                             <div className="go-to-div-startingCtl">
                                 <Button 
                                     type="primary" 
                                     className="go-to-antd-button-startingCtl" 
-                                >GO TO ADMINISTRATION INTERFACE</Button>
+                                >{self.state.i18n.goToAdministrationInterface}</Button>
                             </div>
                             <div className="clear-float-div-common" ></div >
                         </div>
         }else{
             contentHtml=<div className="right-content-div-startingCtl">
                             <div className="a3-starting-up-div-startingCtl">
-                                A3 services are now starting up...
+                                {self.state.i18n.a3ServicesAreNowStartingUp}
                             </div>
                             <div className="progress-div-startingCtl">
                                 <Progress percent={percentage} />

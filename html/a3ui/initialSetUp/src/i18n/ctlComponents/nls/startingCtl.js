@@ -1,4 +1,8 @@
 export let i18n ={
-	"getStart": "getStart",
+	"a3HasStartedSuccessfully": "A3 has started successfully",
+	"goToAdministrationInterface": "GO TO ADMINISTRATION INTERFACE",
+	"a3ServicesAreNowStartingUp": "A3 services are now starting up",
 	
 }
+
+
