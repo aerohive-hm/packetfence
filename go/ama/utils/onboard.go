@@ -6,17 +6,18 @@ import (
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/ama/fetch"
 	"github.com/inverse-inc/packetfence/go/log"
+	"strings"
 )
 
 type A3Interface struct {
-	Parent      string   `json:"Parent"`
-	Vlan        string   `json:"vlan"`
-	IpAddress   string   `json:"ipaddress"`
-	Vip         string   `json:"vip"`
-	Netmask     string   `json:"netmask"`
-	Type        string   `json:"type"`
-	Service     []string `json:"service"`
-	Description string   `json:"description"`
+	Parent    string   `json:"Parent"`
+	Vlan      string   `json:"vlan"`
+	IpAddress string   `json:"ipaddress"`
+	Vip       string   `json:"vip"`
+	Netmask   string   `json:"netmask"`
+	Type      string   `json:"type"`
+	Service   []string `json:"service"`
+	//	Description string   `json:"description"`
 }
 type A3License struct {
 	LicensedCapacity    uint16 `json:"licensedCapacity"`
@@ -71,8 +72,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		a3Interface.Netmask = iface.NetMask
 		a3Interface.Vip = iface.Vip
 		//a3Interface.Type = "Todo"
-		//a3Interface.Service = "Todo"
-		a3Interface.Description = iface.Name + " VLAN " + iface.Vlan
+		a3Interface.Service = []string{}
 		onboardingData.Interfaces = append(onboardingData.Interfaces, *a3Interface)
 	}
 
@@ -89,7 +89,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		return
 	}
 	for _, iface := range managementIface {
-		onboardingData.MacAddress = iface.HwAddr
+		onboardingData.MacAddress = strings.ToUpper(strings.Replace(iface.HwAddr, ":", "", -1))
 		onboardingData.IpAddress = iface.IpAddr
 		onboardingData.Netmask = iface.NetMask
 		onboardingData.Vip = iface.Vip
@@ -109,7 +109,7 @@ func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 	var config fetch.PfConfGeneral
 	config.GetPfConfSub(ctx, &config.General)
 	onboardHeader.Hostname = config.General.Hostname
-	//onboardHeader.SystemID = "Todo"
+	onboardHeader.SystemID = GetA3SysId()
 	//onboardHeader.ClusterID = "Todo"
 	//onboardHeader.SequenceID = "Todo"
 	return
