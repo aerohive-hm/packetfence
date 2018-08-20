@@ -41,7 +41,7 @@ class joiningCtl extends Component {
         let self=this;
         self.getRightI18n();
 
-        let url = "/a3/api/v1/configurator/cluster_status";
+        let url = "/a3/api/v1/configurator/cluster/status";
         let param={
         }
         let xCsrfToken="";
