@@ -30,6 +30,7 @@ our ( @ISA, @EXPORT_OK );
 
 Readonly::Scalar my $BIN_DIR                      => '/usr/bin';
 Readonly::Scalar my $YUM_BIN                      => "$BIN_DIR/yum";
+Readonly::Scalar my $RPM_BIN                      => "$BIN_DIR/rpm";
 Readonly::Scalar my $A3_BASE_DIR                  => '/usr/local/pf';
 Readonly::Scalar my $A3_DB_DIR                    => "$A3_BASE_DIR/db";
 Readonly::Scalar my $A3_BIN_DIR                   => "$A3_BASE_DIR/bin";
@@ -41,7 +42,10 @@ Readonly::Scalar my $A3_LOG_DIR                   => "$A3_BASE_DIR/logs";
 Readonly::Scalar my $A3_CLUSTER_UPDATE_LOG_FILE   => "$A3_LOG_DIR/a3_cluster_update.log";
 Readonly::Scalar my $NODE_BIN 			  => "$A3_BASE_DIR/bin/cluster/node";
 Readonly::Scalar my $A3_UPDATE_PATH_FILE          => "$A3_DB_DIR/a3-update-path";
-Readonly::Scalar my $A3_BK_VER_FILE               => "/tmp/a3_bk_ver_file";
+Readonlu::Scalar my $TMP_DIR			  => "/tmp";
+Readonly::Scalar my $A3_BK_VER_FILE               => "$TMP_DIR/a3_bk_ver_file";
+Readonly::Scalar my $A3_UPDATE_DB_DUMP            => "$TMP_DIR/A3_db.sql";
+Readonly::Scalar my $A3_UPDATE_APP_DUMP           => "$TMP_DIR/A3_app.tar.gz";
 Readonly::Scalar my $PFCMD_BIN                    => "$A3_BIN_DIR/pfcmd";
 Readonly::Scalar my $SYSTEMCTL_BIN                => "$BIN_DIR/systemctl";
 Readonly::Scalar my $MYSQL_BIN                    => "$BIN_DIR/mysql";
@@ -55,8 +59,11 @@ Readonly::Scalar my $CURL_BIN                     => "$BIN_DIR/curl";
 Readonly::Scalar my $GREP_BIN                     => "$BIN_DIR/grep";
 Readonly::Scalar my $HEAD_BIN                     => "$BIN_DIR/head";
 Readonly::Scalar my $PING_BIN                     => "$BIN_DIR/ping";
+Readonly::Scalar my $RM_BIN                       => "$BIN_DIR/rm";
 Readonly::Scalar my $SORT_BIN                     => "$BIN_DIR/sort";
 Readonly::Scalar my $UNIQ_BIN                     => "$BIN_DIR/uniq";
+Readonly::Scalar my $TAR_BIN                      => "$BIN_DIR/tar";
+
 
 Readonly::Scalar my $CENTOS_BASE                  => 'mirrorlist.centos.org';
 
@@ -65,6 +72,7 @@ my $a3_pkg = 'A3';
 my $a3_db = 'A3';
 my $db_user = 'root';
 my $node_port = 9432;
+my $fail_code = 1;
 
 =head2 disable_cluster_check
 
@@ -193,7 +201,7 @@ overall health check
 sub health_check {
   my $ret = check_yum_connectivity();
   if ($ret == 1) {
-    exit 1;
+    exit $fail_code;
   }
 }
 
@@ -224,7 +232,8 @@ sub update_system_app {
   _commit_cluster_update_log("Update pkg cmd is $cmd");
 
   if (call_system_cmd("$cmd >> $A3_CLUSTER_UPDATE_LOG_FILE 2>&1") != 0) {
-    A3_Warn("Unable to update A3 packages, attempting to rollback changes");
+    _commit_cluster_update_log("Unable to update A3 packages, attempting to rollback changes");
+    exit $fail_code;
   }
   
 }
@@ -254,22 +263,31 @@ sub _check_db_schema_file {
   _commit_cluster_update_log('The database schema files that need to be applied are ' . join(',',@db_schema_files));
   foreach (@db_schema_files) {
     if (! -e $A3_DB_DIR."/".$_) {
-      A3_Die("The database schema migration script for $_ does not exist, fatal!!");
+      _commit_cluster_update_log("The database schema migration script for $_ does not exist, fatal!!");
+      exit $fail_code;
     }
   }
   return @db_schema_files;
 }
 
-sub _generate_update_patch_list {
-  my @update_path_list;
+sub get_versions {
   my $content = do {
     open my $fh, '<', "$A3_BK_VER_FILE"  or die 'Error in open backup version file';
     local $/;
     <$fh>;
   };
+
   my $prev_version = (split /=/, (split /\|/, $content)[0])[1];
   my $to_version = (split /=/, (split /\|/, $content)[1])[1];
   chomp $to_version;
+
+  return ($prev_version, $to_version);
+}
+
+sub _generate_update_patch_list {
+  my @update_path_list;
+  my ($prev_version, $to_version) = get_versions();
+
   _commit_cluster_update_log("A3 back version is $prev_version and A3 target update version is $to_version");
   
   open my $fh, '<', "$A3_UPDATE_PATH_FILE" or die "Unable to locate update path file, $!";
@@ -321,7 +339,8 @@ sub apply_db_update_schema {
   foreach my $db_file (@db_schema_files) {
     my $ret = `$MYSQL_BIN -u $db_user -p$passwd $a3_db < $A3_DB_DIR/$db_file 2>&1`;
     if ($ret =~ /ERROR/i) {
-      A3_Warn("Unable to apply database schema update $db_file: failed with error message \"$ret\"!");
+      _commit_cluster_update_log("Unable to apply database schema update $db_file: failed with error message \"$ret\"!");
+      exit $fail_code;
     }
   }
   _commit_cluster_update_log("Finished applying database schema updates!");
@@ -335,7 +354,7 @@ sub post_update {
 
   foreach my $cmd (@post_cmd_list) {
     if (call_system_cmd("$cmd >> $A3_CLUSTER_UPDATE_LOG_FILE 2>&1") != 0) {
-      A3_Die("Post-update processing failed, please investigate!");
+      A3_Warn("Post-update processing failed, please investigate!");
     }
   }
 
@@ -465,6 +484,129 @@ sub kill_force_cluster {
    my $process = 'mysqld';
    call_system_cmd("pkill -9 $process");
 }
+
+
+=head2 dump_db
+
+Dump Database
+
+=cut
+
+sub dump_db {
+  _commit_cluster_update_log("Starting database backup");
+
+  my $db_passwd = _get_db_password();
+
+  if (call_system_cmd("$MYSQLDUMP_BIN --opt -u root -p$db_passwd $a3_db > $A3_UPDATE_DB_DUMP") != 0) {
+    _commit_cluster_update_log("Unable to back up database: $!");
+    exit $fail_code;
+  }
+
+  _commit_cluster_update_log("Database backup completed");
+}
+ 
+=head2 dump_app
+
+Backup A3 app 
+
+=cut
+
+sub dump_app {
+  _commit_cluster_update_log("Starting Application data backup");
+
+  if (call_system_cm_cmd("$TAR_BIN -C /usr/local -czf $A3_UPDATE_APP_DUMP pf --exclude='pf/logs' --exclude='pf/var'") != 0) {
+    commit_update_log("Unable to back up application data: $!");
+    commit_progress_log("error");
+    die "Application data backup failed!\n";
+  }
+
+  _commit_cluster_update_log("Application data backup completed");
+}
+
+=head2 unpack_app_back
+
+unpack app tar pkg
+
+=cut
+
+sub unpack_app_back {
+  if (call_system_cmd("$TAR_BIN xfz $A3_UPDATE_APP_DUMP -C $TMP_DIR") != 0) {
+    A3_Die("Unable to unpack the application data backup file!");
+  }
+}
+
+
+=head2 restore_conf_file
+
+restore A3 conf files
+
+=cut
+
+sub restore_conf_file {
+  my $app_dump_copy = $A3_UPDATE_APP_DUMP;
+  #remove suffix
+  $app_dump_copy =~ s/\..*$//;
+  _commit_cluster_update_log("Restoring configuration files");
+  call_system_cmd("$RM_BIN -rf $A3_CONF_DIR/*; $CP_BIN -rf $TMP_DIR/pf/conf/* $A3_CONF_DIR");
+}
+
+
+=head2 roll_back_db
+
+roll back database
+
+=cut
+
+sub roll_back_db {
+  if (! -e $A3_UPDATE_DB_DUMP) {
+    A3_Die("Database backup file does not exist, unable to restore!!");
+  }
+  if (call_system_cmd "$MYSQL_BIN -u root -p$db_passwd $a3_db < $A3_UPDATE_DB_DUMP" != 0) {
+     _commit_cluster_update_log("Database restore has failed, please investigate!!");
+     exit $fail_code;
+  }
+}
+
+
+=head2 roll_back_app
+
+roll back A3 application
+
+=cut
+
+sub roll_back_app {
+  unpack_app_back();
+  my $rpm_version = `$RPM_BIN -qa $a3_pkg | $AWK_BIN -F- '{print \$2}'`;
+  chomp $rpm_version;
+  #There are possible 3 situations after failure of yum update A3
+  #1)old rpm is removed, and new rpm is not installed
+  #2)old rpm is partially removed, and new rpm is not installed(probabyl we will not get there per rpm update mechanism)
+  #3)new rpm is partially installed
+  my ($prev_version, $to_version) = get_versions();
+  commit_update_log("RPM version is $rpm_version and previous version before update is $prev_version");
+  if (! $rpm_version) {
+    if (call_system_cmd("$YUM_BIN install $a3_pkg."-".$CURRENT_VERSION -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE}") != 0) {
+      A3_Die("Failed to roll back application, really Die!!");
+    }
+    #restore conf
+    restore_conf_file();
+  }
+  elsif ($rpm_version eq $prev_version) {
+    _commit_cluster_update_log("To be done more");
+    restore_conf_file();
+  }
+  elsif ($rpm_version eq $to_version) {
+    my $history_id = `$YUM_BIN history 2>/dev/null   \\
+                    | $GREP_BIN -E '[[:digit:]]{4}-' \\
+                    | $AWK_BIN -F'|' '{print \$1}'   \\
+                    | $HEAD_BIN -1`;
+    _commit_cluster_update_log("Start rolling back last update");
+    call_system_cmd("$YUM_BIN history undo $history_id -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE");
+    _commit_cluster_update_log("Finished rolling back last update");
+    restore_conf_file();
+  }
+}
+
 
 
 =head1 AUTHOR
