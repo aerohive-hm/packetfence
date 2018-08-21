@@ -17,11 +17,10 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/clusterNetworkingCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/clusterNetworkingCtl";
 
-import networksImg from "../../media/networks.png";
-import editNoImg from "../../media/editNo.png";
-import editYesImg from "../../media/editYes.png";
-import addVlanImg from "../../media/addVlan.png";
-import removeVlanImg from "../../media/removeVlan.png";
+import editNoImg from "../../media/editNo.svg";
+import editYesImg from "../../media/editYes.svg";
+
+import networksImg from "../../media/networks.svg";
 
 
 
@@ -70,7 +69,8 @@ class clusterNetworkingCtl extends Component {
     getData= () => {
         let self=this;
 
-        let url= "/api/v1/configurator/cluster/networks";
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/cluster/networks";
          
         let param={
         }
@@ -79,11 +79,11 @@ class clusterNetworkingCtl extends Component {
             loading : true,
         })
 
-        // new RequestApi('get',url,param,xCsrfToken,(data)=>{
-        //     self.getTrueData(data);
-        // });
+        new RequestApi('get',url,param,xCsrfToken,(data)=>{
+            self.getTrueData(data);
+        });
 
-        self.getTrueData(mock.networks);
+        //self.getTrueData(mock.networks);
     }
 
     getTrueData= (data) => {
@@ -92,12 +92,17 @@ class clusterNetworkingCtl extends Component {
         for(let i=0;i<dataTable.length;i++){
             dataTable[i].key=dataTable[i].name;
             dataTable[i].clicked="";
-            dataTable[i].services=dataTable[i].services.split(",");
+            dataTable[i].services=dataTable[i].services===""?[]:dataTable[i].services.split(",");
         }
         self.setState({
             dataTable: dataTable,
             loading : false,
         }); 
+        self.props.form.resetFields();
+        self.props.form.setFieldsValue({
+            hostname:data.hostname,
+        });
+
     }
 
 
@@ -112,7 +117,7 @@ class clusterNetworkingCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!hostname||hostname.toString().trim()===""){
-            newWrongMessage.hostnameWrongMessage="Host Name is required.";
+            newWrongMessage.hostnameWrongMessage=self.state.i18n.hostNameIsRequired;
         }else{
             newWrongMessage.hostnameWrongMessage="";
         }
@@ -140,10 +145,10 @@ class clusterNetworkingCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!ipAddr||ipAddr.toString().trim()===""){
-            newWrongMessage.ipAddrWrongMessage="IP address is required.";
+            newWrongMessage.ipAddrWrongMessage=self.state.i18n.iPAddressIsRequired;
         }else
         if(isIp(ipAddr.toString().trim())===false){
-            newWrongMessage.ipAddrWrongMessage="IP address format is incorrect.";
+            newWrongMessage.ipAddrWrongMessage=self.state.i18n.iPAddressFormatIsIncorrect;
         }else{
             newWrongMessage.ipAddrWrongMessage="";
         }
@@ -182,10 +187,10 @@ class clusterNetworkingCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!netmask||netmask.toString().trim()===""){
-            newWrongMessage.netmaskWrongMessage="Netmask is required.";
+            newWrongMessage.netmaskWrongMessage=self.state.i18n.netmaskIsRequired;
         }else
         if(isIp(netmask.toString().trim())===false){
-            newWrongMessage.netmaskWrongMessage="Netmask format is incorrect.";
+            newWrongMessage.netmaskWrongMessage=self.state.i18n.netmaskFormatIsIncorrect;
         }else{
             newWrongMessage.netmaskWrongMessage="";
         }
@@ -219,6 +224,23 @@ class clusterNetworkingCtl extends Component {
         }
     }
 
+    getItems= () => {
+        let self=this;
+        let items=[];
+        for(let i=0;i<self.state.dataTable.length;i++){
+            items.push({
+                id:self.state.dataTable[i].id,
+                name:self.state.dataTable[i].name,
+                ip_addr:self.state.dataTable[i].ip_addr,
+                netmask:self.state.dataTable[i].netmask,
+                vip:self.state.dataTable[i].vip,
+                type:self.state.dataTable[i].type,
+                services:self.state.dataTable[i].services.join(","),
+            });
+        }
+        return items;
+    }
+
 
     handleSubmit = (e) => {
         let self=this;
@@ -235,6 +257,23 @@ class clusterNetworkingCtl extends Component {
                     return;
                 }
 
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configurator/cluster/networks";
+                
+                let param={
+                    hostname:values.hostname,
+                    itmes:self.getItems(),
+                }
+
+                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        self.props.changeStatus("joining");
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
 
             }
         });
@@ -284,12 +323,37 @@ class clusterNetworkingCtl extends Component {
             return;
         }
 
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/interface";
+
         let dataCopy=self.state.dataTable;
-        dataCopy[index].clicked="";
-        self.setState({
-            dataTable : dataCopy,
-            isEditing: false,
+        
+        let param={
+            "name":dataCopy[index].name,
+            "ip_addr":dataCopy[index].ip_addr,
+            "netmask":dataCopy[index].netmask,
+            "vip":dataCopy[index].vip,
+            "type":dataCopy[index].type,
+            "services":dataCopy[index].services.join(","),
+        }
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                dataCopy[index].clicked="";
+                self.setState({
+                    dataTable : dataCopy,
+                    isEditing: false,
+                }) 
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
         }) 
+
+
+
     }
 
     onClickEditNo= (index,column) => {
@@ -317,7 +381,7 @@ class clusterNetworkingCtl extends Component {
 
         let columns=[];
         columns.push({
-            title:"NAME",
+            title:self.state.i18n.name,
             dataIndex: 'name',
             key: 'name',
             render: (text, record, index) => {
@@ -342,7 +406,7 @@ class clusterNetworkingCtl extends Component {
             } 
         });
         columns.push({
-            title: "IP ADDRESS",
+            title: self.state.i18n.ipAddress,
             dataIndex: 'ip_addr',
             key: 'ip_addr',
             render: (text, record, index) => {
@@ -376,7 +440,7 @@ class clusterNetworkingCtl extends Component {
             } 
         });
         columns.push({
-            title:"NETMASK",
+            title:self.state.i18n.netmask,
             dataIndex: 'netmask',
             key: 'netmask',
             render: (text, record, index) => {
@@ -410,21 +474,21 @@ class clusterNetworkingCtl extends Component {
             } 
         });
         columns.push({
-            title:"VIP",
+            title:self.state.i18n.vip,
             dataIndex: 'vip',
             key: 'vip',
         });
         columns.push({
-            title:"TYPE",
+            title:self.state.i18n.type,
             dataIndex: 'type',
             key: 'type',
             render: (text, record, index) => {
                 let typeObject={
-                    MANAGEMENT:"Management",
-                    REGISTRATION:"Registration",
-                    ISOLATION:"Isolation",
-                    NONE:"None",
-                    OTHER:"Other",
+                    MANAGEMENT:self.state.i18n.management,
+                    REGISTRATION:self.state.i18n.registration,
+                    ISOLATION:self.state.i18n.isolation,
+                    NONE:self.state.i18n.none,
+                    OTHER:self.state.i18n.other,
                 }
                 return (
                     <div>
@@ -435,13 +499,13 @@ class clusterNetworkingCtl extends Component {
         });
 
         columns.push({
-            title: 'SERVICES',
+            title: self.state.i18n.services,
             dataIndex: 'services',
             key: 'services',
             render: (text, record, index) => {
                 let servicesObject={
-                    PORTAL:"Portal",
-                    RADIUS:"RADIUS",
+                    PORTAL:self.state.i18n.portal,
+                    RADIUS:self.state.i18n.radius,
                 }
                 let servicesHtml="";
                 for(let i=0;i<text.length;i++){
@@ -464,12 +528,13 @@ class clusterNetworkingCtl extends Component {
             <Spin spinning={loading}>
                 <div className="left-div-clusterNetworkingCtl">
                     <Guidance 
-                        title={"Networks"} 
-                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
+                        title={self.state.i18n.networks} 
+                        content={[self.state.i18n.networksMessage]} 
                     />
-                    <div className="img-div-clusterNetworkingCtl">
-                       <img src={networksImg} className="img-img-clusterNetworkingCtl" />
+                    <div className="img-div-clusterNetworkingCtl">  
+                       <img src={networksImg} className="img-img-clusterNetworkingCtl" /> 
                     </div>
+
                     <div className="clear-float-div-common" ></div >
                 </div>
 
@@ -478,7 +543,7 @@ class clusterNetworkingCtl extends Component {
                     <Form onSubmit={self.handleSubmit.bind(self)}>
                     <div className="form-item-div-clusterNetworkingCtl">
                         <div className="form-item-title-div-clusterNetworkingCtl">
-                            Host Name
+                            {self.state.i18n.hostName}
                         </div>
                         <div className="form-item-input-div-clusterNetworkingCtl">
                             {getFieldDecorator('hostname', {
@@ -498,7 +563,7 @@ class clusterNetworkingCtl extends Component {
                     </div>
 
                     <div className="interfaces-div-clusterNetworkingCtl">
-                        interfaces
+                        {self.state.i18n.interfaces}
                     </div>
 
                     <div className="table-div-clusterNetworkingCtl">
@@ -515,13 +580,13 @@ class clusterNetworkingCtl extends Component {
                                 type="primary" 
                                 className="form-button-next-antd-button-clusterNetworkingCtl" 
                                 htmlType="submit" 
-                            >NEXT</Button>
+                            >{self.state.i18n.next}</Button>
                         </div>
                         <div className="form-button-cancel-div-clusterNetworkingCtl">
                             <Button 
                                 className="form-button-cancel-antd-button-clusterNetworkingCtl" 
                                 onClick={self.onClickCancel.bind(self)}
-                            >CANCEL</Button>
+                            >{self.state.i18n.cancel}</Button>
                         </div>
                     </div>
 

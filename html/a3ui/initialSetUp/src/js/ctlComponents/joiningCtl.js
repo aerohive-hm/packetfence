@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/joiningCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/joiningCtl";
 
-import startingAndReadyImg from "../../media/startingAndReady.png";
+import startingAndReadyImg from "../../media/startingAndReady.svg";
 
 
 
@@ -41,32 +41,34 @@ class joiningCtl extends Component {
         let self=this;
         self.getRightI18n();
 
-        let url = "/a3/api/v1/configurator/cluster_status";
+        let url = "/a3/api/v1/configurator/cluster/status";
         let param={
         }
         let xCsrfToken="";
 
-        // self.setState({
-        //     loading:true,
-        // }) 
+        self.setState({
+            loading:true,
+        }) 
 
-        // this.timer = setInterval(()=>{
+        this.timer = setInterval(()=>{
 
-        //     RequestApi('get',url,param,xCsrfToken,(data)=>{
-        //         if(data.percentage==="100"){
-        //             clearInterval(self.timer);
-        //             self.setState({
-        //                 percentage : 0,
-        //                 loading:false,
-        //             })
-        //         }else{
-        //             self.setState({
-        //                 percentage : parseInt(data.percentage),
-        //             }) 
-        //         }  
-        //     });
+            RequestApi('get',url,param,xCsrfToken,(data)=>{
+                if(data.percentage==="100"){
+                    clearInterval(self.timer);
+                    self.setState({
+                        percentage : 0,
+                        loading:false,
+                    },function(){
+                        self.props.changeStatus("startingRegistration");
+                    })
+                }else{
+                    self.setState({
+                        percentage : parseInt(data.percentage),
+                    }) 
+                }  
+            });
 
-        // },3000)
+        },3000)
 
 
     }
@@ -117,7 +119,7 @@ class joiningCtl extends Component {
                 <div className="right-div-joiningCtl">
                 
                     <div className="joining-cluster-div-joiningCtl">
-                        Joining cluster...
+                        {self.state.i18n.joiningCluster}
                     </div>
                     <div className="progress-div-joiningCtl">
                         <Progress percent={percentage} />

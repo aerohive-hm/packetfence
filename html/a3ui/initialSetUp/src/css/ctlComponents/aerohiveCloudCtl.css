@@ -156,3 +156,29 @@
     cursor: pointer;
 
 }
+
+
+
+.guidance-div-aerohiveCloudCtl{
+    float:left;
+    width:234px;
+    margin-top:90px;
+}
+.guidance-title-div-aerohiveCloudCtl{
+    float:left;
+    width:234px;
+    height:24px;
+    line-height: 24px;
+    font-size: 18px;
+    color:#333333;
+    font-weight: bold;
+}
+.guidance-content-div-aerohiveCloudCtl{
+    float:left;
+    margin-top:18px;
+    width:234px;
+    line-height: 16px;
+    font-size: 14px;
+    color:#333333;
+
+}

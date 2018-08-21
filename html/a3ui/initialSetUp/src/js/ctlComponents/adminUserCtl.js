@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/adminUserCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/adminUserCtl";
 
-import adminUserImg from "../../media/adminUser.png";
+import adminUserImg from "../../media/adminUser.svg";
 
 
 
@@ -71,10 +71,10 @@ class adminUserCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!user||user.toString().trim()===""){
-            newWrongMessage.userWrongMessage="Email is required.";
+            newWrongMessage.userWrongMessage=self.state.i18n.emailIsRequired;
         }else
-        if(isEmail(user)===false){
-            newWrongMessage.userWrongMessage="Email format is incorrect.";
+        if(isEmail(user.toString().trim())===false){
+            newWrongMessage.userWrongMessage=self.state.i18n.emailFormatIsIncorrect;
         }else{
             newWrongMessage.userWrongMessage="";
         }
@@ -107,7 +107,7 @@ class adminUserCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!pass||pass.toString().trim()===""){
-            newWrongMessage.passWrongMessage="Password is required";
+            newWrongMessage.passWrongMessage=self.state.i18n.passwordIsRequired;
         }else{
             newWrongMessage.passWrongMessage="";
         }
@@ -140,10 +140,10 @@ class adminUserCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!passConfirm||passConfirm.toString().trim()===""){
-            newWrongMessage.passConfirmWrongMessage="Confirm Password is required";
+            newWrongMessage.passConfirmWrongMessage=self.state.i18n.confirmPasswordIsRequired;
         }else
         if(passConfirm.toString().trim()!==($("#pass").val()?$("#pass").val().toString().trim():"")){
-            newWrongMessage.passConfirmWrongMessage="Password do not match";
+            newWrongMessage.passConfirmWrongMessage=self.state.i18n.passwordDoNotMatch;
         }else{
             newWrongMessage.passConfirmWrongMessage="";
         }
@@ -188,6 +188,28 @@ class adminUserCtl extends Component {
                 if(hasWrongValue===true){
                     return;
                 }
+
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configurator/admin_user";
+                
+                let param={
+                    user:values.user,
+                    pass:values.pass,
+                }
+
+                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        self.props.changeStatus("networks");
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
+
+
+
+
 
 
             }
@@ -235,7 +257,7 @@ class adminUserCtl extends Component {
         if(passScore.score===0){
             passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
                                 <div className="form-item-pass-score-0-div-adminUserCtl" >
-                                    Very Weak
+                                    {self.state.i18n.veryWeak}
                                 </div>  
                                 <div className="form-item-pass-score-message-div-adminUserCtl" >
                                     {passScore.feedback.warning===""?passScore.feedback.suggestions[0]:passScore.feedback.warning}
@@ -246,7 +268,7 @@ class adminUserCtl extends Component {
         if(passScore.score===1){
             passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
                                 <div className="form-item-pass-score-1-div-adminUserCtl" >
-                                    Weak
+                                    {self.state.i18n.weak}
                                 </div>  
                                 <div className="form-item-pass-score-message-div-adminUserCtl" >
                                     {passScore.feedback.warning===""?passScore.feedback.suggestions[0]:passScore.feedback.warning}
@@ -257,7 +279,7 @@ class adminUserCtl extends Component {
         if(passScore.score===2){
             passMessageHtml=<div className="form-item-pass-score-div-adminUserCtl" >
                                 <div className="form-item-pass-score-2-div-adminUserCtl" >
-                                    Average
+                                    {self.state.i18n.average}
                                 </div>  
                                 <div className="form-item-pass-score-message-div-adminUserCtl" >
                                     {passScore.feedback.warning===""?passScore.feedback.suggestions[0]:passScore.feedback.warning}
@@ -267,20 +289,20 @@ class adminUserCtl extends Component {
         }else
         if(passScore.score===3){
             passMessageHtml=<div className="form-item-pass-score-3-div-adminUserCtl" >
-                                Strong
+                                {self.state.i18n.strong}
                             </div>                            
         }else
         if(passScore.score===4){
             passMessageHtml=<div className="form-item-pass-score-4-div-adminUserCtl" >
-                                Very Strong
+                                {self.state.i18n.veryStrong}
                             </div>                            
         }
         return (
             <div className="global-div-adminUserCtl">
                 <div className="left-div-adminUserCtl">
                     <Guidance 
-                        title={"Admin User"} 
-                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
+                        title={self.state.i18n.welcomeToA3} 
+                        content={[self.state.i18n.welcomeToA3Message]} 
                     />
                     <div className="img-div-adminUserCtl">
                        <img src={adminUserImg} className="img-img-adminUserCtl" />
@@ -293,7 +315,7 @@ class adminUserCtl extends Component {
                     <Form onSubmit={self.handleSubmit.bind(self)}>
                     <div className="form-item-div-adminUserCtl">
                         <div className="form-item-title-div-adminUserCtl">
-                            Admin Email
+                            {self.state.i18n.adminEmail}
                         </div>
                         <div className="form-item-input-div-adminUserCtl">
                             {getFieldDecorator('user', {
@@ -302,6 +324,7 @@ class adminUserCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckUser.bind(self)}
+                                maxLength={254}
                                 />
                             )}
                         </div>
@@ -314,7 +337,7 @@ class adminUserCtl extends Component {
 
                     <div className="form-item-div-adminUserCtl">
                         <div className="form-item-title-div-adminUserCtl">
-                            Password
+                            {self.state.i18n.password}
                         </div>
                         <div className="form-item-input-div-adminUserCtl">
                             {getFieldDecorator('pass', {
@@ -324,6 +347,7 @@ class adminUserCtl extends Component {
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPass.bind(self)}
                                 onChange={self.onChangePass.bind(self)}
+                                maxLength={254}
                                 />
 
                                 
@@ -335,7 +359,7 @@ class adminUserCtl extends Component {
 
                     <div className="form-item-div-adminUserCtl">
                         <div className="form-item-title-div-adminUserCtl">
-                            Confirm Password
+                            {self.state.i18n.confirmPassword}
                         </div>
                         <div className="form-item-input-div-adminUserCtl">
                             {getFieldDecorator('passConfirm', {
@@ -361,13 +385,13 @@ class adminUserCtl extends Component {
                                 type="primary" 
                                 className="form-button-next-antd-button-adminUserCtl" 
                                 htmlType="submit" 
-                            >NEXT</Button>
+                            >{self.state.i18n.next}</Button>
                         </div>
                         <div className="form-button-cancel-div-adminUserCtl">
                             <Button 
                                 className="form-button-cancel-antd-button-adminUserCtl" 
                                 onClick={self.onClickCancel.bind(self)}
-                            >CANCEL</Button>
+                            >{self.state.i18n.cancel}</Button>
                         </div>
                     </div>
 

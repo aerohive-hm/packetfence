@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/startingCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/startingCtl";
 
-import startingAndReadyImg from "../../media/startingAndReady.png";
+import startingAndReadyImg from "../../media/startingAndReady.svg";
 
 
 
@@ -40,33 +40,38 @@ class startingCtl extends Component {
     componentDidMount() {
         let self=this;
         self.getRightI18n();
-
-        let url = "/api/v1/configurator/services/status";
+        let url = "/a3/api/v1/configurator/services/status";
         let param={
         }
         let xCsrfToken="";
 
-        // self.setState({
-        //     loading:true,
-        // }) 
+        self.setState({
+            loading:true,
+        }) 
 
-        // this.timer = setInterval(()=>{
+        this.timer = setInterval(()=>{
 
-        //     RequestApi('get',url,param,xCsrfToken,(data)=>{
-        //         if(data.percentage==="100"){
-        //             clearInterval(self.timer);
-        //             self.setState({
-        //                 percentage : 0,
-        //                 loading:false,
-        //             })
-        //         }else{
-        //             self.setState({
-        //                 percentage : parseInt(data.percentage),
-        //             }) 
-        //         }  
-        //     });
+            RequestApi('get',url,param,xCsrfToken,(data)=>{
+                if(data.code==="ok"){
+                    if(data.percentage==="100"){
+                        clearInterval(self.timer);
+                        self.setState({
+                            percentage : 0,
+                            loading:false,
+                        })
+                    }else{
+                        self.setState({
+                            percentage : parseInt(data.percentage),
+                        }) 
+                    }  
+                }else{
+                    message.destroy();
+                    message.error(data.msg);
+                }
 
-        // },3000)
+            });
+
+        },3000)
 
 
     }
@@ -111,20 +116,20 @@ class startingCtl extends Component {
         if(loading===false){
             contentHtml=<div className="right-content-div-startingCtl">
                             <div className="a3-started-successfully-div-startingCtl">
-                                A3 has started successfully
+                                {self.state.i18n.a3HasStartedSuccessfully}
                             </div>
                             <div className="go-to-div-startingCtl">
                                 <Button 
                                     type="primary" 
                                     className="go-to-antd-button-startingCtl" 
-                                >GO TO ADMINISTRATION INTERFACE</Button>
+                                >{self.state.i18n.goToAdministrationInterface}</Button>
                             </div>
                             <div className="clear-float-div-common" ></div >
                         </div>
         }else{
             contentHtml=<div className="right-content-div-startingCtl">
                             <div className="a3-starting-up-div-startingCtl">
-                                A3 services are now starting up...
+                                {self.state.i18n.a3ServicesAreNowStartingUp}
                             </div>
                             <div className="progress-div-startingCtl">
                                 <Progress percent={percentage} />

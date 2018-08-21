@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isEntitlementkey} from "../../libs/util";     
 import '../../css/ctlComponents/licensingCtl.css';
 import '../../libs/common.css';
 
@@ -17,9 +17,9 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/licensingCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/licensingCtl";
 
-import licensingImg from "../../media/licensing.png";
-import thirtyDayTrialImg from "../../media/thirtyDayTrial.png";
-import enterEntitlementKeyImg from "../../media/enterEntitlementKey.png";
+import licensingImg from "../../media/licensing.svg";
+import thirtyDayTrialImg from "../../media/thirtyDayTrial.svg";
+import enterEntitlementKeyImg from "../../media/enterEntitlementKey.svg";
 
 
 
@@ -33,6 +33,7 @@ class licensingCtl extends Component {
             wrongMessage:{
                 keyWrongMessage:"",
             },
+            key:"",
             enterEntitlementKeyVisible:false,
             endUserLicenseAgreementVisible:false,
             enableEndUserLicenseAgreement:false,
@@ -91,8 +92,11 @@ class licensingCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!key||key.toString().trim()===""){
-            newWrongMessage.keyWrongMessage="Entitlement key is required.";
-        }else{
+            newWrongMessage.keyWrongMessage=self.state.i18n.entitlementKeyIsRequired;
+        }else
+        if(isEntitlementkey(key.toString().trim())===false){
+            newWrongMessage.keyWrongMessage=self.state.i18n.entitlementKeyFormatIsIncorrect;
+        }else{    
             newWrongMessage.keyWrongMessage="";
         }
 
@@ -146,11 +150,52 @@ class licensingCtl extends Component {
 
     }
 
-    onCancelEndUserLicenseAgreementVisible= () => {
+    onSubmitEndUserLicenseAgreementVisible= () => {
         let self=this;
-        self.setState({ 
-            endUserLicenseAgreementVisible:false,
-        });
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/license";
+        
+        let param={
+            trial:"0",
+            eula_accept:true,
+            key:self.state.key,
+        }
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                self.setState({ 
+                    endUserLicenseAgreementVisible:false,
+                });
+                self.props.changeStatus("aerohiveCloud");
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
+        }) 
+
+    }
+
+    onClickStartThirtyDaysTrial= () => {
+        let self=this;
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/license";
+        
+        let param={
+            trial:"1",
+        }
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                self.props.changeStatus("aerohiveCloud");
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
+        }) 
 
     }
 
@@ -185,8 +230,8 @@ class licensingCtl extends Component {
             <div className="global-div-licensingCtl">
                 <div className="left-div-licensingCtl">
                     <Guidance 
-                        title={"Licensing"} 
-                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
+                        title={self.state.i18n.licensing} 
+                        content={[self.state.i18n.licensingMessage1,self.state.i18n.licensingMessage2]} 
                     />
                     <div className="img-div-licensingCtl">
                        <img src={licensingImg} className="img-img-licensingCtl" />
@@ -200,13 +245,15 @@ class licensingCtl extends Component {
                             <img src={thirtyDayTrialImg} className="thirty-day-trial-img-img-licensingCtl" />
                         </div>
                         <div className="thirty-day-trial-text-div-licensingCtl">
-                            30-DAY
+                            {self.state.i18n.thirtyDay}
                         </div>
                         <div className="thirty-day-trial-text-div-licensingCtl">
-                            TRIAL
+                            {self.state.i18n.trial}
                         </div>
-                        <div className="thirty-day-trial-button-div-licensingCtl">
-                            START A 30-DAY TRIAL PERIOD
+                        <div className="thirty-day-trial-button-div-licensingCtl"
+                            onClick={self.onClickStartThirtyDaysTrial.bind(self)}
+                        >
+                            {self.state.i18n.startAThirtyDayTrialPeriod}
                         </div>
                 
                         <div className="clear-float-div-common" ></div >
@@ -217,16 +264,16 @@ class licensingCtl extends Component {
                             <img src={enterEntitlementKeyImg} className="enter-entitlement-key-img-img-licensingCtl" />
                         </div>
                         <div className="enter-entitlement-key-text-div-licensingCtl">
-                            ENTER
+                            {self.state.i18n.enter}
                         </div>
                         <div className="enter-entitlement-key-text-div-licensingCtl">
-                            ENTITLEMENT KEY
+                            {self.state.i18n.entitlementKey}
                         </div>
                         <div 
                             className="enter-entitlement-key-button-div-licensingCtl"
                             onClick={self.onClickEnterAnEntitlementKey.bind(self)}
                         >
-                            ENTER AN ENTITLEMENT KEY
+                            {self.state.i18n.enterAnEntitlementKey}
                         </div>
                 
                         <div className="clear-float-div-common" ></div >
@@ -239,7 +286,7 @@ class licensingCtl extends Component {
 
 
                 <Modal 
-                    title="Enter Entitlement Key"
+                    title={self.state.i18n.enterEntitlementKey}
                     visible={enterEntitlementKeyVisible}
                     width={513}
                     footer={null}
@@ -253,7 +300,7 @@ class licensingCtl extends Component {
                         <Form onSubmit={self.handleSubmit.bind(self)}>
                         <div className="modal-form-item-div-licensingCtl" style={{marginTop:"0px"}}>
                             <div className="modal-form-item-title-div-licensingCtl">
-                                key:
+                                {self.state.i18n.key}
                             </div>
                             <div className="modal-form-item-input-div-licensingCtl">
                                 {getFieldDecorator('key', {
@@ -278,13 +325,13 @@ class licensingCtl extends Component {
                                     type="primary" 
                                     className="modal-form-button-next-antd-button-licensingCtl" 
                                     htmlType="submit" 
-                                >SUBMIT</Button>
+                                >{self.state.i18n.submit}</Button>
                             </div>
                             <div className="modal-form-button-cancel-div-licensingCtl">
                                 <Button 
                                     className="modal-form-button-cancel-antd-button-licensingCtl" 
                                     onClick={self.onCancelEnterEntitlementKey.bind(self)}
-                                >CANCEL</Button>
+                                >{self.state.i18n.cancel}</Button>
                             </div>
                         </div>
                         </Form>
@@ -298,11 +345,10 @@ class licensingCtl extends Component {
 
 
                 <Modal 
-                    title="End User License Agreement"
+                    title={self.state.i18n.endUserLicenseAgreement}
                     visible={endUserLicenseAgreementVisible}
                     width={513}
                     footer={null}
-                    onCancel={self.onCancelEndUserLicenseAgreementVisible.bind(self)}
                     closable={false}
                     maskClosable={false}
                     bodyStyle={{padding:"0px"}}
@@ -310,7 +356,170 @@ class licensingCtl extends Component {
          
                     <div className="modal-div-licensingCtl">
                         <div className="modal-eula-text-div-licensingCtl">
-                            wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwafqafq sfvwevqeb   svqevqevqevewrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwafqafq sfvwevqeb   svqevqevqevewrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwafqafq sfvwevqeb   svqevqevqevewrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwafqafq sfvwevqeb   svqevqevqevewrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwafqafq sfvwevqeb   svqevqevqevewrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwafqafq sfvwevqeb   svqevqevqevewrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwafqafq sfvwevqeb   svqevqevqevewrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwww wrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwwrgweewwwwwwwwwwwwwwwwwwafqafq sfvwevqeb   svqevqevqeve
+                            <div className="modal-eula-margin-top-0-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem1}
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem2}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem3}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem4}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem5}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem6}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem7}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem8}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem9}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem10}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem11}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem12}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem13}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem14}
+
+                            </div>
+                            <div className="modal-eula-margin-top-0-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem15}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem16}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem17}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem18}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem19}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem20}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem21}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem22}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem23}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem24}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem25}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem26}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem27} 
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem28}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem29}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem30}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem31}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem32}
+
+                            </div>
+                            <div className="modal-eula-margin-top-0-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem33}
+
+                            </div>
+                            <div className="modal-eula-margin-top-0-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem34}
+
+                            </div>
+                            <div className="modal-eula-margin-top-0-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem35}
+
+                            </div>
+                            <div className="modal-eula-margin-top-0-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem36}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem37}
+
+                            </div>
+                            <div className="modal-eula-margin-top-16-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem38}
+
+                            </div>
+                            <div className="modal-eula-margin-top-0-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem39}
+
+                            </div>
+                            <div className="modal-eula-margin-top-0-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem40}
+
+                            </div>
+                            <div className="modal-eula-margin-top-0-text-div-licensingCtl">
+                                {self.state.i18n.endUserLicenseAgreementItem41}
+
+                            </div>
+                            <div className="clear-float-div-common" ></div >
                         </div>
                         <div className="modal-eula-button-div-licensingCtl">
                             <div className="modal-eula-checkbox-div-licensingCtl">
@@ -320,15 +529,15 @@ class licensingCtl extends Component {
                                 ></Checkbox>
                             </div>
                             <div className="modal-eula-checkbox-text-div-licensingCtl">
-                                I agree to these terms
+                                {self.state.i18n.agreeToTheseTerms}
                             </div>
                             <div className="modal-eula-submit-div-licensingCtl">
                                 <Button 
                                     disabled={enableEndUserLicenseAgreement===true?false:true}
                                     type="primary" 
                                     className="modal-eula-submit-antd-button-licensingCtl" 
-                                    onClick={self.onCancelEndUserLicenseAgreementVisible.bind(self)}
-                                >CANCEL</Button>
+                                    onClick={self.onSubmitEndUserLicenseAgreementVisible.bind(self)}
+                                >{self.state.i18n.submit}</Button>
                             </div>
                             <div className="clear-float-div-common" ></div >
                         </div>

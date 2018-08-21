@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isPositiveInteger,isHostname} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isPositiveInteger,isHostname,isVlan} from "../../libs/util";     
 import '../../css/ctlComponents/networksCtl.css';
 import '../../libs/common.css';
 
@@ -17,14 +17,12 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/networksCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/networksCtl";
 
-import networksImg from "../../media/networks.png";
-import editNoImg from "../../media/editNo.png";
-import editYesImg from "../../media/editYes.png";
-import addVlanImg from "../../media/addVlan.png";
-import removeVlanImg from "../../media/removeVlan.png";
+import networksImg from "../../media/networks.svg";
 
-
-
+import editNoImg from "../../media/editNo.svg";
+import editYesImg from "../../media/editYes.svg";
+import addVlanImg from "../../media/addVlan.svg";
+import removeVlanImg from "../../media/removeVlan.svg";
 
 const {Component} = React;
 
@@ -76,6 +74,7 @@ class networksCtl extends Component {
     getData= () => {
         let self=this;
 
+        let xCsrfToken="";
         let url= "/a3/api/v1/configurator/networks";
          
         let param={
@@ -85,11 +84,11 @@ class networksCtl extends Component {
             loading : true,
         })
 
-        // new RequestApi('get',url,param,xCsrfToken,(data)=>{
-        //     self.getTrueData(data);
-        // });
+        new RequestApi('get',url,param,xCsrfToken,(data)=>{
+            self.getTrueData(data);
+        });
 
-        self.getTrueData(mock.networks);
+        //self.getTrueData(mock.networks);
     }
 
     getTrueData= (data) => {
@@ -99,12 +98,17 @@ class networksCtl extends Component {
             dataTable[i].key=dataTable[i].name;
             dataTable[i].vlan=dataTable[i].name;
             dataTable[i].clicked="";
-            dataTable[i].services=dataTable[i].services.split(",");
+            dataTable[i].services=dataTable[i].services===""?[]:dataTable[i].services.split(",");
         }
         self.setState({
+            enableClustering:data.cluster_enable,
             dataTable: dataTable,
             loading : false,
         }); 
+        self.props.form.resetFields();
+        self.props.form.setFieldsValue({
+            hostname:data.hostname,
+        });
     }
 
 
@@ -125,10 +129,10 @@ class networksCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!hostname||hostname.toString().trim()===""){
-            newWrongMessage.hostnameWrongMessage="Host Name is required.";
+            newWrongMessage.hostnameWrongMessage=self.state.i18n.hostNameIsRequired;
         }else
         if(isHostname(hostname.toString().trim())===false){
-            newWrongMessage.hostnameWrongMessage="invalid Host Name.";
+            newWrongMessage.hostnameWrongMessage=self.state.i18n.invalidHostName;
         }else{
             newWrongMessage.hostnameWrongMessage="";
         }
@@ -163,10 +167,10 @@ class networksCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!name||name.toString().trim()===""){
-            newWrongMessage.nameWrongMessage="Name is required.";
+            newWrongMessage.nameWrongMessage=self.state.i18n.nameIsRequired;
         }else
-        if(isPositiveInteger(name.toString().trim())===false){
-            newWrongMessage.nameWrongMessage="The value must be a positive number.";
+        if(isVlan(name.toString().trim())===false){
+            newWrongMessage.nameWrongMessage=self.state.i18n.nameMustBeBetween;
         }else{
             newWrongMessage.nameWrongMessage="";
         }
@@ -213,10 +217,10 @@ class networksCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!ipAddr||ipAddr.toString().trim()===""){
-            newWrongMessage.ipAddrWrongMessage="IP address is required.";
+            newWrongMessage.ipAddrWrongMessage=self.state.i18n.iPAddressIsRequired;
         }else
         if(isIp(ipAddr.toString().trim())===false){
-            newWrongMessage.ipAddrWrongMessage="IP address format is incorrect.";
+            newWrongMessage.ipAddrWrongMessage=self.state.i18n.iPAddressFormatIsIncorrect;
         }else{
             newWrongMessage.ipAddrWrongMessage="";
         }
@@ -260,10 +264,10 @@ class networksCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!netmask||netmask.toString().trim()===""){
-            newWrongMessage.netmaskWrongMessage="Netmask is required.";
+            newWrongMessage.netmaskWrongMessage=self.state.i18n.netmaskIsRequired;
         }else
         if(isIp(netmask.toString().trim())===false){
-            newWrongMessage.netmaskWrongMessage="Netmask format is incorrect.";
+            newWrongMessage.netmaskWrongMessage=self.state.i18n.netmaskFormatIsIncorrect;
         }else{
             newWrongMessage.netmaskWrongMessage="";
         }
@@ -308,10 +312,10 @@ class networksCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!vip||vip.toString().trim()===""){
-            newWrongMessage.vipWrongMessage="VIP is required.";
+            newWrongMessage.vipWrongMessage=self.state.i18n.vipIsRequired;
         }else
         if(isIp(vip.toString().trim())===false){
-            newWrongMessage.vipWrongMessage="VIP format is incorrect.";
+            newWrongMessage.vipWrongMessage=self.state.i18n.vipFormatIsIncorrect;
         }else{
             newWrongMessage.vipWrongMessage="";
         }
@@ -345,6 +349,22 @@ class networksCtl extends Component {
         }
     }
 
+    getItems= () => {
+        let self=this;
+        let items=[];
+        for(let i=0;i<self.state.dataTable.length;i++){
+            items.push({
+                id:self.state.dataTable[i].id,
+                name:self.state.dataTable[i].name,
+                ip_addr:self.state.dataTable[i].ip_addr,
+                netmask:self.state.dataTable[i].netmask,
+                vip:self.state.dataTable[i].vip,
+                type:self.state.dataTable[i].type,
+                services:self.state.dataTable[i].services.join(","),
+            });
+        }
+        return items;
+    }
 
     handleSubmit = (e) => {
         let self=this;
@@ -360,6 +380,25 @@ class networksCtl extends Component {
                 if(hasWrongValue===true){
                     return;
                 }
+
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configurator/networks";
+                
+                let param={
+                    cluster_enable:self.state.enableClustering,
+                    hostname:values.hostname,
+                    itmes:self.getItems(),
+                }
+
+                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        self.props.changeStatus("licensing");
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
 
 
             }
@@ -430,12 +469,35 @@ class networksCtl extends Component {
             return;
         }
 
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/interface";
+
         let dataCopy=self.state.dataTable;
-        dataCopy[index].clicked="";
-        self.setState({
-            dataTable : dataCopy,
-            isEditing: false,
+        
+        let param={
+            "name":dataCopy[index].name,
+            "ip_addr":dataCopy[index].ip_addr,
+            "netmask":dataCopy[index].netmask,
+            "vip":dataCopy[index].vip,
+            "type":dataCopy[index].type,
+            "services":dataCopy[index].services.join(","),
+        }
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                dataCopy[index].clicked="";
+                self.setState({
+                    dataTable : dataCopy,
+                    isEditing: false,
+                }) 
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
         }) 
+
     }
 
     onClickEditNo= (index,column) => {
@@ -505,9 +567,35 @@ class networksCtl extends Component {
                     return;
                 }
 
-                self.setState({ 
-                    addVlanVisible:false,
-                });
+
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configurator/interface";
+                
+                let param={
+                    "name":"VLAN"+values.name.toString().trim(),
+                    "ip_addr":values.ip_addr,
+                    "netmask":values.netmask,
+                    "vip":values.vip,
+                    "type":values.type,
+                    "services":values.services.join(","),
+                }
+
+                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        self.setState({ 
+                            addVlanVisible:false,
+                        });
+                        self.getData();
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
+
+
+
+
 
 
             }
@@ -527,15 +615,32 @@ class networksCtl extends Component {
     onClickRemoveVlan= (index) => {
         let self=this;
         Modal.confirm({
-            content: "Are you sure you want to do this?",
-            okText: 'Yes',
-            cancelText: 'No',
+            content: self.state.i18n.areYouSureYouWantToDoThis,
+            okText: self.state.i18n.yes,
+            cancelText: self.state.i18n.no,
             onOk() {
                 let dataCopy=self.state.dataTable;
-                dataCopy.splice(index,1);
-                self.setState({ 
-                    dataTable : dataCopy,
-                });
+
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configurator/interface";
+                
+                let param={
+                    name:dataCopy[index].name,
+                }
+
+                new RequestApi('delete',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        dataCopy.splice(index,1);
+                        self.setState({ 
+                            dataTable : dataCopy,
+                        });
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
+
             },
             onCancel() {},
         });
@@ -554,7 +659,7 @@ class networksCtl extends Component {
 
         let columns=[];
         columns.push({
-            title:"NAME",
+            title:self.state.i18n.name,
             dataIndex: 'name',
             key: 'name',
             render: (text, record, index) => {
@@ -604,7 +709,7 @@ class networksCtl extends Component {
             } 
         });
         columns.push({
-            title: "IP ADDRESS",
+            title: self.state.i18n.iPAddress,
             dataIndex: 'ip_addr',
             key: 'ip_addr',
             render: (text, record, index) => {
@@ -638,7 +743,7 @@ class networksCtl extends Component {
             } 
         });
         columns.push({
-            title:"NETMASK",
+            title:self.state.i18n.netmask,
             dataIndex: 'netmask',
             key: 'netmask',
             render: (text, record, index) => {
@@ -674,7 +779,7 @@ class networksCtl extends Component {
 
         if(enableClustering===true){
             columns.push({
-                title:"VIP",
+                title:self.state.i18n.vip,
                 dataIndex: 'vip',
                 key: 'vip',
                 render: (text, record, index) => {
@@ -710,7 +815,7 @@ class networksCtl extends Component {
         }
 
         columns.push({
-            title:"TYPE",
+            title:self.state.i18n.type,
             dataIndex: 'type',
             key: 'type',
             render: (text, record, index) => {
@@ -721,11 +826,11 @@ class networksCtl extends Component {
                             onChange={self.onChangeSelect.bind(self,index,"type")}
                             style={{ width: 110 }} 
                         >
-                            <Option value="MANAGEMENT">Management</Option>
-                            <Option value="REGISTRATION">Registration</Option>
-                            <Option value="ISOLATION">Isolation</Option>
-                            <Option value="NONE">None</Option>
-                            <Option value="OTHER">Other</Option>
+                            <Option value="MANAGEMENT">{self.state.i18n.management}</Option>
+                            <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
+                            <Option value="ISOLATION">{self.state.i18n.isolation}</Option>
+                            <Option value="NONE">{self.state.i18n.none}</Option>
+                            <Option value="OTHER">{self.state.i18n.other}</Option>
                         </Select>
                     </div>
                 );
@@ -733,7 +838,7 @@ class networksCtl extends Component {
         });
 
         columns.push({
-            title: 'SERVICES',
+            title: self.state.i18n.services,
             dataIndex: 'services',
             key: 'services',
             render: (text, record, index) => {
@@ -745,8 +850,8 @@ class networksCtl extends Component {
                             style={{ width: 110 }} 
                             mode="multiple"
                         >
-                            <Option value="PORTAL">Portal</Option>
-                            <Option value="RADIUS">RADIUS</Option>
+                            <Option value="PORTAL">{self.state.i18n.portal}</Option>
+                            <Option value="RADIUS">{self.state.i18n.radius}</Option>
                         </Select>
                     </div>
                 );
@@ -754,7 +859,7 @@ class networksCtl extends Component {
         });
 
         columns.push({
-            title: "VLAN",
+            title: self.state.i18n.vlan,
             dataIndex: 'vlan',
             key: 'vlan',
             render: (text, record, index) => {
@@ -762,20 +867,20 @@ class networksCtl extends Component {
                     text.indexOf("VLAN")===-1?
                     <div className="vlan-add-div-networksCtl" onClick={self.onClickAddVlan.bind(self,index)}  >
                         <div className="vlan-add-img-div-networksCtl">
-                            +
+                            <img className="vlan-add-img-img-networksCtl" src={addVlanImg} />
                         </div>
                         <div className="vlan-add-text-div-networksCtl">
-                            Add VLAN
+                            {self.state.i18n.addVlan}
                         </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
                     :
                     <div className="vlan-remove-div-networksCtl" onClick={self.onClickRemoveVlan.bind(self,index)}  >
                         <div className="vlan-remove-img-div-networksCtl">
-                            x
+                            <img className="vlan-remove-img-img-networksCtl" src={removeVlanImg} />
                         </div>
                         <div className="vlan-remove-text-div-networksCtl">
-                            Remove VLAN
+                            {self.state.i18n.removeVlan}
                         </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
@@ -789,8 +894,8 @@ class networksCtl extends Component {
             <Spin spinning={loading}>
                 <div className="left-div-networksCtl">
                     <Guidance 
-                        title={"Networks"} 
-                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
+                        title={self.state.i18n.instructions} 
+                        content={[self.state.i18n.instructionsMessage1,self.state.i18n.instructionsMessage2,self.state.i18n.instructionsMessage3]} 
                     />
                     <div className="img-div-networksCtl">
                        <img src={networksImg} className="img-img-networksCtl" />
@@ -803,7 +908,7 @@ class networksCtl extends Component {
                     <Form onSubmit={self.handleSubmit.bind(self)}>
                     <div className="form-item-div-networksCtl">
                         <div className="form-item-title-div-networksCtl">
-                            Host Name
+                            {self.state.i18n.hostName}
                         </div>
                         <div className="form-item-input-div-networksCtl">
                             {getFieldDecorator('hostname', {
@@ -812,6 +917,7 @@ class networksCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckHostname.bind(self)}
+                                maxLength={254}
                                 />
                             )}
                         </div>
@@ -823,7 +929,7 @@ class networksCtl extends Component {
                     </div>
 
                     <div className="interfaces-div-networksCtl">
-                        interfaces
+                        {self.state.i18n.interfaces}
                     </div>
                     <div className="enable-clustering-div-networksCtl">
                         <div className="enable-clustering-checkbox-div-networksCtl">
@@ -833,7 +939,7 @@ class networksCtl extends Component {
                             ></Checkbox>
                         </div>
                         <div className="enable-clustering-text-div-networksCtl">
-                            Enable clustering
+                            {self.state.i18n.enableClustering}
                         </div>
                         <div className="clear-float-div-common" ></div >
                     </div>
@@ -852,13 +958,13 @@ class networksCtl extends Component {
                                 type="primary" 
                                 className="form-button-next-antd-button-networksCtl" 
                                 htmlType="submit" 
-                            >NEXT</Button>
+                            >{self.state.i18n.next}</Button>
                         </div>
                         <div className="form-button-cancel-div-networksCtl">
                             <Button 
                                 className="form-button-cancel-antd-button-networksCtl" 
                                 onClick={self.onClickCancel.bind(self)}
-                            >CANCEL</Button>
+                            >{self.state.i18n.cancel}</Button>
                         </div>
                     </div>
 
@@ -869,7 +975,7 @@ class networksCtl extends Component {
                 </div>
 
                 <Modal 
-                    title="Add VLAN"
+                    title={self.state.i18n.addVlan}
                     visible={addVlanVisible}
                     width={302}
                     footer={null}
@@ -881,11 +987,11 @@ class networksCtl extends Component {
                         <Form onSubmit={self.onOkAddVlan.bind(self)}>
                         <div className="modal-form-item-div-networksCtl" style={{marginTop:"0px"}}>
                             <div className="modal-form-item-title-div-networksCtl">
-                                Name
+                                {self.state.i18n.modalName}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 <div className="modal-form-item-name-vlan-div-networksCtl">
-                                    VLAN
+                                    {self.state.i18n.vlan}
                                 </div>
                                 <div className="modal-form-item-name-number-div-networksCtl">
                                     {getFieldDecorator('name', {
@@ -908,7 +1014,7 @@ class networksCtl extends Component {
 
                         <div className="modal-form-item-div-networksCtl">
                             <div className="modal-form-item-title-div-networksCtl">
-                                Ip Address
+                                {self.state.i18n.modalIpAddress}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('ip_addr', {
@@ -930,7 +1036,7 @@ class networksCtl extends Component {
 
                         <div className="modal-form-item-div-networksCtl">
                             <div className="modal-form-item-title-div-networksCtl">
-                                Netmask
+                                {self.state.i18n.modalNetmask}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('netmask', {
@@ -950,9 +1056,11 @@ class networksCtl extends Component {
                             <div className="clear-float-div-common" ></div >
                         </div>
 
-                        <div className="modal-form-item-div-networksCtl">
+                        <div className="modal-form-item-div-networksCtl" 
+                            style={{display:enableClustering===true?"block":"none"}}
+                        >
                             <div className="modal-form-item-title-div-networksCtl">
-                                Vip
+                                {self.state.i18n.vip}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('vip', {
@@ -975,7 +1083,7 @@ class networksCtl extends Component {
 
                         <div className="modal-form-item-div-networksCtl">
                             <div className="modal-form-item-title-div-networksCtl">
-                                Type
+                                {self.state.i18n.modalType}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('type', {
@@ -987,11 +1095,11 @@ class networksCtl extends Component {
                                         option={{initialValue:"MANAGEMENT"}}
                                         style={{ height: 32 }} 
                                     >
-                                        <Option value="MANAGEMENT" >Management</Option>
-                                        <Option value="REGISTRATION">Registration</Option>
-                                        <Option value="ISOLATION" >Isolation</Option>
-                                        <Option value="NONE" >None</Option>
-                                        <Option value="OTHER" >Other</Option>
+                                        <Option value="MANAGEMENT" >{self.state.i18n.management}</Option>
+                                        <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
+                                        <Option value="ISOLATION" >{self.state.i18n.isolation}</Option>
+                                        <Option value="NONE" >{self.state.i18n.none}</Option>
+                                        <Option value="OTHER" >{self.state.i18n.other}</Option>
                                     </Select>
 
                                 )}
@@ -1002,7 +1110,7 @@ class networksCtl extends Component {
                         </div>
                         <div className="modal-form-item-div-networksCtl">
                             <div className="modal-form-item-title-div-networksCtl">
-                                Services
+                                {self.state.i18n.modalServices}
                             </div>
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('services', {
@@ -1013,8 +1121,8 @@ class networksCtl extends Component {
                                         mode="multiple"
                                         style={{ height: 32 }} 
                                     >
-                                        <Option value="PORTAL">Portal</Option>
-                                        <Option value="RADIUS">RADIUS</Option>
+                                        <Option value="PORTAL">{self.state.i18n.portal}</Option>
+                                        <Option value="RADIUS">{self.state.i18n.radius}</Option>
                                     </Select>
                                 )}
                             </div>
@@ -1028,13 +1136,13 @@ class networksCtl extends Component {
                                     type="primary" 
                                     className="modal-form-button-next-antd-button-networksCtl" 
                                     htmlType="submit" 
-                                >NEXT</Button>
+                                >{self.state.i18n.next}</Button>
                             </div>
                             <div className="modal-form-button-cancel-div-networksCtl">
                                 <Button 
                                     className="modal-form-button-cancel-antd-button-networksCtl" 
                                     onClick={self.onCancelAddVlan.bind(self)}
-                                >CANCEL</Button>
+                                >{self.state.i18n.cancel}</Button>
                             </div>
                         </div>
                         </Form>

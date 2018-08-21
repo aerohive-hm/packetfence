@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isUrl} from "../../libs/util";     
 import '../../css/ctlComponents/aerohiveCloudCtl.css';
 import '../../libs/common.css';
 
@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/aerohiveCloudCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/aerohiveCloudCtl";
 
-import aerohiveCloudImg from "../../media/aerohiveCloud.png";
+import aerohiveCloudImg from "../../media/aerohiveCloud.svg";
 
 
 
@@ -81,7 +81,10 @@ class aerohiveCloudCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!url||url.toString().trim()===""){
-            newWrongMessage.urlWrongMessage="Cloud URL is required.";
+            newWrongMessage.urlWrongMessage=self.state.i18n.cloudUrlIsRequired;
+        }else
+        if(isUrl(url.toString().trim())===false){
+            newWrongMessage.urlWrongMessage=self.state.i18n.cloudUrlMustStartWith;
         }else{
             newWrongMessage.urlWrongMessage="";
         }
@@ -114,7 +117,10 @@ class aerohiveCloudCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!user||user.toString().trim()===""){
-            newWrongMessage.userWrongMessage="Cloud Admin User is required";
+            newWrongMessage.userWrongMessage=self.state.i18n.cloudAdminUserIsRequired;
+        }else
+        if(isEmail(user.toString().trim())===false){
+            newWrongMessage.userWrongMessage=self.state.i18n.cloudAdminUserFormatIsIncorrect;
         }else{
             newWrongMessage.userWrongMessage="";
         }
@@ -147,7 +153,7 @@ class aerohiveCloudCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!pass||pass.toString().trim()===""){
-            newWrongMessage.passWrongMessage="Password is required";
+            newWrongMessage.passWrongMessage=self.state.i18n.passwordIsRequired;
         }else{
             newWrongMessage.passWrongMessage="";
         }
@@ -193,8 +199,50 @@ class aerohiveCloudCtl extends Component {
                 }
 
 
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configurator/cloud";
+                
+                let param={
+                    url:values.url,
+                    user:values.user,
+                    pass:values.pass,
+                }
+
+                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        self.props.changeStatus("startingManagement");
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
+
+
             }
         });
+        
+    }
+
+    onClickContinueWithoutAnAerohiveCloudAccount= () => {
+        let self=this;
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/cloud";
+        
+        let param={
+            url:"",
+        }
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                self.props.changeStatus("startingManagement");
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
+        }) 
         
     }
 
@@ -211,10 +259,18 @@ class aerohiveCloudCtl extends Component {
         return (
             <div className="global-div-aerohiveCloudCtl">
                 <div className="left-div-aerohiveCloudCtl">
-                    <Guidance 
-                        title={"Aerohive Cloud"} 
-                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
-                    />
+                    <div className="guidance-div-aerohiveCloudCtl">
+                        <div className="guidance-title-div-aerohiveCloudCtl">
+                            {self.state.i18n.aerohiveCloud}
+                        </div>
+                        <div className="guidance-content-div-aerohiveCloudCtl">
+                            {self.state.i18n.alreadyHasAnAerohiveCloudAccount1}<strong>{self.state.i18n.alreadyHasAnAerohiveCloudAccount2}</strong>{self.state.i18n.alreadyHasAnAerohiveCloudAccount3} 
+                        </div>
+                        <div className="guidance-content-div-aerohiveCloudCtl">
+                            {self.state.i18n.firstExposureToAerohive1}<strong>{self.state.i18n.firstExposureToAerohive2}</strong>{self.state.i18n.firstExposureToAerohive3}
+                        </div>
+                        <div className="clear-float-div-common" ></div >
+                    </div>
                     <div className="img-div-aerohiveCloudCtl">
                        <img src={aerohiveCloudImg} className="img-img-aerohiveCloudCtl" />
                     </div>
@@ -227,7 +283,7 @@ class aerohiveCloudCtl extends Component {
 
                     <div className="form-item-div-aerohiveCloudCtl">
                         <div className="form-item-title-div-aerohiveCloudCtl">
-                            Cloud URL
+                            {self.state.i18n.cloudUrl}
                         </div>
                         <div className="form-item-input-div-aerohiveCloudCtl">
                             {getFieldDecorator('url', {
@@ -236,6 +292,7 @@ class aerohiveCloudCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckUrl.bind(self)}
+                                maxLength={254}
                                 
                                 />
                             )}
@@ -250,7 +307,7 @@ class aerohiveCloudCtl extends Component {
 
                     <div className="form-item-div-aerohiveCloudCtl">
                         <div className="form-item-title-div-aerohiveCloudCtl">
-                            Cloud Admin User
+                            {self.state.i18n.cloudAdminUser}
                         </div>
                         <div className="form-item-input-div-aerohiveCloudCtl">
                             {getFieldDecorator('user', {
@@ -259,6 +316,7 @@ class aerohiveCloudCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckUser.bind(self)}
+                                maxLength={1000}
                                 />
                             )}
                         </div>
@@ -271,7 +329,7 @@ class aerohiveCloudCtl extends Component {
 
                     <div className="form-item-div-aerohiveCloudCtl">
                         <div className="form-item-title-div-aerohiveCloudCtl">
-                            Password
+                            {self.state.i18n.password}
                         </div>
                         <div className="form-item-input-div-aerohiveCloudCtl">
                             {getFieldDecorator('pass', {
@@ -280,6 +338,7 @@ class aerohiveCloudCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPass.bind(self)}
+                                maxLength={254}
                                 />
 
                                 
@@ -300,7 +359,7 @@ class aerohiveCloudCtl extends Component {
                                 type="primary" 
                                 className="form-button-link-antd-button-aerohiveCloudCtl" 
                                 htmlType="submit" 
-                            >LINK WITH AEROHIVE CLOUD ACCOUNT</Button>
+                            >{self.state.i18n.linkWithAerohiveCloudAccount}</Button>
                         </div>
                     </div>
                     <div className="form-button-div-aerohiveCloudCtl">
@@ -309,11 +368,13 @@ class aerohiveCloudCtl extends Component {
                                 className="form-button-create-antd-button-aerohiveCloudCtl" 
                                 onClick={self.onClickCreateAnAerohiveCloudAccount.bind(self)}
                                 
-                            >CREATE AN AEROHIVE CLOUD ACCOUNT</Button>
+                            >{self.state.i18n.createAnAerohiveCloudAccount}</Button>
                         </div>
                     </div>
-                    <div className="form-button-continue-div-aerohiveCloudCtl">
-                        Continue without an Aerohive Cloud Account
+                    <div className="form-button-continue-div-aerohiveCloudCtl"
+                        onClick={self.onClickContinueWithoutAnAerohiveCloudAccount.bind(self)}
+                    >
+                        {self.state.i18n.continueWithoutAnAerohiveCloudAccount}
                     </div>
 
 

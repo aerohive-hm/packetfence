@@ -1,4 +1,20 @@
 export let i18n ={
-	"getStart": "getStart",
+	"emailIsRequired": "Email is required.",
+	"emailFormatIsIncorrect": "Email format is incorrect.",
+	"passwordIsRequired": "Password is required.",
+	"confirmPasswordIsRequired": "Confirm Password is required.",
+	"passwordDoNotMatch": "Password do not match.",
+	"veryWeak": "Very Weak",
+	"weak": "Weak",
+	"average": "Average",
+	"strong": "Strong",
+	"veryStrong": "Very Strong",
+	"welcomeToA3": "Welcome to A3!",
+	"welcomeToA3Message": "Please add your primary administrator's login credentials here and select a strong password. It is advisable to consider an email alias if a team of individuals will be administering this system.",
+	"adminEmail": "Admin Email",
+	"password": "Password",
+	"confirmPassword": "Confirm Password",
+	"next": "NEXT",
+	"cancel": "CANCEL",
 	
 }

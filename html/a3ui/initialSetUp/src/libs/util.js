@@ -109,3 +109,26 @@ export function isHostname(data){　
   return r.test(data.toString().trim());
 
 }
+
+export function isVlan(data){
+    var r = /^[1-9][0-9]*$/;　
+    if(r.test(data.toString().trim())&&parseInt(data.toString().trim())<=4094&&parseInt(data.toString().trim())>=2){
+        return true;
+     }else{
+        return false;
+     }
+}
+
+export function isUrl(data){
+    var r = /^(https):\/\/.*$/
+    if(r.test(data.toString().trim())){
+        return true;
+     }else{
+        return false;
+     }
+}
+
+export function isEntitlementkey(data){
+    var r = /^([0-9A-Za-z]{5})-([0-9A-Za-z]{5})-([0-9A-Za-z]{5})-([0-9A-Za-z]{5})-([0-9A-Za-z]{5})-([0-9A-Za-z]{5})$/;
+    return r.test(data.toString().trim());
+}

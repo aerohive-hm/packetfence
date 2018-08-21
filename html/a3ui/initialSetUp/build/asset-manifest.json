@@ -3,5 +3,21 @@
   "main.css.map": "static/css/initialSetUp.css.map",
   "main.js": "static/js/initialSetUp.js",
   "main.js.map": "static/js/initialSetUp.js.map",
-  "static\\media\\licensing.png": "static/media/licensing.3072993c.png"
+  "static\\media\\addVlan.svg": "static/media/addVlan.858740a0.svg",
+  "static\\media\\adminUser.svg": "static/media/adminUser.fc24b3c4.svg",
+  "static\\media\\aerohiveCloud.svg": "static/media/aerohiveCloud.93aec305.svg",
+  "static\\media\\editNo.svg": "static/media/editNo.f8aabf0c.svg",
+  "static\\media\\editYes.svg": "static/media/editYes.d2ae0aa3.svg",
+  "static\\media\\enterEntitlementKey.svg": "static/media/enterEntitlementKey.24fabfd7.svg",
+  "static\\media\\joinCluster.svg": "static/media/joinCluster.baf11476.svg",
+  "static\\media\\joinClusterBackground.svg": "static/media/joinClusterBackground.4650a441.svg",
+  "static\\media\\joinClusterLogo.svg": "static/media/joinClusterLogo.c0285982.svg",
+  "static\\media\\licensing.svg": "static/media/licensing.fdc1db98.svg",
+  "static\\media\\logo.svg": "static/media/logo.41519cdf.svg",
+  "static\\media\\networks.svg": "static/media/networks.10665057.svg",
+  "static\\media\\newDeploymentBackground.svg": "static/media/newDeploymentBackground.2b4b65fd.svg",
+  "static\\media\\newDeploymentLogo.svg": "static/media/newDeploymentLogo.3b501fff.svg",
+  "static\\media\\removeVlan.svg": "static/media/removeVlan.f23e9613.svg",
+  "static\\media\\startingAndReady.svg": "static/media/startingAndReady.42d7d803.svg",
+  "static\\media\\thirtyDayTrial.svg": "static/media/thirtyDayTrial.ec57b003.svg"
 }

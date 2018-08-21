@@ -6,7 +6,8 @@
 import React from 'react';
 import { Table ,Row} from 'antd';
 import '../css/logo.css';
-import logoImg from '../../../media/logo.png';
+
+import logoImg from '../../../media/logo.svg';
 
 const {
     Component

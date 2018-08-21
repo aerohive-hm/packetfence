@@ -15,8 +15,8 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/getStartCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/getStartCtl";
 
-import newDeploymentLogoImg from "../../media/newDeploymentLogo.png";
-import joinClusterBackgroundLogo from "../../media/joinClusterBackgroundLogo.png";
+import newDeploymentLogoImg from "../../media/newDeploymentLogo.svg";
+import joinClusterLogoImg from "../../media/joinClusterLogo.svg";
 
 const {Component} = React;
 
@@ -49,6 +49,21 @@ class getStartCtl extends Component {
         })
 
     }
+
+    onClickNewDeployment= () => {
+        let self=this;
+        self.props.changeStatus("adminUser");
+        
+
+    }
+
+    onClickJoinCluster= () => {
+        let self=this;
+        self.props.changeStatus("joinCluster");
+        
+
+    }
+
     render() {
         const {} = this.state;
         const {} = this.props;
@@ -64,34 +79,34 @@ class getStartCtl extends Component {
                         <img src={newDeploymentLogoImg} className="new-deployment-logo-img-getStartCtl" />
                     </div>
                     <div className="new-deployment-new-div-getStartCtl">
-                        NEW
+                        {self.state.i18n.new}
                     </div>
                     <div className="new-deployment-deployment-div-getStartCtl">
-                        DEPLOYMENT
+                        {self.state.i18n.deployment}
                     </div>
                     <div className="new-deployment-explain-div-getStartCtl">
-                        Set up a new cluster or standalone
+                        {self.state.i18n.setUpANewClusterOrStandalone}
                     </div>
-                    <div className="new-deployment-button-div-getStartCtl">
-                        GET STARTED
+                    <div className="new-deployment-button-div-getStartCtl" onClick={self.onClickNewDeployment.bind(self)}>
+                        {self.state.i18n.getStarted}
                     </div>
                     <div className="clear-float-div-common" ></div >
                 </div>
                 <div className="join-cluster-div-getStartCtl">
                     <div className="join-cluster-logo-div-getStartCtl">
-                        <img src={joinClusterBackgroundLogo} className="join-cluster-logo-img-getStartCtl" />
+                        <img src={joinClusterLogoImg} className="join-cluster-logo-img-getStartCtl" />
                     </div>
                     <div className="join-cluster-new-div-getStartCtl">
-                        JOIN
+                        {self.state.i18n.join}
                     </div>
                     <div className="join-cluster-deployment-div-getStartCtl">
-                        CLUSTER
+                        {self.state.i18n.cluster}
                     </div>
                     <div className="join-cluster-explain-div-getStartCtl">
-                        Join an existing cluster
+                        {self.state.i18n.joinAnExistingCluster}
                     </div>
-                    <div className="join-cluster-button-div-getStartCtl">
-                        GET STARTED
+                    <div className="join-cluster-button-div-getStartCtl" onClick={self.onClickJoinCluster.bind(self)}>
+                        {self.state.i18n.getStarted}
                     </div>
                     <div className="clear-float-div-common" ></div >
                 </div>

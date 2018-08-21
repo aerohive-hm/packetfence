@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isUrl} from "../../libs/util";     
 import '../../css/ctlComponents/joinClusterCtl.css';
 import '../../libs/common.css';
 
@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {i18nfr} from "../../i18n/ctlComponents/nls/fr/joinClusterCtl";
 import {i18n} from "../../i18n/ctlComponents/nls/joinClusterCtl";
 
-import joinClusterImg from "../../media/joinCluster.png";
+import joinClusterImg from "../../media/joinCluster.svg";
 
 
 
@@ -75,10 +75,10 @@ class joinClusterCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!primaryServer||primaryServer.toString().trim()===""){
-            newWrongMessage.primaryServerWrongMessage="Cluster Primary is required.";
+            newWrongMessage.primaryServerWrongMessage=self.state.i18n.clusterPrimaryIsRequired;
         }else
-        if(isIp(primaryServer.toString().trim())===false){
-            newWrongMessage.primaryServerWrongMessage="Cluster Primary is incorret.";
+        if(isUrl(primaryServer.toString().trim())===false){
+            newWrongMessage.primaryServerWrongMessage=self.state.i18n.clusterPrimaryMustStartWith;
         }else{
             newWrongMessage.primaryServerWrongMessage="";
         }
@@ -111,10 +111,10 @@ class joinClusterCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!admin||admin.toString().trim()===""){
-            newWrongMessage.adminWrongMessage="Cluster Admin is required";
+            newWrongMessage.adminWrongMessage=self.state.i18n.clusterAdminIsRequired;
         }else
         if(isEmail(admin.toString().trim())===false){
-            newWrongMessage.adminWrongMessage="Email format is incorret.";
+            newWrongMessage.adminWrongMessage=self.state.i18n.emailFormatIsIncorret;
         }else{
             newWrongMessage.adminWrongMessage="";
         }
@@ -147,7 +147,7 @@ class joinClusterCtl extends Component {
         let newWrongMessage=self.state.wrongMessage;
 
         if(!passwd||passwd.toString().trim()===""){
-            newWrongMessage.passwdWrongMessage="Admin Password is required";
+            newWrongMessage.passwdWrongMessage=self.state.i18n.adminPasswordIsRequired;
         }else{
             newWrongMessage.passwdWrongMessage="";
         }
@@ -193,6 +193,29 @@ class joinClusterCtl extends Component {
                 }
 
 
+
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configurator/cluster/join";
+                
+                let param={
+                    "primary_server":values.primary_server,
+                    "admin":values.admin,
+                    "passwd":values.passwd,
+
+                }
+
+                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        self.props.changeStatus("clusterNetworking");
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
+
+
+
             }
         });
         
@@ -212,8 +235,8 @@ class joinClusterCtl extends Component {
             <div className="global-div-joinClusterCtl">
                 <div className="left-div-joinClusterCtl">
                     <Guidance 
-                        title={"Join Cluster"} 
-                        content={"awgwaegWEE EEEEEEEEEE EEEEEEWfeWEFABERBAR WRBRAEBAERBBEABAWRBAERBAER BAEBABRAEBVAWRVAERBAERBAERBAERBAER BawgwaegWEEEE EEEEEEEEEEEEEEWfeWEFABERBA RWRBRAEBAERBBEABAWRBAE RBAERBAEB ABRAEBVAWR  VAERBAERBA ERBAERBAER BawgwaegWE EEEEEEEEEEE EEEEEEWfeWE FABERBARWRB RAEBAERBBEA BAWRBAER BAERBAEBAB RAEBVAWRVAERB AERBAERBAERBAERB ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"} 
+                        title={self.state.i18n.joinCluster} 
+                        content={[self.state.i18n.joinClusterMessage]} 
                     />
                     <div className="img-div-joinClusterCtl">
                        <img src={joinClusterImg} className="img-img-joinClusterCtl" />
@@ -227,7 +250,7 @@ class joinClusterCtl extends Component {
 
                     <div className="form-item-div-joinClusterCtl">
                         <div className="form-item-title-div-joinClusterCtl">
-                            Cluster Primary
+                            {self.state.i18n.clusterPrimary}
                         </div>
                         <div className="form-item-input-div-joinClusterCtl">
                             {getFieldDecorator('primary_server', {
@@ -236,6 +259,7 @@ class joinClusterCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPrimaryServer.bind(self)}
+                                maxLength={254}
                                 
                                 />
                             )}
@@ -250,7 +274,7 @@ class joinClusterCtl extends Component {
 
                     <div className="form-item-div-joinClusterCtl">
                         <div className="form-item-title-div-joinClusterCtl">
-                            Cluster Admin
+                            {self.state.i18n.clusterAdmin}
                         </div>
                         <div className="form-item-input-div-joinClusterCtl">
                             {getFieldDecorator('admin', {
@@ -259,6 +283,7 @@ class joinClusterCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckAdmin.bind(self)}
+                                maxLength={254}
                                 />
                             )}
                         </div>
@@ -271,7 +296,7 @@ class joinClusterCtl extends Component {
 
                     <div className="form-item-div-joinClusterCtl">
                         <div className="form-item-title-div-joinClusterCtl">
-                            Admin Password
+                            {self.state.i18n.adminPassword}
                         </div>
                         <div className="form-item-input-div-joinClusterCtl">
                             {getFieldDecorator('passwd', {
@@ -280,6 +305,7 @@ class joinClusterCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPasswd.bind(self)}
+                                maxLength={254}
                                 />
 
                                 
@@ -300,13 +326,13 @@ class joinClusterCtl extends Component {
                                 type="primary" 
                                 className="form-button-next-antd-button-joinClusterCtl" 
                                 htmlType="submit" 
-                            >NEXT</Button>
+                            >{self.state.i18n.next}</Button>
                         </div>
                         <div className="form-button-cancel-div-joinClusterCtl">
                             <Button 
                                 className="form-button-cancel-antd-button-joinClusterCtl" 
                                 onClick={self.onClickCancel.bind(self)}
-                            >CANCEL</Button>
+                            >{self.state.i18n.cancel}</Button>
                         </div>
                     </div>
 

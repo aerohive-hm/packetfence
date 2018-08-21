@@ -8,7 +8,7 @@ export let networks ={
             "netmask":"255.255.255.0",
             "vip":"10.0.123.254",
             "type":"ISOLATION",
-            "services":"PORTAL"
+            "services":""
         },
         {
             "id":"interface1",
