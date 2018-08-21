@@ -12,9 +12,11 @@ func init() {
 		"interface":       configurator.InterfaceNew,
 		"cloud":           configurator.CloudNew,
 		"license":         configurator.LicenseNew,
+		"step":            configurator.StepNew,
 		"servicesstatus":  configurator.ServicesNew,
 		"clusterjoin":     configurator.ClusterJoinNew,
-		"clusternetworks": configurator.NetworksNew,
+		"clusternetworks": configurator.ClusterNetworksNew,
+		"clusterstatus":   configurator.ClusterStatusNew,
 	}
 	Register("configurator", sections)
 }
