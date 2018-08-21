@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/inverse-inc/packetfence/go/ama/a3conf"
 )
 
 type Iface struct {
@@ -190,4 +192,31 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 	}
 
 	return list, 0
+}
+
+func GetIfaceType(ifname string) string {
+	ifacefullname := fmt.Sprintf("interface %s", ifname)
+	ifsection := a3config.ReadIface(ifacefullname)
+	iftype := strings.Split(ifsection[ifacefullname]["type"], ",")
+	if iftype[0] == "internal" {
+		netsection := a3config.A3Read("NETWORKS", "all")
+		for k, _ := range netsection {
+			if netsection[k]["dns"] == ifsection[ifacefullname]["ip"] {
+				iftype = strings.Split(netsection[k]["type"], ",")
+				break
+			}
+		}
+	}
+	return iftype[0]
+}
+
+func GetIfaceServices(ifname string) []string {
+	ifacefullname := fmt.Sprintf("interface %s", ifname)
+	Section := a3config.ReadIface(ifacefullname)
+	iftype := strings.Split(Section[ifacefullname]["type"], ",")
+	services := []string{}
+	if len(iftype) > 0 {
+		services = iftype[1:]
+	}
+	return services
 }

@@ -10,9 +10,11 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
+/*
 type item struct {
 	Id       string `json:"id"`
 	Name     string `json:"name"`
@@ -28,7 +30,7 @@ type NetworksData struct {
 	HostName      string `json:"hostname"`
 	Items         []item `json:"items"`
 }
-
+*/
 type Networks struct {
 	crud.Crud
 }
@@ -43,42 +45,7 @@ func NetworksNew(ctx context.Context) crud.SectionCmd {
 
 func handleGetNetwork(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-
-	// Data for demo
-	network := NetworksData{
-		true,
-		"a3.aerohive.com",
-		[]item{
-			{
-				"interface",
-				"eth0",
-				"10.155.23.14",
-				"255.255.255.0",
-				"0.0.0.0",
-				"",
-				"",
-			},
-			{
-				"interface",
-				"VLAN10",
-				"192.168.10.1",
-				"255.255.255.0",
-				"0.0.0.0",
-				"REGISTRATION",
-				"",
-			},
-			{
-				"interface",
-				"VLAN20",
-				"192.168.20.1",
-				"255.255.255.0",
-				"0.0.0.0",
-				"ISOLATION",
-				"RADIUS, PORTAL",
-			},
-		},
-	}
-
+	network := utils.GetNetworksData(ctx)
 	jsonData, err := json.Marshal(network)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
@@ -89,7 +56,7 @@ func handleGetNetwork(r *http.Request, d crud.HandlerData) []byte {
 
 func handleUpdateNetwork(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	net := new(NetworksData)
+	net := new(utils.NetworksData)
 
 	err := json.Unmarshal(d.ReqData, net)
 	if err != nil {
