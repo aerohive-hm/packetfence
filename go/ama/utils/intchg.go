@@ -40,7 +40,6 @@ func (intChgData *A3IntChgData) GetValue() {
 		a3Interface.Vip = iface.Vip
 		//a3Interface.Type = "Todo"
 		a3Interface.Service = []string{}
-		//a3Interface.Description = iface.Name + " VLAN " + iface.Vlan
 		intChgData.Interfaces = append(intChgData.Interfaces, *a3Interface)
 	}
 

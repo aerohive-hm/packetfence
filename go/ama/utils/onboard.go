@@ -4,9 +4,12 @@ package utils
 import (
 	"context"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/inverse-inc/packetfence/go/ama/fetch"
+	"github.com/inverse-inc/packetfence/go/db"
 	"github.com/inverse-inc/packetfence/go/log"
 	"strings"
+	"time"
 )
 
 type A3Interface struct {
@@ -20,10 +23,10 @@ type A3Interface struct {
 	//	Description string   `json:"description"`
 }
 type A3License struct {
-	LicensedCapacity    int    `json:"licensedCapacity"`
-	CurrentUsedCapacity int    `json:"currentUsedCapacity"`
-	AverageUsedCapacity int    `json:"averageUsedCapacity"`
-	NextExpirationDate  uint64 `json:"nextExpirationDate"`
+	LicensedCapacity    int   `json:"licensedCapacity"`
+	CurrentUsedCapacity int   `json:"currentUsedCapacity"`
+	AverageUsedCapacity int   `json:"averageUsedCapacity"`
+	NextExpirationDate  int64 `json:"nextExpirationDate"`
 }
 
 type A3OnboardingData struct {
@@ -54,6 +57,8 @@ type A3OnboardingInfo struct {
 	Data   A3OnboardingData   `json:"data"`
 }
 
+var contextOnboard = log.LoggerNewContext(context.Background())
+
 func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	ifaces, errint := GetIfaceList("all")
 	if errint < 0 {
@@ -72,7 +77,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		a3Interface.Netmask = iface.NetMask
 		a3Interface.Vip = iface.Vip
 		//a3Interface.Type = "Todo"
-		a3Interface.Service = []string{}
+		a3Interface.Service = []string{} //todo
 		onboardingData.Interfaces = append(onboardingData.Interfaces, *a3Interface)
 	}
 
@@ -82,7 +87,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	onboardingData.SoftwareVersion = GetA3Version()
 	onboardingData.SystemUptime = GetSysUptime()
 	//onboardingData.ClusterHostName = "Todo"
-	//onboardingData.ClusterPrimary = "Todo"
+	onboardingData.ClusterPrimary = IsPrimaryCluster()
 	managementIface, errint := GetIfaceList("eth0")
 	if errint < 0 {
 		fmt.Errorf("Get ETH0 interfaces infomation failed")
@@ -96,11 +101,8 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		break
 	}
 
-	//Fetch license info, not hard code, need todo
-	onboardingData.License.LicensedCapacity = 5
-	onboardingData.License.CurrentUsedCapacity = 3
-	onboardingData.License.AverageUsedCapacity = 2
-	onboardingData.License.NextExpirationDate = 4102415999000
+	//Fetch license info
+	onboardingData.License.GetValue(nil)
 
 	return
 }
@@ -111,11 +113,72 @@ func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 	onboardHeader.Hostname = config.General.Hostname
 	onboardHeader.SystemID = GetA3SysId()
 	//onboardHeader.ClusterID = "Todo"
-	//onboardHeader.SequenceID = "Todo"
+	//When onboarding, Cloud will assign a unique messageid, so we could just make it empty;
+	//onboardHeader.MessageID = ""
 	return
 }
 
-var contextOnboard = log.LoggerNewContext(context.Background())
+func (lic *A3License) GetValue(ctx context.Context) {
+	var context context.Context
+	if ctx == nil {
+		context = contextOnboard
+	} else {
+		context = ctx
+	}
+
+	db, err := db.DbFromConfig(context)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+
+	//Fetch LicensedCapacity data
+	results, err := db.Query("SELECT endpoint_count FROM a3_entitlement where type != 'Trial'")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer results.Close()
+	for results.Next() {
+		var count int
+		err := results.Scan(&count)
+		if err != nil {
+			panic(err.Error())
+		}
+		fmt.Println("endpoint_count :", count)
+		lic.LicensedCapacity += count
+	}
+
+	//Fetch NextExpirationDate
+	var times time.Time
+	row := db.QueryRow("SELECT max(sub_end) FROM a3_entitlement")
+	err = row.Scan(&times)
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println("NextExpirationDate :", times)
+	lic.NextExpirationDate = times.UnixNano() / int64(time.Millisecond)
+
+	//Fetch AverageUsedCapacity
+	var averge int
+	row = db.QueryRow("SELECT moving_avg FROM a3_daily_avg order by daily_date DESC limit 1")
+	err = row.Scan(&averge)
+	if err != nil {
+		panic(err.Error())
+
+	}
+	fmt.Println("AverageUsedCapacity :", averge)
+	lic.AverageUsedCapacity = averge
+
+	//Fetch CurrentUsedCapacity
+	var currentUsed int
+	row = db.QueryRow("SELECT COUNT(*) FROM node,radacct WHERE node.mac = radacct.callingstationid AND node.status = 'reg' AND radacct.acctstarttime IS NOT NULL AND radacct.acctstoptime IS NULL")
+	err = row.Scan(&currentUsed)
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println("CurrentUsedCapacity :", currentUsed)
+	lic.CurrentUsedCapacity = currentUsed
+}
 
 func GetOnboardingInfo(ctx context.Context) A3OnboardingInfo {
 	var context context.Context
