@@ -35,6 +35,7 @@ Readonly::Scalar my $A3_BASE_DIR                  => '/usr/local/pf';
 Readonly::Scalar my $A3_DB_DIR                    => "$A3_BASE_DIR/db";
 Readonly::Scalar my $A3_BIN_DIR                   => "$A3_BASE_DIR/bin";
 Readonly::Scalar my $A3_CONF_DIR                  => "$A3_BASE_DIR/conf";
+Readonly::Scalar my $A3_VAR_CONF_DIR              => "$A3_BASE_DIR/var/conf";
 Readonly::Scalar my $PF_MON_CONF                  => "$A3_CONF_DIR/pfmon.conf";
 Readonly::Scalar my $PF_CLUSTER_CONF              => "$A3_CONF_DIR/cluster.conf";
 Readonly::Scalar my $A3_DBINFO_FILE               => "$A3_CONF_DIR/dbinfo.A3";
@@ -42,7 +43,7 @@ Readonly::Scalar my $A3_LOG_DIR                   => "$A3_BASE_DIR/logs";
 Readonly::Scalar my $A3_CLUSTER_UPDATE_LOG_FILE   => "$A3_LOG_DIR/a3_cluster_update.log";
 Readonly::Scalar my $NODE_BIN 			  => "$A3_BASE_DIR/bin/cluster/node";
 Readonly::Scalar my $A3_UPDATE_PATH_FILE          => "$A3_DB_DIR/a3-update-path";
-Readonlu::Scalar my $TMP_DIR			  => "/tmp";
+Readonly::Scalar my $TMP_DIR			  => "/tmp";
 Readonly::Scalar my $A3_BK_VER_FILE               => "$TMP_DIR/a3_bk_ver_file";
 Readonly::Scalar my $A3_UPDATE_DB_DUMP            => "$TMP_DIR/A3_db.sql";
 Readonly::Scalar my $A3_UPDATE_APP_DUMP           => "$TMP_DIR/A3_app.tar.gz";
@@ -547,7 +548,7 @@ sub restore_conf_file {
   #remove suffix
   $app_dump_copy =~ s/\..*$//;
   _commit_cluster_update_log("Restoring configuration files");
-  call_system_cmd("$RM_BIN -rf $A3_CONF_DIR/*; $CP_BIN -rf $TMP_DIR/pf/conf/* $A3_CONF_DIR");
+  call_system_cmd("$RM_BIN -rf $A3_CONF_DIR/*; $CP_BIN -rf $TMP_DIR/pf/conf/* $A3_CONF_DIR; $CP_BIN -rf $TMP_DIR/pf/var/conf/* $A3_VAR_CONF_DIR");
 }
 
 
@@ -561,6 +562,7 @@ sub roll_back_db {
   if (! -e $A3_UPDATE_DB_DUMP) {
     A3_Die("Database backup file does not exist, unable to restore!!");
   }
+  my $db_passwd = _get_db_password();
   if (call_system_cmd "$MYSQL_BIN -u root -p$db_passwd $a3_db < $A3_UPDATE_DB_DUMP" != 0) {
      _commit_cluster_update_log("Database restore has failed, please investigate!!");
      exit $fail_code;
@@ -585,7 +587,7 @@ sub roll_back_app {
   my ($prev_version, $to_version) = get_versions();
   commit_update_log("RPM version is $rpm_version and previous version before update is $prev_version");
   if (! $rpm_version) {
-    if (call_system_cmd("$YUM_BIN install $a3_pkg."-".$CURRENT_VERSION -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE}") != 0) {
+    if (call_system_cmd("$YUM_BIN install $a3_pkg."-".$prev_version -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE}") != 0) {
       A3_Die("Failed to roll back application, really Die!!");
     }
     #restore conf
