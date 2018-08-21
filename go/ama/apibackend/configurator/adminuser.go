@@ -7,12 +7,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 	"net/http"
+	"time"
+
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/inverse-inc/packetfence/go/db"
+	"github.com/inverse-inc/packetfence/go/ama/a3conf"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/fetch"
+	"github.com/inverse-inc/packetfence/go/db"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -34,40 +35,46 @@ func AdminUserNew(ctx context.Context) crud.SectionCmd {
 }
 
 /*write admin info to password table*/
-func writeAdminToDb(user,password,table string) error{
+func writeAdminToDb(user, password, table string) error {
 	var ctx = context.Background()
-	db, err := db.DbFromConfig(ctx) 
-		
-	/* replace is better than insert because it does not need to check if pid exsit or not */
-	prepare := fmt.Sprintf("replace into %s(pid,password,valid_from,expiration,access_level )values(?,?,?,?,?)",table)
-	
-	timeStr:=time.Now().Format("2006-01-02 15:04:05")
-	expiration := "2038-01-01 00:00:00"
-	stmt, err := db.Prepare(prepare)
-	if err != nil {		
+	db, err := db.DbFromConfig(ctx)
+	if err != nil {
 		return err
 	}
-	stmt.Exec(user,password,timeStr,expiration,"ALL")
-	
+	defer db.Close()
+
+	/* replace is better than insert because it does not need to check if pid exsit or not */
+	prepare := fmt.Sprintf("replace into %s(pid,password,valid_from,expiration,access_level )values(?,?,?,?,?)", table)
+
+	timeStr := time.Now().Format("2006-01-02 15:04:05")
+	expiration := "2038-01-01 00:00:00"
+	stmt, err := db.Prepare(prepare)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	stmt.Exec(user, password, timeStr, expiration, "ALL")
+
 	prepare = fmt.Sprintf("replace into person(pid)values(?)")
 	stmt, err = db.Prepare(prepare)
-	if err != nil {		
+	if err != nil {
 		return err
-	} 
+	}
 	stmt.Exec(user)
-    defer stmt.Close()
-	defer db.Close()
 	return nil
 }
 
 func handleGetAdminUserMethod(r *http.Request, d crud.HandlerData) []byte {
-	var adminuserinfo AdminUserInfo
-	var config fetch.PfConfWebservices
+	var admin AdminUserInfo
 	var ctx = r.Context()
-	config.GetPfConfSub(ctx, &config.Webservices)
-	//adminuserinfo.Id = "webservices"
-	adminuserinfo.User = config.Webservices.User
-	jsonData, err := json.Marshal(adminuserinfo)
+	section := a3config.GetWebServices()
+	if section == nil {
+		log.LoggerWContext(ctx).Error("Can't find Admin User.")
+		return []byte("")
+	}
+	admin.User = section["webservices"]["user"]
+	admin.Pass = section["webservices"]["pass"]
+	jsonData, err := json.Marshal(admin)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		return []byte(err.Error())
@@ -78,17 +85,33 @@ func handleGetAdminUserMethod(r *http.Request, d crud.HandlerData) []byte {
 func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	admin := new(AdminUserInfo)
+	code := "fail"
 	err := json.Unmarshal(d.ReqData, admin)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("unmarshal error:" + err.Error())
-		return []byte(`{"code":"fail"}`)
+		log.LoggerWContext(ctx).Error("unmarshal error: " + err.Error())
+		goto END
 	}
-    err = writeAdminToDb(admin.User,admin.Pass,"password")
+
+	log.LoggerWContext(ctx).Error("czhong: write to DB.")
+	err = writeAdminToDb(admin.User, admin.Pass, "password")
 	if err != nil {
-		log.LoggerWContext(ctx).Error("write db error:" + err.Error())
-		return []byte(`{"code":"fail"}`)
+		log.LoggerWContext(ctx).Error("write db error: " + err.Error())
+		goto END
 	}
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("admin: %s, pass: %s", admin.User,
-		admin.Pass))
-	return []byte(crud.PostOK)
+
+	log.LoggerWContext(ctx).Error(fmt.Sprintln("email:", admin.User))
+	err = a3config.UpdateEmail(admin.User)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("write conf error: " + err.Error())
+		goto END
+	}
+
+	code = "ok"
+
+END:
+	var ret = ""
+	if err != nil {
+		ret = err.Error()
+	}
+	return crud.FormPostRely(code, ret)
 }
