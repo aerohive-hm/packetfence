@@ -2,12 +2,13 @@ package configurator
 
 import (
 	"context"
-	"encoding/json"
+//	"encoding/json"
 	//	"fmt"
-	"net/http"
+//	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/log"
+//	"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/ama/apibackend/configuration"
 )
 
 type CloudConf struct {
@@ -23,11 +24,12 @@ type Cloud struct {
 func CloudNew(ctx context.Context) crud.SectionCmd {
 	cloud := new(Cloud)
 	cloud.New()
-	cloud.Add("GET", handleGetCloudConf)
-	cloud.Add("POST", handlePostCloudConf)
+	//cloud.Add("GET", handleGetCloudConf)
+	cloud.Add("POST", configuration.HandlePostCloudInfo)
 	return cloud
 }
 
+/*
 func handleGetCloudConf(r *http.Request, d crud.HandlerData) []byte {
 	// Data for demo
 	cloud := map[string]string{
@@ -55,3 +57,4 @@ func handlePostCloudConf(r *http.Request, d crud.HandlerData) []byte {
 
 	return []byte(crud.PostOK)
 }
+*/

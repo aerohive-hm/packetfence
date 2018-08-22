@@ -137,8 +137,12 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	   GDC URL/username/password, and enable the cloud integration
 	*/
 	case GdcConfigChange:
+		err := update(msg.Data)
+		if(err != nil) {
+			log.LoggerWContext(ctx).Error("Update config failed")
+			return
+		}
 		updateConnStatus(AMA_STATUS_CONNECING_GDC)
-		//to do, get the latest config info
 		loopConnect(ctx)
 		// To do, handle the result, include GDC auth fail, RDC auth fail, server down
 
