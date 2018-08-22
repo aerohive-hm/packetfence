@@ -76,7 +76,8 @@ func ReqTokenForOtherNodes(ctx context.Context, sysId string) []byte {
 	var res []byte
 	tokenRes := A3TokenResFromRdc{}
 
-	url = fmt.Sprintf("http://10.155.20.55:8008/rest/v1/token/1234567?targetSysId=%s", sysId)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("request token for the node %s", sysId))
+	url = fmt.Sprintf("http://10.155.23.116:8008/rest/v1/token/1234567?targetSysId=%s", sysId)
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -89,7 +90,6 @@ func ReqTokenForOtherNodes(ctx context.Context, sysId string) []byte {
 	resp, err := client.Do(request)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
-		fmt.Println("ReqTokenForOtherNodes: RDC is down")
 		return res
 	}
 
@@ -99,7 +99,6 @@ func ReqTokenForOtherNodes(ctx context.Context, sysId string) []byte {
 
 	err = json.Unmarshal([]byte(body), &tokenRes)
 	if err != nil {
-		fmt.Println("json Unmarshal fail")
 		log.LoggerWContext(ctx).Error(err.Error())
 		return res
 	}
@@ -113,59 +112,98 @@ func ReqTokenForOtherNodes(ctx context.Context, sysId string) []byte {
 	return []byte(body)
 }
 
+func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
+	tokenRes := A3TokenResFromRdc{}
+
+	url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from ", url))
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return ""
+	}
+
+	//Using the packetfence token if communicating with cluster members
+	//To do, get a real packetfence token, take the expiration of token
+	//into account
+	request.Header.Add("Packetfence-Token", "packetfence token")
+	request.Header.Set("Content-Type", "application/json")
+	resp, err := client.Do(request)
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return ""
+	}
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println("receive the response ", resp.Status)
+	fmt.Println(string(body))
+	err = json.Unmarshal([]byte(body), &tokenRes)
+	if err != nil {
+		fmt.Println("json Unmarshal fail")
+		log.LoggerWContext(ctx).Error(err.Error())
+		return ""
+	}
+
+	if tokenRes.Data.MsgType != "amac_token" {
+		log.LoggerWContext(ctx).Error("Incorrect message type")
+		return ""
+	}
+
+	resp.Body.Close()
+
+	return tokenRes.Data.Token
+}
+
 /*
 	This function needs to be called if the RDC token is absent
 	or expires
 */
 func reqTokenFromOtherNodes(ctx context.Context) int {
-	/*
-		call API to get the active node list, go through the list to send token-request
-		if can't get a token at last, print a ERROR log to prompt that re-enter the GDC
-		account and password
-		range node list{
-			sending https request to request a token
+
+	//mockup the active node list
+	memList := []MemberList{}
+	nodeNum := 0
+	token := ""
+
+	member1 := MemberList{"10.155.104.4", "test-vhmid", "test-systemid-for-distribute-token"}
+	memList = append(memList, member1)
+
+	for _, mem := range memList {
+		nodeNum++
+		token = reqTokenFromSingleNode(ctx, mem)
+		if len(token) > 0 {
+			UpdateRdcToken(ctx, token)
+			return 0
 		}
-		/*
-		the first node should not pring the error log, because when the AMA start,
-		the user has not started the setup process yet.
-		if (not get the token && nodenum > 1){
-			fmt.Println("send message to request the GDC's password, then go through the"
-			"GDC/RDC process")
-		} else {
-			send request to primary node to get a RDC token
-		}
-
-		if get the token, update the rdcTokenStr variable
-		//RDC token need to write file, if process restart we can read it
-		updateRdcToken(ctx, tokenRes.Data.Token)
-		rdcTokenStr = tokenRes.Data.Token
-
-	*/
-
+	}
+	if nodeNum > 1 && token == "" {
+		log.LoggerWContext(ctx).Error("Requeting token from other nodes fail")
+	}
 	return -1
 }
 
-func HandleSingleNode(ctx context.Context, mem MemberList) {
-	fmt.Println("into HandleSingleNode()")
-	token := ReqTokenForOtherNodes(ctx, mem.SystemId)
+func distributeToSingleNode(ctx context.Context, mem MemberList) {
 
-	fmt.Println(string(token))
+	token := ReqTokenForOtherNodes(ctx, mem.SystemId)
 	reader := bytes.NewReader(token)
+	//Using loop to make sure post successfully
 	for {
-		fmt.Println("begin to post token to ", mem.IpAddr)
-		request, err := http.NewRequest("POST", "https://10.155.104.5:1443/a3/api/v1/event/rdctoken", reader)
+		url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to post token to ", url))
+		request, err := http.NewRequest("POST", url, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return
 		}
 
-		//Add header option, the tokenStr is from RDC now
-		request.Header.Add("X-A3-Auth-Token", "packetfence token")
+		//Using the packetfence token if communicating with cluster members
+		//To do, get a real packetfence token, take the expiration of token
+		//into account
+		request.Header.Add("Packetfence-Token", "packetfence token")
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
-			fmt.Println("member is down")
 			return
 		}
 
@@ -181,10 +219,14 @@ func HandleSingleNode(ctx context.Context, mem MemberList) {
 		if statusCode == 200 {
 			fmt.Println("post token OK ")
 			return
-		} else {
+		} else if statusCode == 504 { //Gateway Timeout
+			//keep on trying to post util success
 			time.Sleep(5 * time.Second)
-			continue
+			//continue
+			return
 		}
+		//Other errors will return
+		return
 	}
 	return
 }
@@ -197,18 +239,17 @@ func HandleSingleNode(ctx context.Context, mem MemberList) {
 	2) Requesting a token for every node
 	3) Posting the new token to every node actively
 */
-func DistributeToken(ctx context.Context) {
+func distributeToken(ctx context.Context) {
 
+	//mockup the active node list
 	memList := []MemberList{}
 
-	member1 := MemberList{"10.155.104.5", "test-vhmid", "test-systemid-for-distribute-token"}
+	member1 := MemberList{"10.155.104.4", "test-vhmid", "test-systemid-for-distribute-token"}
 	memList = append(memList, member1)
 
 	for _, mem := range memList {
-
-		go HandleSingleNode(ctx, mem)
+		go distributeToSingleNode(ctx, mem)
 	}
-	fmt.Println("DistributeToken() return")
 	return
 }
 
@@ -219,8 +260,8 @@ func DistributeToken(ctx context.Context) {
 func fetchTokenFromRdc(ctx context.Context) string {
 	tokenRes := A3TokenResFromRdc{}
 
-	fmt.Println("begin to fetch RDC token")
-	request, err := http.NewRequest("GET", "http://10.155.20.55:8008/rest/token/apply/1234567", nil)
+	log.LoggerWContext(ctx).Info("begin to fetch RDC token")
+	request, err := http.NewRequest("GET", "http://10.155.23.116:8008/rest/token/apply/1234567", nil)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return ""
@@ -231,14 +272,12 @@ func fetchTokenFromRdc(ctx context.Context) string {
 	request.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(request)
 	if err != nil {
-		fmt.Println("fetchTokenFromRdc: RDC is down")
 		log.LoggerWContext(ctx).Error(err.Error())
 		return ""
 	}
 
 	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(body))
-	fmt.Println(resp.Status)
+	log.LoggerWContext(ctx).Info(string(body))
 
 	err = json.Unmarshal([]byte(body), &tokenRes)
 	if err != nil {
@@ -253,13 +292,11 @@ func fetchTokenFromRdc(ctx context.Context) string {
 	}
 	//RDC token need to write file, if process restart we can read it
 	UpdateRdcToken(ctx, tokenRes.Data.Token)
-	rdcTokenStr = tokenRes.Data.Token
-
 	/*
 		To do, post the RDC token/RDC URL/VHMID to the other memebers
 	*/
 	//Updating the RDC token for the other nodes actively
-	DistributeToken(ctx)
+	distributeToken(ctx)
 
 	return rdcTokenStr
 }

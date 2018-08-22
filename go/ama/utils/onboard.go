@@ -76,13 +76,13 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		a3Interface.IpAddress = iface.IpAddr
 		a3Interface.Netmask = iface.NetMask
 		a3Interface.Vip = iface.Vip
-		//a3Interface.Type = "Todo"
+		a3Interface.Type = "MANAGEMENT"
 		a3Interface.Service = []string{} //todo
 		onboardingData.Interfaces = append(onboardingData.Interfaces, *a3Interface)
 	}
 
 	onboardingData.Msgtype = "connect"
-	//onboardingData.IpMode = "Todo"
+	onboardingData.IpMode = "DHCP"
 	//onboardingData.DefaultGateway = "Todo"
 	onboardingData.SoftwareVersion = GetA3Version()
 	onboardingData.SystemUptime = GetSysUptime()

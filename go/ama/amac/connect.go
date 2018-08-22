@@ -46,52 +46,11 @@ type VhmidResponse struct {
 	Data response `json:"data"`
 }
 
-type A3Interface struct {
-	Parent      string   `json:"parent"`
-	Vlan        string   `json:"vlan"`
-	IpAddress   string   `json:"ipAddress"`
-	Vip         string   `json:"vip"`
-	Netmask     string   `json:"netmask"`
-	Type        string   `json:"type"`
-	Service     []string `json:"services"`
-	Description string   `json:"description"`
-}
-
-type A3OnboardingData struct {
-	Msgtype         string        `json:"msgType"`
-	MacAddress      string        `json:"macAddress"`
-	IpMode          string        `json:"ipMode"`
-	IpAddress       string        `json:"ipAddress"`
-	Netmask         string        `json:"netmask"`
-	DefaultGateway  string        `json:"defaultGateway"`
-	SoftwareVersion string        `json:"softwareVersion"`
-	SystemUptime    uint64        `json:"systemUpTime"`
-	Vip             string        `json:"vip"`
-	ClusterHostName string        `json:"clusterHostName"`
-	ClusterPrimary  bool          `json:"clusterPrimary"`
-	Interfaces      []A3Interface `json:"interfaces"`
-}
-
 type A3CommonHeader struct {
 	SystemID  string `json:"systemId"`
 	ClusterID string `json:"clusterId"`
 	Hostname  string `json:"hostname"`
 	MessageID string `json:"messageId"`
-}
-
-type A3OnboardingInfo struct {
-	Header A3CommonHeader   `json:"header"`
-	Data   A3OnboardingData `json:"data"`
-}
-
-type A3TokenReqData struct {
-	MsgType  string `json:"msgType"`
-	SystemID string `json:"systemId"`
-}
-
-type A3TokenReqToRdc struct {
-	Header A3CommonHeader `json:"header"`
-	Data   A3TokenReqData `json:"data"`
 }
 
 type A3TokenResData struct {
@@ -104,52 +63,6 @@ type A3TokenResFromRdc struct {
 	Data   A3TokenResData `json:"data"`
 }
 
-func GetTokenReq(systemId string) A3TokenReqToRdc {
-	tokenReqToRdcInfo := A3TokenReqToRdc{}
-
-	tokenReqToRdcInfo.Header.Hostname = "fake-for-demo1"
-	tokenReqToRdcInfo.Header.SystemID = "47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA"
-	tokenReqToRdcInfo.Header.ClusterID = "1C45299D-DB95-4C7F-A787-219C327971BA"
-	tokenReqToRdcInfo.Header.MessageID = "a738c4da-e5ae-43e0-957a-25d3363e0100"
-
-	tokenReqToRdcInfo.Data.MsgType = "tokenRequest"
-	tokenReqToRdcInfo.Data.SystemID = systemId
-
-	return tokenReqToRdcInfo
-}
-
-/*
-func GetOnboardingInfo() A3OnboardingInfo {
-	onboardInfo := A3OnboardingInfo{}
-
-	onboardInfo.Header.Hostname = "fake-for-demo1"
-	onboardInfo.Header.SystemID = "47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA"
-	onboardInfo.Header.ClusterID = "1C45299D-DB95-4C7F-A787-219C327971BA"
-	onboardInfo.Header.MessageID = "a738c4da-e5ae-43e0-957a-25d3363e0100"
-
-	onboardInfo.Data.Msgtype = "connect"
-	onboardInfo.Data.MacAddress = "0019770004AA"
-	onboardInfo.Data.IpMode = "DHCP"
-	onboardInfo.Data.IpAddress = "10.16.0.10"
-	onboardInfo.Data.Netmask = "255.255.255.0"
-	onboardInfo.Data.DefaultGateway = "10.16.0.254"
-	onboardInfo.Data.SoftwareVersion = "2.0"
-	onboardInfo.Data.SystemUptime = 1532942958060
-	onboardInfo.Data.Vip = "10.16.0.100"
-	onboardInfo.Data.ClusterHostName = "A3-Cluster-demo"
-	onboardInfo.Data.ClusterPrimary = false
-
-	interfaceOne := A3Interface{"ETH0", "null", "10.16.0.10", "10.16.0.100", "255.255.255.0", "MANAGEMENT", []string{}, "ETH0"}
-	interfaceTwo := A3Interface{"ETH0", "10", "10.16.1.10", "10.16.1.100", "255.255.255.0", "REGISTRATION", []string{"PORTAL"}, "ETH0 VLAN 10"}
-	interfaceThree := A3Interface{Parent: "ETH1", Vlan: "30", IpAddress: "10.16.2.10", Vip: "10.16.2.100", Netmask: "255.255.255.0", Type: "PORTAL", Service: []string{"PORTAL", "RADIUS"}, Description: "ETH1 VLAN 30"}
-	onboardInfo.Data.Interfaces = append(onboardInfo.Data.Interfaces, interfaceOne)
-	onboardInfo.Data.Interfaces = append(onboardInfo.Data.Interfaces, interfaceTwo)
-	onboardInfo.Data.Interfaces = append(onboardInfo.Data.Interfaces, interfaceThree)
-
-	return onboardInfo
-}
-*/
-
 /*
 	Send onboarding info to HM once obataining the RDC's token
 */
@@ -157,18 +70,20 @@ func onbordingToRdc(ctx context.Context) int {
 	for {
 		node_info := utils.GetOnboardingInfo(ctx)
 		data, _ := json.Marshal(node_info)
-		fmt.Println(string(data))
+
+		log.LoggerWContext(ctx).Error("begin to send onboarding request to RDC")
+		log.LoggerWContext(ctx).Error(string(data))
 		reader := bytes.NewReader(data)
 
-		fmt.Println("begin to send onboarding request to RDC")
 		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		request, err := http.NewRequest("POST", "http://10.155.20.55:8008/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
+		request, err := http.NewRequest("POST", "http://10.155.23.116:8008/rest/v1/report/A98B-FA51-DC0A-E178-61A1-79AF-6AD6-1518", reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
 		}
 
 		//Add header option, the tokenStr is from RDC now
+		log.LoggerWContext(ctx).Error(rdcTokenStr)
 		request.Header.Add("X-A3-Auth-Token", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
@@ -179,8 +94,9 @@ func onbordingToRdc(ctx context.Context) int {
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println("receive the response ", resp.Status)
-		fmt.Println(string(body))
+
+		log.LoggerWContext(ctx).Error("receive the response ", resp.Status)
+		log.LoggerWContext(ctx).Error(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
 		/*
@@ -196,6 +112,7 @@ func onbordingToRdc(ctx context.Context) int {
 				//not get the token, return and wait for the event from UI or other nodes
 				return result
 			}
+			return -1
 		}
 		return 0
 	}
@@ -209,12 +126,13 @@ func updateMsgToRdc(ctx context.Context) int {
 	for {
 		node_info := utils.GetIntChgInfo(ctx)
 		data, _ := json.Marshal(node_info)
-		fmt.Println(string(data))
+		log.LoggerWContext(ctx).Error("begin to send initerface change to RDC")
+		log.LoggerWContext(ctx).Error(string(data))
 		reader := bytes.NewReader(data)
 
 		fmt.Println("begin to send initerface change to RDC")
 		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		request, err := http.NewRequest("POST", "http://10.155.20.55:8008/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
+		request, err := http.NewRequest("POST", "http://10.155.23.116:8008/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
@@ -232,7 +150,8 @@ func updateMsgToRdc(ctx context.Context) int {
 
 		body, _ := ioutil.ReadAll(resp.Body)
 		fmt.Println("receive the response ", resp.Status)
-		fmt.Println(string(body))
+		//fmt.Println(string(body))
+		log.LoggerWContext(ctx).Error(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
 		/*
@@ -263,7 +182,8 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 	token := readRdcToken(ctx)
 	if len(token) == 0 {
 		result := reqTokenFromOtherNodes(ctx)
-		//result != 0 means not get the token
+		//result != 0 means not get the token, return and waiting event from UI
+		//or other nodes
 		if result != 0 {
 			log.LoggerWContext(ctx).Error("Request RDC token failed from other ondes")
 			return result
@@ -296,7 +216,7 @@ func connectToRdcWithPara(ctx context.Context) int {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return -1
 	}
-	updateMsgToRdc(ctx)
+	//updateMsgToRdc(ctx)
 	return 0
 }
 

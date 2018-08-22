@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/inverse-inc/packetfence/go/ama/a3conf"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
