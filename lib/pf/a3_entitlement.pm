@@ -38,7 +38,7 @@ BEGIN {
     use Exporter ();
     our ( @ISA, @EXPORT );
     @ISA    = qw(Exporter);
-    @EXPORT = qw(is_usage_under_capacity is_entitlement_expired get_trial_status);
+    @EXPORT = qw(is_usage_over_capacity is_entitlement_expired get_trial_status);
 }
 
 =head2 find_one
@@ -56,13 +56,13 @@ sub find_one {
 }
 
 
-=head2 is_usage_under_capacity
+=head2 is_usage_over_capacity
 
 compares the current endpoints moving avg with allowed capacity
 
 =cut
 
-sub is_usage_under_capacity {
+sub is_usage_over_capacity {
     my $logger = get_logger();
     #TODO, Move the get_licensed_capacity sub from Model/Entitlement here
     my $total = 0;
@@ -82,26 +82,26 @@ sub is_usage_under_capacity {
         }
     }
     #if licensed capacity exceeds 100k, we don't check for usage limit
-    return $TRUE if $total >= $MAX_LICENSED_CAPACITY;
+    return $FALSE if $total >= $MAX_LICENSED_CAPACITY;
 
     my ($count_status, $count) = get_current_moving_avg_count();
     if (is_success($count_status)) {
         #return true if we only have less than 7 days of moving avg
-        return $TRUE if $count < 7;
+        return $FALSE if $count < 7;
     }
     else {
         $logger->warn("Cannot retrieve moving average count from db");
         #if system fault, we omit the usage check
         #TODO add the status check
-        return $TRUE;
+        return $FALSE;
     }
     my ($status, $current_moving_avg) = get_current_moving_avg();
     if (is_success($status)) {
-        return $current_moving_avg <= $total;
+        return $current_moving_avg > $total;
     }
     else {
         $logger->warn("Cannot retrieve moving average data from db");
-        return $TRUE;
+        return $FALSE;
     }
 
 }

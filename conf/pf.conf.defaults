@@ -957,12 +957,12 @@ voip=no
 # webservices.user
 #
 # username to use to connect to the webAPI
-user =
+user=aero
 #
 # webservices.pass
 #
 # password of the username
-pass =
+pass=hive
 #
 # webservices.host
 #
@@ -1038,12 +1038,12 @@ galera_replication=enabled
 # active_active.galera_replication_username
 #
 # Defines the replication username to be used for the MariaDB Galera cluster replication
-galera_replication_username=
+galera_replication_username=aerohivecluster
 #
 # active_active.galera_replication_password
 #
 # Defines the replication password to be used for the MariaDB Galera cluster replication
-galera_replication_password=
+galera_replication_password=aerohive
 
 [metadefender]
 #
