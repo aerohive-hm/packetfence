@@ -76,7 +76,7 @@ func onbordingToRdc(ctx context.Context) int {
 		reader := bytes.NewReader(data)
 
 		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		request, err := http.NewRequest("POST", "http://10.155.23.116:8008/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
+		request, err := http.NewRequest("POST", "http://10.155.23.116:8008/rest/v1/report/A98B-FA51-DC0A-E178-61A1-79AF-6AD6-1518", reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
@@ -112,6 +112,7 @@ func onbordingToRdc(ctx context.Context) int {
 				//not get the token, return and wait for the event from UI or other nodes
 				return result
 			}
+			return -1
 		}
 		return 0
 	}
@@ -215,7 +216,7 @@ func connectToRdcWithPara(ctx context.Context) int {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return -1
 	}
-	updateMsgToRdc(ctx)
+	//updateMsgToRdc(ctx)
 	return 0
 }
 

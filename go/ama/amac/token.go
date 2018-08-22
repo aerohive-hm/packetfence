@@ -165,7 +165,7 @@ func reqTokenFromOtherNodes(ctx context.Context) int {
 	nodeNum := 0
 	token := ""
 
-	member1 := MemberList{"10.155.104.5", "test-vhmid", "test-systemid-for-distribute-token"}
+	member1 := MemberList{"10.155.104.4", "test-vhmid", "test-systemid-for-distribute-token"}
 	memList = append(memList, member1)
 
 	for _, mem := range memList {
@@ -222,7 +222,8 @@ func distributeToSingleNode(ctx context.Context, mem MemberList) {
 		} else if statusCode == 504 { //Gateway Timeout
 			//keep on trying to post util success
 			time.Sleep(5 * time.Second)
-			continue
+			//continue
+			return
 		}
 		//Other errors will return
 		return
@@ -243,7 +244,7 @@ func distributeToken(ctx context.Context) {
 	//mockup the active node list
 	memList := []MemberList{}
 
-	member1 := MemberList{"10.155.104.5", "test-vhmid", "test-systemid-for-distribute-token"}
+	member1 := MemberList{"10.155.104.4", "test-vhmid", "test-systemid-for-distribute-token"}
 	memList = append(memList, member1)
 
 	for _, mem := range memList {

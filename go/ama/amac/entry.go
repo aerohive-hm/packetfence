@@ -193,8 +193,7 @@ func keepaliveToRdc(ctx context.Context) {
 		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
 			continue
 		}
-		//msgChannel <- data
-		fmt.Println("sending the keepalive")
+		log.LoggerWContext(ctx).Error("sending the keepalive")
 		request, err := http.NewRequest("GET", "http://10.155.23.116:8008/rest/v1/poll/1234567", nil)
 		if err != nil {
 			panic(err)
