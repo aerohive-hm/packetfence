@@ -13,6 +13,7 @@ var (
 	vhmidUrl string
 	userName string
 	password string
+	enable   string //enable/disable the cloud integration
 )
 
 func init() {
@@ -21,4 +22,6 @@ func init() {
 	vhmidUrl = "https://10.155.23.116/acct-webapp/services/acct/selectvhm"
 	userName = "admin%40cust001.com"
 	password = "aerohive"
+	enalbe = "true"
+	rdcUrl = "https://10.155.23.116.17"
 }

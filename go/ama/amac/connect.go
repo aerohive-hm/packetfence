@@ -67,6 +67,10 @@ type A3TokenResFromRdc struct {
 	Send onboarding info to HM once obataining the RDC's token
 */
 func onbordingToRdc(ctx context.Context) int {
+	if rdcUrl == "" {
+		log.LoggerWContext(ctx).Error("RDC URL is NULL")
+		return -1
+	}
 	for {
 		node_info := utils.GetOnboardingInfo(ctx)
 		data, _ := json.Marshal(node_info)
@@ -190,7 +194,7 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 		}
 	}
 
-	fmt.Println("begin to send onboarding request to RDC server")
+	log.LoggerWContext(ctx).Info("begin to send onboarding request to RDC server")
 	res := onbordingToRdc(ctx)
 	if res != 0 {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
@@ -211,6 +215,7 @@ func connectToRdcWithPara(ctx context.Context) int {
 		log.LoggerWContext(ctx).Error("Fetch token from RDC failed")
 		return -1
 	}
+	log.LoggerWContext(ctx).Info("connectToRdcWithPara:begin to send onboarding request to RDC server")
 	res := onbordingToRdc(ctx)
 	if res != 0 {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
@@ -232,7 +237,7 @@ func fetchTokenFromGdc(ctx context.Context) string {
 	}
 	body := fmt.Sprintf("grant_type=password&client_id=browser&client_secret=secret&username=%s&password=%s", userName, password)
 
-	fmt.Println("begin to fetch GDC token")
+	log.LoggerWContext(ctx).Info("begin to fetch GDC token")
 	for {
 		request, err := http.NewRequest("POST", tokenUrl, strings.NewReader(body))
 		if err != nil {
@@ -243,18 +248,16 @@ func fetchTokenFromGdc(ctx context.Context) string {
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		resp, err := client.Do(request)
 		if err != nil {
-			fmt.Println(err.Error())
-			//to do, using log instead of PrintIn
-			fmt.Println("GDC is down\n")
+			log.LoggerWContext(ctx).Error(err.Error())
 			return ""
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println(string(body))
+		log.LoggerWContext(ctx).Info(string(body))
 		dat := make(map[string]interface{})
 		err = json.Unmarshal([]byte(body), &dat)
 		if err != nil {
-			fmt.Println("json Unmarshal fail")
+			log.LoggerWContext(ctx).Error(err.Error())
 			return ""
 		}
 		//GDC token does not need to write file, it is one-time useful
@@ -275,7 +278,7 @@ func fetchVhmidFromGdc(ctx context.Context, s string) int {
 	if len(vhmidUrl) == 0 {
 		return -1
 	}
-	fmt.Printf("begin to fetch the vhmid, token:%s, vhmid_url:%s\n", s, vhmidUrl)
+	log.LoggerWContext(ctx).Info("begin to fetch vhm and RDC URL")
 	for {
 		request, err := http.NewRequest("GET", vhmidUrl, nil)
 		if err != nil {
@@ -288,19 +291,18 @@ func fetchVhmidFromGdc(ctx context.Context, s string) int {
 		request.Header.Add("Authorization", dst)
 		resp, err := client.Do(request)
 		if err != nil {
-			fmt.Println(err.Error())
-			fmt.Printf("GDC is down")
+			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println(string(body))
-		fmt.Println(resp.Status)
+		log.LoggerWContext(ctx).Info(string(body))
 
 		json.Unmarshal([]byte(body), &vhmres)
 
 		VhmidStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
 		rdcUrl = vhmres.Data.Location
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("rdcUrl = %s", rdcUrl))
 		//To do, save the vhmid and rdcurl to config file and synchronize to cluster member
 
 		resp.Body.Close()

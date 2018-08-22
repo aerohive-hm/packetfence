@@ -43,7 +43,8 @@ var (
 	m                  = new(sync.RWMutex)
 	timeoutCount       uint64
 	//create channel to store messages from UI
-	MsgChannel = make(chan []byte, 4096)
+	MsgChannel      = make(chan []byte, 4096)
+	lastConnectTime uint64
 )
 
 type msgFromUi struct {
@@ -65,6 +66,9 @@ type KeepAliveResFromRdc struct {
 func updateConnStatus(status int) {
 	m.Lock()
 	ama_connect_status = status
+	if status == AMA_STATUS_ONBOARDING_SUC {
+		lastConnectTime = time.Now()
+	}
 	m.Unlock()
 }
 
@@ -72,8 +76,9 @@ func updateConnStatus(status int) {
 func GetConnStatus() int {
 	m.RLock()
 	status := ama_connect_status
+	time := lastConnectTime
 	m.RUnlock()
-	return status
+	return status, time
 }
 
 /*
@@ -82,22 +87,20 @@ func GetConnStatus() int {
 func Entry(ctx context.Context) {
 	var msg []byte
 
-	//To do, code for the later version
+	//check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
+	//if (enbale the cloud integration = true) {
+	//trying to connect to the cloud when damon start
+	//result := connectToRdcWithoutPara(ctx)
 	/*
-		//check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
-		if (enbale the cloud integration = true) {
-			result := connectToRdcWithoutPara(ctx)
-			/*
-				To to, hanle the error, include: RDC auth fail,
-				request RDC token from other nodes fail
+		To to, hanle the error, include: RDC auth fail,
+		request RDC token from other nodes fail
 	*/
-	/*
-			if (result != 0){
-			log.LoggerWContext(ctx).Info("Waiting events from UI or other nodes")
-			}
-			//loopConnect()
-		}
-	*/
+	//if result != 0 {
+	//log.LoggerWContext(ctx).Info("Waiting events from UI or other nodes")
+	//}
+
+	//}
+
 	loopConnect(ctx)
 	//start a goroutine, sending the keepalive only when the status is connected
 	go keepaliveToRdc(ctx)
@@ -113,7 +116,7 @@ func Entry(ctx context.Context) {
 			handleMsgFromUi(ctx, msg)
 
 		default:
-			status := GetConnStatus()
+			status, time := GetConnStatus()
 			if status == AMA_STATUS_ONBOARDING_SUC {
 				time.Sleep(5 * time.Second)
 			} else {
@@ -184,7 +187,7 @@ func keepaliveToRdc(ctx context.Context) {
 				timeoutCount = 0
 			} else {
 				timeoutCount++
-				fmt.Printf("keepaliveToRdc, timeout_cout:%d\n", timeoutCount)
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("Keepalive timeout %d", timeoutCount))
 				//Onboarding fail, not send keepalive
 				continue
 			}
@@ -193,7 +196,7 @@ func keepaliveToRdc(ctx context.Context) {
 		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
 			continue
 		}
-		log.LoggerWContext(ctx).Error("sending the keepalive")
+		log.LoggerWContext(ctx).Info("sending the keepalive")
 		request, err := http.NewRequest("GET", "http://10.155.23.116:8008/rest/v1/poll/1234567", nil)
 		if err != nil {
 			panic(err)
@@ -211,7 +214,6 @@ func keepaliveToRdc(ctx context.Context) {
 		timeoutCount = 0
 		body, _ := ioutil.ReadAll(resp.Body)
 		fmt.Println(string(body))
-		fmt.Println(resp.Status)
 
 		//Dispatch the data coming with keepalive reponses
 		dispathMsgFromRdc(ctx, []byte(body))
