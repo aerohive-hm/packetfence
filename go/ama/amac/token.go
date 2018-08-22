@@ -23,7 +23,7 @@ import (
 )
 
 var (
-	tokenLock                  = new(sync.RWMutex)
+	tokenLock = new(sync.RWMutex)
 )
 
 type MemberList struct {
@@ -51,7 +51,7 @@ func readRdcToken(ctx context.Context) string {
 }
 
 func UpdateRdcToken(ctx context.Context, s string) {
-    tokenLock.Lock()
+	tokenLock.Lock()
 	file, error := os.OpenFile("/usr/local/pf/conf/token.txt", os.O_RDWR|os.O_CREATE, 0600)
 	if error != nil {
 		log.LoggerWContext(ctx).Error(error.Error())
@@ -109,7 +109,7 @@ func ReqTokenForOtherNodes(ctx context.Context, sysId string) []byte {
 		return res
 	}
 	resp.Body.Close()
-	
+
 	return []byte(body)
 }
 
@@ -144,7 +144,6 @@ func reqTokenFromOtherNodes(ctx context.Context) int {
 
 	return -1
 }
-
 
 func HandleSingleNode(ctx context.Context, mem MemberList) {
 	fmt.Println("into HandleSingleNode()")
@@ -183,7 +182,7 @@ func HandleSingleNode(ctx context.Context, mem MemberList) {
 			fmt.Println("post token OK ")
 			return
 		} else {
-		    time.Sleep(5 * time.Second)
+			time.Sleep(5 * time.Second)
 			continue
 		}
 	}
@@ -212,7 +211,6 @@ func DistributeToken(ctx context.Context) {
 	fmt.Println("DistributeToken() return")
 	return
 }
-
 
 /*
 	This func is used to fetch the token from RDC, the requset message only

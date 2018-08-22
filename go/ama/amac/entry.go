@@ -1,3 +1,11 @@
+/*
+	The file implements the following functions:
+	1) start the front end component damon
+	2) try to connect RDC using the current RDC token
+ 	3) monitorinig the message from UI and other nodes
+ 	4)
+*/
+
 package amac
 
 import (
@@ -21,11 +29,12 @@ const (
 	AMA_STATUS_UNKNOWN        = 100
 )
 const (
-	gdcConfigChange   = 1
-	networkChange     = 2
-	licenseInfoChange = 3
-	disconnet         = 4
-	rdcTokenUpdate    =5
+	gdcConfigChange       = 1
+	networkChange         = 2
+	licenseInfoChange     = 3
+	disconnet             = 4
+	rdcTokenUpdate        = 5
+	removeNodeFromCluster = 6
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -34,7 +43,7 @@ var (
 	m                  = new(sync.RWMutex)
 	timeoutCount       uint64
 	//create channel to store messages from UI
-	msgChannel = make(chan []byte, 4096)
+	MsgChannel = make(chan []byte, 4096)
 )
 
 type msgFromUi struct {
@@ -75,15 +84,19 @@ func Entry(ctx context.Context) {
 
 	//To do, code for the later version
 	/*
-		    //check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
-			if (enbale the cloud integration = true) {
-				result := connectToRdcWithoutPara(ctx)
-				//means the current RDC token expires or invalid
-				if (result != 0){
-				log.LoggerWContext(ctx).Info("Waiting events from UI or other nodes")
-				}
-				//loopConnect()
-			}
+	//check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
+	if (enbale the cloud integration = true) {
+		result := connectToRdcWithoutPara(ctx)
+		/*
+			To to, hanle the error, include: RDC auth fail,
+			request RDC token from other nodes fail
+		*/
+		/*
+		if (result != 0){
+		log.LoggerWContext(ctx).Info("Waiting events from UI or other nodes")
+		}
+		//loopConnect()
+	}
 	*/
 	loopConnect(ctx)
 	//start a goroutine, sending the keepalive only when the status is connected
@@ -96,7 +109,7 @@ func Entry(ctx context.Context) {
 	*/
 	for {
 		select {
-		case msg = <-msgChannel:
+		case msg = <-MsgChannel:
 			handleMsgFromUi(ctx, msg)
 
 		default:
@@ -118,6 +131,7 @@ func handleMsgFromUi(ctx context.Context, message []byte) {
 	var msg *msgFromUi = *(**msgFromUi)(unsafe.Pointer(&message))
 	fmt.Println("msg.msgType", msg.msgType)
 	fmt.Println("msg.data", msg.data)
+	log.LoggerWContext(ctx).Info("Receiving event %d", msg.msgType)
 	switch msg.msgType {
 	/*
 	   This type handles changes to the following parameters:
@@ -127,18 +141,21 @@ func handleMsgFromUi(ctx context.Context, message []byte) {
 		updateConnStatus(AMA_STATUS_CONNECING_GDC)
 		//to do, get the latest config info
 		loopConnect(ctx)
+		// To do, handle the result, include GDC auth fail, RDC auth fail, server down
 
 	case networkChange:
-
+		updateMsgToRdc(ctx)
 	case licenseInfoChange:
 
 	case disconnet:
 		updateConnStatus(AMA_STATUS_INIT)
-		case rdcTokenUpdate:
-		log.LoggerWContext(ctx).Info("Receiving RDC update event")
+	case rdcTokenUpdate:
 		connectToRdcWithoutPara(ctx)
+	// To do, handle the result,
+	case removeNodeFromCluster:
+
 	default:
-		log.LoggerWContext(ctx).Error("unexpected message from UI")
+		log.LoggerWContext(ctx).Error("unexpected message")
 	}
 }
 
