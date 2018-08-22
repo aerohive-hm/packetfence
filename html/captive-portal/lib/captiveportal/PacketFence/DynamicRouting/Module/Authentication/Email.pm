@@ -59,6 +59,7 @@ sub do_email_registration {
     my $source = $self->source;
     my $pid = $self->request_fields->{$self->pid_field};
     my $email = $self->request_fields->{email};
+    get_logger->info("PIDDDDD: ".$self->request_fields->{$self->pid_field});
 
     my ( $status, $status_msg ) = $source->authenticate($pid);
     unless ( $status ) {
@@ -170,4 +171,3 @@ Copyright (C) 2005-2018 Inverse inc.
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 
 1;
-

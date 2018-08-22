@@ -33,7 +33,7 @@ $(document).ready(function(){
 
     caSubjNewlabel.innerHTML = caSubjectVal;
     servSubjNewlabel.innerHTML = servSubjectVal;
-    document.getElementById('ca_cert_label_upload').after(caSubjNewlabel); //add after upload button
+    document.getElementById('ca_cert_label_upload').after(caSubjNewlabel);
     document.getElementById('server_cert_label_upload').after(servSubjNewlabel);
 
     var caLength = $("#caSubjNewlabel").width();
@@ -53,7 +53,8 @@ $(document).ready(function(){
       servSubjNewlabel.setAttribute("data-placement", "top");
       servSubjNewlabel.setAttribute("title", servSubjectVal);
     }
-  //*****************save button press pki********************//
+
+//*****************save button press pki********************//
     document.getElementById("savePKI").onclick = function(e){
         console.log("clicked on save");
         e.preventDefault();
@@ -163,7 +164,6 @@ $(document).ready(function(){
         }
     }; //end of save click button
 });
-
 
 
 function showServerFileInfo(){
@@ -302,4 +302,8 @@ function processFiles(input, pki_provider_name, qualifier){
           }
         }
     }); //end of ajax
+}
+
+function processFilesFinal(){
+    
 }
