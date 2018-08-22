@@ -146,21 +146,23 @@ func reqTokenFromOtherNodes(ctx context.Context) int {
 }
 
 func HandleSingleNode(ctx context.Context, mem MemberList) {
-	fmt.Println("into HandleSingleNode()")
-	token := ReqTokenForOtherNodes(ctx, mem.SystemId)
 
-	fmt.Println(string(token))
+	token := ReqTokenForOtherNodes(ctx, mem.SystemId)
 	reader := bytes.NewReader(token)
 	for {
-		fmt.Println("begin to post token to ", mem.IpAddr)
-		request, err := http.NewRequest("POST", "https://10.155.104.5:1443/a3/api/v1/event/rdctoken", reader)
+		url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
+		log := fmt.Sprintf("begin to post token to ", url)
+		log.LoggerWContext(ctx).Error(log)
+		request, err := http.NewRequest("POST", url, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return
 		}
 
-		//Add header option, the tokenStr is from RDC now
-		request.Header.Add("X-A3-Auth-Token", "packetfence token")
+		//Using the packetfence token if communicating with cluster members
+		//To do, get a real packetfence token, take the expiration of token
+		//into account
+		request.Header.Add("Packetfence-Token", "packetfence token")
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
@@ -182,6 +184,7 @@ func HandleSingleNode(ctx context.Context, mem MemberList) {
 			fmt.Println("post token OK ")
 			return
 		} else {
+			//keep on trying to post util success
 			time.Sleep(5 * time.Second)
 			continue
 		}
