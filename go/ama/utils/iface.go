@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/inverse-inc/packetfence/go/ama/a3conf"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 )
 
 type Iface struct {

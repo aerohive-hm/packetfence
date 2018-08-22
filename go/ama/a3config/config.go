@@ -1,8 +1,10 @@
 package a3config
 
 import (
-	//	"fmt"
-	"gopkg.in/ini.v1"
+	"errors"
+	"fmt"
+	"github.com/go-ini/ini"
+	"os"
 )
 
 const ConfRoot = "/usr/local/pf/conf"
@@ -12,6 +14,7 @@ var ConfDict = map[string]string{
 	"PFD":      "pf.conf.defaults",
 	"NETWORKS": "networks.conf",
 	"CLUSTER":  "cluster.conf",
+	"CLOUD":    "cloud.conf",
 }
 
 type keyHash map[string]string
@@ -44,6 +47,17 @@ func (conf *A3Conf) upSection() {
 }
 
 func (conf *A3Conf) loadCfg(path string) error {
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			_, err := os.Create(path)
+			if err != nil {
+				fmt.Println(err)
+				return err
+			}
+		} else {
+			return errors.New("Load file failed")
+		}
+	}
 	cfg, err := ini.Load(path)
 	if err != nil {
 		return err
