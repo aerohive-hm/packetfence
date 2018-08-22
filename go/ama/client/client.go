@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/inverse-inc/packetfence/go/ama/a3conf"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/inverse-inc/packetfence/go/sharedutils"
@@ -96,7 +96,7 @@ func (c *Client) Call(method, url string, body string) error {
 		return err
 	}
 
-	resp, err = httpClient.Do(r)
+	resp, err := httpClient.Do(r)
 	if err != nil {
 		return err
 	}

@@ -6,7 +6,6 @@ import (
 	//"fmt"
 	"net/http"
 
-	"github.com/inverse-inc/packetfence/go/ama/a3conf"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/log"
@@ -57,8 +56,12 @@ func handleGetLicenseConf(r *http.Request, d crud.HandlerData) []byte {
 }
 
 func handlePostLicenseConf(r *http.Request, d crud.HandlerData) []byte {
+	var msg []byte
+	var eva *LicenseEva
+
 	ctx := r.Context()
 	code := "fail"
+
 	license := new(LicenseConf)
 	err := json.Unmarshal(d.ReqData, license)
 	if err != nil {
@@ -66,17 +69,16 @@ func handlePostLicenseConf(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	msg, err := apibackclient.VerifyLicense(license.Key)
+	msg, err = apibackclient.VerifyLicense(license.Key)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		goto END
 	}
-	eva := new(LicenseEva)
+	eva = new(LicenseEva)
 	err = json.Unmarshal(msg, eva)
 	if err != nil {
 		goto END
 	}
-	fmt.Println(eva)
 
 END:
 	ret := ""
