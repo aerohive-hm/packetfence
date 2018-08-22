@@ -22,6 +22,6 @@ func init() {
 	vhmidUrl = "https://10.155.23.116/acct-webapp/services/acct/selectvhm"
 	userName = "admin%40cust001.com"
 	password = "aerohive"
-	enalbe = "true"
+	//enalbe = "true"
 	rdcUrl = "https://10.155.23.116.17"
 }

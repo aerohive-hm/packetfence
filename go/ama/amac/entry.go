@@ -42,8 +42,7 @@ var (
 	m                  = new(sync.RWMutex)
 	timeoutCount       uint64
 	//create channel to store messages from UI
-	MsgChannel      = make(chan []byte, 4096)
-	lastConnectTime uint64
+	MsgChannel      = make(chan MsgStru, 4096)
 )
 
 type MsgStru struct {
@@ -65,19 +64,15 @@ type KeepAliveResFromRdc struct {
 func updateConnStatus(status int) {
 	m.Lock()
 	ama_connect_status = status
-	if status == AMA_STATUS_ONBOARDING_SUC {
-		lastConnectTime = time.Now()
-	}
 	m.Unlock()
 }
 
 //The UI damon will call this API, so it is public
-func GetConnStatus() int {
+func GetConnStatus() int{
 	m.RLock()
 	status := ama_connect_status
-	time := lastConnectTime
 	m.RUnlock()
-	return status, time
+	return status
 }
 
 /*
@@ -115,7 +110,7 @@ func Entry(ctx context.Context) {
 			handleMsgFromUi(ctx, msg)
 
 		default:
-			status, time := GetConnStatus()
+			status := GetConnStatus()
 			if status == AMA_STATUS_ONBOARDING_SUC {
 				time.Sleep(5 * time.Second)
 			} else {
