@@ -195,7 +195,7 @@ func keepaliveToRdc(ctx context.Context) {
 		}
 		//msgChannel <- data
 		fmt.Println("sending the keepalive")
-		request, err := http.NewRequest("GET", "http://10.155.20.55:8008/rest/v1/poll/1234567", nil)
+		request, err := http.NewRequest("GET", "http://10.155.22.93:8882/rest/v1/poll/1234567", nil)
 		if err != nil {
 			panic(err)
 		}

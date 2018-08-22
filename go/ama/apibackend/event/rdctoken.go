@@ -47,18 +47,8 @@ func handlePostToken(r *http.Request, d crud.HandlerData) []byte {
 
 	ctx := r.Context()
 	tokenRes := amac.A3TokenResFromRdc{}
-	
-    log.LoggerWContext(ctx).Info("into handlePostToken")
 
-	log.LoggerWContext(ctx).Info("d.ReqData=")
-	log.LoggerWContext(ctx).Info(string(d.ReqData))
-	
-	log.LoggerWContext(ctx).Info("d.RespData=")
-	log.LoggerWContext(ctx).Info(d.RespData)
-
-	log.LoggerWContext(ctx).Info("d.UrlParam=")
-	log.LoggerWContext(ctx).Info(d.UrlParam)
-
+	log.LoggerWContext(ctx).Info("into handlePostToken")
 	err := json.Unmarshal(d.ReqData, &tokenRes)
 	if err != nil {
 		return []byte(err.Error())
@@ -69,4 +59,3 @@ func handlePostToken(r *http.Request, d crud.HandlerData) []byte {
 
 	return []byte(crud.PostOK)
 }
-

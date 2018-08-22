@@ -157,12 +157,13 @@ func onbordingToRdc(ctx context.Context) int {
 	for {
 		node_info := utils.GetOnboardingInfo(ctx)
 		data, _ := json.Marshal(node_info)
-		fmt.Println(string(data))
+
+		log.LoggerWContext(ctx).Error("begin to send onboarding request to RDC")
+		log.LoggerWContext(ctx).Error(string(data))
 		reader := bytes.NewReader(data)
 
-		fmt.Println("begin to send onboarding request to RDC")
 		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		request, err := http.NewRequest("POST", "http://10.155.20.55:8008/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
+		request, err := http.NewRequest("POST", "http://10.155.22.93:8882/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
@@ -179,8 +180,9 @@ func onbordingToRdc(ctx context.Context) int {
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println("receive the response ", resp.Status)
-		fmt.Println(string(body))
+
+		log.LoggerWContext(ctx).Error("receive the response ", resp.Status)
+		log.LoggerWContext(ctx).Error(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
 		/*
@@ -209,12 +211,13 @@ func updateMsgToRdc(ctx context.Context) int {
 	for {
 		node_info := utils.GetIntChgInfo(ctx)
 		data, _ := json.Marshal(node_info)
-		fmt.Println(string(data))
+		log.LoggerWContext(ctx).Error("begin to send initerface change to RDC")
+		log.LoggerWContext(ctx).Error(string(data))
 		reader := bytes.NewReader(data)
 
 		fmt.Println("begin to send initerface change to RDC")
 		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		request, err := http.NewRequest("POST", "http://10.155.20.55:8008/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
+		request, err := http.NewRequest("POST", "http://10.155.22.93:8882/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
@@ -232,7 +235,8 @@ func updateMsgToRdc(ctx context.Context) int {
 
 		body, _ := ioutil.ReadAll(resp.Body)
 		fmt.Println("receive the response ", resp.Status)
-		fmt.Println(string(body))
+		//fmt.Println(string(body))
+		log.LoggerWContext(ctx).Error(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
 		/*
@@ -263,7 +267,8 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 	token := readRdcToken(ctx)
 	if len(token) == 0 {
 		result := reqTokenFromOtherNodes(ctx)
-		//result != 0 means not get the token
+		//result != 0 means not get the token, return and waiting event from UI
+		//or other nodes
 		if result != 0 {
 			log.LoggerWContext(ctx).Error("Request RDC token failed from other ondes")
 			return result
