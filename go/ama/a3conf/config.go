@@ -12,6 +12,7 @@ var ConfDict = map[string]string{
 	"PFD":      "pf.conf.defaults",
 	"NETWORKS": "networks.conf",
 	"CLUSTER":  "cluster.conf",
+	"A3DB":     "dbinfo.A3",
 }
 
 type keyHash map[string]string
@@ -110,6 +111,28 @@ func A3Read(key string, sectionId string) Section {
 	}
 	conf.readSection(sectionId)
 	if conf.sections == nil {
+		return nil
+	}
+	return conf.sections
+}
+
+func A3ReadFull(key string, sectionId string) Section {
+	conf := new(A3Conf)
+	err := conf.loadCfg(ConfRoot + "/" + ConfDict["PFD"])
+	if err != nil {
+		goto END
+	}
+
+	err = conf.cfg.Append(ConfRoot + "/" + ConfDict[key])
+	if err != nil {
+		goto END
+	}
+
+	conf.readSection(sectionId)
+	return conf.sections
+
+END:
+	if err != nil {
 		return nil
 	}
 	return conf.sections

@@ -31,13 +31,10 @@ func GetHostname() string {
 	return section["general"]["hostname"]
 }
 
-func GetWebServices() Section {
-	return A3Read("PF", "webservices")
-}
-
 func UpdateIface() {
 
 }
+
 func ReadIface(ifname string) Section {
 	if ifname != "all" {
 		return A3Read("PF", ifname)

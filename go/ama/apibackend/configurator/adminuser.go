@@ -65,21 +65,9 @@ func writeAdminToDb(user, password, table string) error {
 }
 
 func handleGetAdminUserMethod(r *http.Request, d crud.HandlerData) []byte {
-	var admin AdminUserInfo
-	var ctx = r.Context()
-	section := a3config.GetWebServices()
-	if section == nil {
-		log.LoggerWContext(ctx).Error("Can't find Admin User.")
-		return []byte("")
-	}
-	admin.User = section["webservices"]["user"]
-	admin.Pass = section["webservices"]["pass"]
-	jsonData, err := json.Marshal(admin)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
-		return []byte(err.Error())
-	}
-	return jsonData
+	//	var admin AdminUserInfo
+	//	var ctx = r.Context()
+	return []byte("")
 }
 
 func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
@@ -92,14 +80,12 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	log.LoggerWContext(ctx).Error("czhong: write to DB.")
 	err = writeAdminToDb(admin.User, admin.Pass, "password")
 	if err != nil {
 		log.LoggerWContext(ctx).Error("write db error: " + err.Error())
 		goto END
 	}
 
-	log.LoggerWContext(ctx).Error(fmt.Sprintln("email:", admin.User))
 	err = a3config.UpdateEmail(admin.User)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("write conf error: " + err.Error())

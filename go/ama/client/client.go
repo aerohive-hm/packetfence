@@ -2,29 +2,38 @@ package apibackclient
 
 import (
 	"context"
+	"crypto/tls"
+	"encoding/base64"
 	"encoding/json"
-	"errors"
+	//"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
+	"github.com/inverse-inc/packetfence/go/ama/a3conf"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/inverse-inc/packetfence/go/sharedutils"
-	"github.com/julienschmidt/httprouter"
 )
 
 var httpClient http.Client
 
 type Client struct {
-	Path     string
 	Method   string //  post,get
+	UrlId    string
 	PostData string //  json data
-	RespData string
+	RespData []byte
 	Status   string
 	Host     string
 	Port     string
+	Token    string
+}
+
+var preUrl = map[string]string{
+	"TxClusterEvent": "https://%s:9999/a3/api/v1/",
+	"ClusterLogin":   "https://%s:9999/api/v1/login",
 }
 
 type ErrorReply struct {
@@ -33,27 +42,41 @@ type ErrorReply struct {
 
 func New(ctx context.Context) *Client {
 	return &Client{
-		Host: "127.0.0.1",
-		Port: "8080",
+		Host: "10.155.103.191",
+		Port: "9999",
 	}
 }
 
-func (c *Client) buildRequest(ctx context.Context, method, path, body string) *http.Request {
-	uri := fmt.Sprintf("http://%s:%s/api/v1%s", c.Host, c.Port, path)
-	log.LoggerWContext(ctx).Info("Calling Unified API on uri: " + uri)
-	fmt.Println("uri=", uri)
-	bodyReader := strings.NewReader("")
-	if body != "" {
-		bodyReader = strings.NewReader(body)
+func genUrl(url string, host string, suffix string) string {
+	return fmt.Sprintf(url, host, suffix)
+}
+
+func skipCertVerify() {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig =
+		&tls.Config{InsecureSkipVerify: true}
+}
+
+func (c *Client) buildRequest(method, url, body string) (*http.Request, error) {
+	bodyReader := strings.NewReader(body)
+	skipCertVerify()
+
+	r, err := http.NewRequest(method, url, bodyReader)
+	if err != nil {
+		return nil, err
 	}
-	r, err := http.NewRequest(method, uri, bodyReader)
+
+	if c.Token != "" {
+		r.Header.Set("Authorization", c.Token)
+	}
+
 	r.Header.Set("Content-type", "application/json")
+	r.Header.Set("Accept", "application/json")
 	sharedutils.CheckError(err)
-	return r
+	return r, nil
 }
 
 // Ensures that the full body is read and closes the reader so that the connection can be reused
-func (c *Client) ensureRequestComplete(ctx context.Context, resp *http.Response) {
+func (c *Client) ensureRequestComplete(resp *http.Response) {
 	if resp == nil {
 		return
 	}
@@ -63,36 +86,93 @@ func (c *Client) ensureRequestComplete(ctx context.Context, resp *http.Response)
 }
 
 //path /config/base/baseid
-func (c *Client) Call(ctx context.Context, method, path string, body string) error {
-	r := c.buildRequest(ctx, method, path, body)
-	resp, err := httpClient.Do(r)
+func (c *Client) Call(method, url string, body string) error {
+	ctx := log.LoggerNewContext(context.Background())
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintln(method, url))
+	log.LoggerWContext(ctx).Info(fmt.Sprintln(body))
+	r, err := c.buildRequest(method, url, body)
 	if err != nil {
 		return err
 	}
-	defer c.ensureRequestComplete(ctx, resp)
+
+	resp, err = httpClient.Do(r)
+	if err != nil {
+		return err
+	}
+	defer c.ensureRequestComplete(resp)
+
 	b, err := ioutil.ReadAll(resp.Body)
 	sharedutils.CheckError(err)
-	// Lower than 400 is a success
-	if resp.StatusCode > 400 {
+
+	c.RespData = b
+	c.Status = resp.Status
+	log.LoggerWContext(ctx).Info(fmt.Sprintln("Response Code:", c.Status))
+
+	/*
+		// Lower than 400 is a success
+		if resp.StatusCode < 400 {
+			return err
+		}
 		errRep := ErrorReply{}
 		dec := json.NewDecoder(resp.Body)
-		err := dec.Decode(&errRep)
+		err = dec.Decode(&errRep)
 		if err != nil {
-			return errors.New("Error body doesn't follow the Unified API standard, couldn't extract the error message from it.")
+			return errors.New("Error body doesn't follow the Unified " +
+				"API standard, couldn't extract the error message from it.")
 		}
 		return errors.New(errRep.Message)
-	}
-	c.RespData = string(b)
-	c.Status = resp.Status
+	*/
 	return err
 }
 
-func TestClientBuildRequest(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func genBasicToken(user string, pass string) string {
+	return "Basic " + base64.StdEncoding.EncodeToString(
+		[]byte(user+":"+pass))
+}
 
-	ctx := r.Context()
-	c := New(ctx)
+func VerifyLicense(key string) ([]byte, error) {
+	a3Cfg := a3config.A3ReadFull("PF", "A3")["A3"]
 
-	body := "{\"emailaddr\": \"zjlitest@aerohive.com\"}"
-	c.Call(ctx, "PATCH", "/config/base/alerting", body)
-	fmt.Fprintf(w, c.RespData)
+	c := new(Client)
+	url := a3Cfg["license_server"] + a3Cfg["entitlement_path"]
+	sysId := utils.GetA3SysId()
+	c.Token = genBasicToken(a3Cfg["license_username"], a3Cfg["license_password"])
+	body := fmt.Sprintf(`{"systemId":"%s", "key":"%s"}`, sysId, key)
+
+	err := c.Call("POST", url, body)
+	return c.RespData, err
+}
+
+func (c *Client) ClusterAuth() error {
+	url := fmt.Sprintf(preUrl["ClusterLogin"], c.Host)
+	webCfg := a3config.A3ReadFull("PF", "webservices")["webservices"]
+	body := fmt.Sprintf(`{"username": "%s", "password":"%s"}`,
+		webCfg["user"], webCfg["pass"])
+
+	err := c.Call("POST", url, body)
+	if err != nil {
+		return err
+	}
+
+	t := new(token)
+	err = json.Unmarshal(c.RespData, t)
+	if err != nil {
+		return err
+	}
+	c.Token = "Bearer " + t.Tk
+
+	return err
+}
+
+func (c *Client) ClusterSend(ctx context.Context, method, url string, body string) error {
+	if c.Token == "" {
+		err := c.ClusterAuth()
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			return err
+		}
+	}
+
+	return c.Call(method, url, body)
 }
