@@ -35,7 +35,6 @@ var contextNetworks = log.LoggerNewContext(context.Background())
 
 func GetItemsValue(ctx context.Context) []item {
 	var items []item
-	var Services []string
 	ifaces, errint := GetIfaceList("all")
 	if errint < 0 {
 		fmt.Errorf("Get interfaces infomation failed.")
@@ -43,21 +42,41 @@ func GetItemsValue(ctx context.Context) []item {
 	}
 	for _, iface := range ifaces {
 		item := new(item)
-		if iface.Master == "" {
-			item.Name = iface.Name
-		} else {
-			item.Name = iface.Master
-		}
+		//		if iface.Master == "" {
+		//			item.Name = iface.Name
+		//		} else {
+		//			item.Name = iface.Master
+		//		}
+		item.Name = iface.Name
 		item.Id = "interface"
 		item.IpAddr = iface.IpAddr
-		item.NetMask = iface.NetMask
-		item.Vip = iface.Vip
-		item.Type = GetIfaceType(iface.Name)
-		Services = GetIfaceServices(iface.Name)
-		item.Services = strings.Join(Services, ",")
+		item.NetMask = GetIfaceElementVlaue(iface.Name, "mask")
+		item.Vip = GetIfaceElementVlaue(iface.Name, "vip")
+		item.Type = strings.ToUpper(GetIfaceType(iface.Name))
+		item.Services = strings.ToUpper(strings.Join(GetIfaceServices(iface.Name), ","))
 		items = append(items, *item)
 	}
 	return items
+
+}
+
+func UpdateItemsValue(ctx context.Context, items []item) error {
+	var err error
+	for _, item := range items {
+		err = UpdateInterface(item)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("UpdateInterface error:" + err.Error())
+			fmt.Println("UpdateInterface err")
+			return err
+		}
+		err = UpdateNetconf(item)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
+			fmt.Println("UpdateNetconf err")
+			return err
+		}
+	}
+	return nil
 
 }
 
@@ -71,7 +90,7 @@ func GetNetworksData(ctx context.Context) NetworksData {
 		context = ctx
 	}
 	networksData.Items = GetItemsValue(context)
-	networksData.ClusterEnable = "todo"
+	networksData.ClusterEnable = "true"
 	networksData.HostName = a3config.GetHostname()
 	return networksData
 }
@@ -88,4 +107,26 @@ func GetClusterNetworksData(ctx context.Context) ClusterNetworksData {
 	clusterNetworksData.Items = GetItemsValue(context)
 	clusterNetworksData.HostName = a3config.GetHostname()
 	return clusterNetworksData
+}
+
+func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
+	var context context.Context
+
+	if ctx == nil {
+		context = contextNetworks
+	} else {
+		context = ctx
+	}
+
+	err := UpdateHostname(networksData.HostName)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
+		return err
+	}
+	err = UpdateItemsValue(context, networksData.Items)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())
+		return err
+	}
+	return err
 }

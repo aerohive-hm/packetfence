@@ -194,16 +194,23 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 	return list, 0
 }
 
-func GetIfaceType(ifname string) string {
+func GetIfaceElementVlaue(ifname, element string) string {
 	ifacefullname := fmt.Sprintf("interface %s", ifname)
-	ifsection := a3config.ReadIface(ifacefullname)
-	iftype := strings.Split(ifsection[ifacefullname]["type"], ",")
+	Section := a3config.ReadIface(ifacefullname)
+	value := Section[ifacefullname][element]
+	return value
+}
+
+func GetIfaceType(ifname string) string {
+	iftype := strings.Split(GetIfaceElementVlaue(ifname, "type"), ",")
 	if iftype[0] == "internal" {
 		netsection := a3config.A3Read("NETWORKS", "all")
 		for k, _ := range netsection {
-			if netsection[k]["dns"] == ifsection[ifacefullname]["ip"] {
+			if netsection[k]["gateway"] == GetIfaceElementVlaue(ifname, "ip") {
 				iftype = strings.Split(netsection[k]["type"], ",")
-				break
+				/*need to delete vlan- for type*/
+				Type := []rune(iftype[0])
+				return string(Type[5:])
 			}
 		}
 	}
@@ -211,12 +218,54 @@ func GetIfaceType(ifname string) string {
 }
 
 func GetIfaceServices(ifname string) []string {
-	ifacefullname := fmt.Sprintf("interface %s", ifname)
-	Section := a3config.ReadIface(ifacefullname)
-	iftype := strings.Split(Section[ifacefullname]["type"], ",")
+	iftype := strings.Split(GetIfaceElementVlaue(ifname, "type"), ",")
 	services := []string{}
 	if len(iftype) > 0 {
 		services = iftype[1:]
 	}
 	return services
+}
+
+func netMask_Len2Str(a int) string {
+	var k, sum int = 0, 0
+	s := []string{}
+	i := a / 8
+	j := a % 8
+	for k = 0; k < i; k++ {
+		s = append(s, "255")
+	}
+	if i < 4 {
+		for k = 0; k < j; k++ {
+			sum = sum + int(1<<(uint)(7-k))
+		}
+		str := strconv.Itoa(sum)
+		s = append(s, str)
+		for k = 0; k < (4 - i - 1); k++ {
+			s = append(s, "0")
+		}
+	}
+	mask := strings.Join(s, ".")
+	return mask
+}
+func netMask_Str2Len(mask string) int {
+
+	var num int = 0
+	var value int
+	sections := strings.Split(mask, ".")
+	l := len(sections)
+	if l != 4 {
+		return 0
+	}
+
+	for k := 0; k < l; k++ {
+		value, _ = strconv.Atoi(sections[k])
+		for value != 0 {
+			if (value & 1) != 0 {
+				num++
+			}
+			value = value >> 1
+		}
+	}
+
+	return num
 }
