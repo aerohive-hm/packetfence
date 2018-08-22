@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/inverse-inc/packetfence/go/db"
+	"github.com/inverse-inc/packetfence/go/log"
 	"strings"
 )
 
@@ -38,7 +39,8 @@ func IsPrimaryCluster() bool {
 	var ctx = context.Background()
 	db, err := db.DbFromConfig(ctx)
 	if err != nil {
-		panic(err.Error())
+		log.LoggerWContext(ctx).Error("Open database error: " + err.Error())
+		return false
 	}
 	defer db.Close()
 
@@ -46,7 +48,8 @@ func IsPrimaryCluster() bool {
 	row := db.QueryRow("SHOW status LIKE 'wsrep_cluster_status'")
 	err = row.Scan(&strName, &strValue)
 	if err != nil {
-		panic(err.Error())
+		log.LoggerWContext(ctx).Error("Query database error: " + err.Error())
+		return false
 	}
 	fmt.Println("Cluster status:", strValue)
 	return strValue == "Primary"

@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"sync"
 	"time"
-	"unsafe"
+//	"unsafe"
 )
 
 const (
@@ -21,10 +21,10 @@ const (
 	AMA_STATUS_UNKNOWN        = 100
 )
 const (
-	gdcConfigChange   = 1
-	networkChange     = 2
-	licenseInfoChange = 3
-	disconnet         = 4
+	GdcConfigChange   = 1
+	NetworkChange     = 2
+	LicenseInfoChange = 3
+	Disconnet         = 4
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -33,12 +33,12 @@ var (
 	m                  = new(sync.RWMutex)
 	timeoutCount       uint64
 	//create channel to store messages from UI
-	msgChannel = make(chan []byte, 4096)
+	MsgChannel = make(chan MsgStru, 4096)
 )
 
-type msgFromUi struct {
-	msgType int
-	data    string
+type MsgStru struct {
+	MsgType int
+	Data    string
 }
 
 type SliceMock struct {
@@ -70,7 +70,7 @@ func GetConnStatus() int {
 	Entry function for the front end component
 */
 func Entry(ctx context.Context) {
-	var msg []byte
+	var msg MsgStru
 
 	//To do, code for the later version
 	/*
@@ -91,7 +91,7 @@ func Entry(ctx context.Context) {
 	*/
 	for {
 		select {
-		case msg = <-msgChannel:
+		case msg = <-MsgChannel:
 			handleMsgFromUi(ctx, msg)
 
 		default:
@@ -109,25 +109,25 @@ func Entry(ctx context.Context) {
 	Handling the message from web UI, such as items about GDC change,
 	network info change, or license info changes
 */
-func handleMsgFromUi(ctx context.Context, message []byte) {
-	var msg *msgFromUi = *(**msgFromUi)(unsafe.Pointer(&message))
-	fmt.Println("msg.msgType", msg.msgType)
-	fmt.Println("msg.data", msg.data)
-	switch msg.msgType {
+func handleMsgFromUi(ctx context.Context, message MsgStru) {
+	var msg MsgStru = message
+	fmt.Println("msg.msgType", msg.MsgType)
+	fmt.Println("msg.data", msg.Data)
+	switch msg.MsgType {
 	/*
 	   This type handles changes to the following parameters:
 	   GDC URL/username/password, and enable the cloud integration
 	*/
-	case gdcConfigChange:
+	case GdcConfigChange:
 		updateConnStatus(AMA_STATUS_CONNECING_GDC)
 		//to do, get the latest config info
 		loopConnect(ctx)
 
-	case networkChange:
+	case NetworkChange:
 
-	case licenseInfoChange:
+	case LicenseInfoChange:
 
-	case disconnet:
+	case Disconnet:
 		updateConnStatus(AMA_STATUS_INIT)
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message from UI")
@@ -168,7 +168,7 @@ func keepaliveToRdc(ctx context.Context) {
 		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
 			continue
 		}
-		//msgChannel <- data
+		//MsgChannel <- data
 		fmt.Println("sending the keepalive")
 		request, err := http.NewRequest("GET", "http://10.155.100.17:8008/rest/v1/poll/1234567", nil)
 		if err != nil {
