@@ -76,7 +76,8 @@ func ReqTokenForOtherNodes(ctx context.Context, sysId string) []byte {
 	var res []byte
 	tokenRes := A3TokenResFromRdc{}
 
-	url = fmt.Sprintf("http://10.155.20.55:8008/rest/v1/token/1234567?targetSysId=%s", sysId)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("request token for the node %s", sysId))
+	url = fmt.Sprintf("http://10.155.23.116:8008/rest/v1/token/1234567?targetSysId=%s", sysId)
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -89,7 +90,6 @@ func ReqTokenForOtherNodes(ctx context.Context, sysId string) []byte {
 	resp, err := client.Do(request)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
-		fmt.Println("ReqTokenForOtherNodes: RDC is down")
 		return res
 	}
 
@@ -99,7 +99,6 @@ func ReqTokenForOtherNodes(ctx context.Context, sysId string) []byte {
 
 	err = json.Unmarshal([]byte(body), &tokenRes)
 	if err != nil {
-		fmt.Println("json Unmarshal fail")
 		log.LoggerWContext(ctx).Error(err.Error())
 		return res
 	}
@@ -170,14 +169,14 @@ func reqTokenFromOtherNodes(ctx context.Context) int {
 	memList = append(memList, member1)
 
 	for _, mem := range memList {
-		nodeNum ++
+		nodeNum++
 		token = reqTokenFromSingleNode(ctx, mem)
-		if len(token) > 0{
+		if len(token) > 0 {
 			UpdateRdcToken(ctx, token)
 			return 0
 		}
 	}
-	if (nodeNum > 1 && token == "") {
+	if nodeNum > 1 && token == "" {
 		log.LoggerWContext(ctx).Error("Requeting token from other nodes fail")
 	}
 	return -1
@@ -260,7 +259,7 @@ func distributeToken(ctx context.Context) {
 func fetchTokenFromRdc(ctx context.Context) string {
 	tokenRes := A3TokenResFromRdc{}
 
-	fmt.Println("begin to fetch RDC token")
+	log.LoggerWContext(ctx).Info("begin to fetch RDC token")
 	request, err := http.NewRequest("GET", "http://10.155.23.116:8008/rest/token/apply/1234567", nil)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
@@ -272,14 +271,12 @@ func fetchTokenFromRdc(ctx context.Context) string {
 	request.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(request)
 	if err != nil {
-		fmt.Println("fetchTokenFromRdc: RDC is down")
 		log.LoggerWContext(ctx).Error(err.Error())
 		return ""
 	}
 
 	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(body))
-	fmt.Println(resp.Status)
+	log.LoggerWContext(ctx).Info(string(body))
 
 	err = json.Unmarshal([]byte(body), &tokenRes)
 	if err != nil {
@@ -294,8 +291,6 @@ func fetchTokenFromRdc(ctx context.Context) string {
 	}
 	//RDC token need to write file, if process restart we can read it
 	UpdateRdcToken(ctx, tokenRes.Data.Token)
-	rdcTokenStr = tokenRes.Data.Token
-
 	/*
 		To do, post the RDC token/RDC URL/VHMID to the other memebers
 	*/
