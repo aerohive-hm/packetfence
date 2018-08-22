@@ -42,7 +42,7 @@ var (
 	m                  = new(sync.RWMutex)
 	timeoutCount       uint64
 	//create channel to store messages from UI
-	MsgChannel      = make(chan MsgStru, 4096)
+	MsgChannel = make(chan MsgStru, 4096)
 )
 
 type MsgStru struct {
@@ -68,7 +68,7 @@ func updateConnStatus(status int) {
 }
 
 //The UI damon will call this API, so it is public
-func GetConnStatus() int{
+func GetConnStatus() int {
 	m.RLock()
 	status := ama_connect_status
 	m.RUnlock()

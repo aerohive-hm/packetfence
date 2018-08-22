@@ -58,13 +58,13 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var GetInfo CloudGetInfo
 
 	var ctx = r.Context()
+    log.LoggerWContext(ctx).Error("into handleGetCloudInfo")
+	
 	GetInfo.Url = a3config.ReadCloudConf(a3config.GDCUrl)
 	GetInfo.User = a3config.ReadCloudConf(a3config.User)
 	GetInfo.Vhm = a3config.ReadCloudConf(a3config.Vhm)
 	GetInfo.Status = "connect"          //todo
 	GetInfo.LastConnectTime = "8888888" //todo
-
-	fmt.Println("into handleGetCloudInfo")
 
 	jsonData, err := json.Marshal(GetInfo)
 	if err != nil {

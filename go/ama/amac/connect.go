@@ -13,6 +13,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
@@ -303,7 +304,6 @@ func fetchVhmidFromGdc(ctx context.Context, s string) int {
 		VhmidStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
 		rdcUrl = vhmres.Data.Location
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("rdcUrl = %s", rdcUrl))
-		//To do, save the vhmid and rdcurl to config file and synchronize to cluster member
 
 		resp.Body.Close()
 		return 0
