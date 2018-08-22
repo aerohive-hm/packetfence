@@ -25,6 +25,7 @@ const (
 	networkChange     = 2
 	licenseInfoChange = 3
 	disconnet         = 4
+	rdcTokenUpdate    =5
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -77,6 +78,10 @@ func Entry(ctx context.Context) {
 		    //check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
 			if (enbale the cloud integration = true) {
 				result := connectToRdcWithoutPara(ctx)
+				//means the current RDC token expires or invalid
+				if (result != 0){
+				log.LoggerWContext(ctx).Info("Waiting events from UI or other nodes")
+				}
 				//loopConnect()
 			}
 	*/
@@ -129,6 +134,9 @@ func handleMsgFromUi(ctx context.Context, message []byte) {
 
 	case disconnet:
 		updateConnStatus(AMA_STATUS_INIT)
+		case rdcTokenUpdate:
+		log.LoggerWContext(ctx).Info("Receiving RDC update event")
+		connectToRdcWithoutPara(ctx)
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message from UI")
 	}
@@ -170,7 +178,7 @@ func keepaliveToRdc(ctx context.Context) {
 		}
 		//msgChannel <- data
 		fmt.Println("sending the keepalive")
-		request, err := http.NewRequest("GET", "http://10.155.100.17:8008/rest/v1/poll/1234567", nil)
+		request, err := http.NewRequest("GET", "http://10.155.20.55:8008/rest/v1/poll/1234567", nil)
 		if err != nil {
 			panic(err)
 		}
@@ -213,7 +221,7 @@ func dispathMsgFromRdc(ctx context.Context, message []byte) {
 	for _, resMsg := range keepAliveResp {
 		if resMsg.Data["msgType"] == "amac_token" {
 			//RDC token need to write file, if process restart we can read it
-			updateRdcToken(ctx, resMsg.Data["token"])
+			UpdateRdcToken(ctx, resMsg.Data["token"])
 			rdcTokenStr = resMsg.Data["token"]
 		}
 	}

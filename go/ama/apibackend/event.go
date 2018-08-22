@@ -14,6 +14,7 @@ func init() {
 		"onboarding":  event.OnBoardingNew,
 		"clusterjoin": event.ClusterJoinNew,
 		"clustersync": event.ClusterSyncNew,
+		"rdctoken":   event.RdcTokenNew,
 	}
 	Register("event", sections)
 }

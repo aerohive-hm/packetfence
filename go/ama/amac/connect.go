@@ -1,3 +1,10 @@
+/*
+	The file implements the following functions:
+	1) connect to the GDC to get GDC token
+	2) connect to the GDC to get the VHMID and RDC URL
+ 	3) Onboarding to the HM with the RDC token
+*/
+
 package amac
 
 import (
@@ -6,14 +13,12 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
-	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 	"time"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
 )
 
 var (
@@ -30,7 +35,7 @@ var (
 	//Store the token to avoid multiple IO
 	gdcTokenStr string
 	rdcTokenStr string
-	VhmidStr   string
+	VhmidStr    string
 )
 
 type response struct {
@@ -112,6 +117,7 @@ func GetTokenReq(systemId string) A3TokenReqToRdc {
 
 	return tokenReqToRdcInfo
 }
+
 /*
 func GetOnboardingInfo() A3OnboardingInfo {
 	onboardInfo := A3OnboardingInfo{}
@@ -143,37 +149,6 @@ func GetOnboardingInfo() A3OnboardingInfo {
 	return onboardInfo
 }
 */
-/*
-	This function needs to be called in the absence of RDC token
-	or RDC token expires
-*/
-func reqTokenFromOtherNodes(ctx context.Context) int {
-	/*
-		call API to get the active node list, go through the list to send token-request
-		if can't get a token at last, print a ERROR log to prompt that re-enter the GDC
-		account and password
-		range node list{
-			sending https request to request a token
-		}
-		/*
-		the first node should not pring the error log, because when the AMA start,
-		the user has not started the setup process yet.
-		if (not get the token && nodenum > 1){
-			fmt.Println("send message to request the GDC's password, then go through the"
-			"GDC/RDC process")
-		} else {
-			send request to primary node to get a RDC token
-		}
-
-		if get the token, update the rdcTokenStr variable
-		//RDC token need to write file, if process restart we can read it
-		updateRdcToken(ctx, tokenRes.Data.Token)
-		rdcTokenStr = tokenRes.Data.Token
-
-	*/
-
-	return -1
-}
 
 /*
 	Send onboarding info to HM once obataining the RDC's token
@@ -187,7 +162,7 @@ func onbordingToRdc(ctx context.Context) int {
 
 		fmt.Println("begin to send onboarding request to RDC")
 		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		request, err := http.NewRequest("POST", "http://10.155.22.33:8882/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
+		request, err := http.NewRequest("POST", "http://10.155.20.55:8008/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
@@ -199,7 +174,7 @@ func onbordingToRdc(ctx context.Context) int {
 		resp, err := client.Do(request)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
-			fmt.Println("RDC is down")
+			fmt.Println("onbordingToRdc: RDC is down")
 			return -1
 		}
 
@@ -239,7 +214,7 @@ func updateMsgToRdc(ctx context.Context) int {
 
 		fmt.Println("begin to send initerface change to RDC")
 		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		request, err := http.NewRequest("POST", "http://10.155.22.33:8882/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
+		request, err := http.NewRequest("POST", "http://10.155.20.55:8008/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
@@ -250,8 +225,8 @@ func updateMsgToRdc(ctx context.Context) int {
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
+			log.LoggerWContext(ctx).Error("Update message to RDC fail")
 			log.LoggerWContext(ctx).Error(err.Error())
-			fmt.Println("RDC is down")
 			return -1
 		}
 
@@ -277,56 +252,6 @@ func updateMsgToRdc(ctx context.Context) int {
 		return 0
 	}
 	return 0
-}
-
-/*
-	This func is used to fetch the token from RDC, the requset message only
-	need to include the GDC token
-*/
-func fetchTokenFromRdc(ctx context.Context) string {
-	tokenRes := A3TokenResFromRdc{}
-
-	fmt.Println("begin to fetch RDC token")
-	request, err := http.NewRequest("GET", "http://10.155.100.17:8008/rest/token/apply/1234567", nil)
-	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
-		return ""
-	}
-
-	//Taking the GDC token to request a RDC token
-	request.Header.Add("X-A3-Auth-Token", gdcTokenStr)
-	request.Header.Set("Content-Type", "application/json")
-	resp, err := client.Do(request)
-	if err != nil {
-		fmt.Println("RDC is down")
-		log.LoggerWContext(ctx).Error(err.Error())
-		return ""
-	}
-
-	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(body))
-	fmt.Println(resp.Status)
-
-	err = json.Unmarshal([]byte(body), &tokenRes)
-	if err != nil {
-		fmt.Println("json Unmarshal fail")
-		log.LoggerWContext(ctx).Error(err.Error())
-		return ""
-	}
-
-	if tokenRes.Data.MsgType != "amac_token" {
-		log.LoggerWContext(ctx).Error("Incorrect message type")
-		return ""
-	}
-	//RDC token need to write file, if process restart we can read it
-	updateRdcToken(ctx, tokenRes.Data.Token)
-	rdcTokenStr = tokenRes.Data.Token
-
-	/*
-		To do, post the RDC token/RDC URL/VHMID to the other memebers
-	*/
-
-	return rdcTokenStr
 }
 
 /*
@@ -373,34 +298,6 @@ func connectToRdcWithPara(ctx context.Context) int {
 	}
 	updateMsgToRdc(ctx)
 	return 0
-}
-
-func readRdcToken(ctx context.Context) string {
-	if len(rdcTokenStr) != 0 {
-		return rdcTokenStr
-	}
-
-	file, error := os.OpenFile("./token.txt", os.O_RDWR|os.O_CREATE, 0600)
-	if error != nil {
-		fmt.Println(error)
-	}
-	content, _ := ioutil.ReadAll(file)
-	file.Close()
-	//update the variable to aviod multi IO
-	rdcTokenStr = string(content)
-	return rdcTokenStr
-}
-
-func updateRdcToken(ctx context.Context, s string) {
-	file, error := os.OpenFile("./token.txt", os.O_RDWR|os.O_CREATE, 0600)
-	if error != nil {
-		fmt.Println(error)
-		return
-	}
-	_, _ = io.WriteString(file, s) //write file(string)
-
-	file.Close()
-	return
 }
 
 /*
@@ -537,3 +434,4 @@ func loopConnect(ctx context.Context) {
 	}
 	return
 }
+
