@@ -43,7 +43,43 @@ var (
 	timeoutCount       uint64
 	//create channel to store messages from UI
 	MsgChannel      = make(chan MsgStru, 4096)
+	LastConnectTime A3Time
 )
+
+type A3Time struct {
+	time time.Time
+	mu   sync.RWMutex
+}
+
+func updateLastConTime() {
+	LastConnectTime.mu.Lock()
+	LastConnectTime.time = time.Now()
+	LastConnectTime.mu.Unlock()
+}
+
+func ReadLastContime() time.Time {
+	LastConnectTime.mu.RLock()
+	time := LastConnectTime.time
+	LastConnectTime.mu.RUnlock()
+	return time
+}
+
+func GetAMAConnStatus() string {
+	var str string
+	switch ama_connect_status {
+	case AMA_STATUS_INIT:
+		str = "Init status"
+	case AMA_STATUS_CONNECING_GDC:
+		str = "Connecting GDC"
+	case AMA_STATUS_CONNECING_RDC:
+		str = "Connecting RDC"
+	case AMA_STATUS_ONBOARDING_SUC:
+		str = "Connected"
+	default:
+		str = "Unknow"
+	}
+	return str
+}
 
 type MsgStru struct {
 	MsgType int
@@ -65,10 +101,13 @@ func updateConnStatus(status int) {
 	m.Lock()
 	ama_connect_status = status
 	m.Unlock()
+	if status == AMA_STATUS_ONBOARDING_SUC {
+		updateLastConTime()
+	}
 }
 
 //The UI damon will call this API, so it is public
-func GetConnStatus() int{
+func GetConnStatus() int {
 	m.RLock()
 	status := ama_connect_status
 	m.RUnlock()
@@ -136,7 +175,7 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	*/
 	case GdcConfigChange:
 		err := update(msg.Data)
-		if(err != nil) {
+		if err != nil {
 			log.LoggerWContext(ctx).Error("Update config failed")
 			return
 		}

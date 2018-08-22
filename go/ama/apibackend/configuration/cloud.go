@@ -61,8 +61,8 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	GetInfo.Url = a3config.ReadCloudConf(a3config.GDCUrl)
 	GetInfo.User = a3config.ReadCloudConf(a3config.User)
 	GetInfo.Vhm = a3config.ReadCloudConf(a3config.Vhm)
-	GetInfo.Status = "connect"          //todo
-	GetInfo.LastConnectTime = "8888888" //todo
+	GetInfo.Status = amac.GetAMAConnStatus()
+	GetInfo.LastConnectTime = fmt.Sprintf("%v", amac.ReadLastContime())
 
 	fmt.Println("into handleGetCloudInfo")
 
