@@ -50,7 +50,7 @@ func CloudNew(ctx context.Context) crud.SectionCmd {
 	cloud := new(Cloud)
 	cloud.New()
 	cloud.Add("GET", handleGetCloudInfo)
-	cloud.Add("POST", handlePostCloudInfo)
+	cloud.Add("POST", HandlePostCloudInfo)
 	return cloud
 }
 
@@ -74,7 +74,7 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
-func handlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
+func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	postInfo := new(CloudPostInfo)
 	code := "fail"
