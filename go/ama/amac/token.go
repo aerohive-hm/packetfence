@@ -165,9 +165,10 @@ func reqTokenFromOtherNodes(ctx context.Context) int {
 	nodeNum := 0
 	token := ""
 
+	log.LoggerWContext(ctx).Info("begin to request RDC token from other nodes")
+
 	member1 := MemberList{"10.155.104.4", "test-vhmid", "test-systemid-for-distribute-token"}
 	memList = append(memList, member1)
-
 	for _, mem := range memList {
 		nodeNum++
 		token = reqTokenFromSingleNode(ctx, mem)

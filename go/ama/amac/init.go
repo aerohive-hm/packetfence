@@ -1,9 +1,9 @@
 package amac
 
 import (
+	"errors"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"net/url"
-	"errors"
 )
 
 var (
@@ -14,6 +14,7 @@ var (
 	vhmidUrl string
 	userName string
 	password string
+	enable   string //enable/disable the cloud integration
 )
 
 func init() {
