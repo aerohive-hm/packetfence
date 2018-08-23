@@ -152,7 +152,15 @@ sub processCertificate :Path('processCertificate') :Args(1) {
             return;
         }
 
+        unless (open(my $fh, '>>', '/usr/local/pf/conf/cluster-files.txt') ) {
+            $logger->warn("Failed to open cluster-files to sync $targer: $!");
+            return;
+        }
+
+        print $fh $target; #put the cert file path in cluster-file.txt for sync to cluster nodes
         $c->stash->{filePath} = $target;
+
+
         $logger->info("Saved certificate at $target");
     }
 }
