@@ -295,6 +295,7 @@ func fetchTokenFromRdc(ctx context.Context) string {
 	//RDC token need to write file, if process restart we can read it
 	UpdateRdcToken(ctx, tokenRes.Data.Token)
 	//Save RDC url and VHM to config file if get the RDC token
+	//To do, inform the BE to synchronize the config file
 	err = a3config.UpdateCloudConf(a3config.RDCUrl, rdcUrl)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Save RDC URL error: " + err.Error())
