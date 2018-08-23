@@ -153,7 +153,7 @@ sub processCertificate :Path('processCertificate') :Args(1) {
         }
 
         unless (open(my $fh, '>>', '/usr/local/pf/conf/cluster-files.txt') ) {
-            $logger->warn("Failed to open cluster-files to sync $targer: $!");
+            $logger->warn("Failed to open cluster-files to sync $target: $!");
             return;
         }
 
