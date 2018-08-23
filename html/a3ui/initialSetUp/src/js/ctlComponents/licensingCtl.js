@@ -131,11 +131,30 @@ class licensingCtl extends Component {
                     return;
                 }
 
-                self.setState({ 
+
+                let xCsrfToken="";
+                let url= "/a3/api/v1/configurator/license";
+                
+                let param={
+                    trial:"0",
                     key:values.key,
-                    enterEntitlementKeyVisible:false,
-                    endUserLicenseAgreementVisible:true,
-                });
+                }
+
+                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                    if(data.code==="ok"){
+                        self.setState({ 
+                            key:values.key,
+                            enterEntitlementKeyVisible:false,
+                            endUserLicenseAgreementVisible:true,
+                        });
+                    }else{
+                        message.destroy();
+                        message.error(data.msg);
+                    }
+
+                }) 
+
+
                 
 
 

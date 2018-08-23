@@ -306,6 +306,7 @@ class joinClusterCtl extends Component {
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPasswd.bind(self)}
                                 maxLength={254}
+                                type={"password"}
                                 />
 
                                 

@@ -339,6 +339,7 @@ class aerohiveCloudCtl extends Component {
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPass.bind(self)}
                                 maxLength={254}
+                                type={"password"}
                                 />
 
                                 
