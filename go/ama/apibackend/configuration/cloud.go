@@ -8,7 +8,6 @@ package configuration
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
@@ -79,6 +78,8 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	postInfo := new(CloudPostInfo)
 	code := "fail"
 	event := new(amac.MsgStru)
+
+    log.LoggerWContext(ctx).Error("int HandlePostCloudInfo")
 
 	err := json.Unmarshal(d.ReqData, postInfo)
 	if err != nil {

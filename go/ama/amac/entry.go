@@ -14,10 +14,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/log"
+	//"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"io/ioutil"
 	"net/http"
 	"sync"
 	"time"
+	//"strconv"
 )
 
 const (
@@ -84,18 +86,18 @@ func Entry(ctx context.Context) {
 	//check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
 	//if (enbale the cloud integration = true) {
 	//trying to connect to the cloud when damon start
-	//result := connectToRdcWithoutPara(ctx)
+	result := connectToRdcWithoutPara(ctx)
 	/*
 		To to, hanle the error, include: RDC auth fail,
 		request RDC token from other nodes fail
 	*/
-	//if result != 0 {
-	//log.LoggerWContext(ctx).Info("Waiting events from UI or other nodes")
-	//}
+	if result != 0 {
+		log.LoggerWContext(ctx).Info("Waiting events from UI or other nodes")
+	}
 
 	//}
 
-	loopConnect(ctx)
+	//loopConnect(ctx)
 	//start a goroutine, sending the keepalive only when the status is connected
 	go keepaliveToRdc(ctx)
 
@@ -128,7 +130,7 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	var msg MsgStru = message
 	fmt.Println("msg.msgType", msg.MsgType)
 	fmt.Println("msg.data", msg.Data)
-	log.LoggerWContext(ctx).Info("Receiving event %d", msg.MsgType)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Receiving event %d, data:%s", msg.MsgType,msg.Data))
 	switch msg.MsgType {
 	/*
 	   This type handles changes to the following parameters:
@@ -163,6 +165,11 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 //Sending keepalive packets after onboarding successfully
 func keepaliveToRdc(ctx context.Context) {
 
+    /*
+    interval_str := a3config.ReadCloudConf(a3config.Interval)
+    interval,_ := strconv.Atoi(interval_str)
+    log.LoggerWContext(ctx).Error(fmt.Sprintf("read the keepalive interval %d", interval))
+    */
 	// create a ticker for heartbeat
 	ticker := time.NewTicker(10 * time.Second)
 	timeoutCount = 0

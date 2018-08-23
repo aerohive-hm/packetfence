@@ -13,7 +13,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
@@ -195,7 +194,7 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 		}
 	}
 
-	log.LoggerWContext(ctx).Info("begin to send onboarding request to RDC server")
+	log.LoggerWContext(ctx).Info("connectToRdcWithoutPara: begin to send onboarding request to RDC server")
 	res := onbordingToRdc(ctx)
 	if res != 0 {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
@@ -239,6 +238,7 @@ func fetchTokenFromGdc(ctx context.Context) string {
 	body := fmt.Sprintf("grant_type=password&client_id=browser&client_secret=secret&username=%s&password=%s", userName, password)
 
 	log.LoggerWContext(ctx).Info("begin to fetch GDC token")
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("tokenUrl:%s,userName:%s,password:%s",tokenUrl,userName,password))
 	for {
 		request, err := http.NewRequest("POST", tokenUrl, strings.NewReader(body))
 		if err != nil {
@@ -340,6 +340,8 @@ func loopConnect(ctx context.Context) {
 	result := connectToGdcRdc(ctx)
 	if result == 0 {
 		updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
+		return
+	} else {
 		return
 	}
 

@@ -298,13 +298,11 @@ func fetchTokenFromRdc(ctx context.Context) string {
 	err = a3config.UpdateCloudConf(a3config.RDCUrl, rdcUrl)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Save RDC URL error: " + err.Error())
-		goto END
 	}
 
 	err = a3config.UpdateCloudConf(a3config.Vhm, VhmidStr)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
-		goto END
 	}
 	/*
 		To do, post the RDC token/RDC URL/VHMID to the other memebers
