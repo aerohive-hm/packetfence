@@ -194,7 +194,7 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 		}
 	}
 
-	log.LoggerWContext(ctx).Info("begin to send onboarding request to RDC server")
+	log.LoggerWContext(ctx).Info("connectToRdcWithoutPara: begin to send onboarding request to RDC server")
 	res := onbordingToRdc(ctx)
 	if res != 0 {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
@@ -238,6 +238,7 @@ func fetchTokenFromGdc(ctx context.Context) string {
 	body := fmt.Sprintf("grant_type=password&client_id=browser&client_secret=secret&username=%s&password=%s", userName, password)
 
 	log.LoggerWContext(ctx).Info("begin to fetch GDC token")
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("tokenUrl:%s,userName:%s,password:%s",tokenUrl,userName,password))
 	for {
 		request, err := http.NewRequest("POST", tokenUrl, strings.NewReader(body))
 		if err != nil {
@@ -303,7 +304,6 @@ func fetchVhmidFromGdc(ctx context.Context, s string) int {
 		VhmidStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
 		rdcUrl = vhmres.Data.Location
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("rdcUrl = %s", rdcUrl))
-		//To do, save the vhmid and rdcurl to config file and synchronize to cluster member
 
 		resp.Body.Close()
 		return 0
@@ -340,6 +340,8 @@ func loopConnect(ctx context.Context) {
 	result := connectToGdcRdc(ctx)
 	if result == 0 {
 		updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
+		return
+	} else {
 		return
 	}
 

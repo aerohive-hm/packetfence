@@ -13,6 +13,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io"
 	"io/ioutil"
@@ -293,6 +294,17 @@ func fetchTokenFromRdc(ctx context.Context) string {
 	}
 	//RDC token need to write file, if process restart we can read it
 	UpdateRdcToken(ctx, tokenRes.Data.Token)
+	//Save RDC url and VHM to config file if get the RDC token
+	//To do, inform the BE to synchronize the config file
+	err = a3config.UpdateCloudConf(a3config.RDCUrl, rdcUrl)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Save RDC URL error: " + err.Error())
+	}
+
+	err = a3config.UpdateCloudConf(a3config.Vhm, VhmidStr)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
+	}
 	/*
 		To do, post the RDC token/RDC URL/VHMID to the other memebers
 	*/
