@@ -14,6 +14,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	//"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"io/ioutil"
 	"net/http"
@@ -242,9 +243,10 @@ func keepaliveToRdc(ctx context.Context) {
 		}
 
 		log.LoggerWContext(ctx).Info("sending the keepalive")
-		request, err := http.NewRequest("GET", "http://10.155.23.116:8008/rest/v1/poll/1234567", nil)
+		url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/poll/%s", utils.GetA3SysId())
+		request, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			panic(err)
+			log.LoggerWContext(ctx).Error(err.Error())
 		}
 
 		//Add header option
@@ -258,7 +260,7 @@ func keepaliveToRdc(ctx context.Context) {
 		}
 		timeoutCount = 0
 		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println(string(body))
+		log.LoggerWContext(ctx).Info(string(body))
 
 		//Dispatch the data coming with keepalive reponses
 		dispathMsgFromRdc(ctx, []byte(body))
