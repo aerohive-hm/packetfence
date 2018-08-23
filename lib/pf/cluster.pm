@@ -587,6 +587,28 @@ sub handle_config_conflict {
 
 }
 
+=head2 add_file_to_cluster_sync
+
+adds the file path to /usr/local/pf/conf/cluster-files.txt for /usr/local/pf/bin/cluster/sync --as-master
+
+=cut
+
+sub add_file_to_cluster_sync {
+
+    my ($file) = @_;
+    my $fh;
+    my $logger = get_logger();
+    unless (open($fh, '>>', '/usr/local/pf/conf/cluster-files.txt') ) {
+        $logger->error("Failed to open cluster-files to sync $file: $!");
+        return -1;
+    }
+
+    say $fh $file; #put the cert file path in cluster-file.txt for sync to cluster nodes
+    close $fh;
+    $logger->info("Added $file to cluster-files.txt");
+    return 0;
+}
+
 =head2 stores_to_sync
 
 Returns the list of ConfigStore to synchronize between cluster members

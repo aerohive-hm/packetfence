@@ -15,6 +15,7 @@ use Moose;  # automatically turns on strict and warnings
 use namespace::autoclean;
 
 use pf::factory::pki_provider;
+use pf::cluster;
 use strict;
 use warnings;
 #for file processing
@@ -152,13 +153,11 @@ sub processCertificate :Path('processCertificate') :Args(1) {
             return;
         }
 
-        unless (open(my $fh, '>>', '/usr/local/pf/conf/cluster-files.txt') ) {
-            $logger->warn("Failed to open cluster-files to sync $target: $!");
+        if ( pf::cluster::add_file_to_cluster_sync($target) ) {
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to save certificate to cluster. Try again.");
             return;
         }
-
-        print $fh $target; #put the cert file path in cluster-file.txt for sync to cluster nodes
-        close $fh;
 
         $c->stash->{filePath} = $target;
         $logger->info("Saved certificate at $target");
