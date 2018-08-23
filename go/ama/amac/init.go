@@ -1,11 +1,12 @@
 package amac
 
 import (
-//"fmt"
+	"errors"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"net/url"
 )
 
 var (
-
 	//package variable to store the URL of HM
 	gdcUrl   string
 	rdcUrl   string
@@ -13,12 +14,31 @@ var (
 	vhmidUrl string
 	userName string
 	password string
+	enable   string //enable/disable the cloud integration
 )
 
 func init() {
-	gdcUrl = "https://10.155.23.116.17/acct-webapp"
-	tokenUrl = "https://10.155.23.116/acct-webapp/oauth/cookietoken"
-	vhmidUrl = "https://10.155.23.116/acct-webapp/services/acct/selectvhm"
-	userName = "admin%40cust001.com"
-	password = "aerohive"
+	_ = update("")
+}
+
+func update(pass string) error {
+	gdcUrl = a3config.ReadCloudConf(a3config.GDCUrl)
+	if len(gdcUrl) == 0 {
+		return errors.New("Fetch GDC Url failed")
+	}
+	tokenUrl = gdcUrl + "/oauth/cookietoken"
+	vhmidUrl = gdcUrl + "/services/acct/selectvhm"
+	rdcUrl = a3config.ReadCloudConf(a3config.RDCUrl)
+	if len(rdcUrl) == 0 {
+		return errors.New("Fetch RDC Url failed")
+	}
+	
+	userName = a3config.ReadCloudConf(a3config.User)
+	if len(userName) != 0 {
+		userName = url.QueryEscape(userName)
+	}
+	if pass != "" {
+		password = url.QueryEscape(pass)
+	}
+	return nil
 }

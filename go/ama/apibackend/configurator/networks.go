@@ -6,7 +6,7 @@ package configurator
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	//"fmt"
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
@@ -62,8 +62,7 @@ func handleUpdateNetwork(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		return []byte(err.Error())
 	}
-
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", net))
+	utils.UpdateNetworksData(ctx, *net)
 
 	return []byte(crud.PostOK)
 }

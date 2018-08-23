@@ -8,7 +8,6 @@ package configuration
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
@@ -50,7 +49,7 @@ func CloudNew(ctx context.Context) crud.SectionCmd {
 	cloud := new(Cloud)
 	cloud.New()
 	cloud.Add("GET", handleGetCloudInfo)
-	cloud.Add("POST", handlePostCloudInfo)
+	cloud.Add("POST", HandlePostCloudInfo)
 	return cloud
 }
 
@@ -58,13 +57,13 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var GetInfo CloudGetInfo
 
 	var ctx = r.Context()
+    log.LoggerWContext(ctx).Error("into handleGetCloudInfo")
+	
 	GetInfo.Url = a3config.ReadCloudConf(a3config.GDCUrl)
 	GetInfo.User = a3config.ReadCloudConf(a3config.User)
 	GetInfo.Vhm = a3config.ReadCloudConf(a3config.Vhm)
 	GetInfo.Status = "connect"          //todo
 	GetInfo.LastConnectTime = "8888888" //todo
-
-	fmt.Println("into handleGetCloudInfo")
 
 	jsonData, err := json.Marshal(GetInfo)
 	if err != nil {
@@ -74,11 +73,13 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
-func handlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
+func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	postInfo := new(CloudPostInfo)
 	code := "fail"
 	event := new(amac.MsgStru)
+
+    log.LoggerWContext(ctx).Error("int HandlePostCloudInfo")
 
 	err := json.Unmarshal(d.ReqData, postInfo)
 	if err != nil {

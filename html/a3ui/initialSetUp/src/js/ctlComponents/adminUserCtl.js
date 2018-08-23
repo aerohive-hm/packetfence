@@ -348,6 +348,7 @@ class adminUserCtl extends Component {
                                 onBlur={self.onBlurCheckPass.bind(self)}
                                 onChange={self.onChangePass.bind(self)}
                                 maxLength={254}
+                                type={"password"}
                                 />
 
                                 
@@ -368,6 +369,7 @@ class adminUserCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckPassConfirm.bind(self)}
+                                type={"password"}
                                 
                                 />
                             )}

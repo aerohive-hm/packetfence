@@ -73,6 +73,10 @@ class startingCtl extends Component {
 
         },3000)
 
+        // self.setState({
+        //     loading:false,
+        // }) 
+
 
     }
 
@@ -94,6 +98,12 @@ class startingCtl extends Component {
         self.setState({
             i18n : rightI18n,
         })
+
+    }
+
+    onClickGoToAdministrationInterface= () => {
+        window.location.href="https://"+window.location.hostname+":1443/";
+
 
     }
 
@@ -122,6 +132,7 @@ class startingCtl extends Component {
                                 <Button 
                                     type="primary" 
                                     className="go-to-antd-button-startingCtl" 
+                                    onClick={self.onClickGoToAdministrationInterface.bind(self)}
                                 >{self.state.i18n.goToAdministrationInterface}</Button>
                             </div>
                             <div className="clear-float-div-common" ></div >

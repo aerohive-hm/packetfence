@@ -14,10 +14,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/log"
+	//"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"io/ioutil"
 	"net/http"
 	"sync"
 	"time"
+	//"strconv"
 )
 
 const (
@@ -81,23 +83,21 @@ func GetConnStatus() int {
 func Entry(ctx context.Context) {
 	var msg MsgStru
 
-	//To do, code for the later version
+	//check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
+	//if (enbale the cloud integration = true) {
+	//trying to connect to the cloud when damon start
+	result := connectToRdcWithoutPara(ctx)
 	/*
-		//check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
-		if (enbale the cloud integration = true) {
-			result := connectToRdcWithoutPara(ctx)
-			/*
-				To to, hanle the error, include: RDC auth fail,
-				request RDC token from other nodes fail
+		To to, hanle the error, include: RDC auth fail,
+		request RDC token from other nodes fail
 	*/
-	/*
-			if (result != 0){
-			log.LoggerWContext(ctx).Info("Waiting events from UI or other nodes")
-			}
-			//loopConnect()
-		}
-	*/
-	loopConnect(ctx)
+	if result != 0 {
+		log.LoggerWContext(ctx).Info("Waiting events from UI or other nodes")
+	}
+
+	//}
+
+	//loopConnect(ctx)
 	//start a goroutine, sending the keepalive only when the status is connected
 	go keepaliveToRdc(ctx)
 
@@ -130,15 +130,19 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	var msg MsgStru = message
 	fmt.Println("msg.msgType", msg.MsgType)
 	fmt.Println("msg.data", msg.Data)
-	log.LoggerWContext(ctx).Info("Receiving event %d", msg.MsgType)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Receiving event %d, data:%s", msg.MsgType,msg.Data))
 	switch msg.MsgType {
 	/*
 	   This type handles changes to the following parameters:
 	   GDC URL/username/password, and enable the cloud integration
 	*/
 	case GdcConfigChange:
+		err := update(msg.Data)
+		if(err != nil) {
+			log.LoggerWContext(ctx).Error("Update config failed")
+			return
+		}
 		updateConnStatus(AMA_STATUS_CONNECING_GDC)
-		//to do, get the latest config info
 		loopConnect(ctx)
 		// To do, handle the result, include GDC auth fail, RDC auth fail, server down
 
@@ -161,6 +165,11 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 //Sending keepalive packets after onboarding successfully
 func keepaliveToRdc(ctx context.Context) {
 
+    /*
+    interval_str := a3config.ReadCloudConf(a3config.Interval)
+    interval,_ := strconv.Atoi(interval_str)
+    log.LoggerWContext(ctx).Error(fmt.Sprintf("read the keepalive interval %d", interval))
+    */
 	// create a ticker for heartbeat
 	ticker := time.NewTicker(10 * time.Second)
 	timeoutCount = 0
@@ -183,7 +192,7 @@ func keepaliveToRdc(ctx context.Context) {
 				timeoutCount = 0
 			} else {
 				timeoutCount++
-				fmt.Printf("keepaliveToRdc, timeout_cout:%d\n", timeoutCount)
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("Keepalive timeout %d", timeoutCount))
 				//Onboarding fail, not send keepalive
 				continue
 			}
@@ -192,9 +201,9 @@ func keepaliveToRdc(ctx context.Context) {
 		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
 			continue
 		}
-		//MsgChannel <- data
+
 		log.LoggerWContext(ctx).Info("sending the keepalive")
-		request, err := http.NewRequest("GET", "http://10.155.100.17:8008/rest/v1/poll/1234567", nil)
+		request, err := http.NewRequest("GET", "http://10.155.23.116:8008/rest/v1/poll/1234567", nil)
 		if err != nil {
 			panic(err)
 		}
@@ -211,7 +220,6 @@ func keepaliveToRdc(ctx context.Context) {
 		timeoutCount = 0
 		body, _ := ioutil.ReadAll(resp.Body)
 		fmt.Println(string(body))
-		fmt.Println(resp.Status)
 
 		//Dispatch the data coming with keepalive reponses
 		dispathMsgFromRdc(ctx, []byte(body))
