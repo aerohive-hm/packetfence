@@ -158,9 +158,9 @@ sub processCertificate :Path('processCertificate') :Args(1) {
         }
 
         print $fh $target; #put the cert file path in cluster-file.txt for sync to cluster nodes
+        close $fh;
+
         $c->stash->{filePath} = $target;
-
-
         $logger->info("Saved certificate at $target");
     }
 }
