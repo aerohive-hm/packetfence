@@ -31,6 +31,7 @@ class App extends Component {
         super(props);
         this.state = {
             i18n:{},
+            loading : false,
             show:"getStart",
             // getStart
             // adminUser
