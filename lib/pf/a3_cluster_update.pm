@@ -548,7 +548,7 @@ sub restore_conf_file {
   #remove suffix
   $app_dump_copy =~ s/\..*$//;
   _commit_cluster_update_log("Restoring configuration files");
-  call_system_cmd("$RM_BIN -rf $A3_CONF_DIR/*; $CP_BIN -rf $TMP_DIR/pf/conf/* $A3_CONF_DIR; $CP_BIN -rf $TMP_DIR/pf/var/conf/* $A3_VAR_CONF_DIR");
+  call_system_cmd("$RM_BIN -rf $A3_CONF_DIR/*; $CP_BIN -rf $TMP_DIR/pf/conf/* $A3_CONF_DIR");
 }
 
 
@@ -598,13 +598,14 @@ sub roll_back_app {
     restore_conf_file();
   }
   elsif ($rpm_version eq $to_version) {
-    my $history_id = `$YUM_BIN history 2>/dev/null   \\
-                    | $GREP_BIN -E '[[:digit:]]{4}-' \\
-                    | $AWK_BIN -F'|' '{print \$1}'   \\
-                    | $HEAD_BIN -1`;
+    #my $history_id = `$YUM_BIN history 2>/dev/null   \\
+    #                | $GREP_BIN -E '[[:digit:]]{4}-' \\
+    #                | $AWK_BIN -F'|' '{print \$1}'   \\
+    #                | $HEAD_BIN -1`;
     _commit_cluster_update_log("Start rolling back last update");
-    call_system_cmd("$YUM_BIN history undo $history_id -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE");
-    _commit_cluster_update_log("Finished rolling back last update");
+    #call_system_cmd("$YUM_BIN history undo $history_id -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE");
+    call_system_cmd("$YUM_BIN clean all; $YUM_BIN makecache fast; $YUM_BIN downgrade 'A3*' -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE");
+    _commit_cluster_update_log("Finished rolling back to last release");
     restore_conf_file();
   }
 }
