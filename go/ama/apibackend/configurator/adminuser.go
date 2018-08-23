@@ -6,15 +6,14 @@ package configurator
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	//	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
-	"github.com/inverse-inc/packetfence/go/db"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -30,51 +29,69 @@ type AdminUser struct {
 func AdminUserNew(ctx context.Context) crud.SectionCmd {
 	admin := new(AdminUser)
 	admin.New()
-	admin.Add("GET", handleGetAdminUserMethod)
+	//	admin.Add("GET", handleGetAdminUserMethod)
 	admin.Add("POST", handleGetAdminUserPost)
 	return admin
 }
 
+/* replace is better than insert because it does not need to check if pid exsit or not */
+const sqlCmd = "replace into password(pid,password,valid_from,expiration,access_level )" +
+	"values(?,?,?,?,?)"
+
 /*write admin info to password table*/
 func writeAdminToDb(user, password, table string) error {
-	var ctx = context.Background()
-	db, err := db.DbFromConfig(ctx)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	/* replace is better than insert because it does not need to check if pid exsit or not */
-	prepare := fmt.Sprintf("replace into %s(pid,password,valid_from,expiration,access_level )values(?,?,?,?,?)", table)
-
-	timeStr := time.Now().Format("2006-01-02 15:04:05")
+	timeStart := time.Now().UTC().Format("2006-01-02 15:04:05")
 	expiration := "2038-01-01 00:00:00"
-	stmt, err := db.Prepare(prepare)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-	stmt.Exec(user, password, timeStr, expiration, "ALL")
 
-	prepare = fmt.Sprintf("replace into person(pid)values(?)")
-	stmt, err = db.Prepare(prepare)
+	// strip realm, code to be removed
+	ret := strings.Split(user, "@")
+	var tmpUser string
+	if len(ret) > 1 {
+		tmpUser = ret[0]
+	} else {
+		tmpUser = user
+	}
+
+	sql := []amadb.SqlCmd{
+		{
+			sqlCmd,
+			[]interface{}{
+				tmpUser,
+				password,
+				timeStart,
+				expiration,
+				"ALL",
+			},
+		},
+		{
+			"replace into person(pid,email)values(?,?)",
+			[]interface{}{
+				tmpUser,
+				user,
+			},
+		},
+	}
+
+	db := new(amadb.A3Db)
+	err := db.Exec(sql)
 	if err != nil {
 		return err
 	}
-	stmt.Exec(user)
 	return nil
 }
 
+/*
 func handleGetAdminUserMethod(r *http.Request, d crud.HandlerData) []byte {
 	//	var admin AdminUserInfo
 	//	var ctx = r.Context()
 	return []byte("")
 }
-
+*/
 func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	admin := new(AdminUserInfo)
 	code := "fail"
+
 	err := json.Unmarshal(d.ReqData, admin)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("unmarshal error: " + err.Error())
@@ -87,7 +104,7 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	err = a3config.UpdateEmail(admin.User)
+	err = utils.UpdateEmail(admin.User)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("write conf error: " + err.Error())
 		goto END

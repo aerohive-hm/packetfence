@@ -1,46 +1,85 @@
 package amadb
 
 import (
-	"context"
-	//"database/sql"
+	//"context"
+	"database/sql"
+	"errors"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/inverse-inc/packetfence/go/db"
+	//	_ "github.com/go-sql-driver/mysql"
+
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 )
-type UpdateItem struct {
-	tablename     string 
-	pid           string//primary key
-	pidvalue      string   
-	keyname       string//update key 
-	keyvalue      string
+
+const (
+	StdTimeFormat = "2006-01-02 15:04:05"
+)
+
+type SqlCmd struct {
+	Sql  string
+	Args []interface{}
 }
 
-/*update one key */
-func (item *UpdateItem)Update(obj *UpdateItem) {
-	var ctx = context.Background()
-	db, err := db.DbFromConfig(ctx) 
-	
-	/* replace is better than insert because it does not need to check if pid exsit or not */
-	prepare := fmt.Sprintf("replace into %s (pid,%s) values (?,?)",obj.tablename, obj.keyname)	 
-	                      
-	stmt, err := db.Prepare(prepare)
-	if err != nil {
-		fmt.Println(err)
+type A3Db struct {
+	Sql []SqlCmd
+	db  *sql.DB
+	cb  func(...interface{}) error
+}
+
+func connect(user, pass, host, port, dbname string) (*sql.DB, error) {
+	var where string
+	if host == "localhost" {
+		where = "unix(/var/lib/mysql/mysql.sock)"
+	} else {
+		where = "tcp(" + host + ":" + port + ")"
 	}
-	stmt.Exec(obj.pidvalue,obj.keyvalue)
-	 
-    defer stmt.Close()
-	defer db.Close()
+
+	//?charset=utf8&parseTime=true&loc=Local
+	db, err := sql.Open("mysql", user+":"+pass+"@"+where+"/"+dbname+"?parseTime=true")
+	db.SetMaxIdleConns(0)
+	db.SetMaxOpenConns(500)
+	return db, err
 }
 
+func dbFromConfig() (*sql.DB, error) {
+	dbCfg := a3config.A3ReadFull("PF", "database")["database"]
+	if dbCfg == nil {
+		return nil, errors.New("Can't find database.")
+	}
+	return connect(dbCfg["user"], dbCfg["pass"], dbCfg["host"],
+		dbCfg["port"], dbCfg["db"])
+}
 
-func testUpdatedb() {
-	fmt.Println("TestInsertdb start")
-	var obj UpdateItem	 
-	obj.tablename = "password"
-	obj.pid = "pid"
-	obj.pidvalue = "testXXX"
-	obj.keyname = "password"
-	obj.keyvalue = "testacdd1"
-	obj.Update(&obj)	
+func (db *A3Db) DbInit() error {
+	tdb, err := dbFromConfig()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	db.db = tdb
+	return err
+}
+
+func (db *A3Db) execOnce(sql string, args ...interface{}) error {
+	stmt, err := db.db.Prepare(sql)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	stmt.Exec(args...)
+	return nil
+}
+
+func (db *A3Db) Exec(sql []SqlCmd) error {
+	err := db.DbInit()
+	if err != nil {
+		return err
+	}
+
+	for _, v := range sql {
+		err := db.execOnce(v.Sql, v.Args...)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
