@@ -7,8 +7,10 @@ import (
 
 func init() {
 	sections := crud.Sections{
-		"cloud"  :           configuration.CloudNew,
+		"cloud":     configuration.CloudNew,
+		"interface": configuration.InterfaceNew,
+		"license":   configuration.LicenseNew,
+		"cluster":   configuration.ClusterNew,
 	}
 	Register("configuration", sections)
 }
-
