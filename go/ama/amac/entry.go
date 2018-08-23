@@ -14,6 +14,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	//"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"io/ioutil"
 	"net/http"
@@ -44,8 +45,44 @@ var (
 	m                  = new(sync.RWMutex)
 	timeoutCount       uint64
 	//create channel to store messages from UI
-	MsgChannel = make(chan MsgStru, 4096)
+	MsgChannel      = make(chan MsgStru, 4096)
+	LastConnectTime A3Time
 )
+
+type A3Time struct {
+	time time.Time
+	mu   sync.RWMutex
+}
+
+func updateLastConTime() {
+	LastConnectTime.mu.Lock()
+	LastConnectTime.time = time.Now()
+	LastConnectTime.mu.Unlock()
+}
+
+func ReadLastContime() time.Time {
+	LastConnectTime.mu.RLock()
+	time := LastConnectTime.time
+	LastConnectTime.mu.RUnlock()
+	return time
+}
+
+func GetAMAConnStatus() string {
+	var str string
+	switch ama_connect_status {
+	case AMA_STATUS_INIT:
+		str = "Init status"
+	case AMA_STATUS_CONNECING_GDC:
+		str = "Connecting GDC"
+	case AMA_STATUS_CONNECING_RDC:
+		str = "Connecting RDC"
+	case AMA_STATUS_ONBOARDING_SUC:
+		str = "Connected"
+	default:
+		str = "Unknow"
+	}
+	return str
+}
 
 type MsgStru struct {
 	MsgType int
@@ -67,6 +104,9 @@ func updateConnStatus(status int) {
 	m.Lock()
 	ama_connect_status = status
 	m.Unlock()
+	if status == AMA_STATUS_ONBOARDING_SUC {
+		updateLastConTime()
+	}
 }
 
 //The UI damon will call this API, so it is public
@@ -138,7 +178,7 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	*/
 	case GdcConfigChange:
 		err := update(msg.Data)
-		if(err != nil) {
+		if err != nil {
 			log.LoggerWContext(ctx).Error("Update config failed")
 			return
 		}
@@ -203,9 +243,10 @@ func keepaliveToRdc(ctx context.Context) {
 		}
 
 		log.LoggerWContext(ctx).Info("sending the keepalive")
-		request, err := http.NewRequest("GET", "http://10.155.23.116:8008/rest/v1/poll/1234567", nil)
+		url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/poll/%s", utils.GetA3SysId())
+		request, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			panic(err)
+			log.LoggerWContext(ctx).Error(err.Error())
 		}
 
 		//Add header option
@@ -219,7 +260,7 @@ func keepaliveToRdc(ctx context.Context) {
 		}
 		timeoutCount = 0
 		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println(string(body))
+		log.LoggerWContext(ctx).Info(string(body))
 
 		//Dispatch the data coming with keepalive reponses
 		dispathMsgFromRdc(ctx, []byte(body))

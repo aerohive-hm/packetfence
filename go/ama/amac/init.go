@@ -28,10 +28,9 @@ func update(pass string) error {
 	}
 	tokenUrl = gdcUrl + "/oauth/cookietoken"
 	vhmidUrl = gdcUrl + "/services/acct/selectvhm"
+	
 	rdcUrl = a3config.ReadCloudConf(a3config.RDCUrl)
-	if len(rdcUrl) == 0 {
-		return errors.New("Fetch RDC Url failed")
-	}
+	//Not check the rdcUrl if NULL
 	
 	userName = a3config.ReadCloudConf(a3config.User)
 	if len(userName) != 0 {

@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/log"
+	"strconv"
 )
 
 type A3IntChgHeader struct {
@@ -34,16 +35,18 @@ func (intChgData *A3IntChgData) GetValue() {
 		} else {
 			a3Interface.Parent = iface.Master
 		}
-		a3Interface.Vlan = iface.Vlan
+		a3Interface.Vlan, _ = strconv.Atoi(iface.Vlan)
 		a3Interface.IpAddress = iface.IpAddr
-		a3Interface.Netmask = iface.NetMask
+		a3Interface.Netmask = "255.255.255.0"
 		a3Interface.Vip = iface.Vip
 		//a3Interface.Type = "Todo"
-		a3Interface.Service = []string{}
+		//a3Interface.Service = []string{}
+		a3Interface.Type = "MANAGEMENT"
+		a3Interface.Service = []string{"PORTAL"}
 		intChgData.Interfaces = append(intChgData.Interfaces, *a3Interface)
 	}
 
-	intChgData.MsgType = "interface-change"
+	intChgData.MsgType = "interface-update"
 }
 
 var contextIntChg = log.LoggerNewContext(context.Background())

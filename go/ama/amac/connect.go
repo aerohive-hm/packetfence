@@ -36,6 +36,9 @@ var (
 	gdcTokenStr string
 	rdcTokenStr string
 	VhmidStr    string
+	connMsgUrl  string
+	fetchRdcTokenUrl string
+	keepAliveUrl  string
 )
 
 type response struct {
@@ -64,6 +67,14 @@ type A3TokenResFromRdc struct {
 }
 
 /*
+func assembleRdcUrl(rdcUrl string){
+ 
+   i := strings.Index(rdcUrl, "/")
+   log.LoggerWContext(ctx).Error(fmt.Sprintf("rdcUrl:%s,i:%d", rdcUrl, i) 
+   
+}
+*/
+/*
 	Send onboarding info to HM once obataining the RDC's token
 */
 func onbordingToRdc(ctx context.Context) int {
@@ -80,7 +91,8 @@ func onbordingToRdc(ctx context.Context) int {
 		reader := bytes.NewReader(data)
 
 		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		request, err := http.NewRequest("POST", "http://10.155.23.116:8008/rest/v1/report/A98B-FA51-DC0A-E178-61A1-79AF-6AD6-1518", reader)
+		url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/report/syn/%s", utils.GetA3SysId())
+		request, err := http.NewRequest("POST", url, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
@@ -99,7 +111,7 @@ func onbordingToRdc(ctx context.Context) int {
 
 		body, _ := ioutil.ReadAll(resp.Body)
 
-		log.LoggerWContext(ctx).Error("receive the response ", resp.Status)
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("receive the response %d", resp.StatusCode))
 		log.LoggerWContext(ctx).Error(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
@@ -136,7 +148,8 @@ func updateMsgToRdc(ctx context.Context) int {
 
 		fmt.Println("begin to send initerface change to RDC")
 		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		request, err := http.NewRequest("POST", "http://10.155.23.116:8008/rest/v1/report/47B4-FB5D-7817-2EDF-0FFE-D9F0-944A-9BAA", reader)
+		url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/report/syn/%s", utils.GetA3SysId())
+		request, err := http.NewRequest("POST", url, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
@@ -192,7 +205,9 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 			log.LoggerWContext(ctx).Error("Request RDC token failed from other ondes")
 			return result
 		}
-	}
+	} 
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("token:%s",token))
 
 	log.LoggerWContext(ctx).Info("connectToRdcWithoutPara: begin to send onboarding request to RDC server")
 	res := onbordingToRdc(ctx)
@@ -221,7 +236,7 @@ func connectToRdcWithPara(ctx context.Context) int {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return -1
 	}
-	//updateMsgToRdc(ctx)
+	updateMsgToRdc(ctx)
 	return 0
 }
 
