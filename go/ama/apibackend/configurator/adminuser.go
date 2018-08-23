@@ -13,6 +13,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/db"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -100,7 +101,7 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	log.LoggerWContext(ctx).Error(fmt.Sprintln("email:", admin.User))
-	err = a3config.UpdateEmail(admin.User)
+	err = utils.UpdateEmail(admin.User)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("write conf error: " + err.Error())
 		goto END
