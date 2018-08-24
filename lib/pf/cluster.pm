@@ -635,12 +635,11 @@ sub remove_file_from_cluster_sync {
         say $temp_fh $row unless $row eq $file;
     }
 
+    close($in);
     if ( ! rename ($temp_file, $cluster_file) ) {
         $logger->error("Failed to rename $temp_file to $cluster_file: $!");
-        close($in);
         return -1;
     }
-    close($in);
     return 0;
 }
 
