@@ -643,6 +643,46 @@ sub remove_file_from_cluster_sync {
     return 0;
 }
 
+=head2 sync_and_remove_cluster_file
+
+removes the file in input directory that is removed from cluster-file list
+
+=cut
+
+sub sync_and_remove_cluster_file {
+    my ($target_dir) = @_;
+    my $logger = get_logger();
+    my $cluster_file = 'usr/local/pf/conf/cluster-files.txt';
+    my $in;
+    my @cluster_list;
+    unless (opendir(D, "$target_dir")) {
+        $logger->error("Failed to open $target_dir to read files");
+    }
+
+    my @list = grep !/^\.\.?$/, readdir(D);
+    closedir(D);
+
+    unless (open($in, '<', $cluster_file) ) {
+        $logger->error("Failed to open cluster-files to sync $file: $!");
+    }
+    #put the list of cluster file path in an array
+    while (<$in>) {
+        chomp;
+        push @cluster_list, $_;
+    }
+    close($in);
+
+    foreach my $file (@list) {
+        $file = $target_dir . $file;
+        if (! grep( /^$file$/, @cluster_list ) ) {
+            if (unlink($file) != 1) {
+                $logger->error("Failed to remove $file that is removed from cluster file");
+            }
+        }
+    }
+
+}
+
 =head2 stores_to_sync
 
 Returns the list of ConfigStore to synchronize between cluster members

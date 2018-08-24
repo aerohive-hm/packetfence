@@ -965,6 +965,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3ec
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3us
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3ma
+%attr(0755, pf, pf)     /usr/local/pf/bin/a3cs
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfhttpd
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd.pl
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd_vlan
