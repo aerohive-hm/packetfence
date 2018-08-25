@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/inverse-inc/packetfence/go/db"
+	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/log"
 	"strings"
 )
@@ -37,11 +37,14 @@ func GetA3SysId() string {
 
 func IsPrimaryCluster() bool {
 	var ctx = context.Background()
-	db, err := db.DbFromConfig(ctx)
+
+	tmpDB := new(amadb.A3Db)
+	err := tmpDB.DbInit()
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Open database error: " + err.Error())
 		return false
 	}
+	db := tmpDB.Db
 	defer db.Close()
 
 	var strName, strValue string

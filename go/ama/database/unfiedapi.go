@@ -21,7 +21,7 @@ type SqlCmd struct {
 
 type A3Db struct {
 	Sql []SqlCmd
-	db  *sql.DB
+	Db  *sql.DB
 	cb  func(...interface{}) error
 }
 
@@ -54,12 +54,12 @@ func (db *A3Db) DbInit() error {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	db.db = tdb
+	db.Db = tdb
 	return err
 }
 
 func (db *A3Db) execOnce(sql string, args ...interface{}) error {
-	stmt, err := db.db.Prepare(sql)
+	stmt, err := db.Db.Prepare(sql)
 	if err != nil {
 		return err
 	}
