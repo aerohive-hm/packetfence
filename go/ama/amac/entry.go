@@ -14,13 +14,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/log"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
-	//"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"io/ioutil"
 	"net/http"
 	"sync"
 	"time"
-	//"strconv"
 )
 
 const (
@@ -168,22 +165,14 @@ func Entry(ctx context.Context) {
 */
 func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	var msg MsgStru = message
-	fmt.Println("msg.msgType", msg.MsgType)
-	fmt.Println("msg.data", msg.Data)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Receiving event %d, data:%s", msg.MsgType,msg.Data))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Receiving event %d, data:%s", msg.MsgType, msg.Data))
 	switch msg.MsgType {
 	/*
 	   This type handles changes to the following parameters:
 	   GDC URL/username/password, and enable the cloud integration
 	*/
 	case GdcConfigChange:
-		err := update(msg.Data)
-		if err != nil {
-			log.LoggerWContext(ctx).Error("Update config failed")
-			return
-		}
-		updateConnStatus(AMA_STATUS_CONNECING_GDC)
-		loopConnect(ctx)
+
 		// To do, handle the result, include GDC auth fail, RDC auth fail, server down
 
 	case NetworkChange:
@@ -205,11 +194,11 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 //Sending keepalive packets after onboarding successfully
 func keepaliveToRdc(ctx context.Context) {
 
-    /*
-    interval_str := a3config.ReadCloudConf(a3config.Interval)
-    interval,_ := strconv.Atoi(interval_str)
-    log.LoggerWContext(ctx).Error(fmt.Sprintf("read the keepalive interval %d", interval))
-    */
+	/*
+	   interval_str := a3config.ReadCloudConf(a3config.Interval)
+	   interval,_ := strconv.Atoi(interval_str)
+	   log.LoggerWContext(ctx).Error(fmt.Sprintf("read the keepalive interval %d", interval))
+	*/
 	// create a ticker for heartbeat
 	ticker := time.NewTicker(10 * time.Second)
 	timeoutCount = 0
@@ -243,8 +232,8 @@ func keepaliveToRdc(ctx context.Context) {
 		}
 
 		log.LoggerWContext(ctx).Info("sending the keepalive")
-		url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/poll/%s", utils.GetA3SysId())
-		request, err := http.NewRequest("GET", url, nil)
+		//url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/poll/%s", utils.GetA3SysId())
+		request, err := http.NewRequest("GET", keepAliveUrl, nil)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 		}

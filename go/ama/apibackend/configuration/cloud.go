@@ -75,10 +75,16 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 }
 
 func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
+    var ret string
+    var reason string
+    var result int
 	ctx := r.Context()
 	postInfo := new(CloudPostInfo)
 	code := "fail"
 	event := new(amac.MsgStru)
+
+	code = "ok"
+	ret = "connect to cloud successfully"
 
     log.LoggerWContext(ctx).Error("int HandlePostCloudInfo")
 
@@ -103,11 +109,14 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	event.MsgType = amac.GdcConfigChange
 	event.Data = postInfo.Pass
 	amac.MsgChannel <- *event
-
-	code = "ok"
+	result, reason = amac.LoopConnect(ctx, postInfo.Pass)
+	if (result != 0) {
+		code = "fail"
+		ret = reason
+		goto END		
+	}
 
 END:
-	var ret = ""
 	if err != nil {
 		ret = err.Error()
 	}
