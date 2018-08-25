@@ -5,8 +5,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/inverse-inc/packetfence/go/ama/a3config"
 )
 
 type Iface struct {
@@ -194,39 +192,7 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 	return list, 0
 }
 
-func GetIfaceElementVlaue(ifname, element string) string {
-	ifacefullname := fmt.Sprintf("interface %s", ifname)
-	Section := a3config.ReadIface(ifacefullname)
-	value := Section[ifacefullname][element]
-	return value
-}
-
-func GetIfaceType(ifname string) string {
-	iftype := strings.Split(GetIfaceElementVlaue(ifname, "type"), ",")
-	if iftype[0] == "internal" {
-		netsection := a3config.A3Read("NETWORKS", "all")
-		for k, _ := range netsection {
-			if netsection[k]["gateway"] == GetIfaceElementVlaue(ifname, "ip") {
-				iftype = strings.Split(netsection[k]["type"], ",")
-				/*need to delete vlan- for type*/
-				Type := []rune(iftype[0])
-				return string(Type[5:])
-			}
-		}
-	}
-	return iftype[0]
-}
-
-func GetIfaceServices(ifname string) []string {
-	iftype := strings.Split(GetIfaceElementVlaue(ifname, "type"), ",")
-	services := []string{}
-	if len(iftype) > 0 {
-		services = iftype[1:]
-	}
-	return services
-}
-
-func netMask_Len2Str(a int) string {
+func NetmaskLen2Str(a int) string {
 	var k, sum int = 0, 0
 	s := []string{}
 	i := a / 8
@@ -247,7 +213,7 @@ func netMask_Len2Str(a int) string {
 	mask := strings.Join(s, ".")
 	return mask
 }
-func netMask_Str2Len(mask string) int {
+func NetmaskStr2Len(mask string) int {
 
 	var num int = 0
 	var value int
