@@ -15,6 +15,9 @@ func init() {
 		"clusterjoin": event.ClusterJoinNew,
 		"clustersync": event.ClusterSyncNew,
 		"rdctoken":   event.RdcTokenNew,
+		"clusterremove": event.RemoveNodeNew,
+		"amastatus"	:	event.AMAStatusNew,
+
 	}
 	Register("event", sections)
 }

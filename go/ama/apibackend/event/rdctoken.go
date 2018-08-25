@@ -1,3 +1,6 @@
+/*rdctoken.go implements handling REST API:
+ *      /a3/api/v1/event/rdctoken
+ */
 package event
 
 import (
