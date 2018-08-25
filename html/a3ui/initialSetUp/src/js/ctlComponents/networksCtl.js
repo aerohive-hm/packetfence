@@ -354,7 +354,6 @@ class networksCtl extends Component {
         let items=[];
         for(let i=0;i<self.state.dataTable.length;i++){
             items.push({
-                id:self.state.dataTable[i].id,
                 name:self.state.dataTable[i].name,
                 ip_addr:self.state.dataTable[i].ip_addr,
                 netmask:self.state.dataTable[i].netmask,
