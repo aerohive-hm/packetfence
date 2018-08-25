@@ -8,8 +8,8 @@ package configuration
 import (
 	"context"
 	"encoding/json"
-	"net/http"
 	"fmt"
+	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/amac"
@@ -58,8 +58,8 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var GetInfo CloudGetInfo
 
 	var ctx = r.Context()
-    log.LoggerWContext(ctx).Error("into handleGetCloudInfo")
-	
+	log.LoggerWContext(ctx).Error("into handleGetCloudInfo")
+
 	GetInfo.Url = a3config.ReadCloudConf(a3config.GDCUrl)
 	GetInfo.User = a3config.ReadCloudConf(a3config.User)
 	GetInfo.Vhm = a3config.ReadCloudConf(a3config.Vhm)
@@ -75,9 +75,9 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 }
 
 func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
-    var ret string
-    var reason string
-    var result int
+	var ret string
+	var reason string
+	var result int
 	ctx := r.Context()
 	postInfo := new(CloudPostInfo)
 	code := "fail"
@@ -86,34 +86,49 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	code = "ok"
 	ret = "connect to cloud successfully"
 
-    log.LoggerWContext(ctx).Error("int HandlePostCloudInfo")
+	log.LoggerWContext(ctx).Error("int HandlePostCloudInfo")
 
 	err := json.Unmarshal(d.ReqData, postInfo)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("unmarshal error: " + err.Error())
 		goto END
 	}
+	//This case means disable the cloud integration
+	if postInfo.Url == "" {
+		err = a3config.UpdateCloudConf(a3config.Switch, "disable")
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Update cloud switch error: " + err.Error())
+		} else {
+			event.MsgType = amac.DisableCloudIntegration
+			event.Data = "disable"
+			amac.MsgChannel <- *event
+		}
+
+		goto END
+	}
 
 	err = a3config.UpdateCloudConf(a3config.GDCUrl, postInfo.Url)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("Update cloud config error: " + err.Error())
+		log.LoggerWContext(ctx).Error("Update cloud GDC URL error: " + err.Error())
 		goto END
 	}
 
 	err = a3config.UpdateCloudConf(a3config.User, postInfo.User)
 	if err != nil {
+		log.LoggerWContext(ctx).Error("Update cloud username error: " + err.Error())
+		goto END
+	}
+
+	err = a3config.UpdateCloudConf(a3config.Switch, "enable")
+	if err != nil {
 		log.LoggerWContext(ctx).Error("Update cloud config error: " + err.Error())
 		goto END
 	}
 
-	event.MsgType = amac.GdcConfigChange
-	event.Data = postInfo.Pass
-	amac.MsgChannel <- *event
 	result, reason = amac.LoopConnect(ctx, postInfo.Pass)
-	if (result != 0) {
+	if result != 0 {
 		code = "fail"
 		ret = reason
-		goto END		
 	}
 
 END:

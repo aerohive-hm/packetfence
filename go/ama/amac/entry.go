@@ -28,12 +28,12 @@ const (
 	AMA_STATUS_UNKNOWN        = 100
 )
 const (
-	GdcConfigChange       = 1
-	NetworkChange         = 2
-	LicenseInfoChange     = 3
-	Disconnet             = 4
-	RdcTokenUpdate        = 5
-	RemoveNodeFromCluster = 6
+	GdcConfigChange         = 1
+	NetworkChange           = 2
+	LicenseInfoChange       = 3
+	DisableCloudIntegration = 4
+	RdcTokenUpdate          = 5
+	RemoveNodeFromCluster   = 6
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -173,14 +173,14 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	*/
 	case GdcConfigChange:
 
-		// To do, handle the result, include GDC auth fail, RDC auth fail, server down
-
+	// To do, handle the result, include GDC auth fail, RDC auth fail, server down
 	case NetworkChange:
 		updateMsgToRdc(ctx)
 	case LicenseInfoChange:
 
-	case Disconnet:
+	case DisableCloudIntegration:
 		updateConnStatus(AMA_STATUS_INIT)
+		globalSwitch = "disable"
 	case RdcTokenUpdate:
 		connectToRdcWithoutPara(ctx)
 	// To do, handle the result,
@@ -194,21 +194,20 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 //Sending keepalive packets after onboarding successfully
 func keepaliveToRdc(ctx context.Context) {
 
-	/*
-	   interval_str := a3config.ReadCloudConf(a3config.Interval)
-	   interval,_ := strconv.Atoi(interval_str)
-	   log.LoggerWContext(ctx).Error(fmt.Sprintf("read the keepalive interval %d", interval))
-	*/
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the keepalive interval %d seconds", keepaliveInterval))
 	// create a ticker for heartbeat
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(time.Duration(keepaliveInterval) * time.Second)
 	timeoutCount = 0
 
 	for _ = range ticker.C {
 		/*
-			To do, check if disable the connect to cloud, if disable,
+			check if allow to the connect to cloud, if not,
 			not send the keepalive
 		*/
-
+		if globalSwitch != "enable" {
+			timeoutCount = 0
+			continue
+		}
 		/*
 			check the timeoutCount of keepalive, if hearbeat fails,
 			need to re-onboarding

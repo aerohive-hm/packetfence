@@ -15,7 +15,7 @@ var (
 	vhmidUrl          string
 	userName          string
 	password          string
-	enable            string //enable/disable the cloud integration
+	globalSwitch      string //enable/disable the cloud integration
 	keepaliveInterval int
 )
 
@@ -52,5 +52,8 @@ func update(pass string) error {
 	} else {
 		keepaliveInterval, _ = strconv.Atoi(intervalStr)
 	}
+
+	globalSwitch = a3config.ReadCloudConf(a3config.Switch)
+
 	return nil
 }

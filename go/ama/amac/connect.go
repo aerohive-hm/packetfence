@@ -42,14 +42,13 @@ var (
 )
 
 const (
-	ConnCloudSuc   = "Connect to cloud successfully"
+	ConnCloudSuc    = "Connect to cloud successfully"
 	SrvNoResponse   = "Sever is unavailable"
-	AuthFail = "Authenticate fail, please check the input parameters"
-	UrlIsNull = "URL is NULL"
+	AuthFail        = "Authenticate fail, please check the input parameters"
+	UrlIsNull       = "URL is NULL"
 	ErrorMsgFromSrv = "Error messages from server"
-    OtherError = "System error"
+	OtherError      = "System error"
 )
-
 
 type response struct {
 	Location string `json:"location"`
@@ -147,7 +146,7 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 				continue
 			} else {
 				//not get the token, return and wait for the event from UI or other nodes
-			return -1, AuthFail
+				return -1, AuthFail
 			}
 		}
 		return 0, ConnCloudSuc
@@ -388,18 +387,18 @@ func LoopConnect(ctx context.Context, pass string) (int, string) {
 		return -1, reason
 	}
 
-   /*
-	//Create a timer to connect the GDC and RDC
-	ticker := time.NewTicker(10 * time.Second)
-	for _ = range ticker.C {
-		result := connectToGdcRdc(ctx)
-		if result == 0 {
-			updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
-			ticker.Stop()
-			return
+	/*
+		//Create a timer to connect the GDC and RDC
+		ticker := time.NewTicker(10 * time.Second)
+		for _ = range ticker.C {
+			result := connectToGdcRdc(ctx)
+			if result == 0 {
+				updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
+				ticker.Stop()
+				return
+			}
+			continue
 		}
-		continue
-	}
 	*/
 	return 0, ConnCloudSuc
 }
