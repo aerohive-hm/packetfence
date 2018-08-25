@@ -1,9 +1,10 @@
 //intchg.go implements geting interface changed info.
-package utils
+package a3share
 
 import (
 	"context"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"strconv"
 )
@@ -23,7 +24,7 @@ type A3IntChgInfo struct {
 }
 
 func (intChgData *A3IntChgData) GetValue() {
-	ifaces, errint := GetIfaceList("all")
+	ifaces, errint := utils.GetIfaceList("all")
 	if errint < 0 {
 		fmt.Errorf("Get interfaces infomation failed.")
 		return

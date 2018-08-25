@@ -13,6 +13,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
@@ -33,12 +34,12 @@ var (
 	client = &http.Client{Transport: tr, Timeout: 10 * time.Second}
 
 	//Store the token to avoid multiple IO
-	gdcTokenStr string
-	rdcTokenStr string
-	VhmidStr    string
-	connMsgUrl  string
+	gdcTokenStr      string
+	rdcTokenStr      string
+	VhmidStr         string
+	connMsgUrl       string
 	fetchRdcTokenUrl string
-	keepAliveUrl  string
+	keepAliveUrl     string
 )
 
 type response struct {
@@ -68,10 +69,10 @@ type A3TokenResFromRdc struct {
 
 /*
 func assembleRdcUrl(rdcUrl string){
- 
+
    i := strings.Index(rdcUrl, "/")
-   log.LoggerWContext(ctx).Error(fmt.Sprintf("rdcUrl:%s,i:%d", rdcUrl, i) 
-   
+   log.LoggerWContext(ctx).Error(fmt.Sprintf("rdcUrl:%s,i:%d", rdcUrl, i)
+
 }
 */
 /*
@@ -83,7 +84,7 @@ func onbordingToRdc(ctx context.Context) int {
 		return -1
 	}
 	for {
-		node_info := utils.GetOnboardingInfo(ctx)
+		node_info := a3share.GetOnboardingInfo(ctx)
 		data, _ := json.Marshal(node_info)
 
 		log.LoggerWContext(ctx).Error("begin to send onboarding request to RDC")
@@ -140,7 +141,7 @@ func onbordingToRdc(ctx context.Context) int {
 */
 func updateMsgToRdc(ctx context.Context) int {
 	for {
-		node_info := utils.GetIntChgInfo(ctx)
+		node_info := a3share.GetIntChgInfo(ctx)
 		data, _ := json.Marshal(node_info)
 		log.LoggerWContext(ctx).Error("begin to send initerface change to RDC")
 		log.LoggerWContext(ctx).Error(string(data))
@@ -205,9 +206,9 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 			log.LoggerWContext(ctx).Error("Request RDC token failed from other ondes")
 			return result
 		}
-	} 
+	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("token:%s",token))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("token:%s", token))
 
 	log.LoggerWContext(ctx).Info("connectToRdcWithoutPara: begin to send onboarding request to RDC server")
 	res := onbordingToRdc(ctx)
@@ -253,7 +254,7 @@ func fetchTokenFromGdc(ctx context.Context) string {
 	body := fmt.Sprintf("grant_type=password&client_id=browser&client_secret=secret&username=%s&password=%s", userName, password)
 
 	log.LoggerWContext(ctx).Info("begin to fetch GDC token")
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("tokenUrl:%s,userName:%s,password:%s",tokenUrl,userName,password))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("tokenUrl:%s,userName:%s,password:%s", tokenUrl, userName, password))
 	for {
 		request, err := http.NewRequest("POST", tokenUrl, strings.NewReader(body))
 		if err != nil {

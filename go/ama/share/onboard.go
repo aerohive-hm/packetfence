@@ -1,16 +1,18 @@
 //onboard.go implements fetching onboarding info.
-package utils
+package a3share
 
 import (
 	"context"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	"github.com/inverse-inc/packetfence/go/ama/database"
-	"github.com/inverse-inc/packetfence/go/log"
 	"strconv"
 	"strings"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"github.com/inverse-inc/packetfence/go/ama/database"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 type A3Interface struct {
@@ -61,7 +63,7 @@ type A3OnboardingInfo struct {
 var contextOnboard = log.LoggerNewContext(context.Background())
 
 func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
-	ifaces, errint := GetIfaceList("all")
+	ifaces, errint := utils.GetIfaceList("all")
 	if errint < 0 {
 		fmt.Errorf("Get interfaces infomation failed.")
 		return
@@ -87,11 +89,11 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	onboardingData.Msgtype = "connect"
 	onboardingData.IpMode = "DHCP"
 	onboardingData.DefaultGateway = "8.8.8.8"
-	onboardingData.SoftwareVersion = GetA3Version()
+	onboardingData.SoftwareVersion = utils.GetA3Version()
 	onboardingData.SystemUptime = time.Now().UnixNano() / int64(time.Millisecond)
 	//onboardingData.ClusterHostName = "Todo"
-	onboardingData.ClusterPrimary = IsPrimaryCluster()
-	managementIface, errint := GetIfaceList("eth0")
+	onboardingData.ClusterPrimary = amadb.IsPrimaryCluster()
+	managementIface, errint := utils.GetIfaceList("eth0")
 	if errint < 0 {
 		fmt.Errorf("Get ETH0 interfaces infomation failed")
 		return
@@ -111,7 +113,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 
 func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 	onboardHeader.Hostname = a3config.GetHostname()
-	onboardHeader.SystemID = GetA3SysId()
+	onboardHeader.SystemID = utils.GetA3SysId()
 	//onboardHeader.ClusterID = "Todo"
 	//When onboarding, Cloud will assign a unique messageid, so we could just make it empty;
 	//onboardHeader.MessageID = ""
