@@ -67,13 +67,28 @@ type A3TokenResFromRdc struct {
 }
 
 /*
-func assembleRdcUrl(rdcUrl string){
+	Installing the URL for fethcing RDC token, keepalive and onboarding  
+*/
+func installRdcUrl(ctx context.Context, rdcUrl string){
  
-   i := strings.Index(rdcUrl, "/")
-   log.LoggerWContext(ctx).Error(fmt.Sprintf("rdcUrl:%s,i:%d", rdcUrl, i) 
+	log.LoggerWContext(ctx).Error("into installRdcUrl")
+    systemId := utils.GetA3SysId()
+
+    //Get the RDC domain name
+    i := strings.Index(rdcUrl, "/")
+	s := string([]byte(rdcUrl)[:i])
+	
+	log.LoggerWContext(ctx).Error(fmt.Sprintf("rdcUri:%s", s))
+
+	
+	connMsgUrl = s + ":8008/rest/v1/report/syn/" + systemId
+	fetchRdcTokenUrl = s + ":8008/rest/token/apply/" + systemId
+	keepAliveUrl = s + ":8008/rest/v1/poll/" + systemId
+
+   log.LoggerWContext(ctx).Error(fmt.Sprintf("connMsgUrl:%s,fetchRdcTokenUrl:%s, keepAliveUrl:%s", connMsgUrl, fetchRdcTokenUrl, keepAliveUrl))
    
 }
-*/
+
 /*
 	Send onboarding info to HM once obataining the RDC's token
 */
@@ -319,7 +334,9 @@ func fetchVhmidFromGdc(ctx context.Context, s string) int {
 		VhmidStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
 		rdcUrl = vhmres.Data.Location
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("rdcUrl = %s", rdcUrl))
-
+		
+        installRdcUrl(ctx, rdcUrl)
+        
 		resp.Body.Close()
 		return 0
 	}
