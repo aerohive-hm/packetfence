@@ -14,6 +14,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io"
 	"io/ioutil"
@@ -117,7 +118,7 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 	tokenRes := A3TokenResFromRdc{}
 
 	url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from ", url))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
@@ -191,7 +192,7 @@ func distributeToSingleNode(ctx context.Context, mem MemberList) {
 	//Using loop to make sure post successfully
 	for {
 		url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to post token to ", url))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to post token to %s", url))
 		request, err := http.NewRequest("POST", url, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
@@ -263,7 +264,9 @@ func fetchTokenFromRdc(ctx context.Context) string {
 	tokenRes := A3TokenResFromRdc{}
 
 	log.LoggerWContext(ctx).Info("begin to fetch RDC token")
-	request, err := http.NewRequest("GET", "http://10.155.23.116:8008/rest/token/apply/1234567", nil)
+	url := fmt.Sprintf("http://10.155.23.116:8008/rest/token/apply/%s", utils.GetA3SysId())
+	log.LoggerWContext(ctx).Error(fmt.Sprintf("http://10.155.23.116:8008/rest/token/apply/%s", utils.GetA3SysId()))	
+	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return ""
@@ -309,7 +312,7 @@ func fetchTokenFromRdc(ctx context.Context) string {
 		To do, post the RDC token/RDC URL/VHMID to the other memebers
 	*/
 	//Updating the RDC token for the other nodes actively
-	distributeToken(ctx)
+	//distributeToken(ctx)
 
 	return rdcTokenStr
 }
