@@ -5,17 +5,17 @@ import (
 	"context"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/inverse-inc/packetfence/go/ama/fetch"
-	"github.com/inverse-inc/packetfence/go/db"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/log"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 )
 
 type A3Interface struct {
 	Parent    string   `json:"parent"`
-	Vlan      int   `json:"vlan,omitempty"`
+	Vlan      int      `json:"vlan,omitempty"`
 	IpAddress string   `json:"ipAddress"`
 	Vip       string   `json:"vip"`
 	Netmask   string   `json:"netmask"`
@@ -110,9 +110,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 }
 
 func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
-	var config fetch.PfConfGeneral
-	config.GetPfConfSub(ctx, &config.General)
-	onboardHeader.Hostname = config.General.Hostname
+	onboardHeader.Hostname = a3config.GetHostname()
 	onboardHeader.SystemID = GetA3SysId()
 	//onboardHeader.ClusterID = "Todo"
 	//When onboarding, Cloud will assign a unique messageid, so we could just make it empty;
@@ -128,23 +126,26 @@ func (lic *A3License) GetValue(ctx context.Context) {
 		context = ctx
 	}
 
-	db, err := db.DbFromConfig(context)
+	tmpDB := new(amadb.A3Db)
+	err := tmpDB.DbInit()
 	if err != nil {
+		log.LoggerWContext(context).Error("Open database error: " + err.Error())
 		return
 	}
+	db := tmpDB.Db
 	defer db.Close()
 
 	//Fetch LicensedCapacity data
 	results, err := db.Query("SELECT endpoint_count FROM a3_entitlement where type != 'Trial'")
 	if err != nil {
-		//panic(err.Error())
+		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
 		defer results.Close()
 		for results.Next() {
 			var count int
 			err := results.Scan(&count)
 			if err != nil {
-				//panic(err.Error())
+				log.LoggerWContext(context).Error("Scan data error: " + err.Error())
 			}
 			fmt.Println("endpoint_count :", count)
 			lic.LicensedCapacity += count
@@ -155,7 +156,7 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	row := db.QueryRow("SELECT max(sub_end) FROM a3_entitlement")
 	err = row.Scan(&times)
 	if err != nil {
-	
+		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
 		fmt.Println("NextExpirationDate :", times)
 		lic.NextExpirationDate = times.UnixNano() / int64(time.Millisecond)
@@ -166,7 +167,7 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	row = db.QueryRow("SELECT moving_avg FROM a3_daily_avg order by daily_date DESC limit 1")
 	err = row.Scan(&averge)
 	if err != nil {
-
+		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
 		fmt.Println("AverageUsedCapacity :", averge)
 		lic.AverageUsedCapacity = averge
@@ -177,7 +178,7 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	row = db.QueryRow("SELECT COUNT(*) FROM node,radacct WHERE node.mac = radacct.callingstationid AND node.status = 'reg' AND radacct.acctstarttime IS NOT NULL AND radacct.acctstoptime IS NULL")
 	err = row.Scan(&currentUsed)
 	if err != nil {
-		
+		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
 		fmt.Println("CurrentUsedCapacity :", currentUsed)
 		lic.CurrentUsedCapacity = currentUsed
