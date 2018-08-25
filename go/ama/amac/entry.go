@@ -196,6 +196,9 @@ func keepaliveToRdc(ctx context.Context) {
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the keepalive interval %d seconds", keepaliveInterval))
 	// create a ticker for heartbeat
+	if keepaliveInterval == 0 {
+		keepaliveInterval = 30
+	}
 	ticker := time.NewTicker(time.Duration(keepaliveInterval) * time.Second)
 	timeoutCount = 0
 

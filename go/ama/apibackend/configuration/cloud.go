@@ -94,6 +94,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 	//This case means disable the cloud integration
+
 	if postInfo.Url == "" {
 		err = a3config.UpdateCloudConf(a3config.Switch, "disable")
 		if err != nil {
