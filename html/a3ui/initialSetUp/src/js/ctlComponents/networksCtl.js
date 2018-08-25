@@ -387,7 +387,7 @@ class networksCtl extends Component {
                 let param={
                     cluster_enable:self.state.enableClustering,
                     hostname:values.hostname,
-                    itmes:self.getItems(),
+                    items:self.getItems(),
                 }
 
                 new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
