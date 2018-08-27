@@ -62,25 +62,22 @@ func GetItemsValue(ctx context.Context) []Item {
 
 func UpdateItemsValue(ctx context.Context, items []Item) error {
 	var err error
-	fmt.Println("UpdateItemsValue START")
+
 	for _, item := range items {
 		err = UpdateInterface(item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdateInterface error:" + err.Error())
-			fmt.Println("UpdateInterface error")
 			return err
 		}
 		err = UpdateNetconf(item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
-			fmt.Println("UpdateNetconf error")
 			return err
 		}
-		fmt.Println("UpdateItemsValue  before ")
+
 		err = UpdatePrimaryClusterconf(item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
-			fmt.Println("UpdatePrimaryClusterconf error")
 			return err
 		}
 	}
