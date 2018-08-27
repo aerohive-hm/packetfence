@@ -64,6 +64,7 @@ var contextOnboard = log.LoggerNewContext(context.Background())
 
 func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	var ifullname string
+	var services []string
 	ifaces, errint := utils.GetIfaceList("all")
 	if errint < 0 {
 		fmt.Errorf("Get interfaces infomation failed.")
@@ -71,14 +72,13 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	}
 	for _, iface := range ifaces {
 		a3Interface := new(A3Interface)
-		/*
-			if iface.Master == "" {
-				a3Interface.Parent = iface.Name
-			} else {
-				a3Interface.Parent = iface.Master
-			}
-		*/
-
+		
+		if iface.Master == "" {
+			a3Interface.Parent = iface.Name
+		} else {
+			a3Interface.Parent = iface.Master
+		}
+		
 		//a3Interface = strings.Split(iface.Name, ".")
 		iname := strings.Split(iface.Name, ".")
 
@@ -94,18 +94,15 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		//a3Interface.Type = "MANAGEMENT"
 		//a3Interface.Service = []string{"PORTAL"}
 		a3Interface.Type = a3config.GetIfaceType(ifullname)
-		strings.ToUpper(a3Interface.Type)
+		a3Interface.Type = strings.ToUpper(a3Interface.Type)
+		a3Interface.Type = "MANAGEMENT"
 		a3Interface.Service = a3config.GetIfaceServices(ifullname)
 		for _, service := range a3Interface.Service {
-			strings.ToUpper(service)
+			service = strings.ToUpper(service)
+			services = append(services, service)
 			log.LoggerWContext(ctx).Error(service)
 		}
-		/*
-			log.LoggerWContext(ctx).Error("begin to print type")
-			log.LoggerWContext(ctx).Error(a3Interface.Type)
-			log.LoggerWContext(ctx).Error(iface.Name)
-			log.LoggerWContext(ctx).Error("end to print type")
-		*/
+		a3Interface.Service = services
 		onboardingData.Interfaces = append(onboardingData.Interfaces, *a3Interface)
 	}
 

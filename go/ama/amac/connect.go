@@ -133,10 +133,12 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 				//not get the token, return and wait for the event from UI or other nodes
 				return -1, AuthFail
 			}
+		} else if statusCode == 200 {
+			return 0, ConnCloudSuc
 		}
-		return 0, ConnCloudSuc
+		return 0, OtherError
 	}
-	return 0, ConnCloudSuc
+	return 0, OtherError
 }
 
 /*
