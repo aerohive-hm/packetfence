@@ -24,7 +24,7 @@ type Client struct {
 	UrlId    string
 	PostData string //  json data
 	RespData []byte
-	Status   string
+	Status   int
 	Host     string
 	Port     string
 	Token    string
@@ -105,7 +105,7 @@ func (c *Client) Call(method, url string, body string) error {
 	sharedutils.CheckError(err)
 
 	c.RespData = b
-	c.Status = resp.Status
+	c.Status = resp.StatusCode
 	log.LoggerWContext(ctx).Info(fmt.Sprintln("Response Code:", c.Status))
 
 	/*
