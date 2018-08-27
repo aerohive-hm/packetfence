@@ -53,12 +53,11 @@ const (
 
 type response struct {
 	Location string `json:"location"`
-	OwnerId  long    `json:"ownerId"`
+	OwnerId  int    `json:"ownerId"`
 }
 type VhmidResponse struct {
 	Data response `json:"data"`
 }
-
 
 /*
 	Installing the URL for fethcing RDC token, keepalive and onboarding
@@ -307,7 +306,7 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 			return -1, OtherError
 		}
 
-		//fill the token		
+		//fill the token
 		request.Header.Add("Authorization", s)
 		resp, err := client.Do(request)
 		if err != nil {

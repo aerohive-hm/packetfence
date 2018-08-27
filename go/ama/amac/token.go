@@ -14,15 +14,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/log"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 	"time"
-	"strconv"
 )
 
 var (
@@ -39,11 +39,10 @@ type tokenCommonHeader struct {
 	SystemID  string `json:"systemId"`
 	ClusterID string `json:"clusterId"`
 	Hostname  string `json:"hostname"`
-	MessageID string `json:"messageId"`
-	VhmId   string `json:"vhmId"`
-	VhmName string `json:"vhmName"`
-	OwnerId long  `json:"ownerId"`
-	OrgId  long   `json:"orgId"`
+	VhmId     string `json:"vhmId"`
+	VhmName   string `json:"vhmName"`
+	OwnerId   int    `json:"ownerId"`
+	OrgId     int    `json:"orgId"`
 	MessageID string `json:"messageId"`
 }
 
@@ -58,7 +57,7 @@ type tokenResData struct {
 
 type A3TokenResFromRdc struct {
 	Header tokenCommonHeader `json:"header"`
-	Data   tokenResData `json:"data"`
+	Data   tokenResData      `json:"data"`
 }
 
 func readRdcToken(ctx context.Context) string {
@@ -283,13 +282,14 @@ func distributeToken(ctx context.Context) {
 	return
 }
 
-func fillRdcTokenReq(){
-   rdcTokenReq := rdcTokenReqFromRdc{}
-   
-   rdcTokenReq.SystemID = utils.GetA3SysId()
-   rdcTokenReq.Hostname = a3config.GetHostname()
-   rdcTokenReq.OwnerId = strconv.Atoi(VhmidStr)
+func fillRdcTokenReq() {
+	rdcTokenReq := rdcTokenReqFromRdc{}
+
+	rdcTokenReq.Header.SystemID = utils.GetA3SysId()
+	rdcTokenReq.Header.Hostname = a3config.GetHostname()
+	rdcTokenReq.Header.OwnerId, _ = strconv.Atoi(VhmidStr)
 }
+
 /*
 	This func is used to fetch the token from RDC, the requset message only
 	need to include the GDC token
@@ -298,9 +298,9 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	tokenRes := A3TokenResFromRdc{}
 
 	log.LoggerWContext(ctx).Info("begin to fetch RDC token")
-	//url := fmt.Sprintf("http://10.155.23.116:8008/rest/token/apply/%s", utils.GetA3SysId())	
+	//url := fmt.Sprintf("http://10.155.23.116:8008/rest/token/apply/%s", utils.GetA3SysId())
 	log.LoggerWContext(ctx).Error(fetchRdcTokenUrl)
-	
+
 	request, err := http.NewRequest("POST", fetchRdcTokenUrl, nil)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
