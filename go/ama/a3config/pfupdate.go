@@ -139,3 +139,67 @@ func DeleteNetconf(i Item) error {
 
 	return A3Delete("NETWORKS", sectionid)
 }
+
+func UpdatePrimaryClusterconf(i Item) error {
+	var keyname string
+	isvlan := VlanInface(i.Name)
+	if isvlan {
+		name := []rune(i.Name) /*need to delete vlan for name*/
+		keyname = fmt.Sprintf("CLUSTER interface eth0.%s", string(name[4:]))
+		section := Section{
+			keyname: {
+				"ip": i.Vip,
+			},
+		}
+		return A3Commit("CLUSTER", section)
+
+	} else {
+		keyname = "CLUSTER"
+		section := Section{
+			keyname: {
+				"management_ip": i.Vip,
+			},
+		}
+		A3Commit("CLUSTER", section)
+		section = Section{
+			keyname: {
+				"ip": i.Vip,
+			},
+		}
+		return A3Commit("CLUSTER", section)
+	}
+
+}
+func UpdateJoinClusterconf(i Item, hostname string) error {
+
+	var keyname string
+	isvlan := VlanInface(i.Name)
+	if isvlan {
+		name := []rune(i.Name) /*need to delete vlan for name*/
+		keyname = fmt.Sprintf("%s interface eth0.%s", hostname, string(name[4:]))
+
+		section := Section{
+			keyname: {
+				"ip": i.IpAddr,
+			},
+		}
+		return A3Commit("CLUSTER", section)
+
+	} else {
+		keyname = hostname
+		section := Section{
+			keyname: {
+				"management_ip": i.IpAddr,
+			},
+		}
+		A3Commit("CLUSTER", section)
+		keyname = fmt.Sprintf("%s interface %s", hostname, i.Name)
+		section = Section{
+			keyname: {
+				"ip": i.IpAddr,
+			},
+		}
+		return A3Commit("CLUSTER", section)
+	}
+
+}

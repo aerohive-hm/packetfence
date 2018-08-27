@@ -73,7 +73,10 @@ func UpdateSystemInterface(ctx context.Context, i Item) error {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
 	}
-
+	err = UpdatePrimaryClusterconf(i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
+	}
 	return err
 }
 
