@@ -72,13 +72,13 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	}
 	for _, iface := range ifaces {
 		a3Interface := new(A3Interface)
-		
+
 		if iface.Master == "" {
 			a3Interface.Parent = iface.Name
 		} else {
 			a3Interface.Parent = iface.Master
 		}
-		
+
 		//a3Interface = strings.Split(iface.Name, ".")
 		iname := strings.Split(iface.Name, ".")
 
