@@ -65,7 +65,7 @@ func isVlanIface(ifname string) bool {
 }
 
 func DelVlanIface(ifname string) int {
-	if !ifaceExists(ifname) {
+	if !IfaceExists(ifname) {
 		return 0
 	}
 
@@ -97,7 +97,7 @@ func SetIfaceDown(ifname string) int {
 		return -1
 	}
 
-	if !ifaceExists(ifname) {
+	if !IfaceExists(ifname) {
 		return -1
 	}
 
@@ -114,7 +114,7 @@ func SetIfaceDown(ifname string) int {
 	return 0
 }
 
-func ifaceExists(ifname string) bool {
+func IfaceExists(ifname string) bool {
 	_, err := GetIfaceList(ifname)
 	if err < 0 {
 		return false
@@ -192,6 +192,24 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 	return list, 0
 }
 
+func SetIfaceIIpAddr(ifname, ip, mask string) int {
+	i := NetmaskStr2Len(mask)
+	cmd := fmt.Sprintf("sudo ip addr add %s/%d broadcast 255.255.255.255 dev %s", ip, i, ifname)
+	_, err := ExecShell(cmd)
+	if err != nil {
+		return -1
+	}
+	return 0
+}
+func DelIfaceIIpAddr(ifname, ip string) int {
+	cmd := fmt.Sprintf("sudo ip addr del %s dev %s", ip, ifname)
+	_, err := ExecShell(cmd)
+	if err != nil {
+		return -1
+	}
+	return 0
+}
+
 func NetmaskLen2Str(a int) string {
 	var k, sum int = 0, 0
 	s := []string{}
@@ -213,6 +231,7 @@ func NetmaskLen2Str(a int) string {
 	mask := strings.Join(s, ".")
 	return mask
 }
+
 func NetmaskStr2Len(mask string) int {
 
 	var num int = 0
