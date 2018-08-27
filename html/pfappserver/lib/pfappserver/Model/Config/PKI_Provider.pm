@@ -18,6 +18,7 @@ use namespace::autoclean;
 use pf::ConfigStore::PKI_Provider;
 use pf::ConfigStore::Provisioning;
 use pf::log;
+use pf::cluster;
 use File::Basename;
 
 extends 'pfappserver::Base::Model::Config';
@@ -73,6 +74,12 @@ sub remove {
             }
             if(unlink($obj->{ca_cert_path}) != 1) {
                 $logger->warn("Failed to remove ca cert for [_1] at [_2] $!",$id, $obj->{ca_cert_path});
+            }
+            if(pf::cluster::remove_file_from_cluster_sync($obj->{server_cert_path})) {
+                $logger->warn("Failed to remove server cert $obj->{server_cert_path} from the cluster file");
+            }
+            if(pf::cluster::remove_file_from_cluster_sync($obj->{ca_cert_path})) {
+                $logger->warn("Failed to remove ca cert $obj->{ca_cert_path} from the cluster file");
             }
         }
         return ($status, $status_msg);

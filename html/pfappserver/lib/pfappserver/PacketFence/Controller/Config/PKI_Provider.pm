@@ -15,6 +15,7 @@ use Moose;  # automatically turns on strict and warnings
 use namespace::autoclean;
 
 use pf::factory::pki_provider;
+use pf::cluster;
 use strict;
 use warnings;
 #for file processing
@@ -149,6 +150,12 @@ sub processCertificate :Path('processCertificate') :Args(1) {
             $logger->warn("Failed to move certificate file $filename into place at $target: $!");
             $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
             $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+            return;
+        }
+
+        if ( pf::cluster::add_file_to_cluster_sync($target) ) {
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to save certificate to cluster. Try again.");
             return;
         }
 
