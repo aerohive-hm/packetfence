@@ -93,7 +93,7 @@ type SliceMock struct {
 }
 
 type KeepAliveResFromRdc struct {
-	Header A3CommonHeader    `json:"header"`
+	Header tokenCommonHeader `json:"header"`
 	Data   map[string]string `json:"data"`
 }
 

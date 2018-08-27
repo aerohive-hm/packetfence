@@ -59,23 +59,6 @@ type VhmidResponse struct {
 	Data response `json:"data"`
 }
 
-type A3CommonHeader struct {
-	SystemID  string `json:"systemId"`
-	ClusterID string `json:"clusterId"`
-	Hostname  string `json:"hostname"`
-	MessageID string `json:"messageId"`
-}
-
-type A3TokenResData struct {
-	MsgType string `json:"msgType"`
-	Token   string `json:"token"`
-}
-
-type A3TokenResFromRdc struct {
-	Header A3CommonHeader `json:"header"`
-	Data   A3TokenResData `json:"data"`
-}
-
 /*
 	Installing the URL for fethcing RDC token, keepalive and onboarding
 */
@@ -87,11 +70,11 @@ func installRdcUrl(ctx context.Context, rdcUrl string) {
 	//Get the RDC domain name
 	a1 := strings.Split(rdcUrl, "//")[1]
 	a2 := strings.Split(a1, "/")[0]
-	domain := "http://" + a2
+	domain := "https://" + a2
 
-	connMsgUrl = domain + ":8008/rest/v1/report/syn/" + systemId
-	fetchRdcTokenUrl = domain + ":8008/rest/token/apply/" + systemId
-	keepAliveUrl = domain + ":8008/rest/v1/poll/" + systemId
+	connMsgUrl = domain + "amac/rest/v1/report/syn/" + systemId
+	fetchRdcTokenUrl = domain + "amac/rest/token/apply/" + systemId
+	keepAliveUrl = domain + "amac/rest/v1/poll/" + systemId
 
 	log.LoggerWContext(ctx).Error(fmt.Sprintf("connMsgUrl:%s,fetchRdcTokenUrl:%s, keepAliveUrl:%s", connMsgUrl, fetchRdcTokenUrl, keepAliveUrl))
 }
@@ -298,8 +281,9 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 		}
 		//GDC token does not need to write file, it is one-time useful
 		gdcTokenStr = dat["access_token"].(string)
+		dst := fmt.Sprintf("Bearer %s", gdcTokenStr)
 		resp.Body.Close()
-		return gdcTokenStr, ConnCloudSuc
+		return dst, ConnCloudSuc
 	}
 }
 
@@ -323,8 +307,7 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 		}
 
 		//fill the token
-		dst := fmt.Sprintf("Bearer %s", gdcTokenStr)
-		request.Header.Add("Authorization", dst)
+		request.Header.Add("Authorization", s)
 		resp, err := client.Do(request)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
