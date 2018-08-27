@@ -9,11 +9,12 @@
 package amac
 
 import (
-	"bytes"
+	//	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	innerClient "github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io"
 	"io/ioutil"
@@ -72,7 +73,7 @@ func UpdateRdcToken(ctx context.Context, s string) {
 	for the other nodes, this func will be called by webUI
 	it is public
 */
-func ReqTokenForOtherNodes(ctx context.Context, sysId string) []byte {
+func ReqTokenForOtherNode(ctx context.Context, sysId string) []byte {
 	var url string
 	var res []byte
 	tokenRes := A3TokenResFromRdc{}
@@ -116,27 +117,41 @@ func ReqTokenForOtherNodes(ctx context.Context, sysId string) []byte {
 func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 	tokenRes := A3TokenResFromRdc{}
 
-	url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken", mem.IpAddr)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
-	request, err := http.NewRequest("GET", url, nil)
+
+	node := new(innerClient.Client)
+	err := node.ClusterSend(ctx, "GET", url, "")
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return ""
 	}
 
-	//Using the packetfence token if communicating with cluster members
-	//To do, get a real packetfence token, take the expiration of token
-	//into account
-	request.Header.Add("Packetfence-Token", "packetfence token")
-	request.Header.Set("Content-Type", "application/json")
-	resp, err := client.Do(request)
-	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
-		return ""
-	}
+	body := node.RespData
 
-	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("receive the response ", resp.Status)
+	/*
+		url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
+		request, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			return ""
+		}
+
+		//Using the packetfence token if communicating with cluster members
+		//To do, get a real packetfence token, take the expiration of token
+		//into account
+		request.Header.Add("Packetfence-Token", "packetfence token")
+		request.Header.Set("Content-Type", "application/json")
+		resp, err := client.Do(request)
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			return ""
+		}
+
+		body, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println("receive the response ", resp.Status)
+	*/
 	fmt.Println(string(body))
 	err = json.Unmarshal([]byte(body), &tokenRes)
 	if err != nil {
@@ -150,7 +165,7 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 		return ""
 	}
 
-	resp.Body.Close()
+	//	resp.Body.Close()
 
 	return tokenRes.Data.Token
 }
@@ -186,34 +201,44 @@ func reqTokenFromOtherNodes(ctx context.Context) int {
 
 func distributeToSingleNode(ctx context.Context, mem MemberList) {
 
-	token := ReqTokenForOtherNodes(ctx, mem.SystemId)
-	reader := bytes.NewReader(token)
+	token := ReqTokenForOtherNode(ctx, mem.SystemId)
+	//reader := bytes.NewReader(token)
 	//Using loop to make sure post successfully
 	for {
-		url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to post token to %s", url))
-		request, err := http.NewRequest("POST", url, reader)
+		url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken", mem.IpAddr)
+		node := new(innerClient.Client)
+		err := node.ClusterSend(ctx, "POST", url, string(token))
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return
 		}
+		statusCode := node.Status
+		/*
+			url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
+			log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to post token to %s", url))
+			request, err := http.NewRequest("POST", url, reader)
+			if err != nil {
+				log.LoggerWContext(ctx).Error(err.Error())
+				return
+			}
 
-		//Using the packetfence token if communicating with cluster members
-		//To do, get a real packetfence token, take the expiration of token
-		//into account
-		request.Header.Add("Packetfence-Token", "packetfence token")
-		request.Header.Set("Content-Type", "application/json")
-		resp, err := client.Do(request)
-		if err != nil {
-			log.LoggerWContext(ctx).Error(err.Error())
-			return
-		}
+			//Using the packetfence token if communicating with cluster members
+			//To do, get a real packetfence token, take the expiration of token
+			//into account
+			request.Header.Add("Packetfence-Token", "packetfence token")
+			request.Header.Set("Content-Type", "application/json")
+			resp, err := client.Do(request)
+			if err != nil {
+				log.LoggerWContext(ctx).Error(err.Error())
+				return
+			}
 
-		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println("receive the response ", resp.Status)
-		fmt.Println(string(body))
-		statusCode := resp.StatusCode
-		resp.Body.Close()
+			body, _ := ioutil.ReadAll(resp.Body)
+			fmt.Println("receive the response ", resp.Status)
+			fmt.Println(string(body))
+			statusCode := resp.StatusCode
+			resp.Body.Close()
+		*/
 		/*
 			statusCode = 401 means authenticate fail, need to request valid RDC token
 			from the other nodes
