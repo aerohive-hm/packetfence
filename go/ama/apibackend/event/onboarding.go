@@ -8,7 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/log"
 	"net/http"
 )
@@ -27,7 +27,7 @@ func OnBoardingNew(ctx context.Context) crud.SectionCmd {
 //Fetch and Convert A3 onboarding infomation To Json
 func getMethodHandle(r *http.Request, d crud.HandlerData) []byte {
 	var ctx = r.Context()
-	onboardingInfo := utils.GetOnboardingInfo(ctx)
+	onboardingInfo := a3share.GetOnboardingInfo(ctx)
 
 	jsonData, err := json.Marshal(onboardingInfo)
 	if err != nil {

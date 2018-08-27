@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/database"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -104,7 +104,7 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	err = utils.UpdateEmail(admin.User)
+	err = a3config.UpdateEmail(admin.User)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("write conf error: " + err.Error())
 		goto END

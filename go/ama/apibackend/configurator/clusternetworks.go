@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -28,7 +28,7 @@ func ClusterNetworksNew(ctx context.Context) crud.SectionCmd {
 
 func handleGetClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	clusternet := utils.GetClusterNetworksData(ctx)
+	clusternet := a3config.GetClusterNetworksData(ctx)
 	jsonData, err := json.Marshal(clusternet)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
@@ -39,7 +39,7 @@ func handleGetClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 
 func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	clusternet := new(utils.ClusterNetworksData)
+	clusternet := new(a3config.ClusterNetworksData)
 
 	err := json.Unmarshal(d.ReqData, clusternet)
 	if err != nil {

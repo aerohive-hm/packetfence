@@ -9,8 +9,8 @@ import (
 	//"fmt"
 	"net/http"
 
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -45,7 +45,7 @@ func NetworksNew(ctx context.Context) crud.SectionCmd {
 
 func handleGetNetwork(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	network := utils.GetNetworksData(ctx)
+	network := a3config.GetNetworksData(ctx)
 	jsonData, err := json.Marshal(network)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
@@ -56,13 +56,13 @@ func handleGetNetwork(r *http.Request, d crud.HandlerData) []byte {
 
 func handleUpdateNetwork(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	net := new(utils.NetworksData)
+	net := new(a3config.NetworksData)
 
 	err := json.Unmarshal(d.ReqData, net)
 	if err != nil {
 		return []byte(err.Error())
 	}
-	utils.UpdateNetworksData(ctx, *net)
+	a3config.UpdateNetworksData(ctx, *net)
 
 	return []byte(crud.PostOK)
 }

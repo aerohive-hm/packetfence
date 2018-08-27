@@ -1,5 +1,5 @@
 //pfupdate.go implements update pfconf element.
-package utils
+package a3config
 
 import (
 	//"context"
@@ -7,26 +7,26 @@ import (
 	"net"
 	"strings"
 
-	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	//"github.com/inverse-inc/packetfence/go/log"
 )
 
 func UpdateEmail(email string) error {
-	section := a3config.Section{
+	section := Section{
 		"alerting": {
 			"emailaddr": email,
 		},
 	}
-	return a3config.A3Commit("PF", section)
+	return A3Commit("PF", section)
 }
 
 func UpdateHostname(hostname string) error {
-	section := a3config.Section{
+	section := Section{
 		"general": {
 			"hostname": hostname,
 		},
 	}
-	return a3config.A3Commit("PF", section)
+	return A3Commit("PF", section)
 }
 
 func UpdateInterface(i item) error {
@@ -39,7 +39,7 @@ func UpdateInterface(i item) error {
 		Type = fmt.Sprintf("management,%s", strings.ToLower(i.Services))
 	}
 
-	section := a3config.Section{
+	section := Section{
 		keyname: {
 			"ip":   i.IpAddr,
 			"type": Type,
@@ -47,10 +47,10 @@ func UpdateInterface(i item) error {
 			"vip":  i.Vip,
 		},
 	}
-	return a3config.A3Commit("PF", section)
+	return A3Commit("PF", section)
 }
 func UpdateNetconf(i item) error {
-	a := netMask_Str2Len(i.NetMask)
+	a := utils.NetmaskStr2Len(i.NetMask)
 
 	ipv4Addr := net.ParseIP(i.IpAddr)
 	ipv4Mask := net.CIDRMask(a, 32)
@@ -64,12 +64,12 @@ func UpdateNetconf(i item) error {
 		Type = fmt.Sprintf("vlan-%s,%s", strings.ToLower(i.Type), strings.ToLower(i.Services))
 	}
 
-	section := a3config.Section{
+	section := Section{
 		keyname: {
 			"gateway": i.IpAddr,
 			"type":    Type,
 			"netmask": i.NetMask,
 		},
 	}
-	return a3config.A3Commit("NETWORKS", section)
+	return A3Commit("NETWORKS", section)
 }

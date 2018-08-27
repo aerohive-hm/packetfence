@@ -5,7 +5,14 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
+)
+
+const (
+	A3Root        = "/usr/local/pf"
+	A3Release     = A3Root + "/conf/pf-release"
+	A3CurrentlyAt = A3Root + "/conf/currently-at"
 )
 
 func ExecShell(s string) (string, error) {
@@ -55,4 +62,11 @@ func GenClusterID() string {
 		return ""
 	}
 	return uuid
+}
+
+func IsFileExist(path string) bool {
+	if _, err := os.Stat(path); err != nil {
+		return !os.IsNotExist(err)
+	}
+	return true
 }

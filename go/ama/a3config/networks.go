@@ -1,12 +1,11 @@
-//networks.go implements fetching networks info.
-package utils
+package a3config
 
 import (
 	"context"
 	"fmt"
 	"strings"
 
-	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -33,20 +32,49 @@ type NetworksData struct {
 
 var contextNetworks = log.LoggerNewContext(context.Background())
 
+func GetNetworksData(ctx context.Context) NetworksData {
+	var context context.Context
+	networksData := NetworksData{}
+
+	if ctx == nil {
+		context = contextNetworks
+	} else {
+		context = ctx
+	}
+	networksData.Items = GetItemsValue(context)
+	networksData.ClusterEnable = "true"
+	networksData.HostName = GetHostname()
+	return networksData
+}
+
+func GetClusterNetworksData(ctx context.Context) ClusterNetworksData {
+	var context context.Context
+	clusterNetworksData := ClusterNetworksData{}
+
+	if ctx == nil {
+		context = contextNetworks
+	} else {
+		context = ctx
+	}
+	clusterNetworksData.Items = GetItemsValue(context)
+	clusterNetworksData.HostName = GetHostname()
+	return clusterNetworksData
+}
+
 func GetItemsValue(ctx context.Context) []item {
 	var items []item
-	ifaces, errint := GetIfaceList("all")
+	ifaces, errint := utils.GetIfaceList("all")
 	if errint < 0 {
 		fmt.Errorf("Get interfaces infomation failed.")
 		return items
 	}
 	for _, iface := range ifaces {
 		item := new(item)
-		//		if iface.Master == "" {
-		//			item.Name = iface.Name
-		//		} else {
-		//			item.Name = iface.Master
-		//		}
+		//      if iface.Master == "" {
+		//          item.Name = iface.Name
+		//      } else {
+		//          item.Name = iface.Master
+		//      }
 		item.Name = iface.Name
 		item.Id = "interface"
 		item.IpAddr = iface.IpAddr
@@ -78,35 +106,6 @@ func UpdateItemsValue(ctx context.Context, items []item) error {
 	}
 	return nil
 
-}
-
-func GetNetworksData(ctx context.Context) NetworksData {
-	var context context.Context
-	networksData := NetworksData{}
-
-	if ctx == nil {
-		context = contextNetworks
-	} else {
-		context = ctx
-	}
-	networksData.Items = GetItemsValue(context)
-	networksData.ClusterEnable = "true"
-	networksData.HostName = a3config.GetHostname()
-	return networksData
-}
-
-func GetClusterNetworksData(ctx context.Context) ClusterNetworksData {
-	var context context.Context
-	clusterNetworksData := ClusterNetworksData{}
-
-	if ctx == nil {
-		context = contextNetworks
-	} else {
-		context = ctx
-	}
-	clusterNetworksData.Items = GetItemsValue(context)
-	clusterNetworksData.HostName = a3config.GetHostname()
-	return clusterNetworksData
 }
 
 func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {

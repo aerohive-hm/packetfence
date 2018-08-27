@@ -3,25 +3,6 @@ package a3config
 //	"fmt"
 //"regexp"
 
-func GetHostname() string {
-	section := A3Read("PF", "general")
-	if section == nil {
-		return ""
-	}
-	return section["general"]["hostname"]
-}
-
-func UpdateIface() {
-
-}
-
-func ReadIface(ifname string) Section {
-	if ifname != "all" {
-		return A3Read("PF", ifname)
-	}
-	return nil
-}
-
 //Below is the APIs for write/read cloud.conf
 //The const value as items presented in cloud.conf
 const (

@@ -15,7 +15,6 @@ import (
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	innerClient "github.com/inverse-inc/packetfence/go/ama/client"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io"
 	"io/ioutil"
@@ -285,16 +284,16 @@ func distributeToken(ctx context.Context) {
 	This func is used to fetch the token from RDC, the requset message only
 	need to include the GDC token
 */
-func fetchTokenFromRdc(ctx context.Context) string {
+func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	tokenRes := A3TokenResFromRdc{}
 
 	log.LoggerWContext(ctx).Info("begin to fetch RDC token")
-	url := fmt.Sprintf("http://10.155.23.116:8008/rest/token/apply/%s", utils.GetA3SysId())
-	log.LoggerWContext(ctx).Error(fmt.Sprintf("http://10.155.23.116:8008/rest/token/apply/%s", utils.GetA3SysId()))
-	request, err := http.NewRequest("GET", url, nil)
+	//url := fmt.Sprintf("http://10.155.23.116:8008/rest/token/apply/%s", utils.GetA3SysId())
+	log.LoggerWContext(ctx).Error(fetchRdcTokenUrl)
+	request, err := http.NewRequest("GET", fetchRdcTokenUrl, nil)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
-		return ""
+		return "", OtherError
 	}
 
 	//Taking the GDC token to request a RDC token
@@ -303,7 +302,7 @@ func fetchTokenFromRdc(ctx context.Context) string {
 	resp, err := client.Do(request)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
-		return ""
+		return "", SrvNoResponse
 	}
 
 	body, _ := ioutil.ReadAll(resp.Body)
@@ -311,14 +310,13 @@ func fetchTokenFromRdc(ctx context.Context) string {
 
 	err = json.Unmarshal([]byte(body), &tokenRes)
 	if err != nil {
-		fmt.Println("json Unmarshal fail")
 		log.LoggerWContext(ctx).Error(err.Error())
-		return ""
+		return "", ErrorMsgFromSrv
 	}
 
 	if tokenRes.Data.MsgType != "amac_token" {
 		log.LoggerWContext(ctx).Error("Incorrect message type")
-		return ""
+		return "", ErrorMsgFromSrv
 	}
 	//RDC token need to write file, if process restart we can read it
 	UpdateRdcToken(ctx, tokenRes.Data.Token)
@@ -339,5 +337,5 @@ func fetchTokenFromRdc(ctx context.Context) string {
 	//Updating the RDC token for the other nodes actively
 	//distributeToken(ctx)
 
-	return rdcTokenStr
+	return rdcTokenStr, ConnCloudSuc
 }

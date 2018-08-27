@@ -1,10 +1,10 @@
 package a3config
 
 import (
-	"errors"
-	"fmt"
-	"github.com/go-ini/ini"
 	"os"
+
+	"github.com/go-ini/ini"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 )
 
 const ConfRoot = "/usr/local/pf/conf"
@@ -48,21 +48,18 @@ func (conf *A3Conf) upSection() {
 }
 
 func (conf *A3Conf) loadCfg(path string) error {
-	if _, err := os.Stat(path); err != nil {
-		if os.IsNotExist(err) {
-			_, err := os.Create(path)
-			if err != nil {
-				fmt.Println(err)
-				return err
-			}
-		} else {
-			return errors.New("Load file failed")
+	if !utils.IsFileExist(path) {
+		_, err := os.Create(path)
+		if err != nil {
+			return err
 		}
 	}
+
 	cfg, err := ini.Load(path)
 	if err != nil {
 		return err
 	}
+
 	conf.path = path
 	conf.cfg = cfg
 	return nil
