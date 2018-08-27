@@ -40,6 +40,7 @@ func UpdateInterface(i Item) error {
 	}
 	return err
 }
+
 func UpdateManageInterface(i Item) error {
 	keyname := fmt.Sprintf("interface %s", i.Name)
 
@@ -123,4 +124,18 @@ func UpdateNetconf(i Item) error {
 		},
 	}
 	return A3Commit("NETWORKS", section)
+}
+func DeleteNetconf(i Item) error {
+
+	isvlan := VlanInface(i.Name)
+	if !isvlan {
+		return nil
+	}
+
+	a := utils.NetmaskStr2Len(i.NetMask)
+	ipv4Addr := net.ParseIP(i.IpAddr)
+	ipv4Mask := net.CIDRMask(a, 32)
+	sectionid := fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask)) // ip & mask
+
+	return A3Delete("NETWORKS", sectionid)
 }

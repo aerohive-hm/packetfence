@@ -31,7 +31,7 @@ func handleUpdateInterface(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		return []byte(err.Error())
 	}
-	fmt.Println("handleUpdateInterface", i)
+
 	err = a3config.UpdateSystemInterface(ctx, *i)
 	if err != nil {
 		return []byte(err.Error())
@@ -47,7 +47,7 @@ func handleDelInterface(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		return []byte(err.Error())
 	}
-	err = a3config.DelInterface(ctx, *i)
+	err = a3config.DelSystemInterface(ctx, *i)
 	if err != nil {
 		return []byte(err.Error())
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -57,7 +58,8 @@ func UpdateSystemInterface(ctx context.Context, i Item) error {
 			utils.CreateVlanIface("eth0", string(name[4:]))
 
 		} else {
-			ipold := GetIfaceElementVlaue(keyname, "ip")
+			iface, _ := utils.GetIfaceList(keyname)
+			ipold := iface[0].IpAddr
 			utils.DelIfaceIIpAddr(keyname, ipold)
 		}
 		utils.SetIfaceIIpAddr(keyname, i.IpAddr, i.NetMask)
@@ -65,16 +67,34 @@ func UpdateSystemInterface(ctx context.Context, i Item) error {
 
 	err = UpdateInterface(i)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("UpdateVlanInterface error:" + err.Error())
+		log.LoggerWContext(ctx).Error("Update Interface error:" + err.Error())
 	}
 	err = UpdateNetconf(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
 	}
-	fmt.Println("UpdateNetconf commplite")
+
 	return err
 }
 
-func DelInterface(ctx context.Context, i Item) error {
+func DelSystemInterface(ctx context.Context, i Item) error {
+	var err error
+	var sectionId string
+
+	if VlanInface(i.Name) {
+		name := []rune(i.Name) /*need to delete vlan for name*/
+		keyname := fmt.Sprintf("eth0.%s", string(name[4:]))
+		sectionId = fmt.Sprintf("interface %s", keyname)
+		utils.DelVlanIface(keyname)
+	} else {
+		sectionId = fmt.Sprintf("interface %s", strings.ToLower(i.Name))
+	}
+
+	err = A3Delete("PF", sectionId)
+
+	err = DeleteNetconf(i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("DeleteNetconf error:" + err.Error())
+	}
 	return nil
 }
