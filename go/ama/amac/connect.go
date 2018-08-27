@@ -34,12 +34,13 @@ var (
 	client = &http.Client{Transport: tr, Timeout: 10 * time.Second}
 
 	//Store the token to avoid multiple IO
-	gdcTokenStr      string
-	rdcTokenStr      string
-	VhmidStr         string
-	connMsgUrl       string
-	fetchRdcTokenUrl string
-	keepAliveUrl     string
+	gdcTokenStr               string
+	rdcTokenStr               string
+	VhmidStr                  string
+	connMsgUrl                string
+	fetchRdcTokenUrl          string
+	fetchRdcTokenUrlForOthers string
+	keepAliveUrl              string
 )
 
 const (
@@ -72,9 +73,10 @@ func installRdcUrl(ctx context.Context, rdcUrl string) {
 	a2 := strings.Split(a1, "/")[0]
 	domain := "https://" + a2
 
-	connMsgUrl = domain + "amac/rest/v1/report/syn/" + systemId
-	fetchRdcTokenUrl = domain + "amac/rest/token/apply/" + systemId
-	keepAliveUrl = domain + "amac/rest/v1/poll/" + systemId
+	connMsgUrl = domain + "/amac/rest/v1/report/syn/" + systemId
+	fetchRdcTokenUrl = domain + "/amac/rest/token/apply/" + systemId
+	fetchRdcTokenUrlForOthers = domain + "/amac/rest/v1/token/" + systemId
+	keepAliveUrl = domain + "/amac/rest/v1/poll/" + systemId
 
 	log.LoggerWContext(ctx).Error(fmt.Sprintf("connMsgUrl:%s,fetchRdcTokenUrl:%s, keepAliveUrl:%s", connMsgUrl, fetchRdcTokenUrl, keepAliveUrl))
 }
@@ -105,7 +107,7 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 
 		//Add header option, the tokenStr is from RDC now
 		log.LoggerWContext(ctx).Error(rdcTokenStr)
-		request.Header.Add("X-A3-Auth-Token", rdcTokenStr)
+		request.Header.Add("Authorization", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
@@ -151,15 +153,15 @@ func updateMsgToRdc(ctx context.Context) int {
 
 		fmt.Println("begin to send initerface change to RDC")
 		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/report/syn/%s", utils.GetA3SysId())
-		request, err := http.NewRequest("POST", url, reader)
+		//url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/report/syn/%s", utils.GetA3SysId())
+		request, err := http.NewRequest("POST", connMsgUrl, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
 		}
 
 		//Add header option, the tokenStr is from RDC now
-		request.Header.Add("X-A3-Auth-Token", rdcTokenStr)
+		request.Header.Add("Authorization", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
@@ -280,10 +282,10 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 			return "", ErrorMsgFromSrv
 		}
 		//GDC token does not need to write file, it is one-time useful
-		gdcTokenStr = dat["access_token"].(string)
-		dst := fmt.Sprintf("Bearer %s", gdcTokenStr)
+		//gdcTokenStr = dat["access_token"].(string)
+		gdcTokenStr = fmt.Sprintf("Bearer %s", dat["access_token"].(string))
 		resp.Body.Close()
-		return dst, ConnCloudSuc
+		return gdcTokenStr, ConnCloudSuc
 	}
 }
 

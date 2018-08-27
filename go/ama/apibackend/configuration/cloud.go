@@ -14,6 +14,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -83,18 +84,18 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	code := "fail"
 	event := new(amac.MsgStru)
 
-	code = "ok"
-	ret = "connect to cloud successfully"
-
 	log.LoggerWContext(ctx).Error("int HandlePostCloudInfo")
+
+	code = "fail"
+	ret = ""
 
 	err := json.Unmarshal(d.ReqData, postInfo)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("unmarshal error: " + err.Error())
 		goto END
 	}
-	//This case means disable the cloud integration
 
+	//This case means disable the cloud integration
 	if postInfo.Url == "" {
 		err = a3config.UpdateCloudConf(a3config.Switch, "disable")
 		if err != nil {
@@ -104,7 +105,8 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 			event.Data = "disable"
 			amac.MsgChannel <- *event
 		}
-
+		code = "ok"
+		ret = "disable cloud integration successfully"
 		goto END
 	}
 
@@ -127,12 +129,18 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	result, reason = amac.LoopConnect(ctx, postInfo.Pass)
-	if result != 0 {
-		code = "fail"
+	if result == 0 {
+		code = "ok"
+		ret = "connect to cloud successfully"
+	} else {
 		ret = reason
 	}
 
 END:
+	//start A3 all the services
+	if code == "ok" {
+		utils.StartService()
+	}
 	if err != nil {
 		ret = err.Error()
 	}
