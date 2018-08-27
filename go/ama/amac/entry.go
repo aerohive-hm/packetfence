@@ -241,7 +241,7 @@ func keepaliveToRdc(ctx context.Context) {
 		}
 
 		//Add header option
-		request.Header.Add("X-A3-Auth-Token", rdcTokenStr)
+		request.Header.Add("Authorization", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
 
 		resp, result := client.Do(request)

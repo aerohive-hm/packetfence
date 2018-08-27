@@ -106,7 +106,6 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		}
 
 		//Add header option, the tokenStr is from RDC now
-		log.LoggerWContext(ctx).Error(rdcTokenStr)
 		request.Header.Add("Authorization", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
@@ -241,7 +240,7 @@ func connectToRdcWithPara(ctx context.Context) (int, string) {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return -1, reason
 	}
-	updateMsgToRdc(ctx)
+	//updateMsgToRdc(ctx)
 	return 0, ConnCloudSuc
 }
 

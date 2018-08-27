@@ -63,6 +63,7 @@ type A3OnboardingInfo struct {
 var contextOnboard = log.LoggerNewContext(context.Background())
 
 func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
+var ifullname string
 	ifaces, errint := utils.GetIfaceList("all")
 	if errint < 0 {
 		fmt.Errorf("Get interfaces infomation failed.")
@@ -70,19 +71,35 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	}
 	for _, iface := range ifaces {
 		a3Interface := new(A3Interface)
+		/*
 		if iface.Master == "" {
 			a3Interface.Parent = iface.Name
 		} else {
 			a3Interface.Parent = iface.Master
 		}
+		*/
+		 
+		//a3Interface = strings.Split(iface.Name, ".")
+		iname := strings.Split(iface.Name, ".")
+		 
+		if len(iname) > 1 {
+			ifullname = fmt.Sprintf("VLAN%s", iname[1])
+		} else {
+			ifullname = iname[0]
+		}
 		a3Interface.Vlan, _ = strconv.Atoi(iface.Vlan)
 		a3Interface.IpAddress = iface.IpAddr
 		a3Interface.Netmask = "255.255.255.0"
 		a3Interface.Vip = iface.Vip
-		a3Interface.Type = "MANAGEMENT"
-		a3Interface.Service = []string{"PORTAL"}
-		//a3Interface.Type = GetIfaceType(iface.Name)
-		//a3Interface.Service = GetIfaceServices(iface.Name)
+		//a3Interface.Type = "MANAGEMENT"
+		//a3Interface.Service = []string{"PORTAL"}
+		a3Interface.Type = a3config.GetIfaceType(ifullname)
+		a3Interface.Service = a3config.GetIfaceServices(ifullname)
+		log.LoggerWContext(ctx).Error("begin to print type")
+		log.LoggerWContext(ctx).Error(a3Interface.Type)
+		log.LoggerWContext(ctx).Error(iface.Name)
+		log.LoggerWContext(ctx).Error("end to print type")
+		//log.LoggerWContext(ctx).Error(string(a3Interface.Service))
 		onboardingData.Interfaces = append(onboardingData.Interfaces, *a3Interface)
 	}
 

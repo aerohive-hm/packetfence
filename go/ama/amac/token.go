@@ -363,7 +363,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		log.LoggerWContext(ctx).Error("Incorrect message type")
 		return "", ErrorMsgFromSrv
 	}
-	
+
 	dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Token)
 	//RDC token need to write file, if process restart we can read it
 	UpdateRdcToken(ctx, dst)
@@ -378,7 +378,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
 	}
-	
+
 	/*
 		To do, post the RDC token/RDC URL/VHMID to the other memebers
 	*/
