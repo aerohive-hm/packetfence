@@ -28,3 +28,10 @@ func ReadIface(ifname string) Section {
 	}
 	return nil
 }
+func GetDomain() string {
+	section := A3Read("PF", "general")
+	if section == nil {
+		return ""
+	}
+	return section["general"]["domain"]
+}

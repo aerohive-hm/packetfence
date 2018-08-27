@@ -29,10 +29,10 @@ type A3Conf struct {
 
 func updateKeyHash(section *(ini.Section), kh keyHash) {
 	for k, v := range kh {
-		if section.HasKey(k) {
-			section.Key(k).SetValue(v)
-			continue
-		}
+		//		if section.HasKey(k) {
+		//			section.Key(k).SetValue(v)
+		//			continue
+		//		}
 
 		section.NewKey(k, v)
 	}

@@ -37,7 +37,7 @@ func handleGetToken(r *http.Request, d crud.HandlerData) []byte {
 
 	fmt.Println(r.URL)
 
-	token := amac.ReqTokenForOtherNodes(ctx, "test-systemid")
+	token := amac.ReqTokenForOtherNode(ctx, "test-systemid")
 
 	return token
 }

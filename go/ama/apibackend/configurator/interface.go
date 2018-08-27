@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -22,31 +23,35 @@ func InterfaceNew(ctx context.Context) crud.SectionCmd {
 	return iface
 }
 
-type Iface struct {
-	Name     string `json:"name"`
-	IpAddr   string `json:"ip_addr"`
-	NetMask  string `json:"netmask"`
-	Vip      string `json:"vip"`
-	Type     string `json:"type"`
-	Services string `json:"services"`
-}
-
 func handleUpdateInterface(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	log.LoggerWContext(ctx).Info("czhong get method " + r.Method)
+	i := new(a3config.Item)
+
+	err := json.Unmarshal(d.ReqData, i)
+	if err != nil {
+		return []byte(err.Error())
+	}
+	fmt.Println("handleUpdateInterface", i)
+	err = a3config.UpdateSystemInterface(ctx, *i)
+	if err != nil {
+		return []byte(err.Error())
+	}
 	return []byte(crud.PostOK)
 }
 
 func handleDelInterface(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	iface := new(Iface)
+	i := new(a3config.Item)
 
-	err := json.Unmarshal(d.ReqData, iface)
+	err := json.Unmarshal(d.ReqData, i)
 	if err != nil {
 		return []byte(err.Error())
 	}
-
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", iface))
+	err = a3config.DelInterface(ctx, *i)
+	if err != nil {
+		return []byte(err.Error())
+	}
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", i))
 
 	return []byte(crud.PostOK)
 }
