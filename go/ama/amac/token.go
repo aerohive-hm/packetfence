@@ -31,9 +31,7 @@ var (
 )
 
 type MemberList struct {
-	IpAddr   string `json:"ipAddr"`
-	VhmId    string `json:"vhmId"`
-	SystemId string `json:"systemId"`
+	IpAddr string `json:"ipAddr"`
 }
 
 type tokenCommonHeader struct {
@@ -59,6 +57,31 @@ type tokenResData struct {
 type A3TokenResFromRdc struct {
 	Header tokenCommonHeader `json:"header"`
 	Data   tokenResData      `json:"data"`
+}
+
+//Fetch node list from cluster.conf
+func FetchNodeList() []MemberList {
+	conf := a3config.A3Read("CLUSTER", "all")
+	if conf == nil {
+		return nil
+	}
+	nodes := []MemberList{}
+	headNode := []MemberList{}
+	for secName, kvpair := range conf {
+		is_primary := (secName == "CLUSTER")
+		for k, v := range kvpair {
+			if k == "management_ip" {
+				node := MemberList{IpAddr: v}
+				if is_primary {
+					headNode = append(headNode, node)
+				} else {
+					nodes = append(nodes, node)
+				}
+			}
+		}
+	}
+	nodes = append(headNode, nodes...)
+	return nodes
 }
 
 func readRdcToken(ctx context.Context) string {
@@ -204,14 +227,12 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 func reqTokenFromOtherNodes(ctx context.Context) int {
 
 	//mockup the active node list
-	memList := []MemberList{}
+	memList := FetchNodeList()
 	nodeNum := 0
 	token := ""
 
 	log.LoggerWContext(ctx).Info("begin to request RDC token from other nodes")
 
-	member1 := MemberList{"10.155.104.4", "test-vhmid", "test-systemid-for-distribute-token"}
-	memList = append(memList, member1)
 	for _, mem := range memList {
 		nodeNum++
 		token = reqTokenFromSingleNode(ctx, mem)
@@ -226,9 +247,14 @@ func reqTokenFromOtherNodes(ctx context.Context) int {
 	return -1
 }
 
+//Fetch systemID for one Node -- Todo
+func FetchSysIDForNode(node MemberList) string {
+	return ""
+}
+
 func distributeToSingleNode(ctx context.Context, mem MemberList) {
 
-	token := ReqTokenForOtherNode(ctx, mem.SystemId)
+	token := ReqTokenForOtherNode(ctx, FetchSysIDForNode(mem))
 	//reader := bytes.NewReader(token)
 	//Using loop to make sure post successfully
 	for {
@@ -296,10 +322,7 @@ func distributeToSingleNode(ctx context.Context, mem MemberList) {
 func distributeToken(ctx context.Context) {
 
 	//mockup the active node list
-	memList := []MemberList{}
-
-	member1 := MemberList{"10.155.104.4", "test-vhmid", "test-systemid-for-distribute-token"}
-	memList = append(memList, member1)
+	memList := FetchNodeList()
 
 	for _, mem := range memList {
 		go distributeToSingleNode(ctx, mem)
