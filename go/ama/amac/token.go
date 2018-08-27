@@ -49,6 +49,11 @@ type rdcTokenReqFromRdc struct {
 	Header tokenCommonHeader `json:"header"`
 }
 
+type NodeInfo struct {
+	SystemID string
+	Hostname string
+}
+
 type tokenResData struct {
 	MsgType string `json:"msgType"`
 	Token   string `json:"token"`
@@ -123,21 +128,28 @@ func UpdateRdcToken(ctx context.Context, s string) {
 	for the other nodes, this func will be called by webUI
 	it is public
 */
-func ReqTokenForOtherNode(ctx context.Context, sysId string) []byte {
-	var url string
+func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
+	//	var url string
 	var res []byte
 	tokenRes := A3TokenResFromRdc{}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("request token for the node %s", sysId))
-	url = fmt.Sprintf("http://10.155.23.116:8008/rest/v1/token/1234567?targetSysId=%s", sysId)
+	nodeInfo := rdcTokenReqFromRdc{}
+	nodeInfo.Header.SystemID = node.SystemID
+	nodeInfo.Header.Hostname = node.Hostname
+	nodeInfo.Header.OwnerId, _ = strconv.Atoi(VhmidStr)
 
-	request, err := http.NewRequest("GET", url, nil)
+	data, _ := json.Marshal(nodeInfo)
+	reader := bytes.NewReader(data)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Begin to fetch RDC token for node %s", node.Hostname))
+	//	url = fmt.Sprintf("http://10.155.23.116:8008/rest/v1/token/1234567?targetSysId=%s", node.SystemID)
+
+	request, err := http.NewRequest("POST", fetchRdcTokenUrlForOthers, reader)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return res
 	}
 
-	request.Header.Add("X-A3-Auth-Token", rdcTokenStr)
+	request.Header.Add("Authorization", rdcTokenStr)
 	request.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(request)
 	if err != nil {
@@ -164,6 +176,7 @@ func ReqTokenForOtherNode(ctx context.Context, sysId string) []byte {
 	return []byte(body)
 }
 
+//This API was used by nodes without GDC and RDC token.
 func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 	tokenRes := A3TokenResFromRdc{}
 
@@ -224,7 +237,7 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 	This function needs to be called if the RDC token is absent
 	or expires
 */
-func reqTokenFromOtherNodes(ctx context.Context) int {
+func ReqTokenFromOtherNodes(ctx context.Context) int {
 
 	//mockup the active node list
 	memList := FetchNodeList()
@@ -252,9 +265,15 @@ func FetchSysIDForNode(node MemberList) string {
 	return ""
 }
 
-func distributeToSingleNode(ctx context.Context, mem MemberList) {
-
-	token := ReqTokenForOtherNode(ctx, FetchSysIDForNode(mem))
+func distributeToSingleNode(ctx context.Context, mem MemberList, selfRenew bool) {
+	var token []byte
+	if selfRenew == false {
+		token = ReqTokenForOtherNode(ctx, NodeInfo{})
+	} else {
+		tokenRes := A3TokenResFromRdc{}
+		tokenRes.Data.MsgType = "renew_token"
+		token, _ = json.Marshal(tokenRes)
+	}
 	//reader := bytes.NewReader(token)
 	//Using loop to make sure post successfully
 	for {
@@ -316,16 +335,15 @@ func distributeToSingleNode(ctx context.Context, mem MemberList) {
 	calling this function to focus on the below things:
 	1) Geting the list of active nodes in the cluser, include the materials
 	   of generating the RDC token
-	2) Requesting a token for every node
-	3) Posting the new token to every node actively
+	2) If selfRenew is false, will requesting a token for every node,
+	   and posting the new token to every node actively;
+	3) If selfRenew is true, will notice every node to renew RDC token by itself.
 */
-func distributeToken(ctx context.Context) {
+func triggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
+	nodeList := FetchNodeList()
 
-	//mockup the active node list
-	memList := FetchNodeList()
-
-	for _, mem := range memList {
-		go distributeToSingleNode(ctx, mem)
+	for _, node := range nodeList {
+		go distributeToSingleNode(ctx, node, selfRenew)
 	}
 	return
 }
@@ -404,7 +422,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		To do, post the RDC token/RDC URL/VHMID to the other memebers
 	*/
 	//Updating the RDC token for the other nodes actively
-	//distributeToken(ctx)
+	//triggerUpdateNodesToken(ctx, true)
 
 	return dst, ConnCloudSuc
 }
