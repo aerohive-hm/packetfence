@@ -29,11 +29,6 @@ type A3Conf struct {
 
 func updateKeyHash(section *(ini.Section), kh keyHash) {
 	for k, v := range kh {
-		//		if section.HasKey(k) {
-		//			section.Key(k).SetValue(v)
-		//			continue
-		//		}
-
 		section.NewKey(k, v)
 	}
 }
@@ -147,4 +142,42 @@ END:
 		return nil
 	}
 	return conf.sections
+}
+
+func deleteSection(conf *A3Conf, Id string) {
+	section := conf.cfg.Section(Id)
+	if section == nil {
+		return
+	}
+	conf.cfg.DeleteSection(Id)
+}
+func deleteAllSections(conf *A3Conf) {
+	sections := conf.cfg.Sections()
+	if sections == nil {
+		return
+	}
+	for _, section := range sections {
+		conf.cfg.DeleteSection(section.Name())
+	}
+}
+
+func (conf *A3Conf) deleteSection(sectionId string) {
+	if sectionId == "all" {
+		deleteAllSections(conf)
+	} else {
+		deleteSection(conf, sectionId)
+	}
+	return
+}
+
+func A3Delete(key string, sectionId string) error {
+	conf := new(A3Conf)
+	err := conf.loadCfg(ConfRoot + "/" + ConfDict[key])
+	if err != nil {
+		return err
+	}
+	conf.deleteSection(sectionId)
+	conf.cfg.SaveTo(conf.path)
+
+	return nil
 }
