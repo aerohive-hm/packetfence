@@ -9,7 +9,7 @@
 package amac
 
 import (
-	//	"bytes"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -42,7 +42,7 @@ type tokenCommonHeader struct {
 	VhmName   string `json:"vhmName"`
 	OwnerId   int    `json:"ownerId"`
 	OrgId     int    `json:"orgId"`
-	MessageID string `json:"messageId"`
+	MessageID string `json:"messageId,omitempty"`
 }
 
 type rdcTokenReqFromRdc struct {
@@ -330,12 +330,13 @@ func distributeToken(ctx context.Context) {
 	return
 }
 
-func fillRdcTokenReq() {
+func fillRdcTokenReq() rdcTokenReqFromRdc {
 	rdcTokenReq := rdcTokenReqFromRdc{}
 
 	rdcTokenReq.Header.SystemID = utils.GetA3SysId()
 	rdcTokenReq.Header.Hostname = a3config.GetHostname()
 	rdcTokenReq.Header.OwnerId, _ = strconv.Atoi(VhmidStr)
+	return rdcTokenReq
 }
 
 /*
@@ -345,17 +346,23 @@ func fillRdcTokenReq() {
 func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	tokenRes := A3TokenResFromRdc{}
 
-	log.LoggerWContext(ctx).Info("begin to fetch RDC token")
-	//url := fmt.Sprintf("http://10.155.23.116:8008/rest/token/apply/%s", utils.GetA3SysId())
-	log.LoggerWContext(ctx).Error(fetchRdcTokenUrl)
+	node_info := fillRdcTokenReq()
+	data, _ := json.Marshal(node_info)
 
-	request, err := http.NewRequest("POST", fetchRdcTokenUrl, nil)
+	log.LoggerWContext(ctx).Info("begin to fetch RDC token")
+	log.LoggerWContext(ctx).Error(string(data))
+	reader := bytes.NewReader(data)
+
+	log.LoggerWContext(ctx).Error(fetchRdcTokenUrl)
+	//url := fmt.Sprintf("http://10.155.23.116:8008/rest/token/apply/%s", utils.GetA3SysId())
+	request, err := http.NewRequest("POST", fetchRdcTokenUrl, reader)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return "", OtherError
 	}
 
 	//Taking the GDC token to request a RDC token
+	log.LoggerWContext(ctx).Error(gdcTokenStr)
 	request.Header.Add("Authorization", gdcTokenStr)
 	request.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(request)
@@ -377,8 +384,10 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		log.LoggerWContext(ctx).Error("Incorrect message type")
 		return "", ErrorMsgFromSrv
 	}
+
+	dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Token)
 	//RDC token need to write file, if process restart we can read it
-	UpdateRdcToken(ctx, tokenRes.Data.Token)
+	UpdateRdcToken(ctx, dst)
 	//Save RDC url and VHM to config file if get the RDC token
 	//To do, inform the BE to synchronize the config file
 	err = a3config.UpdateCloudConf(a3config.RDCUrl, rdcUrl)
@@ -390,11 +399,12 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
 	}
+
 	/*
 		To do, post the RDC token/RDC URL/VHMID to the other memebers
 	*/
 	//Updating the RDC token for the other nodes actively
 	//distributeToken(ctx)
 
-	return rdcTokenStr, ConnCloudSuc
+	return dst, ConnCloudSuc
 }

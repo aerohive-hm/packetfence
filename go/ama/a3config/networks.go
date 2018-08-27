@@ -1,3 +1,4 @@
+//networks.go implements fetching networks info.
 package a3config
 
 import (
@@ -9,8 +10,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
-type item struct {
-	Id       string `json:"id"`
+type Item struct {
 	Name     string `json:"name"`
 	IpAddr   string `json:"ip_addr"`
 	NetMask  string `json:"netmask"`
@@ -21,62 +21,32 @@ type item struct {
 
 type ClusterNetworksData struct {
 	HostName string `json:"hostname"`
-	Items    []item `json:"items"`
+	Items    []Item `json:"items"`
 }
 
 type NetworksData struct {
-	ClusterEnable string `json:"cluster_enable"`
+	ClusterEnable bool   `json:"cluster_enable"`
 	HostName      string `json:"hostname"`
-	Items         []item `json:"items"`
+	Items         []Item `json:"items"`
 }
 
 var contextNetworks = log.LoggerNewContext(context.Background())
 
-func GetNetworksData(ctx context.Context) NetworksData {
-	var context context.Context
-	networksData := NetworksData{}
-
-	if ctx == nil {
-		context = contextNetworks
-	} else {
-		context = ctx
-	}
-	networksData.Items = GetItemsValue(context)
-	networksData.ClusterEnable = "true"
-	networksData.HostName = GetHostname()
-	return networksData
-}
-
-func GetClusterNetworksData(ctx context.Context) ClusterNetworksData {
-	var context context.Context
-	clusterNetworksData := ClusterNetworksData{}
-
-	if ctx == nil {
-		context = contextNetworks
-	} else {
-		context = ctx
-	}
-	clusterNetworksData.Items = GetItemsValue(context)
-	clusterNetworksData.HostName = GetHostname()
-	return clusterNetworksData
-}
-
-func GetItemsValue(ctx context.Context) []item {
-	var items []item
+func GetItemsValue(ctx context.Context) []Item {
+	var items []Item
 	ifaces, errint := utils.GetIfaceList("all")
 	if errint < 0 {
 		fmt.Errorf("Get interfaces infomation failed.")
 		return items
 	}
 	for _, iface := range ifaces {
-		item := new(item)
-		//      if iface.Master == "" {
-		//          item.Name = iface.Name
-		//      } else {
-		//          item.Name = iface.Master
-		//      }
-		item.Name = iface.Name
-		item.Id = "interface"
+		item := new(Item)
+		iname := strings.Split(iface.Name, ".")
+		if len(iname) > 1 {
+			item.Name = fmt.Sprintf("VLAN%s", iname[1])
+		} else {
+			item.Name = iname[0]
+		}
 		item.IpAddr = iface.IpAddr
 		item.NetMask = GetIfaceElementVlaue(iface.Name, "mask")
 		item.Vip = GetIfaceElementVlaue(iface.Name, "vip")
@@ -88,8 +58,9 @@ func GetItemsValue(ctx context.Context) []item {
 
 }
 
-func UpdateItemsValue(ctx context.Context, items []item) error {
+func UpdateItemsValue(ctx context.Context, items []Item) error {
 	var err error
+
 	for _, item := range items {
 		err = UpdateInterface(item)
 		if err != nil {
@@ -108,6 +79,35 @@ func UpdateItemsValue(ctx context.Context, items []item) error {
 
 }
 
+func GetNetworksData(ctx context.Context) NetworksData {
+	var context context.Context
+	networksData := NetworksData{}
+
+	if ctx == nil {
+		context = contextNetworks
+	} else {
+		context = ctx
+	}
+	networksData.Items = GetItemsValue(context)
+	networksData.ClusterEnable = true
+	networksData.HostName = GetHostname()
+	return networksData
+}
+
+func GetClusterNetworksData(ctx context.Context) ClusterNetworksData {
+	var context context.Context
+	clusterNetworksData := ClusterNetworksData{}
+
+	if ctx == nil {
+		context = contextNetworks
+	} else {
+		context = ctx
+	}
+	clusterNetworksData.Items = GetItemsValue(context)
+	clusterNetworksData.HostName = GetHostname()
+	return clusterNetworksData
+}
+
 func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	var context context.Context
 
@@ -116,13 +116,34 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	} else {
 		context = ctx
 	}
-
+	//TODO Write networksData.ClusterEnable
 	err := UpdateHostname(networksData.HostName)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
 		return err
 	}
 	err = UpdateItemsValue(context, networksData.Items)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())
+		return err
+	}
+	return err
+}
+func UpdateClusterNetworksData(ctx context.Context, clusterNetworksData ClusterNetworksData) error {
+	var context context.Context
+
+	if ctx == nil {
+		context = contextNetworks
+	} else {
+		context = ctx
+	}
+
+	err := UpdateHostname(clusterNetworksData.HostName)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
+		return err
+	}
+	err = UpdateItemsValue(context, clusterNetworksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())
 		return err
