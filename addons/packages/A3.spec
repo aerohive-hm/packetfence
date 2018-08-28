@@ -706,6 +706,27 @@ else
   echo "DH already exists, won't touch it!"
 fi
 
+echo "Creating EAP-TLS Certificates in the tls_certs directory..."
+if [ ! -f /usr/local/pf/conf/ssl/tls_certs/eap-server.key ]; then
+    cp /usr/local/pf/raddb/certs/server.key /usr/local/pf/conf/ssl/tls_certs/eap-server.key
+    chown pf.pf /usr/local/pf/conf/ssl/tls_certs/eap-server.key
+    chmod 600 /usr/local/pf/conf/ssl/tls_certs/eap-server.key
+fi
+
+if [ ! -f /usr/local/pf/conf/ssl/tls_certs/eap-server.pem ]; then
+    cp /usr/local/pf/raddb/certs/server.crt /usr/local/pf/conf/ssl/tls_certs/eap-server.pem
+    chown pf.pf /usr/local/pf/conf/ssl/tls_certs/eap-server.pem
+    chmod 664 /usr/local/pf/conf/ssl/tls_certs/eap-server.pem
+fi
+
+if [ ! -f /usr/local/pf/conf/ssl/tls_certs/eap-server.key ]; then
+    cp /usr/local/pf/raddb/certs/ca.pem /usr/local/pf/conf/ssl/tls_certs/eap-cacerts.pem
+    chown pf.pf /usr/local/pf/conf/ssl/tls_certs/eap-cacerts.pem
+    chmod 664 /usr/local/pf/conf/ssl/tls_certs/eap-cacerts.pem
+fi
+
+
+
 if [ ! -f /usr/local/pf/conf/pf.conf ]; then
   echo "Touch pf.conf because it doesnt exist"
   touch /usr/local/pf/conf/pf.conf
@@ -1146,9 +1167,6 @@ fi
                         /usr/local/pf/conf/scan.conf.example
 %dir                    /usr/local/pf/conf/ssl
 %dir                    /usr/local/pf/conf/ssl/tls_certs
-                        /usr/local/pf/conf/ssl/tls_certs/eap-server.pem
-                        /usr/local/pf/conf/ssl/tls_certs/eap-server.key
-                        /usr/local/pf/conf/ssl/tls_certs/eap-cacerts.pem
 %dir                    /usr/local/pf/conf/systemd
 %config                 /usr/local/pf/conf/systemd/*
 %config(noreplace)      /usr/local/pf/conf/switches.conf
