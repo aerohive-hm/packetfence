@@ -3,16 +3,16 @@ package crud
 import (
 	"context"
 	"fmt"
-	"net/http"
-
 	"github.com/inverse-inc/packetfence/go/log"
+	"net/http"
+	"net/url"
 )
 
 type HandlerData struct {
 	Cmd      string //configurator
 	SubCmd   string //adminuser
 	Header   string
-	UrlParam string /*/?aa=123&bb=abc*/
+	UrlParam url.Values /*/?aa=123&bb=abc*/
 	ReqData  []byte
 	RespData string
 }
@@ -26,6 +26,7 @@ type SectionCmd interface {
 }
 
 const PostOK = `{"code": "ok"}`
+const PostNOTOK = `{"code": "fail"}`
 
 type Crud struct {
 	handlers map[string]CrudSubHandler
