@@ -624,7 +624,12 @@ class networksCtl extends Component {
                 let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
-                    name:dataCopy[index].name,
+                    "name":dataCopy[index].name,
+                    "ip_addr":dataCopy[index].ip_addr,
+                    "netmask":dataCopy[index].netmask,
+                    "vip":dataCopy[index].vip,
+                    "type":dataCopy[index].type,
+                    "services":dataCopy[index].services.join(","),
                 }
 
                 new RequestApi('delete',url,JSON.stringify(param),xCsrfToken,(data)=>{
