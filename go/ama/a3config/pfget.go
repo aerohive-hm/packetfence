@@ -2,12 +2,11 @@
 package a3config
 
 import (
-//"context"
-//"fmt"
-//"strings"
-
-//"github.com/inverse-inc/packetfence/go/ama/a3config"
-//"github.com/inverse-inc/packetfence/go/log"
+	//"context"
+	"fmt"
+	//"strings"
+	//"github.com/inverse-inc/packetfence/go/ama/a3config"
+	//"github.com/inverse-inc/packetfence/go/log"
 )
 
 func GetHostname() string {
@@ -34,4 +33,34 @@ func GetDomain() string {
 		return ""
 	}
 	return section["general"]["domain"]
+}
+
+func GetPrimaryClusterVip(ifname string) string {
+	var keyname, vip string
+	isvlan := VlanInface(ifname)
+	if isvlan {
+		name := []rune(ifname) /*need to delete vlan for name*/
+		keyname = fmt.Sprintf("CLUSTER interface eth0.%s", string(name[4:]))
+		section := A3Read("CLUSTER", keyname)
+		if section == nil {
+			return ""
+		}
+		vip = section[keyname]["ip"]
+
+		if vip == "" {
+			vip = "0.0.0.0"
+		}
+		return vip
+	} else {
+		keyname = "CLUSTER"
+		section := A3Read("CLUSTER", keyname)
+		if section == nil {
+			return ""
+		}
+		vip = section["CLUSTER"]["management_ip"]
+		if vip == "" {
+			vip = "0.0.0.0"
+		}
+		return vip
+	}
 }

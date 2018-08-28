@@ -173,7 +173,10 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 		if len(str) == 0 {
 			return err
 		}
-		item.IpAddr = str[2]
+
+		ipmask := strings.Split(str[1], "/")
+		item.IpAddr = ipmask[0]
+		item.NetMask = ipmask[1]
 		return nil
 	}
 

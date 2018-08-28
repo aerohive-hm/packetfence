@@ -4,6 +4,7 @@ package a3config
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -47,9 +48,10 @@ func GetItemsValue(ctx context.Context) []Item {
 		} else {
 			item.Name = iname[0]
 		}
+		value, _ := strconv.Atoi(iface.NetMask)
 		item.IpAddr = iface.IpAddr
-		item.NetMask = GetIfaceElementVlaue(iface.Name, "mask")
-		item.Vip = GetIfaceElementVlaue(iface.Name, "vip")
+		item.NetMask = utils.NetmaskLen2Str(value)
+		item.Vip = GetPrimaryClusterVip(iface.Name)
 		item.Type = strings.ToUpper(GetIfaceType(iface.Name))
 		item.Services = strings.ToUpper(strings.Join(GetIfaceServices(iface.Name), ","))
 		items = append(items, *item)
@@ -65,13 +67,17 @@ func UpdateItemsValue(ctx context.Context, items []Item) error {
 		err = UpdateInterface(item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdateInterface error:" + err.Error())
-			fmt.Println("UpdateInterface err")
 			return err
 		}
 		err = UpdateNetconf(item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
-			fmt.Println("UpdateNetconf err")
+			return err
+		}
+
+		err = UpdatePrimaryClusterconf(item)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
 			return err
 		}
 	}

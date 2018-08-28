@@ -77,9 +77,10 @@ class joinClusterCtl extends Component {
         if(!primaryServer||primaryServer.toString().trim()===""){
             newWrongMessage.primaryServerWrongMessage=self.state.i18n.clusterPrimaryIsRequired;
         }else
-        if(isUrl(primaryServer.toString().trim())===false){
-            newWrongMessage.primaryServerWrongMessage=self.state.i18n.clusterPrimaryMustStartWith;
-        }else{
+        // if(isUrl(primaryServer.toString().trim())===false){
+        //     newWrongMessage.primaryServerWrongMessage=self.state.i18n.clusterPrimaryMustStartWith;
+        // }else
+        {
             newWrongMessage.primaryServerWrongMessage="";
         }
 
