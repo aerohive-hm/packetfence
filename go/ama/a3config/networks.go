@@ -15,7 +15,7 @@ type Item struct {
 	Name     string `json:"name"`
 	IpAddr   string `json:"ip_addr"`
 	NetMask  string `json:"netmask"`
-	Vip      string `json:"vip"`
+	Vip      string `json:"vip",omitempty`
 	Type     string `json:"type"`
 	Services string `json:"services"`
 }
@@ -82,15 +82,14 @@ func UpdateItemsValue(ctx context.Context, items []Item) error {
 		}
 	}
 
-
-	for _, item1 := range items {
-		err = UpdateJoinClusterconf(item1, GetHostname())
+	for _, item := range items {
+		err = UpdateJoinClusterconf(item, GetHostname())
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdateJoinClusterconf error:" + err.Error())
 			return err
 		}
 	}
-	
+
 	return nil
 
 }

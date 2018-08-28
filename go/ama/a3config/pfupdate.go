@@ -51,15 +51,15 @@ func UpdateManageInterface(i Item) error {
 		Type = "management"
 	}
 
-	if i.Vip == "" {
-		i.Vip = "0.0.0.0"
+	if i.Vip != "" && i.Vip != "0.0.0.0" {
+		Type = fmt.Sprintf("%s,high-availability", Type)
 	}
+
 	section := Section{
 		keyname: {
 			"ip":   i.IpAddr,
 			"type": Type,
 			"mask": i.NetMask,
-			"vip":  i.Vip,
 		},
 	}
 	return A3Commit("PF", section)
@@ -98,6 +98,10 @@ func UpdateNetconf(i Item) error {
 	ipv4Addr := net.ParseIP(i.IpAddr)
 	ipv4Mask := net.CIDRMask(a, 32)
 	keyname := fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask)) // ip & mask
+	s := strings.Split(keyname, ".")
+	dhcpstart := fmt.Sprintf("%s.%s.%s.10", s[0], s[1], s[2])
+	dhcpend := fmt.Sprintf("%s.%s.%s.246", s[0], s[1], s[2])
+
 	if i.Services != "" {
 		Type = fmt.Sprintf("vlan-%s,%s", strings.ToLower(i.Type), strings.ToLower(i.Services))
 	} else {
@@ -108,7 +112,7 @@ func UpdateNetconf(i Item) error {
 		keyname: {
 			"dns":                     i.IpAddr,
 			"split_network":           "disabled",
-			"dhcp_start":              i.IpAddr,
+			"dhcp_start":              dhcpstart,
 			"gateway":                 i.IpAddr,
 			"domain-name":             Domain,
 			"nat_enabled":             "disabled",
@@ -116,7 +120,7 @@ func UpdateNetconf(i Item) error {
 			"dhcp_max_lease_time":     "30",
 			"fake_mac_enabled":        "disabled",
 			"dhcpd":                   "enabled",
-			"dhcp_end":                "",
+			"dhcp_end":                dhcpend,
 			"type":                    Type,
 			"netmask":                 i.NetMask,
 			"dhcp_default_lease_time": "30",
@@ -155,13 +159,18 @@ func DeletePrimaryClusterconf(i Item) error {
 		sectionid = GetHostname()
 		A3Delete("CLUSTER", sectionid)
 		sectionid = GetHostname() + "interface eth0"
-		return A3Delete("CLUSTER", sectionid)		
+		return A3Delete("CLUSTER", sectionid)
 	}
-	
+
 }
 
 func UpdatePrimaryClusterconf(i Item) error {
 	var keyname string
+
+	if i.Vip == "" || i.Vip == "0.0.0.0" {
+		return nil
+	}
+
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		name := []rune(i.Name) /*need to delete vlan for name*/
@@ -186,8 +195,12 @@ func UpdatePrimaryClusterconf(i Item) error {
 	}
 }
 func UpdateJoinClusterconf(i Item, hostname string) error {
-
 	var keyname string
+
+	if i.Vip == "" || i.Vip == "0.0.0.0" {
+		return nil
+	}
+
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		name := []rune(i.Name) /*need to delete vlan for name*/
