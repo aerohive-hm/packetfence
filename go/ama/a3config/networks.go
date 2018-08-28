@@ -137,6 +137,7 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
 		return err
 	}
+	utils.SetHostname(networksData.HostName)
 	err = UpdateItemsValue(context, networksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())
