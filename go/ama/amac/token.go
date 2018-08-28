@@ -368,27 +368,35 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		log.LoggerWContext(ctx).Error("Incorrect message type")
 		return "", ErrorMsgFromSrv
 	}
+	statusCode := resp.StatusCode
+	resp.Body.Close()
 
-	dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Token)
-	//RDC token need to write file, if process restart we can read it
-	UpdateRdcToken(ctx, dst)
-	//Save RDC url and VHM to config file if get the RDC token
-	//To do, inform the BE to synchronize the config file
-	err = a3config.UpdateCloudConf(a3config.RDCUrl, rdcUrl)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("Save RDC URL error: " + err.Error())
+	if statusCode == 200 {
+		dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Token)
+		//RDC token need to write file, if process restart we can read it
+		UpdateRdcToken(ctx, dst)
+		//Save RDC url and VHM to config file if get the RDC token
+		//To do, inform the BE to synchronize the config file
+		err = a3config.UpdateCloudConf(a3config.RDCUrl, rdcUrl)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save RDC URL error: " + err.Error())
+		}
+
+		err = a3config.UpdateCloudConf(a3config.Vhm, VhmidStr)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
+		}
+		/*
+			To do, post the RDC token/RDC URL/VHMID to the other memebers
+		*/
+		//Updating the RDC token for the other nodes actively
+		//distributeToken(ctx)
+		return dst, ConnCloudSuc
+	} else if statusCode == 401 {
+		return "", AuthFail
 	}
 
-	err = a3config.UpdateCloudConf(a3config.Vhm, VhmidStr)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
-	}
+	errMsg := fmt.Sprintf("Server(RDC) respons the code %d, please check the input parameters", statusCode)
+	return "", errMsg
 
-	/*
-		To do, post the RDC token/RDC URL/VHMID to the other memebers
-	*/
-	//Updating the RDC token for the other nodes actively
-	//distributeToken(ctx)
-
-	return dst, ConnCloudSuc
 }

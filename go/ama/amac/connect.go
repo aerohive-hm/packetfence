@@ -48,7 +48,7 @@ const (
 	SrvNoResponse   = "Server is unavailable"
 	AuthFail        = "Authenticate fail, please check the input parameters"
 	UrlIsNull       = "URL is NULL"
-	ErrorMsgFromSrv = "Error messages from server"
+	ErrorMsgFromSrv = "Error messages from server, please check the input parameters"
 	OtherError      = "System error"
 )
 
@@ -176,7 +176,6 @@ func updateMsgToRdc(ctx context.Context) int {
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println("receive the response ", resp.Status)
 		//fmt.Println(string(body))
 		log.LoggerWContext(ctx).Error(string(body))
 		statusCode := resp.StatusCode
@@ -286,11 +285,19 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return "", ErrorMsgFromSrv
 		}
-		//GDC token does not need to write file, it is one-time useful
-		//gdcTokenStr = dat["access_token"].(string)
-		gdcTokenStr = fmt.Sprintf("Bearer %s", dat["access_token"].(string))
+
+		statusCode := resp.StatusCode
 		resp.Body.Close()
-		return gdcTokenStr, ConnCloudSuc
+		if statusCode == 200 {
+			//GDC token does not need to write file, it is one-time useful
+			gdcTokenStr = fmt.Sprintf("Bearer %s", dat["access_token"].(string))
+			return gdcTokenStr, ConnCloudSuc
+		} else if statusCode == 401 {
+			return "", AuthFail
+		}
+
+		errMsg := fmt.Sprintf("Server(GDC) respons the code %d, please check the input parameters", statusCode)
+		return "", errMsg
 	}
 }
 
@@ -375,6 +382,7 @@ func LoopConnect(ctx context.Context, pass string) (int, string) {
 		updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
 		return 0, reason
 	} else {
+		updateConnStatus(AMA_STATUS_INIT)
 		return -1, reason
 	}
 

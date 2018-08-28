@@ -108,7 +108,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 
 	onboardingData.Msgtype = "connect"
 	onboardingData.IpMode = "DHCP"
-	onboardingData.DefaultGateway = "8.8.8.8"
+	onboardingData.DefaultGateway = "10.155.104.254"
 	onboardingData.SoftwareVersion = utils.GetA3Version()
 	onboardingData.SystemUptime = time.Now().UnixNano() / int64(time.Millisecond)
 	//onboardingData.ClusterHostName = "Todo"
