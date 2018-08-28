@@ -46,9 +46,9 @@ func UpdateManageInterface(i Item) error {
 
 	var Type string
 	if i.Services != "" {
-		Type = fmt.Sprintf("management,%s", strings.ToLower(i.Services))
+		Type = fmt.Sprintf("%s,%s", strings.ToLower(i.Type), strings.ToLower(i.Services))
 	} else {
-		Type = "management"
+		Type = strings.ToLower(i.Type)
 	}
 
 	if i.Vip != "" && i.Vip != "0.0.0.0" {
