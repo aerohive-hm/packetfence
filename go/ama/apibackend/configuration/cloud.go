@@ -140,7 +140,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 END:
 	//start A3 all the services
 	if code == "ok" {
-		a3share.StartService()
+		go a3share.StartService()
 		/*
 			if err != nil {
 				log.LoggerWContext(ctx).Info(err.Error())

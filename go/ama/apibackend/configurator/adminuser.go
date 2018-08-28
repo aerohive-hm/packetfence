@@ -48,8 +48,12 @@ func hashPassword(password string) string {
 }
 
 /* replace is better than insert because it does not need to check if pid exsit or not */
-const sqlCmd = "replace into password(pid,password,valid_from,expiration,access_level )" +
-	"values(?,?,?,?,?)"
+const (
+	sqlCmd = `replace into password(pid,password,valid_from,expiration,access_level)` +
+		`values(?,?,?,?,?)`
+	apiUserSql = `replace into api_user(username,password,valid_from,expiration,` +
+		`access_level)values(?,?,?,?,?)`
+)
 
 /*write admin info to password table*/
 func writeAdminToDb(user, password string) error {
@@ -82,6 +86,16 @@ func writeAdminToDb(user, password string) error {
 			[]interface{}{
 				tmpUser,
 				user,
+			},
+		},
+		{
+			apiUserSql,
+			[]interface{}{
+				user,
+				hpassword,
+				timeStart,
+				expiration,
+				"ALL",
 			},
 		},
 	}

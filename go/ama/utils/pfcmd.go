@@ -23,7 +23,7 @@ type Service struct {
 }
 
 func pfExpire(ns string) {
-	cmd := pfconfig + " expire" + " " + ns
+	cmd := pfconfig + " expire " + ns
 	ExecShell(cmd)
 }
 
@@ -67,7 +67,7 @@ func initClusterDB() {
 			cmd: "generatemariadbconfig",
 		},
 		{
-			cmd: `pf-mariadb --force-new-cluster`,
+			cmd: A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
 		},
 	}
 
@@ -76,7 +76,6 @@ func initClusterDB() {
 
 // only Start Services during initial setup
 func InitStartService() error {
-	initClusterDB()
 
 	log.LoggerWContext(ctx).Error("czhong: start init service...")
 	out, err := UpdatePfServices()
@@ -89,6 +88,8 @@ func InitStartService() error {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 	time.Sleep(time.Duration(15) * time.Second)
+	go initClusterDB()
+	time.Sleep(time.Duration(15) * time.Second)
 
 	out, err = serviceCmdBackground(pfservice + "pf start")
 	if err != nil {
@@ -96,6 +97,7 @@ func InitStartService() error {
 	}
 
 	updateCurrentlyAt()
+	log.LoggerWContext(ctx).Error("czhong: finished.")
 	return nil
 }
 

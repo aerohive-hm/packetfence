@@ -27,5 +27,5 @@ func handleGetServiceStatus(r *http.Request, d crud.HandlerData) []byte {
 	//var ctx = r.Context()
 	code := "ok"
 
-	return crud.FormPostRely(code, "")
+	return crud.FormPostRely(code, `"percentage":"100"`)
 }
