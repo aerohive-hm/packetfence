@@ -76,6 +76,7 @@ conf/radiusd/acct.conf
 conf/radiusd/auth.conf
 conf/radiusd/cli.conf
 conf/radiusd/clients.conf.inc
+conf/radiusd/eap.conf
 conf/radiusd/eduroam
 conf/radiusd/eduroam-cluster
 conf/radiusd/eduroam.conf
@@ -112,6 +113,7 @@ conf/snort/classification.config
 conf/snort/local.rules
 conf/snort/reference.config
 conf/switches.conf
+conf/httpd.conf.d/ssl-certificates.conf
 conf/iptables.conf
 conf/listener.msg
 conf/provisioning.conf
