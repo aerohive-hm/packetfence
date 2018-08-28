@@ -81,6 +81,16 @@ func UpdateItemsValue(ctx context.Context, items []Item) error {
 			return err
 		}
 	}
+
+
+	for _, item1 := range items {
+		err = UpdateJoinClusterconf(item1, GetHostname())
+		if err != nil {
+			log.LoggerWContext(ctx).Error("UpdateJoinClusterconf error:" + err.Error())
+			return err
+		}
+	}
+	
 	return nil
 
 }

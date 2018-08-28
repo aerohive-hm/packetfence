@@ -143,14 +143,21 @@ func DeletePrimaryClusterconf(i Item) error {
 	if isvlan {
 		name := []rune(i.Name) /*need to delete vlan for name*/
 		sectionid = fmt.Sprintf("CLUSTER interface eth0.%s", string(name[4:]))
-		return A3Delete("CLUSTER", sectionid)
+		A3Delete("CLUSTER", sectionid)
 
+		sectionid = fmt.Sprintf("%s interface eth0.%s", GetHostname(), string(name[4:]))
+		return A3Delete("CLUSTER", sectionid)
 	} else {
 		sectionid = "CLUSTER"
 		A3Delete("CLUSTER", sectionid)
 		sectionid = "CLUSTER interface eth0"
-		return A3Delete("CLUSTER", sectionid)
+		A3Delete("CLUSTER", sectionid)
+		sectionid = GetHostname()
+		A3Delete("CLUSTER", sectionid)
+		sectionid = GetHostname() + "interface eth0"
+		return A3Delete("CLUSTER", sectionid)		
 	}
+	
 }
 
 func UpdatePrimaryClusterconf(i Item) error {
