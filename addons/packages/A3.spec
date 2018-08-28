@@ -965,6 +965,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3ec
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3us
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3ma
+%attr(0755, pf, pf)     /usr/local/pf/bin/a3cs
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfhttpd
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd.pl
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd_vlan
@@ -993,6 +994,7 @@ fi
                         /usr/local/pf/conf/caddy-services/*.conf.example
 %config(noreplace)      /usr/local/pf/conf/chi.conf
 %config                 /usr/local/pf/conf/chi.conf.defaults
+%config                 /usr/local/pf/conf/cluster-files.txt
 %config(noreplace)      /usr/local/pf/conf/pfdns.conf
 %config(noreplace)      /usr/local/pf/conf/pfdhcp.conf
 %config(noreplace)      /usr/local/pf/conf/portal_modules.conf
