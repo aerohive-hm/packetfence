@@ -43,7 +43,7 @@ BEGIN {extends 'pfappserver::Base::Controller'; }
 =cut
 
 our %ALLOWED_SECTIONS = (
-    active_active     => undef,
+    # active_active     => undef,
     advanced          => undef,
     alerting          => undef,
     captive_portal    => undef,
@@ -51,6 +51,7 @@ our %ALLOWED_SECTIONS = (
     database_advanced => undef,
     fencing           => undef,
     general           => undef,
+    https_certificate => undef,
     # inline            => undef,
     metadefender      => undef,
     mse_tab           => undef,
@@ -277,6 +278,37 @@ sub networks :Local {
     $c->forward('_handle_tab_view');
 }
 
+=head2 clustering
+
+=cut
+
+sub clustering :Local {
+    my ($self, $c) = @_;
+
+    $c->stash->{template} = "configuration/cluster.tt";
+}
+
+=head2 certificates
+
+=cut
+
+sub certificates :Local {
+    my ($self, $c) = @_;
+
+    $c->stash->{template} = "configuration/certificates.tt";
+}
+
+=head2 cloudIntegration
+
+=cut
+
+sub cloudIntegration :Local {
+    my ($self, $c) = @_;
+
+    $c->stash->{template} = "configuration/cloudIntegration.tt";
+}
+
+
 =head2 network_conf
 
 =cut
@@ -438,6 +470,12 @@ sub all_subsections : Private {
                 maintenance => {
                     controller => 'Controller::Config::Pfmon',
                     name => 'Maintenance',
+                },
+                https_certificate => {
+                    controller => 'Controller::Configuration',
+                    action => 'section',
+                    action_args => ['https_certificate'],
+                    name => 'HTTPs Certificate',
                 }
                 # services => {
                 #     controller => 'Controller::Configuration',

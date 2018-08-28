@@ -1,0 +1,66 @@
+
+[%  jsFiles = [
+        'js/vendor/raphael.min',
+        'admin/config/items',
+        'js/node',
+        'js/user',
+        ]
+    cssFiles = [
+        ]
+-%]
+[% MACRO list_entry(action,description) BLOCK %]
+
+  <li[% IF section == action %] class="active"[% END %]>
+    <a href="#[% action %]">[% l(description) %]</a>
+  </li>
+[% END -%]
+<div class="card">
+    <div class="card-block">
+        <div class="documentation">
+          <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
+          <form>
+              <label class="form-horizontal control-label" style="float:left; width: 130px;" for="sharedKey">Shared Key</label>
+              <input class="form-inline help-inline" type="text" name="sharedKey" id="male" value="*****"><br>
+              <br/>
+              <label class="form-horizontal control-label" style="float:left; width:130px;" for="virtual_router_id">Virtual Router IP</label>
+              <input class="form-inline help-inline" type="text" name="virtual_router_id" id="other" value="50"><br>
+          </form>
+          <br>
+          <label style="float:left; width:130px;">  </label>
+          <button class="btn btn-success submit" style="width: 220px;">Submit</button>
+
+          <hr/>
+          <h6>Cluster Node List</h6>
+          <table id="items" class="table items" data-list-uri="https://10.16.139.168:1443/config/pfmon/list">
+            <thead>
+              <tr>
+                <th><a style="padding-left:1px;" href="#"><i class="icon-trash-o"></i></a></th>
+                <th>Host Name</th>
+                <th>IP Address</th>
+                <th>Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td class="item"><a href="https://10.16.139.168:1443/config/pfmon/acct_maintenance/read">a1.example.com</a></td>
+                <td>10.0.123.1</td>
+                <td>Master</td>
+                <td>Active</td>
+              </tr>
+
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td class="item"><a href="https://10.16.139.168:1443/config/pfmon/auth_log_cleanup/read">a2.example.com</a></td>
+                <td>10.0.123.1</td>
+                <td>Member</td>
+                <td>Active</td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+    </div>
+</div>
