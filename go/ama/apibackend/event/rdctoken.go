@@ -71,9 +71,10 @@ func handlePostToken(r *http.Request, d crud.HandlerData) []byte {
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("%+v", tokenRes))
 	if tokenRes.Data.MsgType == "amac_token" {
-		amac.UpdateRdcToken(ctx, tokenRes.Data.Token)
+		amac.UpdateRdcToken(ctx, tokenRes.Data.Data)
 	} else if tokenRes.Data.MsgType == "renew_token" {
-		amac.ReqTokenFromOtherNodes(ctx)
+		node := amac.MemberList{IpAddr: tokenRes.Data.Data}
+		amac.ReqTokenFromOtherNodes(ctx, &node)
 	} else {
 		log.LoggerWContext(ctx).Info("Unknow MsgType")
 		return []byte(crud.PostNOTOK)

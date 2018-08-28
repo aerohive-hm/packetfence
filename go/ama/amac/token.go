@@ -56,7 +56,7 @@ type NodeInfo struct {
 
 type tokenResData struct {
 	MsgType string `json:"msgType"`
-	Token   string `json:"token"`
+	Data    string `json:"token"`
 }
 
 type A3TokenResFromRdc struct {
@@ -180,7 +180,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
 func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 	tokenRes := A3TokenResFromRdc{}
 
-	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken", mem.IpAddr)
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken?systemID=%s&hostname=%s", mem.IpAddr, utils.GetA3SysId(), a3config.GetHostname())
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
 
 	node := new(innerClient.Client)
@@ -230,17 +230,23 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 
 	//	resp.Body.Close()
 
-	return tokenRes.Data.Token
+	return tokenRes.Data.Data
 }
 
 /*
 	This function needs to be called if the RDC token is absent
 	or expires
 */
-func ReqTokenFromOtherNodes(ctx context.Context) int {
+func ReqTokenFromOtherNodes(ctx context.Context, node *MemberList) int {
 
 	//mockup the active node list
-	memList := FetchNodeList()
+	memList := []MemberList{}
+
+	if node == nil {
+		memList = append(memList, FetchNodeList()...)
+	} else {
+		memList = append(memList, *node)
+	}
 	nodeNum := 0
 	token := ""
 
@@ -254,7 +260,7 @@ func ReqTokenFromOtherNodes(ctx context.Context) int {
 			return 0
 		}
 	}
-	if nodeNum > 1 && token == "" {
+	if nodeNum >= 1 && token == "" {
 		log.LoggerWContext(ctx).Error("Requeting token from other nodes fail")
 	}
 	return -1
@@ -403,7 +409,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		return "", ErrorMsgFromSrv
 	}
 
-	dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Token)
+	dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Data)
 	//RDC token need to write file, if process restart we can read it
 	UpdateRdcToken(ctx, dst)
 	//Save RDC url and VHM to config file if get the RDC token
