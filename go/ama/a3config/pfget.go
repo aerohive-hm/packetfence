@@ -38,32 +38,19 @@ func GetDomain() string {
 
 func GetPrimaryClusterVip(ifname string) string {
 	var keyname, vip string
-	isvlan := VlanInface(ifname)
-	if isvlan {
-		name := []rune(ifname) /*need to delete vlan for name*/
-		keyname = fmt.Sprintf("CLUSTER interface eth0.%s", string(name[4:]))
-		section := A3Read("CLUSTER", keyname)
-		if section == nil {
-			return ""
-		}
-		vip = section[keyname]["ip"]
 
-		if vip == "" {
-			vip = "0.0.0.0"
-		}
-		return vip
-	} else {
-		keyname = "CLUSTER"
-		section := A3Read("CLUSTER", keyname)
-		if section == nil {
-			return ""
-		}
-		vip = section["CLUSTER"]["management_ip"]
-		if vip == "" {
-			vip = "0.0.0.0"
-		}
-		return vip
+	keyname = fmt.Sprintf("CLUSTER interface %s", ifname)
+	section := A3Read("CLUSTER", keyname)
+	if section == nil {
+		return "0.0.0.0"
 	}
+	vip = section[keyname]["ip"]
+
+	if vip == "" {
+		vip = "0.0.0.0"
+	}
+	return vip
+
 }
 
 func GetKeyFromSection(sectionId string, key string) string {
