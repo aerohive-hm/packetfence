@@ -546,10 +546,14 @@ class networksCtl extends Component {
                 console.log(values);
 
                 let hasWrongValue=false;
-                if(self.checkVip(values.vip)===false){
-                    hasWrongValue=true;
-                    $("#vip").focus();
+
+                if(self.state.enableClustering===true){
+                    if(self.checkVip(values.vip)===false){
+                        hasWrongValue=true;
+                        $("#vip").focus();
+                    }
                 }
+
                 if(self.checkNetmask(values.netmask)===false){
                     hasWrongValue=true;
                     $("#netmask").focus();
