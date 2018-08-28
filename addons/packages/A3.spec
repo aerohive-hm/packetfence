@@ -1146,6 +1146,9 @@ fi
                         /usr/local/pf/conf/scan.conf.example
 %dir                    /usr/local/pf/conf/ssl
 %dir                    /usr/local/pf/conf/ssl/tls_certs
+                        /usr/local/pf/conf/ssl/tls_certs/eap-server.pem
+                        /usr/local/pf/conf/ssl/tls_certs/eap-server.key
+                        /usr/local/pf/conf/ssl/tls_certs/eap-cacerts.pem
 %dir                    /usr/local/pf/conf/systemd
 %config                 /usr/local/pf/conf/systemd/*
 %config(noreplace)      /usr/local/pf/conf/switches.conf
