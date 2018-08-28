@@ -33,6 +33,9 @@ func update(pass string) error {
 
 	rdcUrl = a3config.ReadCloudConf(a3config.RDCUrl)
 	//Not check the rdcUrl if NULL
+	if len(rdcUrl) != 0 {
+		installRdcUrl(nil, rdcUrl)
+	}
 
 	userName = a3config.ReadCloudConf(a3config.User)
 	if len(userName) != 0 {
