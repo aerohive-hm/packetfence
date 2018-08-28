@@ -140,8 +140,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
 
 	data, _ := json.Marshal(nodeInfo)
 	reader := bytes.NewReader(data)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Begin to fetch RDC token for node %s", node.Hostname))
-	//	url = fmt.Sprintf("http://10.155.23.116:8008/rest/v1/token/1234567?targetSysId=%s", node.SystemID)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Begin to fetch RDC token for node %s, url:%s", node.Hostname, fetchRdcTokenUrlForOthers))
 
 	request, err := http.NewRequest("POST", fetchRdcTokenUrlForOthers, reader)
 	if err != nil {
@@ -158,8 +157,8 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
 	}
 
 	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("receive the response ", resp.Status)
-	fmt.Println(string(body))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %s", resp.Status))
+	log.LoggerWContext(ctx).Info(string(body))
 
 	err = json.Unmarshal([]byte(body), &tokenRes)
 	if err != nil {
@@ -192,30 +191,6 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 
 	body := node.RespData
 
-	/*
-		url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
-		request, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			log.LoggerWContext(ctx).Error(err.Error())
-			return ""
-		}
-
-		//Using the packetfence token if communicating with cluster members
-		//To do, get a real packetfence token, take the expiration of token
-		//into account
-		request.Header.Add("Packetfence-Token", "packetfence token")
-		request.Header.Set("Content-Type", "application/json")
-		resp, err := client.Do(request)
-		if err != nil {
-			log.LoggerWContext(ctx).Error(err.Error())
-			return ""
-		}
-
-		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println("receive the response ", resp.Status)
-	*/
-	fmt.Println(string(body))
 	err = json.Unmarshal([]byte(body), &tokenRes)
 	if err != nil {
 		fmt.Println("json Unmarshal fail")
@@ -228,7 +203,7 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 		return ""
 	}
 
-	//	resp.Body.Close()
+	//resp.Body.Close()
 
 	return tokenRes.Data.Token
 }

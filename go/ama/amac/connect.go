@@ -41,6 +41,7 @@ var (
 	fetchRdcTokenUrl          string
 	fetchRdcTokenUrlForOthers string
 	keepAliveUrl              string
+	updateMsgUrl              string
 )
 
 const (
@@ -79,6 +80,7 @@ func installRdcUrl(ctx context.Context, rdcUrl string) {
 	fetchRdcTokenUrl = domain + "/amac/rest/token/apply/" + systemId
 	fetchRdcTokenUrlForOthers = domain + "/amac/rest/v1/token/" + systemId
 	keepAliveUrl = domain + "/amac/rest/v1/poll/" + systemId
+	updateMsgUrl = domain + "/amac/rest/v1/report/" + systemId
 	if ctx != nil {
 		log.LoggerWContext(ctx).Error(fmt.Sprintf("connMsgUrl:%s,fetchRdcTokenUrl:%s, keepAliveUrl:%s", connMsgUrl, fetchRdcTokenUrl, keepAliveUrl))
 	}
@@ -101,8 +103,6 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		log.LoggerWContext(ctx).Error(string(data))
 		reader := bytes.NewReader(data)
 
-		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		//url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/report/syn/%s", utils.GetA3SysId())
 		request, err := http.NewRequest("POST", connMsgUrl, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
@@ -149,6 +149,11 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 	This function is used to send update message if network/license changes
 */
 func updateMsgToRdc(ctx context.Context) int {
+	if updateMsgUrl == "" {
+		log.LoggerWContext(ctx).Error("RDC URL is NULL")
+		return -1
+	}
+
 	for {
 		node_info := a3share.GetIntChgInfo(ctx)
 		data, _ := json.Marshal(node_info)
@@ -156,10 +161,7 @@ func updateMsgToRdc(ctx context.Context) int {
 		log.LoggerWContext(ctx).Error(string(data))
 		reader := bytes.NewReader(data)
 
-		fmt.Println("begin to send initerface change to RDC")
-		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		//url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/report/syn/%s", utils.GetA3SysId())
-		request, err := http.NewRequest("POST", connMsgUrl, reader)
+		request, err := http.NewRequest("POST", updateMsgUrl, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
@@ -176,7 +178,7 @@ func updateMsgToRdc(ctx context.Context) int {
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		//fmt.Println(string(body))
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("receive the response %d", resp.StatusCode))
 		log.LoggerWContext(ctx).Error(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
@@ -245,7 +247,13 @@ func connectToRdcWithPara(ctx context.Context) (int, string) {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return -1, reason
 	}
-	//updateMsgToRdc(ctx)
+	/* Debugging code of integrating test with HM
+	updateMsgToRdc(ctx)
+	{
+		nodeInfo := NodeInfo{"B0C5-2104-0349-64CD-2D25-AAAA-AAAA-AAAA", "testforrequestRDCtoken"}
+		_ = ReqTokenForOtherNode(ctx, nodeInfo)
+	}
+	*/
 	return 0, ConnCloudSuc
 }
 
