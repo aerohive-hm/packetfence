@@ -1,4 +1,1 @@
 /usr/local/pf/conf/cluster-files.txt
-/usr/local/pf/conf/ssl/tls_certs/eap-server.pem
-/usr/local/pf/conf/ssl/tls_certs/eap-server.key
-/usr/local/pf/conf/ssl/tls_certs/eap-cacerts.pem
