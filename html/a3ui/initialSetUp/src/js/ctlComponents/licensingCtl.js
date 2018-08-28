@@ -165,7 +165,9 @@ class licensingCtl extends Component {
 
     onCancelEnterEntitlementKey= () => {
         let self=this;
-        self.props.form.resetFields();
+        self.setState({ 
+            enterEntitlementKeyVisible:false,
+        });
 
     }
 
