@@ -98,7 +98,6 @@ func UpdateNetconf(i Item) error {
 	ipv4Addr := net.ParseIP(i.IpAddr)
 	ipv4Mask := net.CIDRMask(a, 32)
 	keyname := fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask)) // ip & mask
-
 	if i.Services != "" {
 		Type = fmt.Sprintf("vlan-%s,%s", strings.ToLower(i.Type), strings.ToLower(i.Services))
 	} else {
@@ -131,13 +130,27 @@ func DeleteNetconf(i Item) error {
 	if !isvlan {
 		return nil
 	}
-
 	a := utils.NetmaskStr2Len(i.NetMask)
 	ipv4Addr := net.ParseIP(i.IpAddr)
 	ipv4Mask := net.CIDRMask(a, 32)
 	sectionid := fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask)) // ip & mask
-
 	return A3Delete("NETWORKS", sectionid)
+}
+
+func DeletePrimaryClusterconf(i Item) error {
+	var sectionid string
+	isvlan := VlanInface(i.Name)
+	if isvlan {
+		name := []rune(i.Name) /*need to delete vlan for name*/
+		sectionid = fmt.Sprintf("CLUSTER interface eth0.%s", string(name[4:]))
+		return A3Delete("CLUSTER", sectionid)
+
+	} else {
+		sectionid = "CLUSTER"
+		A3Delete("CLUSTER", sectionid)
+		sectionid = "CLUSTER interface eth0"
+		return A3Delete("CLUSTER", sectionid)
+	}
 }
 
 func UpdatePrimaryClusterconf(i Item) error {
@@ -154,21 +167,16 @@ func UpdatePrimaryClusterconf(i Item) error {
 		return A3Commit("CLUSTER", section)
 
 	} else {
-		keyname = "CLUSTER"
 		section := Section{
-			keyname: {
+			"CLUSTER": {
 				"management_ip": i.Vip,
 			},
-		}
-		A3Commit("CLUSTER", section)
-		section = Section{
-			keyname: {
+			"CLUSTER interface eth0": {
 				"ip": i.Vip,
 			},
 		}
 		return A3Commit("CLUSTER", section)
 	}
-
 }
 func UpdateJoinClusterconf(i Item, hostname string) error {
 

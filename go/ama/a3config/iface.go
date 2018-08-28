@@ -99,5 +99,9 @@ func DelSystemInterface(ctx context.Context, i Item) error {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("DeleteNetconf error:" + err.Error())
 	}
+	err = DeletePrimaryClusterconf(i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("DeletePrimaryClusterconf error:" + err.Error())
+	}
 	return nil
 }
