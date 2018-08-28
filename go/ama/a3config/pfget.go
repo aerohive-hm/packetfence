@@ -27,6 +27,7 @@ func ReadIface(ifname string) Section {
 	}
 	return nil
 }
+
 func GetDomain() string {
 	section := A3Read("PF", "general")
 	if section == nil {
@@ -63,4 +64,12 @@ func GetPrimaryClusterVip(ifname string) string {
 		}
 		return vip
 	}
+}
+
+func GetKeyFromSection(sectionId string, key string) string {
+	section := A3ReadFull("PF", sectionId)
+	if section == nil {
+		return ""
+	}
+	return section[sectionId][key]
 }
