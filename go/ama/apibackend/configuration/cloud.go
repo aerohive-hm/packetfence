@@ -14,7 +14,8 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/ama/share"
+	//	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -139,10 +140,12 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 END:
 	//start A3 all the services
 	if code == "ok" {
-		err = utils.StartService()
-		if err != nil {
-			log.LoggerWContext(ctx).Info(err.Error())
-		}
+		a3share.StartService()
+		/*
+			if err != nil {
+				log.LoggerWContext(ctx).Info(err.Error())
+			}
+		*/
 	}
 	if err != nil {
 		ret = err.Error()

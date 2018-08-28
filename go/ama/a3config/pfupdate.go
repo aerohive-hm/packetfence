@@ -203,3 +203,30 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 	}
 
 }
+func UpdateWebservicesAcct() error {
+	rsection := A3ReadFull("PF", "webservices")
+
+	wsection := Section{
+		"webservices": {
+			"user": rsection["webservices"]["user"],
+			"pass": rsection["webservices"]["pass"],
+		},
+	}
+
+	return A3Commit("PF", wsection)
+}
+
+func UpdateGaleraUser() error {
+
+	rsection := A3ReadFull("PF", "database")
+
+	wsection := Section{
+		"active_active": {
+			"galera_replication_username": rsection["database"]["user"],
+			"galera_replication_password": rsection["database"]["pass"],
+		},
+	}
+
+	return A3Commit("PF", wsection)
+
+}

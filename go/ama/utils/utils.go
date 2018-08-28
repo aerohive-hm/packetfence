@@ -3,10 +3,13 @@ package utils
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
+
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 const (
@@ -14,6 +17,15 @@ const (
 	A3Release     = A3Root + "/conf/pf-release"
 	A3CurrentlyAt = A3Root + "/conf/currently-at"
 )
+
+type Clis struct {
+	cmd    string
+	ignore bool
+	err    error
+	out    string
+}
+
+var ctx = context.Background()
 
 func ExecShell(s string) (string, error) {
 	cmd := exec.Command("/bin/bash", "-c", s)
@@ -27,6 +39,19 @@ func ExecShell(s string) (string, error) {
 	}
 
 	return out.String(), err
+}
+
+func ExecClis(clis []Clis) {
+	for _, cli := range clis {
+		cli.out, cli.err = ExecShell(cli.cmd)
+	}
+
+	for _, cmd := range clis {
+		if cmd.err != nil {
+			log.LoggerWContext(ctx).Error(cmd.err.Error())
+			log.LoggerWContext(ctx).Error(cmd.out)
+		}
+	}
 }
 
 func execCommand(cmdName string, params []string) bool {

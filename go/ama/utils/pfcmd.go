@@ -1,13 +1,13 @@
 package utils
 
 import (
-	"context"
 	//"errors"
 	"fmt"
 	//"regexp"
 	"github.com/inverse-inc/packetfence/go/log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -21,8 +21,6 @@ type Service struct {
 	ShouldBeStarted string
 	Pid             string
 }
-
-var ctx = context.Background()
 
 func pfExpire(ns string) {
 	cmd := pfconfig + " expire" + " " + ns
@@ -42,7 +40,7 @@ func serviceCmdBackground(cmd string) (string, error) {
 	return ExecShell("setsid " + cmd + " &>/dev/null &")
 }
 
-func StartPfServices() (string, error) {
+func UpdatePfServices() (string, error) {
 	cmd := pfservice + "pf updatesystemd"
 	return ExecShell(cmd)
 }
@@ -51,14 +49,37 @@ func updateCurrentlyAt() {
 	cmd := "cp -f " + A3Release + " " + A3CurrentlyAt
 	ExecShell(cmd)
 }
-
-// only Start Services during initial setup
-func StartService() error {
-	if IsFileExist(A3CurrentlyAt) {
-		return nil
+func initClusterDB() {
+	clis := []Clis{
+		{
+			cmd: pfcmd + "configreload hard",
+		},
+		{
+			cmd: pfcmd + "checkup",
+		},
+		{
+			cmd: `systemctl set-default packetfence-cluster`,
+		},
+		{
+			cmd: `systemctl stop packetfence-mariadb`,
+		},
+		{
+			cmd: "generatemariadbconfig",
+		},
+		{
+			cmd: `pf-mariadb --force-new-cluster`,
+		},
 	}
 
-	out, err := StartPfServices()
+	ExecClis(clis)
+}
+
+// only Start Services during initial setup
+func InitStartService() error {
+	initClusterDB()
+
+	log.LoggerWContext(ctx).Error("czhong: start init service...")
+	out, err := UpdatePfServices()
 	if err != nil {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
@@ -67,6 +88,7 @@ func StartService() error {
 	if err != nil {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
+	time.Sleep(time.Duration(15) * time.Second)
 
 	out, err = serviceCmdBackground(pfservice + "pf start")
 	if err != nil {
