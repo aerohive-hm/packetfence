@@ -45,7 +45,7 @@ var (
 
 const (
 	ConnCloudSuc    = "Connect to cloud successfully"
-	SrvNoResponse   = "Sever is unavailable"
+	SrvNoResponse   = "Server is unavailable"
 	AuthFail        = "Authenticate fail, please check the input parameters"
 	UrlIsNull       = "URL is NULL"
 	ErrorMsgFromSrv = "Error messages from server"
@@ -65,7 +65,9 @@ type VhmidResponse struct {
 */
 func installRdcUrl(ctx context.Context, rdcUrl string) {
 
-	log.LoggerWContext(ctx).Error("into installRdcUrl")
+	if ctx != nil {
+		log.LoggerWContext(ctx).Error("into installRdcUrl")
+	}
 	systemId := utils.GetA3SysId()
 
 	//Get the RDC domain name
@@ -77,15 +79,16 @@ func installRdcUrl(ctx context.Context, rdcUrl string) {
 	fetchRdcTokenUrl = domain + "/amac/rest/token/apply/" + systemId
 	fetchRdcTokenUrlForOthers = domain + "/amac/rest/v1/token/" + systemId
 	keepAliveUrl = domain + "/amac/rest/v1/poll/" + systemId
-
-	log.LoggerWContext(ctx).Error(fmt.Sprintf("connMsgUrl:%s,fetchRdcTokenUrl:%s, keepAliveUrl:%s", connMsgUrl, fetchRdcTokenUrl, keepAliveUrl))
+	if ctx != nil {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("connMsgUrl:%s,fetchRdcTokenUrl:%s, keepAliveUrl:%s", connMsgUrl, fetchRdcTokenUrl, keepAliveUrl))
+	}
 }
 
 /*
 	Send onboarding info to HM once obataining the RDC's token
 */
 func onbordingToRdc(ctx context.Context) (int, string) {
-	if rdcUrl == "" {
+	if connMsgUrl == "" {
 		log.LoggerWContext(ctx).Error("RDC URL is NULL")
 		return -1, UrlIsNull
 	}
@@ -93,7 +96,8 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		node_info := a3share.GetOnboardingInfo(ctx)
 		data, _ := json.Marshal(node_info)
 
-		log.LoggerWContext(ctx).Error("begin to send onboarding request to RDC")
+		log.LoggerWContext(ctx).Error("begin to send onboarding request to RDC, connMsgUrl=")
+		log.LoggerWContext(ctx).Error(connMsgUrl)
 		log.LoggerWContext(ctx).Error(string(data))
 		reader := bytes.NewReader(data)
 

@@ -325,6 +325,11 @@ func fillRdcTokenReq() rdcTokenReqFromRdc {
 func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	tokenRes := A3TokenResFromRdc{}
 
+	if fetchRdcTokenUrl == "" {
+		log.LoggerWContext(ctx).Error("RDC URL is NULL")
+		return "", UrlIsNull
+	}
+
 	node_info := fillRdcTokenReq()
 	data, _ := json.Marshal(node_info)
 
