@@ -1,17 +1,28 @@
 package utils
 
 import (
-	//	"fmt"
-	//	"strings"
-	"errors"
-	//	"github.com/inverse-inc/packetfence/go/log"
+	"context"
+	//"errors"
+	"fmt"
+	//"regexp"
+	"github.com/inverse-inc/packetfence/go/log"
+	"strconv"
+	"strings"
 )
 
 const (
-	pfcmd     = A3Root + "bin/pfcmd"
-	pfconfig  = "sudo pfcmd pfconfig"
-	pfservice = "sudo pfcmd service"
+	pfcmd     = A3Root + "/bin/pfcmd "
+	pfconfig  = "sudo " + pfcmd + "pfconfig "
+	pfservice = "sudo " + pfcmd + "service "
 )
+
+type Service struct {
+	Name            string
+	ShouldBeStarted string
+	Pid             string
+}
+
+var ctx = context.Background()
 
 func pfExpire(ns string) {
 	cmd := pfconfig + " expire" + " " + ns
@@ -27,8 +38,12 @@ func restartPfconfig() (string, error) {
 	return ExecShell(cmd)
 }
 
+func serviceCmdBackground(cmd string) (string, error) {
+	return ExecShell("setsid " + cmd + " &>/dev/null &")
+}
+
 func StartPfServices() (string, error) {
-	cmd := pfservice + "  pf updatesystemd"
+	cmd := pfservice + "pf updatesystemd"
 	return ExecShell(cmd)
 }
 
@@ -45,14 +60,51 @@ func StartService() error {
 
 	out, err := StartPfServices()
 	if err != nil {
-		return errors.New(out)
+		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
 	out, err = restartPfconfig()
 	if err != nil {
-		return errors.New(out)
+		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
+	}
+
+	out, err = serviceCmdBackground(pfservice + "pf start")
+	if err != nil {
+		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
 	updateCurrentlyAt()
+	return nil
+}
+
+func ServiceStatus() error {
+	cmd := pfservice + "pf status"
+	ret, err := ExecShell(cmd)
+	lines := strings.Split(ret, "\n")
+	if len(lines) < 1 {
+		return err
+	}
+
+	toBeStarted := 0
+	started := 0
+	for _, l := range lines {
+		vals := strings.Split(l, "|")
+		if len(vals) < 3 {
+			continue
+		}
+		i, err := strconv.Atoi(vals[1])
+		if err != nil {
+			continue
+		}
+
+		toBeStarted += i
+
+		i, err = strconv.Atoi(vals[2])
+		if err != nil || i <= 0 {
+			continue
+		}
+		started++
+	}
+	fmt.Println(toBeStarted, started)
 	return nil
 }

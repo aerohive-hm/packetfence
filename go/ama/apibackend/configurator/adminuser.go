@@ -9,11 +9,11 @@ import (
 	//	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/database"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -40,8 +40,8 @@ const sqlCmd = "replace into password(pid,password,valid_from,expiration,access_
 
 /*write admin info to password table*/
 func writeAdminToDb(user, password, table string) error {
-	timeStart := time.Now().UTC().Format("2006-01-02 15:04:05")
-	expiration := "2038-01-01 00:00:00"
+	timeStart := utils.AhNowUtcFormated()
+	expiration := utils.ExpireTime
 
 	// strip realm, code to be removed
 	ret := strings.Split(user, "@")
