@@ -45,7 +45,7 @@ var (
 
 const (
 	ConnCloudSuc    = "Connect to cloud successfully"
-	SrvNoResponse   = "Sever is unavailable"
+	SrvNoResponse   = "Server is unavailable"
 	AuthFail        = "Authenticate fail, please check the input parameters"
 	UrlIsNull       = "URL is NULL"
 	ErrorMsgFromSrv = "Error messages from server"
