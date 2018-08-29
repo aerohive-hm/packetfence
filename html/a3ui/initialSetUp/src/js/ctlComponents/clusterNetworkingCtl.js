@@ -262,7 +262,7 @@ class clusterNetworkingCtl extends Component {
                 
                 let param={
                     hostname:values.hostname,
-                    itmes:self.getItems(),
+                    items:self.getItems(),
                 }
 
                 new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
