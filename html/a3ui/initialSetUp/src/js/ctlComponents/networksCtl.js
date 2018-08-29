@@ -111,6 +111,41 @@ class networksCtl extends Component {
         });
     }
 
+    getDataTable= () => {
+        let self=this;
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/networks";
+         
+        let param={
+        }
+        
+        self.setState({
+            loading : true,
+        })
+
+        new RequestApi('get',url,param,xCsrfToken,(data)=>{
+            self.getTrueDataTable(data);
+        });
+
+        //self.getTrueData(mock.networks);
+    }
+
+    getTrueDataTable= (data) => {
+        let self=this;
+        let dataTable=data.items;
+        for(let i=0;i<dataTable.length;i++){
+            dataTable[i].key=dataTable[i].name;
+            dataTable[i].vlan=dataTable[i].name;
+            dataTable[i].clicked="";
+            dataTable[i].services=dataTable[i].services===""?[]:dataTable[i].services.split(",");
+        }
+        self.setState({
+            dataTable: dataTable,
+            loading : false,
+        }); 
+    }
+
 
     onChangeCheckbox=(e)=>{
         let self=this;
@@ -624,7 +659,7 @@ class networksCtl extends Component {
                         self.setState({ 
                             addVlanVisible:false,
                         });
-                        self.getData();
+                        self.getDataTable();
                     }else{
                         message.destroy();
                         message.error(data.msg);
@@ -1182,7 +1217,7 @@ class networksCtl extends Component {
                                     type="primary" 
                                     className="modal-form-button-next-antd-button-networksCtl" 
                                     htmlType="submit" 
-                                >{self.state.i18n.next}</Button>
+                                >{self.state.i18n.save}</Button>
                             </div>
                             <div className="modal-form-button-cancel-div-networksCtl">
                                 <Button 
