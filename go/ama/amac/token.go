@@ -184,6 +184,7 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
 
 	node := new(innerClient.Client)
+	node.Host = mem.IpAddr
 	err := node.ClusterSend(ctx, "GET", url, "")
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
@@ -232,7 +233,8 @@ func ReqTokenFromOtherNodes(ctx context.Context, node *MemberList) int {
 		nodeNum++
 		token = reqTokenFromSingleNode(ctx, mem)
 		if len(token) > 0 {
-			UpdateRdcToken(ctx, token)
+			dst := fmt.Sprintf("Bearer %s", token)
+			UpdateRdcToken(ctx, dst)
 			return 0
 		}
 	}
@@ -261,6 +263,7 @@ func distributeToSingleNode(ctx context.Context, mem MemberList, selfRenew bool)
 	for {
 		url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken", mem.IpAddr)
 		node := new(innerClient.Client)
+		node.Host = mem.IpAddr
 		err := node.ClusterSend(ctx, "POST", url, string(token))
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())

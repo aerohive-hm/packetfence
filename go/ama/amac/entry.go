@@ -287,7 +287,8 @@ func dispathMsgFromRdc(ctx context.Context, message []byte) {
 	for _, resMsg := range keepAliveResp {
 		if resMsg.Data["msgType"] == "amac_token" {
 			//RDC token need to write file, if process restart we can read it
-			UpdateRdcToken(ctx, resMsg.Data["token"])
+			dst := fmt.Sprintf("Bearer %s", resMsg.Data["token"])
+			UpdateRdcToken(ctx, dst)
 			rdcTokenStr = resMsg.Data["token"]
 		}
 	}
