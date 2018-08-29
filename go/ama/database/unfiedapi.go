@@ -1,13 +1,14 @@
 package amadb
 
 import (
-	//"context"
+	//	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	//	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	//	"github.com/inverse-inc/packetfence/go/log"
 )
 
 const (
@@ -65,8 +66,8 @@ func (db *A3Db) execOnce(sql string, args ...interface{}) error {
 	}
 	defer stmt.Close()
 
-	stmt.Exec(args...)
-	return nil
+	_, err = stmt.Exec(args...)
+	return err
 }
 
 func (db *A3Db) Exec(sql []SqlCmd) error {

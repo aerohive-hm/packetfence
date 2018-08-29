@@ -8,7 +8,7 @@ import (
 	//	"strconv"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
+	//	"github.com/inverse-inc/packetfence/go/ama/utils"
 	//	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -27,10 +27,5 @@ func handleGetServiceStatus(r *http.Request, d crud.HandlerData) []byte {
 	//var ctx = r.Context()
 	code := "ok"
 
-	err := utils.StartService()
-
-	if err != nil {
-		code = "fail"
-	}
-	return crud.FormPostRely(code, err.Error())
+	return crud.FormPostRely(code, `"percentage":"100"`)
 }

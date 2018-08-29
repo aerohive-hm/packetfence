@@ -18,7 +18,7 @@ func GetIfaceElementVlaue(ifname, element string) string {
 
 func GetIfaceType(ifname string) string {
 	iftype := strings.Split(GetIfaceElementVlaue(ifname, "type"), ",")
-	if iftype[0] == "internal" {
+	if strings.Contains(ifname, ".") {
 		netsection := A3Read("NETWORKS", "all")
 		for k, _ := range netsection {
 			if netsection[k]["gateway"] == GetIfaceElementVlaue(ifname, "ip") {
@@ -33,11 +33,20 @@ func GetIfaceType(ifname string) string {
 }
 
 func GetIfaceServices(ifname string) []string {
-	iftype := strings.Split(GetIfaceElementVlaue(ifname, "type"), ",")
 	services := []string{}
-	if len(iftype) > 0 {
-		services = iftype[1:]
+	iftype := GetIfaceElementVlaue(ifname, "type")
+	if iftype == "" {
+		return services
 	}
+	s := strings.Split(iftype, ",")
+	l := len(s)
+	if strings.Contains(iftype, "high-availability") {
+		services = s[1 : l-1]
+	} else {
+		fmt.Println("2", s)
+		services = s[1:]
+	}
+
 	return services
 }
 

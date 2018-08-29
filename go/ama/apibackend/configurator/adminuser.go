@@ -6,14 +6,14 @@ package configurator
 import (
 	"context"
 	"encoding/json"
-	//	"fmt"
+	//"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/database"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -34,14 +34,31 @@ func AdminUserNew(ctx context.Context) crud.SectionCmd {
 	return admin
 }
 
+func hashPassword(password string) string {
+	method := a3config.GetKeyFromSection("advanced", "hash_passwords")
+	if method == "plaintext" {
+		return password
+	} else if method == "bcrypt" {
+		return utils.AhBcryptHash(password)
+	} else if method == "ntlm" {
+		// TODO
+		return ""
+	}
+	return ""
+}
+
 /* replace is better than insert because it does not need to check if pid exsit or not */
-const sqlCmd = "replace into password(pid,password,valid_from,expiration,access_level )" +
-	"values(?,?,?,?,?)"
+const (
+	sqlCmd = `replace into password(pid,password,valid_from,expiration,access_level)` +
+		`values(?,?,?,?,?)`
+	apiUserSql = `replace into api_user(username,password,valid_from,expiration,` +
+		`access_level)values(?,?,?,?,?)`
+)
 
 /*write admin info to password table*/
-func writeAdminToDb(user, password, table string) error {
-	timeStart := time.Now().UTC().Format("2006-01-02 15:04:05")
-	expiration := "2038-01-01 00:00:00"
+func writeAdminToDb(user, password string) error {
+	timeStart := utils.AhNowUtcFormated()
+	expiration := utils.ExpireTime
 
 	// strip realm, code to be removed
 	ret := strings.Split(user, "@")
@@ -52,12 +69,13 @@ func writeAdminToDb(user, password, table string) error {
 		tmpUser = user
 	}
 
+	hpassword := `{bcrypt}` + hashPassword(password)
 	sql := []amadb.SqlCmd{
 		{
 			sqlCmd,
 			[]interface{}{
 				tmpUser,
-				password,
+				hpassword,
 				timeStart,
 				expiration,
 				"ALL",
@@ -70,14 +88,20 @@ func writeAdminToDb(user, password, table string) error {
 				user,
 			},
 		},
+		{
+			apiUserSql,
+			[]interface{}{
+				user,
+				hpassword,
+				timeStart,
+				expiration,
+				"ALL",
+			},
+		},
 	}
 
 	db := new(amadb.A3Db)
-	err := db.Exec(sql)
-	if err != nil {
-		return err
-	}
-	return nil
+	return db.Exec(sql)
 }
 
 /*
@@ -98,7 +122,7 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	err = writeAdminToDb(admin.User, admin.Pass, "password")
+	err = writeAdminToDb(admin.User, admin.Pass)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("write db error: " + err.Error())
 		goto END

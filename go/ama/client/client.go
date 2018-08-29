@@ -3,7 +3,6 @@ package apibackclient
 import (
 	"context"
 	"crypto/tls"
-	"encoding/base64"
 	"encoding/json"
 	//"errors"
 	"fmt"
@@ -13,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/inverse-inc/packetfence/go/sharedutils"
 )
@@ -126,8 +126,7 @@ func (c *Client) Call(method, url string, body string) error {
 }
 
 func genBasicToken(user string, pass string) string {
-	return "Basic " + base64.StdEncoding.EncodeToString(
-		[]byte(user+":"+pass))
+	return "Basic " + utils.AhBase64Enc(user+":"+pass)
 }
 
 type token struct {

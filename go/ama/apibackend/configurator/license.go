@@ -3,19 +3,21 @@ package configurator
 import (
 	"context"
 	"encoding/json"
-	//	"fmt"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/database"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
 const (
-	sqlUpdate = "replace into a3_entitlement(entitlement_key, type, status, endpoint_count," +
+	sqlUpdateLicense = "replace into a3_entitlement(entitlement_key, type, status, endpoint_count," +
 		"sub_start, sub_end, support_start, support_end)values(?,?,?,?,?,?,?,?)"
+	sqlUpdateEula = "replace into a3_eula_acceptance(timestamp, is_synced)values(?,?)"
 )
 
 type LicenseConf struct {
@@ -69,7 +71,7 @@ func createTrial() error {
 
 	sql := []amadb.SqlCmd{
 		{
-			sqlUpdate,
+			sqlUpdateLicense,
 			[]interface{}{
 				"TRIAL",
 				"Trial",
@@ -84,17 +86,13 @@ func createTrial() error {
 	}
 
 	db := new(amadb.A3Db)
-	err := db.Exec(sql)
-	if err != nil {
-		return err
-	}
-	return nil
+	return db.Exec(sql)
 }
 
 func create(key string, eva *LicenseEva) error {
 	sql := []amadb.SqlCmd{
 		{
-			sqlUpdate,
+			sqlUpdateLicense,
 			[]interface{}{
 				key,
 				eva.Type,
@@ -109,11 +107,22 @@ func create(key string, eva *LicenseEva) error {
 	}
 
 	db := new(amadb.A3Db)
-	err := db.Exec(sql)
-	if err != nil {
-		return err
+	return db.Exec(sql)
+}
+
+func recordEula(timestamp string) error {
+	sql := []amadb.SqlCmd{
+		{
+			sqlUpdateEula,
+			[]interface{}{
+				timestamp,
+				true,
+			},
+		},
 	}
-	return nil
+
+	db := new(amadb.A3Db)
+	return db.Exec(sql)
 }
 
 func handlePostLicenseConf(r *http.Request, d crud.HandlerData) []byte {
@@ -131,7 +140,6 @@ func handlePostLicenseConf(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	if license.Trial == "1" {
-		log.LoggerWContext(ctx).Info("czhong: create trial")
 		err = createTrial()
 		if err == nil {
 			code = "ok"
@@ -140,10 +148,19 @@ func handlePostLicenseConf(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	if license.EulaAccept {
-		_, err = apibackclient.RecordEula()
+		log.LoggerWContext(ctx).Info("record Eula accept.")
+		timestamp := utils.AhNowUtcFormated()
+		resp, err := apibackclient.RecordEula(timestamp)
+		if err != nil {
+			goto END
+		}
+		err = recordEula(timestamp)
 		if err == nil {
 			code = "ok"
+			log.LoggerWContext(ctx).Info(fmt.Sprintln(resp))
+
 		}
+
 		goto END
 	}
 

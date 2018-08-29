@@ -2,7 +2,6 @@ package apibackclient
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -24,13 +23,13 @@ func VerifyLicense(key string) ([]byte, error) {
 	return c.RespData, err
 }
 
-func RecordEula() ([]byte, error) {
+func RecordEula(timestamp string) ([]byte, error) {
 	a3Cfg := a3config.A3ReadFull("PF", "A3")["A3"]
 
 	c := new(Client)
 	url := a3Cfg["license_server"] + a3Cfg["eula_path"] + "/" + utils.GetA3SysId()
 	c.Token = genBasicToken(a3Cfg["license_username"], a3Cfg["license_password"])
-	body := fmt.Sprintf(`{"timestamp":"%s"}`, time.Now().UTC().Format(StdTimeiTFormat))
+	body := fmt.Sprintf(`{"timestamp":"%s"}`, timestamp)
 
 	err := c.Call("POST", url, body)
 	return c.RespData, err
