@@ -25,6 +25,11 @@ type ClusterNetworksData struct {
 	Items    []Item `json:"items"`
 }
 
+type ClusterNetworksData1 struct {
+	HostName string `json:"hostname"`
+	Items    []Item `json:"itmes"`
+}
+
 type NetworksData struct {
 	ClusterEnable bool   `json:"cluster_enable"`
 	HostName      string `json:"hostname"`

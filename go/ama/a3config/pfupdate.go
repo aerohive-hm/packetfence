@@ -231,6 +231,7 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 	}
 
 }
+
 func UpdateWebservicesAcct() error {
 	rsection := A3ReadFull("PF", "webservices")
 
@@ -258,3 +259,20 @@ func UpdateGaleraUser() error {
 	return A3Commit("PF", wsection)
 
 }
+
+
+func WriteUserPassToPF(host, username, passw string) error {
+
+	section := Section {
+		"Cluster Primary": {
+			"ip": host,
+		},
+		"webservices": {
+			"user": username,
+			"pass": passw,
+		},
+	}
+	return A3Commit("PF", section)
+
+}
+
