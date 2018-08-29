@@ -25,7 +25,5 @@ func ServicesNew(ctx context.Context) crud.SectionCmd {
 
 func handleGetServiceStatus(r *http.Request, d crud.HandlerData) []byte {
 	//var ctx = r.Context()
-	code := "ok"
-
-	return crud.FormPostRely(code, `"percentage":"100"`)
+	return []byte(`{"code":"ok", "percentage":"100"}`)
 }
