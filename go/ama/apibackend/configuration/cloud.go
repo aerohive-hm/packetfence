@@ -141,12 +141,8 @@ END:
 	//start A3 all the services
 	if code == "ok" {
 		go a3share.StartService()
-		/*
-			if err != nil {
-				log.LoggerWContext(ctx).Info(err.Error())
-			}
-		*/
 	}
+
 	if err != nil {
 		ret = err.Error()
 	}
