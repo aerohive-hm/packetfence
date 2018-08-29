@@ -43,3 +43,9 @@ func SetHostname(hostname string) {
 	}
 	ExecClis(clis)
 }
+
+/*
+func waitProc(daemon string) error {
+	cmd :=
+}
+*/
