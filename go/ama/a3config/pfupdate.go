@@ -197,7 +197,7 @@ func UpdatePrimaryClusterconf(i Item) error {
 func UpdateJoinClusterconf(i Item, hostname string) error {
 	var keyname string
 
-	if i.Vip == "" || i.Vip == "0.0.0.0" {
+	if !utils.IsFileExist("/usr/local/pf/conf/cluster.conf") {
 		return nil
 	}
 
