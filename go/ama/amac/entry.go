@@ -33,6 +33,7 @@ const (
 	DisableCloudIntegration = 4
 	RdcTokenUpdate          = 5
 	RemoveNodeFromCluster   = 6
+	JoinClusterComplete     = 7
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -187,6 +188,13 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 
 	case RemoveNodeFromCluster:
 		UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
+
+	case JoinClusterComplete:
+		//Read the conf file and install RDC URL
+		_ = update("")
+		if globalSwitch == "enable" {
+			connectToRdcWithoutPara(ctx)
+		}
 
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")

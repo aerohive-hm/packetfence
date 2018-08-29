@@ -50,7 +50,7 @@ const (
 	AuthFail        = "Authenticate fail, please check the input parameters"
 	UrlIsNull       = "URL is NULL"
 	ErrorMsgFromSrv = "Error messages from server, please check the input parameters"
-	LimitedAccess   = "Limited access, please use an administrator account"
+	LimitedAccess   = "Limited access, please use an administrator/operator account"
 	UpdateMsgSuc    = "Update message to cloud successfully"
 	InvalidToken    = "Token is invalid, update message to cloud fail, "
 	OtherError      = "System error"
@@ -174,6 +174,7 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 		return res
 	}
 	updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
+	_, _ = UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
 	return 0
 }
 
@@ -197,7 +198,7 @@ func connectToRdcWithPara(ctx context.Context) (int, string) {
 	/* Debugging code of integrating test with HM
 	updateMsgToRdcAsyn(ctx, LicenseInfoChange)
 	updateMsgToRdcAsyn(ctx, NetworkChange)
-	
+
 	{
 		nodeInfo := NodeInfo{"B0C5-2104-0349-64CD-2D25-AAAA-AAAA-AAAA", "testforrequestRDCtoken"}
 		_ = ReqTokenForOtherNode(ctx, nodeInfo)
