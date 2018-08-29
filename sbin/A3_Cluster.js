@@ -45,7 +45,7 @@ function system_call(cmd, opts) {
 	  reject(data);
 	});
         proc.on('close', (code) => {
-	   audit_log('we got return code for cmd '+cmd+' '+opts+' is ['+code+']');
+	   audit_log('The return code for cmd '+cmd+' '+opts+' is ['+code+']');
            if (code == 0) {
                 resolve("Success to execute cmd "+cmd+" " +opts);
            }else {

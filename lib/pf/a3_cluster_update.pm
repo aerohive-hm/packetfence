@@ -604,7 +604,7 @@ sub roll_back_app {
     #                | $HEAD_BIN -1`;
     _commit_cluster_update_log("Start rolling back last update");
     #call_system_cmd("$YUM_BIN history undo $history_id -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE");
-    my $A3_downgrd_pkg = "A3*$pre_version";
+    my $A3_downgrd_pkg = "A3*$prev_version";
     call_system_cmd("$YUM_BIN clean all; $YUM_BIN makecache fast; $YUM_BIN downgrade $A3_downgrd_pkg -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE");
     _commit_cluster_update_log("Finished rolling back to last release");
     restore_conf_file();
