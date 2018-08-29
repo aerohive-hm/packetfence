@@ -72,10 +72,11 @@ func FetchNodeList() []MemberList {
 	}
 	nodes := []MemberList{}
 	headNode := []MemberList{}
+	ownMgtIP := a3config.GetIfaceElementVlaue("eth0", "ip")
 	for secName, kvpair := range conf {
 		is_primary := (secName == "CLUSTER")
 		for k, v := range kvpair {
-			if k == "management_ip" {
+			if k == "management_ip" && v != ownMgtIP {
 				node := MemberList{IpAddr: v}
 				if is_primary {
 					headNode = append(headNode, node)
