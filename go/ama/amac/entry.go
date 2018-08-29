@@ -33,6 +33,7 @@ const (
 	DisableCloudIntegration = 4
 	RdcTokenUpdate          = 5
 	RemoveNodeFromCluster   = 6
+	JoinClusterComplete     = 7
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -171,19 +172,29 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	*/
 	case GdcConfigChange:
 
-	// To do, handle the result, include GDC auth fail, RDC auth fail, server down
 	case NetworkChange:
-		updateMsgToRdc(ctx)
+		updateMsgToRdcAsyn(ctx, NetworkChange)
+
 	case LicenseInfoChange:
+		updateMsgToRdcAsyn(ctx, LicenseInfoChange)
 
 	case DisableCloudIntegration:
 		updateConnStatus(AMA_STATUS_INIT)
 		globalSwitch = "disable"
+
 	case RdcTokenUpdate:
 		//To do, set the globalswitch to enable
 		connectToRdcWithoutPara(ctx)
-	// To do, handle the result,
+
 	case RemoveNodeFromCluster:
+		UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
+
+	case JoinClusterComplete:
+		//Read the conf file and install RDC URL
+		_ = update("")
+		if globalSwitch == "enable" {
+			connectToRdcWithoutPara(ctx)
+		}
 
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")

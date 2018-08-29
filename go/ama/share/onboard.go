@@ -95,6 +95,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		//a3Interface.Service = []string{"PORTAL"}
 		a3Interface.Type = a3config.GetIfaceType(ifullname)
 		a3Interface.Type = strings.ToUpper(a3Interface.Type)
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("interface %s type is %s", ifullname, a3Interface.Type))
 		a3Interface.Type = "MANAGEMENT"
 		a3Interface.Service = a3config.GetIfaceServices(ifullname)
 		for _, service := range a3Interface.Service {
