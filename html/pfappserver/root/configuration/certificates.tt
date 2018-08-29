@@ -4,10 +4,11 @@
         'admin/config/items',
         'js/node',
         'js/user',
+        'js/certificates'
         ]
 -%]
 <head>
-  <link href="[% c.uri_for('/static/admin/config/certificates.css') %]" rel="stylesheet">
+  <!-- <link href="[% c.uri_for('/static/admin/config/certificates.css') %]" rel="stylesheet"> -->
 </head>
 <div class="card">
     <div class="card-block">
@@ -22,25 +23,29 @@
               </li>
             </ul>
             <div class="tab-content">
+
               <div id="eap_tls" class="tab-pane fade in active">
                 <div style="padding-left: 50px;">
-                  <label><h4>EAP-TLS</h4></label>
-                  <div class="server">
-                    <h6>Server Certificate and Key Upload</h6>
-                    <span>A server key and server certificate is required. If a CA certificate exists, upload that as well.</span>
-                    <br><br>
-                    <label><h6>Key (file type:  .key)</h6></label>
-                    <input type="file" name="serverCert" id="file" class="inputfile" />
+                  <form class="eap_tls_form">
+                    <label><h4>EAP-TLS</h4></label>
+                    <div class="server">
+                      <h6>Server Certificate and Key Upload</h6>
+                      <span>A server key and server certificate is required. If a CA certificate exists, upload that as well.</span>
+                      <br><br>
+                      <input id="serverKey_path" name="serverKey_path" type="hidden" value="">
+                      <label><h6>Key (file type:  .key)</h6></label>
+                      <input id="serverKey" name="serverKey_upload" class="serverKey" type="file"/>
+                      <br>
+                      <label><h6>Server Certificate (file type:  .pem)</h6></label>
+                      <input id="serverCert" name="serverCert_upload" class="serverCert" type="file">
+                    </div>
                     <br>
-                    <label><h6>Server Certificate (file type:  .pem)</h6></label>
-                    <input class="serverKey" type="file">
-                  </div>
-                  <br>
-                  <div class="caFile">
-                    <h6>CA Certificate Upload (file type:  .pem)</h6>
-                    <input class="ca" type="file">
-                  </div>
-                  <button class="btn btn-success" style="float:right;">Submit</button>
+                    <div class="caFile">
+                      <h6>CA Certificate Upload (file type:  .pem)</h6>
+                      <input class="ca" type="file">
+                    </div>
+                    <button class="btn btn-success" style="float:right;">Submit</button>
+                  </form>
                 </div>
               </div>
 
@@ -52,10 +57,10 @@
                       <span>A server key and server certificate is required.</span>
                       <br><br>
                       <label><h6>Key (file type:  .key)</h6></label>
-                      <input class="serverFile" type="file">
+                      <input class="serverFile_upload" type="file">
                       <br>
                       <label><h6>Server Certificate (file type:  .pem)</h6></label>
-                      <input class="serverKey" type="file">
+                      <input class="serverKey_upload" type="file">
                     </div>
                     <button class="btn btn-success" style="float:right;">Submit</button>
                   </div>
@@ -64,3 +69,21 @@
         </div>
     </div>
 </div>
+
+<script>
+
+$(document).ready(function(){
+  alert("in process files");
+  var base_url = window.location.origin;
+  return $.ajax({
+      type: 'POST',
+      url: base_url + '/uploadKey',
+      success: function(data){
+        alert("post went through");
+      },
+      error: function(data){
+        alert("did not go through");
+      }
+  });
+});
+</script>
