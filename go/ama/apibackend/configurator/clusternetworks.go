@@ -101,10 +101,10 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(err.Error())
 	}
 
-
 	body := client.RespData
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive from cluster primay data:%s", string(body)))	
 	//TODO check if need to write account to pf.conf
+
 
 	return []byte(crud.PostOK)
 }

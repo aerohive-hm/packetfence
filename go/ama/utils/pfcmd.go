@@ -64,7 +64,7 @@ func initClusterDB() {
 			cmd: `systemctl stop packetfence-mariadb`,
 		},
 		{
-			cmd: "generatemariadbconfig",
+			cmd: pfcmd + "generatemariadbconfig",
 		},
 		{
 			cmd: A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
@@ -76,8 +76,6 @@ func initClusterDB() {
 
 // only Start Services during initial setup
 func InitStartService() error {
-
-	log.LoggerWContext(ctx).Error("czhong: start init service...")
 	out, err := UpdatePfServices()
 	if err != nil {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
@@ -87,6 +85,7 @@ func InitStartService() error {
 	if err != nil {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
+
 	time.Sleep(time.Duration(15) * time.Second)
 	go initClusterDB()
 	time.Sleep(time.Duration(15) * time.Second)
@@ -97,8 +96,64 @@ func InitStartService() error {
 	}
 
 	updateCurrentlyAt()
-	log.LoggerWContext(ctx).Error("czhong: finished.")
 	return nil
+}
+
+func ForceNewCluster() {
+	clis := []Clis{
+		{
+			cmd: pfcmd + "configreload hard",
+		},
+		{
+			cmd: pfcmd + "checkup",
+		},
+		{
+			cmd: "systemctl stop packetfence-mariadb",
+		},
+		{
+			cmd: pfcmd + "generatemariadbconfig",
+		},
+		{
+			cmd: A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
+		},
+	}
+
+	ExecClis(clis)
+}
+
+func SyncFromPrimary(ip, user, pass string) {
+	clis := []Clis{
+		{
+			cmd: `systemctl stop packetfence-iptables`,
+		},
+		{
+			cmd: fmt.Sprintf(A3Root+`/bin/cluster/sync --from=%s`+
+				`--api-user=%s --api-password=%s`, ip, user, pass),
+		},
+		{
+			cmd: `systemctl restart packetfence-config`,
+		},
+		{
+			cmd: pfcmd + "configreload",
+		},
+		{
+			cmd: `systemctl set-default packetfence-cluster`,
+		},
+		{
+			cmd: `rm -fr /var/lib/mysql/*`,
+		},
+		{
+			cmd: `systemctl restart packetfence-mariadb`,
+		},
+		{
+			cmd: pfservice + "haproxy-db restart",
+		},
+		{
+			cmd: pfservice + "httpd.webservices restart",
+		},
+	}
+
+	ExecClis(clis)
 }
 
 func ServiceStatus() error {

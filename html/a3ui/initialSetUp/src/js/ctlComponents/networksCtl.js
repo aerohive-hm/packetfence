@@ -111,6 +111,41 @@ class networksCtl extends Component {
         });
     }
 
+    getDataTable= () => {
+        let self=this;
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/networks";
+         
+        let param={
+        }
+        
+        self.setState({
+            loading : true,
+        })
+
+        new RequestApi('get',url,param,xCsrfToken,(data)=>{
+            self.getTrueDataTable(data);
+        });
+
+        //self.getTrueData(mock.networks);
+    }
+
+    getTrueDataTable= (data) => {
+        let self=this;
+        let dataTable=data.items;
+        for(let i=0;i<dataTable.length;i++){
+            dataTable[i].key=dataTable[i].name;
+            dataTable[i].vlan=dataTable[i].name;
+            dataTable[i].clicked="";
+            dataTable[i].services=dataTable[i].services===""?[]:dataTable[i].services.split(",");
+        }
+        self.setState({
+            dataTable: dataTable,
+            loading : false,
+        }); 
+    }
+
 
     onChangeCheckbox=(e)=>{
         let self=this;
@@ -443,11 +478,47 @@ class networksCtl extends Component {
 
     onChangeSelect=(index,column,value) =>{
         let self=this;
+
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/interface";
+
         let dataCopy=self.state.dataTable;
-        dataCopy[index][column]=value;
-        self.setState({ 
-            dataTable : dataCopy, 
-        });
+        
+        let param
+        if(column==="type"){
+            param={
+                "name":dataCopy[index].name,
+                "ip_addr":dataCopy[index].ip_addr,
+                "netmask":dataCopy[index].netmask,
+                "vip":dataCopy[index].vip,
+                "type":value,
+                "services":dataCopy[index].services.join(","),
+            }
+        }else{
+            param={
+                "name":dataCopy[index].name,
+                "ip_addr":dataCopy[index].ip_addr,
+                "netmask":dataCopy[index].netmask,
+                "vip":dataCopy[index].vip,
+                "type":dataCopy[index].type,
+                "services":value.join(","),
+            } 
+        }
+
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                dataCopy[index][column]=value;
+                self.setState({ 
+                    dataTable : dataCopy, 
+                });
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
+        })
 
     }
 
@@ -546,10 +617,14 @@ class networksCtl extends Component {
                 console.log(values);
 
                 let hasWrongValue=false;
-                if(self.checkVip(values.vip)===false){
-                    hasWrongValue=true;
-                    $("#vip").focus();
+
+                if(self.state.enableClustering===true){
+                    if(self.checkVip(values.vip)===false){
+                        hasWrongValue=true;
+                        $("#vip").focus();
+                    }
                 }
+
                 if(self.checkNetmask(values.netmask)===false){
                     hasWrongValue=true;
                     $("#netmask").focus();
@@ -584,7 +659,7 @@ class networksCtl extends Component {
                         self.setState({ 
                             addVlanVisible:false,
                         });
-                        self.getData();
+                        self.getDataTable();
                     }else{
                         message.destroy();
                         message.error(data.msg);
@@ -624,7 +699,12 @@ class networksCtl extends Component {
                 let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
-                    name:dataCopy[index].name,
+                    "name":dataCopy[index].name,
+                    "ip_addr":dataCopy[index].ip_addr,
+                    "netmask":dataCopy[index].netmask,
+                    "vip":dataCopy[index].vip,
+                    "type":dataCopy[index].type,
+                    "services":dataCopy[index].services.join(","),
                 }
 
                 new RequestApi('delete',url,JSON.stringify(param),xCsrfToken,(data)=>{
@@ -828,6 +908,7 @@ class networksCtl extends Component {
                             <Option value="MANAGEMENT">{self.state.i18n.management}</Option>
                             <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                             <Option value="ISOLATION">{self.state.i18n.isolation}</Option>
+                            <Option value="PORTAL">{self.state.i18n.portal}</Option>
                             <Option value="NONE">{self.state.i18n.none}</Option>
                             <Option value="OTHER">{self.state.i18n.other}</Option>
                         </Select>
@@ -1097,6 +1178,7 @@ class networksCtl extends Component {
                                         <Option value="MANAGEMENT" >{self.state.i18n.management}</Option>
                                         <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                                         <Option value="ISOLATION" >{self.state.i18n.isolation}</Option>
+                                        <Option value="PORTAL">{self.state.i18n.portal}</Option>
                                         <Option value="NONE" >{self.state.i18n.none}</Option>
                                         <Option value="OTHER" >{self.state.i18n.other}</Option>
                                     </Select>
@@ -1135,7 +1217,7 @@ class networksCtl extends Component {
                                     type="primary" 
                                     className="modal-form-button-next-antd-button-networksCtl" 
                                     htmlType="submit" 
-                                >{self.state.i18n.next}</Button>
+                                >{self.state.i18n.save}</Button>
                             </div>
                             <div className="modal-form-button-cancel-div-networksCtl">
                                 <Button 
