@@ -103,6 +103,13 @@ sub _commit_cluster_update_log {
   print UPDATE_CLUSTER_LOG "[ $current_time ] $msg\n";
 }
 
+
+=head2 A3_Die
+
+Die with A3 messages
+
+=cut
+
 sub A3_Die {
   my $msg = shift;
   _commit_cluster_update_log($msg);
@@ -110,12 +117,19 @@ sub A3_Die {
 }
 
 
+=head2 A3_Warn
+
+Warn with A3 messages
+
+=cut
+
 sub A3_Warn {
   my $msg = shift;
   _commit_cluster_update_log($msg);
   warn "$msg\n";
 
 }
+
 
 =head2 call_system_cmd
 
@@ -136,6 +150,7 @@ sub call_system_cmd {
   return $exit_code;
 }
 
+
 =head2 
 
 System call with output
@@ -153,6 +168,7 @@ sub call_system_cmd_with_output {
   _commit_cluster_update_log("call_system invoked with \"$cmd\" ends");
 
 }
+
 
 =head2
  
@@ -193,7 +209,8 @@ sub check_yum_connectivity {
   return 0;
 }
 
-=head2
+
+=head2 health_check 
 
 overall health check
 
@@ -206,6 +223,12 @@ sub health_check {
   }
 }
 
+
+=head2 update_system_app
+
+update A3 application rpm
+
+=cut
 
 sub update_system_app {
   my @all_pkgs;
@@ -240,6 +263,12 @@ sub update_system_app {
 }
 
 
+=head2 get_to_version
+
+get update to version
+
+=cut
+
 sub get_to_version {
   my $ava_version;
   open CMD, '-|', "$YUM_BIN list $a3_pkg available" or die $@;
@@ -254,6 +283,13 @@ sub get_to_version {
   _commit_cluster_update_log("A3 target update version is $to_version");
   return $to_version;
 }
+
+
+=head2 _check_db_schema_file
+
+check the exist of schema files
+
+=cut
 
 sub _check_db_schema_file {
   my @update_path_list = @_;
@@ -271,6 +307,13 @@ sub _check_db_schema_file {
   return @db_schema_files;
 }
 
+
+=head2 get_versions
+
+get from and to version from backup file
+
+=cut
+
 sub get_versions {
   my $content = do {
     open my $fh, '<', "$A3_BK_VER_FILE"  or die 'Error in open backup version file';
@@ -284,6 +327,13 @@ sub get_versions {
 
   return ($prev_version, $to_version);
 }
+
+
+=head2 _generate_update_patch_list
+
+generate update patch list 
+
+=cut
 
 sub _generate_update_patch_list {
   my @update_path_list;
@@ -317,6 +367,12 @@ sub _generate_update_patch_list {
 }
 
 
+=head2 _get_db_password
+
+get db passwd from file
+
+=cut
+
 sub _get_db_password {
   my $password;
   open DBINFO, "<", $A3_DBINFO_FILE || die "Unable to find the database information file";
@@ -333,6 +389,13 @@ sub _get_db_password {
   return $password;
 }
 
+
+=head2 apply_db_update_schema
+
+apply db schemas
+
+=cut
+
 sub apply_db_update_schema {
   my @update_path_list = _generate_update_patch_list();
   my @db_schema_files = _check_db_schema_file(@update_path_list);
@@ -346,6 +409,13 @@ sub apply_db_update_schema {
   }
   _commit_cluster_update_log("Finished applying database schema updates!");
 }
+
+
+=head2 post_update
+
+actions after update
+
+=cut
 
 sub post_update {
   my @post_cmd_list = ("$PFCMD_BIN fixpermissions",
@@ -361,6 +431,13 @@ sub post_update {
 
 }
 
+
+=head2 remote_api_call_get
+
+remote api call with get method
+
+=cut
+
 sub remote_api_call_get {
   my ($IP, $URI, $data) = @_;
   my $url = "http://$IP:$node_port/".$URI;
@@ -374,6 +451,12 @@ sub remote_api_call_get {
   }
 }
   
+
+=head2 remote_api_call_post
+
+remoate api call with post method
+
+=cut
 
 sub remote_api_call_post {
   my ($IP, $URI, $data) = @_;
@@ -391,6 +474,7 @@ sub remote_api_call_post {
   return 0;
 
 }
+
 
 =head2 get_first_node_update
 
@@ -412,6 +496,7 @@ sub get_first_node_ip_update {
   return $node_ip;
 
 }
+
 
 =head2 get_remaining_nodes_update
 
@@ -437,6 +522,7 @@ sub get_remains_nodes_ip_update {
   return @nodes_ip;
 }
 
+
 =head2 get_all_nodes_ip_update
 
 All nodes in cluster need to be updated
@@ -460,6 +546,13 @@ sub get_all_nodes_ip_update {
   return @nodes_ip;
 }
 
+
+=head2 get_first_node_hostname
+
+Get the hostname for the fist node to be updated
+
+=cut
+
 sub get_first_node_hostname {
   my $ret = `$NODE_BIN|awk '{print \$2}'`;
   my @hosts = (split /\n/, $ret);
@@ -467,6 +560,13 @@ sub get_first_node_hostname {
   _commit_cluster_update_log("The first node to update hostname is $first_host\n");
   return $first_host; 
 }
+
+
+=head2 get_remains_nodes_hostname
+
+Get the remaining nodes hostname
+
+=cut
 
 sub get_remains_nodes_hostname {
   my $ret = `$NODE_BIN|awk '{print \$2}'`;
@@ -476,10 +576,24 @@ sub get_remains_nodes_hostname {
   return @hosts; 
 }
 
+
+=head2 delete_mysql_db_files
+
+delete mysql db files
+
+=cut
+
 sub delete_mysql_db_files {
   my $db_folder = "/var/lib/mysql/";
   call_system_cmd("rm -rf $db_folder/*");
 }
+
+
+=head2  kill_force_cluster
+
+kill mysqld process
+
+=cut
 
 sub kill_force_cluster {
    my $process = 'mysqld';
