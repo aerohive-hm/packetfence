@@ -1,0 +1,14 @@
+[Unit]
+Description=A3 node app
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/bin/sh -c '/usr/bin/node /root/A3_Cluster.js'
+WorkingDirectory=/root/
+Restart=on-failure
+RestartSec=20s
+
+[Install]
+WantedBy=packetfence.target
