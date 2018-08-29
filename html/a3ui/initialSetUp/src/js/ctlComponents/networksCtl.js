@@ -443,11 +443,47 @@ class networksCtl extends Component {
 
     onChangeSelect=(index,column,value) =>{
         let self=this;
+
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/interface";
+
         let dataCopy=self.state.dataTable;
-        dataCopy[index][column]=value;
-        self.setState({ 
-            dataTable : dataCopy, 
-        });
+        
+        let param
+        if(column==="type"){
+            param={
+                "name":dataCopy[index].name,
+                "ip_addr":dataCopy[index].ip_addr,
+                "netmask":dataCopy[index].netmask,
+                "vip":dataCopy[index].vip,
+                "type":value,
+                "services":dataCopy[index].services.join(","),
+            }
+        }else{
+            param={
+                "name":dataCopy[index].name,
+                "ip_addr":dataCopy[index].ip_addr,
+                "netmask":dataCopy[index].netmask,
+                "vip":dataCopy[index].vip,
+                "type":dataCopy[index].type,
+                "services":value.join(","),
+            } 
+        }
+
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                dataCopy[index][column]=value;
+                self.setState({ 
+                    dataTable : dataCopy, 
+                });
+            }else{
+                message.destroy();
+                message.error(data.msg);
+            }
+
+        })
 
     }
 
@@ -837,6 +873,7 @@ class networksCtl extends Component {
                             <Option value="MANAGEMENT">{self.state.i18n.management}</Option>
                             <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                             <Option value="ISOLATION">{self.state.i18n.isolation}</Option>
+                            <Option value="PORTAL">{self.state.i18n.portal}</Option>
                             <Option value="NONE">{self.state.i18n.none}</Option>
                             <Option value="OTHER">{self.state.i18n.other}</Option>
                         </Select>
@@ -1106,6 +1143,7 @@ class networksCtl extends Component {
                                         <Option value="MANAGEMENT" >{self.state.i18n.management}</Option>
                                         <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                                         <Option value="ISOLATION" >{self.state.i18n.isolation}</Option>
+                                        <Option value="PORTAL">{self.state.i18n.portal}</Option>
                                         <Option value="NONE" >{self.state.i18n.none}</Option>
                                         <Option value="OTHER" >{self.state.i18n.other}</Option>
                                     </Select>
