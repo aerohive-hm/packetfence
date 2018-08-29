@@ -50,6 +50,9 @@ const (
 	AuthFail        = "Authenticate fail, please check the input parameters"
 	UrlIsNull       = "URL is NULL"
 	ErrorMsgFromSrv = "Error messages from server, please check the input parameters"
+	LimitedAccess   = "Limited access, please use an administrator account"
+	UpdateMsgSuc    = "Update message to cloud successfully"
+	InvalidToken    = "Token is invalid, update message to cloud fail, "
 	OtherError      = "System error"
 )
 
@@ -146,62 +149,6 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 }
 
 /*
-	This function is used to send update message if network/license changes
-*/
-func updateMsgToRdc(ctx context.Context) int {
-	if updateMsgUrl == "" {
-		log.LoggerWContext(ctx).Error("RDC URL is NULL")
-		return -1
-	}
-
-	for {
-		node_info := a3share.GetIntChgInfo(ctx)
-		data, _ := json.Marshal(node_info)
-		log.LoggerWContext(ctx).Error("begin to send initerface change to RDC")
-		log.LoggerWContext(ctx).Error(string(data))
-		reader := bytes.NewReader(data)
-
-		request, err := http.NewRequest("POST", updateMsgUrl, reader)
-		if err != nil {
-			log.LoggerWContext(ctx).Error(err.Error())
-			return -1
-		}
-
-		//Add header option, the tokenStr is from RDC now
-		request.Header.Add("Authorization", rdcTokenStr)
-		request.Header.Set("Content-Type", "application/json")
-		resp, err := client.Do(request)
-		if err != nil {
-			log.LoggerWContext(ctx).Error("Update message to RDC fail")
-			log.LoggerWContext(ctx).Error(err.Error())
-			return -1
-		}
-
-		body, _ := ioutil.ReadAll(resp.Body)
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("receive the response %d", resp.StatusCode))
-		log.LoggerWContext(ctx).Error(string(body))
-		statusCode := resp.StatusCode
-		resp.Body.Close()
-		/*
-			statusCode = 401 means authenticate fail, need to request valid RDC token
-			from the other nodes
-		*/
-		if statusCode == 401 {
-			result := ReqTokenFromOtherNodes(ctx)
-			//result == 0 means get the token, try to onboarding again
-			if result == 0 {
-				continue
-			} else {
-				//not get the token, return and wait for the event from UI or other nodes
-				return result
-			}
-		}
-		return 0
-	}
-	return 0
-}
-
-/*
 	This func only for the node who do not know the GDC pasword,
 	in this case, this node will request RDC token from the other nodes
 */
@@ -248,7 +195,9 @@ func connectToRdcWithPara(ctx context.Context) (int, string) {
 		return -1, reason
 	}
 	/* Debugging code of integrating test with HM
-	updateMsgToRdc(ctx)
+	updateMsgToRdcAsyn(ctx, LicenseInfoChange)
+	updateMsgToRdcAsyn(ctx, NetworkChange)
+	
 	{
 		nodeInfo := NodeInfo{"B0C5-2104-0349-64CD-2D25-AAAA-AAAA-AAAA", "testforrequestRDCtoken"}
 		_ = ReqTokenForOtherNode(ctx, nodeInfo)

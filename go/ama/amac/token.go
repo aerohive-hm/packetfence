@@ -352,7 +352,6 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	reader := bytes.NewReader(data)
 
 	log.LoggerWContext(ctx).Error(fetchRdcTokenUrl)
-	//url := fmt.Sprintf("http://10.155.23.116:8008/rest/token/apply/%s", utils.GetA3SysId())
 	request, err := http.NewRequest("POST", fetchRdcTokenUrl, reader)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
@@ -408,6 +407,8 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		return dst, ConnCloudSuc
 	} else if statusCode == 401 {
 		return "", AuthFail
+	} else if statusCode == 403 {
+		return "", LimitedAccess
 	}
 
 	errMsg := fmt.Sprintf("Server(RDC) respons the code %d, please check the input parameters", statusCode)

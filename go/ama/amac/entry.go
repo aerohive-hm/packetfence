@@ -171,19 +171,22 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	*/
 	case GdcConfigChange:
 
-	// To do, handle the result, include GDC auth fail, RDC auth fail, server down
 	case NetworkChange:
-		updateMsgToRdc(ctx)
+		updateMsgToRdcAsyn(ctx, NetworkChange)
+
 	case LicenseInfoChange:
+		updateMsgToRdcAsyn(ctx, LicenseInfoChange)
 
 	case DisableCloudIntegration:
 		updateConnStatus(AMA_STATUS_INIT)
 		globalSwitch = "disable"
+
 	case RdcTokenUpdate:
 		//To do, set the globalswitch to enable
 		connectToRdcWithoutPara(ctx)
-	// To do, handle the result,
+
 	case RemoveNodeFromCluster:
+		UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
 
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")
