@@ -14,23 +14,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
-/*
-type item struct {
-	Id       string `json:"id"`
-	Name     string `json:"name"`
-	IpAddr   string `json:"ip_addr"`
-	NetMask  string `json:"netmask"`
-	Vip      string `json:"vip"`
-	Type     string `json:"type"`
-	Services string `json:"services"`
-}
-
-type NetworksData struct {
-	ClusterEnable bool   `json:"cluster_enable"`
-	HostName      string `json:"hostname"`
-	Items         []item `json:"items"`
-}
-*/
 type Networks struct {
 	crud.Crud
 }

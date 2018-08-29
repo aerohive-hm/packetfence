@@ -159,6 +159,7 @@ func UpdateClusterNetworksData(ctx context.Context, clusterNetworksData ClusterN
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
 		return err
 	}
+	utils.SetHostname(clusterNetworksData.HostName)
 	err = UpdateItemsValue(context, clusterNetworksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())

@@ -43,7 +43,6 @@ func GetIfaceServices(ifname string) []string {
 	if strings.Contains(iftype, "high-availability") {
 		services = s[1 : l-1]
 	} else {
-		fmt.Println("2", s)
 		services = s[1:]
 	}
 
