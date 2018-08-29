@@ -169,8 +169,16 @@ func (lic *A3License) GetValue(ctx context.Context) {
 			if err != nil {
 				log.LoggerWContext(context).Error("Scan data error: " + err.Error())
 			}
-			fmt.Println("endpoint_count :", count)
 			lic.LicensedCapacity += count
+		}
+		if lic.LicensedCapacity == 0 {
+			var trialCount int
+			err = db.QueryRow("SELECT endpoint_count FROM a3_entitlement where type = 'Trial'").Scan(&trialCount)
+			if err != nil {
+				log.LoggerWContext(context).Error("Query database error: " + err.Error())
+			} else {
+				lic.LicensedCapacity = trialCount
+			}
 		}
 	}
 	//Fetch NextExpirationDate
@@ -180,7 +188,6 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	if err != nil {
 		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
-		fmt.Println("NextExpirationDate :", times)
 		lic.NextExpirationDate = times.UnixNano() / int64(time.Millisecond)
 	}
 
@@ -191,7 +198,6 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	if err != nil {
 		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
-		fmt.Println("AverageUsedCapacity :", averge)
 		lic.AverageUsedCapacity = averge
 	}
 
@@ -202,7 +208,6 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	if err != nil {
 		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
-		fmt.Println("CurrentUsedCapacity :", currentUsed)
 		lic.CurrentUsedCapacity = currentUsed
 	}
 }

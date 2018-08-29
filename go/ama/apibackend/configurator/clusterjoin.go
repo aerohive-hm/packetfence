@@ -1,7 +1,7 @@
 /*join.go implements handling REST API:
- *	/a3/api/v1/event/cluster/join
+ *	/a3/api/v1/configurator/cluster/join
  */
-package event
+package configurator
 
 import (
 	"context"
@@ -10,21 +10,14 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	//	"github.com/inverse-inc/packetfence/go/ama/fetch"
+
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
-type item struct {
-	Id       string `json:"id"`
-	Name     string `json:"name"`
-	IpAdddr  string `json:"ip_addr"`
-	NetMask  string `json:"netmask"`
-	Type     string `json:"type"`
-	Services string `json:"services"`
-}
-
 type JoinData struct {
-	Items []item `json:"items"`
+	PrimaryServer string `json:"primary_server"`
+	Admin         string `json:"admin"`
+	Passwd        string `json:"passwd"`
 }
 
 type Join struct {
@@ -44,24 +37,9 @@ func handleGetJoin(r *http.Request, d crud.HandlerData) []byte {
 
 	// Data for demo
 	join := JoinData{
-		[]item{
-			{
-				"interface",
-				"eth0",
-				"10.155.23.14",
-				"255.255.255.0",
-				"MANAGEMENT",
-				"PORTAL",
-			},
-			{
-				"interface",
-				"VLAN10",
-				"192.168.10.1",
-				"255.255.255.0",
-				"REGISTRATION",
-				"RADIUS, PORTAL",
-			},
-		},
+		"192.168.10.200",
+		"admin@aerohive.com",
+		"aerohive",
 	}
 
 	jsonData, err := json.Marshal(join)

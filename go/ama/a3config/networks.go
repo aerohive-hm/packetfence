@@ -16,8 +16,8 @@ type Item struct {
 	IpAddr   string `json:"ip_addr"`
 	NetMask  string `json:"netmask"`
 	Vip      string `json:"vip",omitempty`
-	Type     string `json:"type"`
-	Services string `json:"services"`
+	Type     string `json:"type,omitempty"`
+	Services string `json:"services,omitempty"`
 }
 
 type ClusterNetworksData struct {
@@ -159,6 +159,7 @@ func UpdateClusterNetworksData(ctx context.Context, clusterNetworksData ClusterN
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
 		return err
 	}
+	utils.SetHostname(clusterNetworksData.HostName)
 	err = UpdateItemsValue(context, clusterNetworksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())

@@ -129,7 +129,7 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 			from the other nodes
 		*/
 		if statusCode == 401 {
-			result := reqTokenFromOtherNodes(ctx)
+			result := ReqTokenFromOtherNodes(ctx, nil)
 			//result == 0 means get the token, try to onboarding again
 			if result == 0 {
 				continue
@@ -185,7 +185,7 @@ func updateMsgToRdc(ctx context.Context) int {
 			from the other nodes
 		*/
 		if statusCode == 401 {
-			result := reqTokenFromOtherNodes(ctx)
+			result := ReqTokenFromOtherNodes(ctx, nil)
 			//result == 0 means get the token, try to onboarding again
 			if result == 0 {
 				continue
@@ -207,7 +207,7 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 	//Read the local RDC token, if exist, not send request to other nodes
 	token := readRdcToken(ctx)
 	if len(token) == 0 {
-		result := reqTokenFromOtherNodes(ctx)
+		result := ReqTokenFromOtherNodes(ctx, nil)
 		//result != 0 means not get the token, return and waiting event from UI
 		//or other nodes
 		if result != 0 {

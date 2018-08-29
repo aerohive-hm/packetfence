@@ -56,7 +56,7 @@ func updateLastConTime() {
 	LastConnectTime.mu.Unlock()
 }
 
-func ReadLastContime() time.Time {
+func ReadLastConTime() time.Time {
 	LastConnectTime.mu.RLock()
 	time := LastConnectTime.time
 	LastConnectTime.mu.RUnlock()

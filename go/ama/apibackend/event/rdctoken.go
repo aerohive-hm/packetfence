@@ -34,10 +34,22 @@ func RdcTokenNew(ctx context.Context) crud.SectionCmd {
 func handleGetToken(r *http.Request, d crud.HandlerData) []byte {
 
 	ctx := r.Context()
+	node := amac.NodeInfo{}
 
-	fmt.Println(r.URL)
+	para, ok := d.UrlParam["systemID"]
+	if !ok {
+		log.LoggerWContext(ctx).Error("Without systemID in URL parameter.")
+		return nil
+	}
+	node.SystemID = para[0]
 
-	token := amac.ReqTokenForOtherNode(ctx, "test-systemid")
+	para, ok = d.UrlParam["hostname"]
+	if !ok {
+		log.LoggerWContext(ctx).Error("Without hostname in URL parameter.")
+		return nil
+	}
+	node.Hostname = para[0]
+	token := amac.ReqTokenForOtherNode(ctx, node)
 
 	return token
 }
@@ -58,7 +70,15 @@ func handlePostToken(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("%+v", tokenRes))
-	amac.UpdateRdcToken(ctx, tokenRes.Data.Token)
+	if tokenRes.Data.MsgType == "amac_token" {
+		amac.UpdateRdcToken(ctx, tokenRes.Data.Data)
+	} else if tokenRes.Data.MsgType == "renew_token" {
+		node := amac.MemberList{IpAddr: tokenRes.Data.Data}
+		amac.ReqTokenFromOtherNodes(ctx, &node)
+	} else {
+		log.LoggerWContext(ctx).Info("Unknow MsgType")
+		return []byte(crud.PostNOTOK)
+	}
 
 	return []byte(crud.PostOK)
 }

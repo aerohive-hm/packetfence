@@ -46,6 +46,7 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(err.Error())
 	}
 
+	a3config.UpdateClusterNetworksData(ctx, *clusternet)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", clusternet))
 
 	return []byte(crud.PostOK)
