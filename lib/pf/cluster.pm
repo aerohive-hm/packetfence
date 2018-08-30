@@ -664,6 +664,7 @@ sub sync_and_remove_cluster_file {
 
     unless (open($in, '<', $cluster_file) ) {
         $logger->error("Failed to open cluster-files to sync $!");
+        return;
     }
     #put the list of cluster file path in an array
     while (<$in>) {
