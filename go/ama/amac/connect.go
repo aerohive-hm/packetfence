@@ -173,8 +173,8 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return res
 	}
-	updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
-	_, _ = UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
+	//updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
+	//_, _ = UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
 	return 0
 }
 
