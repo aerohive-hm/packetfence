@@ -10,9 +10,15 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
+type ClusterItem struct {
+	Name    string `json:"name"`
+	IpAddr  string `json:"ip_addr"`
+	NetMask string `json:"netmask"`
+}
+
 type ClusterEventJoinData struct {
-	Hostname string `json:"hostname"`
-	Items    []Item `json:"items"`
+	Hostname string        `json:"hostname"`
+	Items    []ClusterItem `json:"items"`
 }
 
 type ClusterEventRespItem struct {
@@ -21,7 +27,7 @@ type ClusterEventRespItem struct {
 }
 type ClusterEventRespData struct {
 	Code  string                 `json:"code"`
-	Items []ClusterEventRespItem `json:"items"` 
+	Items []ClusterEventRespItem `json:"items"`
 }
 
 func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterEventJoinData) (error, ClusterEventRespData) {
