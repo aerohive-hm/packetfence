@@ -92,6 +92,7 @@ func GenClusterID() string {
 	if err != nil {
 		return ""
 	}
+
 	return strings.TrimRight(uuid, "\n")
 }
 
@@ -114,7 +115,7 @@ func CreateClusterId() error {
 	clusterid := GenClusterID()
 
 	fmt.Println(len(clusterid), clusterid)
-	cmd := fmt.Sprintf("echo \"%s\" > %s", clusterid, path)
+	cmd := fmt.Sprintf("echo -n \"%s\" > %s", clusterid, path)
 	_, err = ExecShell(cmd)
 	if err != nil {
 		fmt.Println("%s:exec error", cmd)

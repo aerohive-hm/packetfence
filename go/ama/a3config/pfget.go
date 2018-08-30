@@ -71,12 +71,4 @@ func ReadClusterPrimary() string {
 
 }
 
-func GetClusterId() string {
 
-	section := A3Read("CLUSTERID", "Cluster Id")
-	if section == nil {
-		return ""
-	}
-	return section["Cluster Id"]["id"]
-
-}
