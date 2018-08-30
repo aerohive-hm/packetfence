@@ -58,20 +58,6 @@ func VlanInface(infacename string) bool {
 
 func UpdateSystemInterface(ctx context.Context, i Item) error {
 	var err error
-	if VlanInface(i.Name) {
-		name := []rune(i.Name) /*need to delete vlan for name*/
-		keyname := fmt.Sprintf("eth0.%s", string(name[4:]))
-
-		if !utils.IfaceExists(keyname) {
-			utils.CreateVlanIface("eth0", string(name[4:]))
-
-		} else {
-			iface, _ := utils.GetIfaceList(keyname)
-			ipold := iface[0].IpAddr
-			utils.DelIfaceIIpAddr(keyname, ipold)
-		}
-		utils.SetIfaceIIpAddr(keyname, i.IpAddr, i.NetMask)
-	}
 
 	err = UpdateInterface(i)
 	if err != nil {
