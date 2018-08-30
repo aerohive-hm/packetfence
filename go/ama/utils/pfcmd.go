@@ -7,7 +7,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 	"strconv"
 	"strings"
-	"time"
 )
 
 const (
@@ -40,18 +39,21 @@ func serviceCmdBackground(cmd string) (string, error) {
 	return ExecShell("setsid " + cmd + " &>/dev/null &")
 }
 
-func UpdatePfServices() (string, error) {
-	cmd := pfservice + "pf updatesystemd"
-	return ExecShell(cmd)
+func UpdatePfServices() []Clis {
+	cmds := []string{
+		pfservice + "pf updatesystemd",
+		pfcmd + "configreload hard",
+	}
+	return ExecCmds(cmds)
 }
 
 func updateCurrentlyAt() {
 	cmd := "cp -f " + A3Release + " " + A3CurrentlyAt
 	ExecShell(cmd)
 }
+
 func initClusterDB() {
 	cmds := []string{
-		pfcmd + "configreload hard",
 		pfcmd + "checkup",
 		`systemctl set-default packetfence-cluster`,
 		`systemctl stop packetfence-mariadb`,
@@ -66,21 +68,32 @@ func initClusterDB() {
 	ExecCmds(cmds)
 }
 
+func initStandAloneDb() {
+	cmds := []string{
+		pfcmd + "checkup",
+		`systemctl stop packetfence-mariadb`,
+	}
+	ExecCmds(cmds)
+	waitProcStop("mysqld")
+	ExecShell(`systemctl start packetfence-mariadb`)
+}
+
 // only Start Services during initial setup
 func InitStartService() error {
-	out, err := UpdatePfServices()
-	if err != nil {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
-	}
+	UpdatePfServices()
 
-	out, err = restartPfconfig()
+	out, err := restartPfconfig()
 	if err != nil {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
 	waitProcStart("pfconfig")
-	go initClusterDB()
-	time.Sleep(time.Duration(15) * time.Second)
+	if IsFileExist(A3Root + "conf/cluster.conf") {
+		go initClusterDB()
+	} else {
+		initStandAloneDb()
+	}
+	waitProcStart("mysqld")
 
 	out, err = serviceCmdBackground(pfservice + "pf start")
 	if err != nil {
@@ -121,15 +134,26 @@ func SyncFromPrimary(ip, user, pass string) {
 		fmt.Sprintf(A3Root+`/bin/cluster/sync --from=%s`+
 			`--api-user=%s --api-password=%s`, ip, user, pass),
 		`systemctl restart packetfence-config`,
+	}
+	ExecCmds(cmds)
+	waitProcStop("pfconfig")
+
+	cmds = []string{
 		pfcmd + "configreload",
 		`systemctl set-default packetfence-cluster`,
 		`rm -fr /var/lib/mysql/*`,
 		`systemctl restart packetfence-mariadb`,
-		pfservice + "haproxy-db restart",
-		pfservice + "httpd.webservices restart",
 	}
-
 	ExecCmds(cmds)
+	waitProcStart("mysqld")
+	/*
+		cmds = []string{
+			pfservice + "haproxy-db restart",
+			pfservice + "httpd.webservices restart",
+		}
+		ExecCmds(cmds)
+	*/
+	ExecShell(pfservice + "pf start")
 }
 
 func RecoverDB() {

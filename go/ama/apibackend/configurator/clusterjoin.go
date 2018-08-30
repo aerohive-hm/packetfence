@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
-	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -53,11 +53,12 @@ func handleGetJoin(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
-
 // Login primary server with API: "https://PrimaryServer:9999/api/v1/login"
 func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	join := new(JoinData)
+	code := "fail"
+	ret := ""
 
 	err := json.Unmarshal(d.ReqData, join)
 	if err != nil {
@@ -74,10 +75,9 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	err = client.ClusterAuth()
 	if err != nil {
 		log.LoggerWContext(ctx).Error("ClusterAuth error:" + err.Error())
-
-		//TODO: ignore now to walk through the whole flow
-		return []byte(err.Error())
+		ret := err.Error()
+		return crud.FormPostRely(code, ret)
 	}
-
-	return []byte(crud.PostOK)
+	code = "ok"
+	return crud.FormPostRely(code, ret)
 }

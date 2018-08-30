@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"strconv"
+	//	"strconv"
 	"strings"
 	"time"
 )
@@ -33,8 +33,6 @@ func GetA3SysId() string {
 	return out
 }
 
-
-
 func SetHostname(hostname string) {
 	cmds := []string{
 		"hostnamectl set-hostname " + hostname,
@@ -45,20 +43,8 @@ func SetHostname(hostname string) {
 }
 
 func waitProcStop(proc string) {
-	cmd := "pgrep " + proc
 	for {
-		_, err := ExecShell(cmd)
-		if err == nil {
-			break
-		}
-		time.Sleep(time.Duration(3) * time.Second)
-	}
-}
-
-func waitProcStart(proc string) {
-	cmd := "pgrep " + proc
-	for {
-		_, err := ExecShell(cmd)
+		_, err := ExecShell(`pgrep ` + proc)
 		if err != nil {
 			break
 		}
@@ -66,6 +52,17 @@ func waitProcStart(proc string) {
 	}
 }
 
+func waitProcStart(proc string) {
+	for {
+		_, err := ExecShell(`pgrep ` + proc)
+		if err == nil {
+			break
+		}
+		time.Sleep(time.Duration(3) * time.Second)
+	}
+}
+
+/*
 func killPorc(proc string) error {
 	cmd := "pgrep " + proc
 	out, err := ExecShell(cmd)
@@ -78,5 +75,10 @@ func killPorc(proc string) error {
 		if err != nil {
 			continue
 		}
+		pids, err := ExecShell(`pgrep ` + proc)
+		if err == nil {
+			return
+		}
 	}
 }
+*/
