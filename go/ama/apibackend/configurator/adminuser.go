@@ -69,13 +69,14 @@ func writeAdminToDb(user, password string) error {
 		tmpUser = user
 	}
 
-	hpassword := `{bcrypt}` + hashPassword(password)
+	hpassword := hashPassword(password)
+	bpassword := `{bcrypt}` + hpassword
 	sql := []amadb.SqlCmd{
 		{
 			sqlCmd,
 			[]interface{}{
 				tmpUser,
-				hpassword,
+				bpassword,
 				timeStart,
 				expiration,
 				"ALL",
