@@ -141,8 +141,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
 
 	data, _ := json.Marshal(nodeInfo)
 	reader := bytes.NewReader(data)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Begin to fetch RDC token for node %s", node.Hostname))
-	//	url = fmt.Sprintf("http://10.155.23.116:8008/rest/v1/token/1234567?targetSysId=%s", node.SystemID)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Begin to fetch RDC token for node %s, url:%s", node.Hostname, fetchRdcTokenUrlForOthers))
 
 	request, err := http.NewRequest("POST", fetchRdcTokenUrlForOthers, reader)
 	if err != nil {
@@ -159,8 +158,8 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
 	}
 
 	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("receive the response ", resp.Status)
-	fmt.Println(string(body))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %s", resp.Status))
+	log.LoggerWContext(ctx).Info(string(body))
 
 	err = json.Unmarshal([]byte(body), &tokenRes)
 	if err != nil {
@@ -185,6 +184,7 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
 
 	node := new(innerClient.Client)
+	node.Host = mem.IpAddr
 	err := node.ClusterSend(ctx, "GET", url, "")
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
@@ -193,30 +193,6 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 
 	body := node.RespData
 
-	/*
-		url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
-		request, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			log.LoggerWContext(ctx).Error(err.Error())
-			return ""
-		}
-
-		//Using the packetfence token if communicating with cluster members
-		//To do, get a real packetfence token, take the expiration of token
-		//into account
-		request.Header.Add("Packetfence-Token", "packetfence token")
-		request.Header.Set("Content-Type", "application/json")
-		resp, err := client.Do(request)
-		if err != nil {
-			log.LoggerWContext(ctx).Error(err.Error())
-			return ""
-		}
-
-		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println("receive the response ", resp.Status)
-	*/
-	fmt.Println(string(body))
 	err = json.Unmarshal([]byte(body), &tokenRes)
 	if err != nil {
 		fmt.Println("json Unmarshal fail")
@@ -229,7 +205,7 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 		return ""
 	}
 
-	//	resp.Body.Close()
+	//resp.Body.Close()
 
 	return tokenRes.Data.Data
 }
@@ -257,7 +233,8 @@ func ReqTokenFromOtherNodes(ctx context.Context, node *MemberList) int {
 		nodeNum++
 		token = reqTokenFromSingleNode(ctx, mem)
 		if len(token) > 0 {
-			UpdateRdcToken(ctx, token)
+			dst := fmt.Sprintf("Bearer %s", token)
+			UpdateRdcToken(ctx, dst)
 			return 0
 		}
 	}
@@ -286,6 +263,7 @@ func distributeToSingleNode(ctx context.Context, mem MemberList, selfRenew bool)
 	for {
 		url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken", mem.IpAddr)
 		node := new(innerClient.Client)
+		node.Host = mem.IpAddr
 		err := node.ClusterSend(ctx, "POST", url, string(token))
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
@@ -384,7 +362,6 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	reader := bytes.NewReader(data)
 
 	log.LoggerWContext(ctx).Error(fetchRdcTokenUrl)
-	//url := fmt.Sprintf("http://10.155.23.116:8008/rest/token/apply/%s", utils.GetA3SysId())
 	request, err := http.NewRequest("POST", fetchRdcTokenUrl, reader)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
@@ -414,27 +391,36 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		log.LoggerWContext(ctx).Error("Incorrect message type")
 		return "", ErrorMsgFromSrv
 	}
+	statusCode := resp.StatusCode
+	resp.Body.Close()
 
-	dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Data)
-	//RDC token need to write file, if process restart we can read it
-	UpdateRdcToken(ctx, dst)
-	//Save RDC url and VHM to config file if get the RDC token
-	//To do, inform the BE to synchronize the config file
-	err = a3config.UpdateCloudConf(a3config.RDCUrl, rdcUrl)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("Save RDC URL error: " + err.Error())
+	if statusCode == 200 {
+		dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Data)
+		//RDC token need to write file, if process restart we can read it
+		UpdateRdcToken(ctx, dst)
+		//Save RDC url and VHM to config file if get the RDC token
+		//To do, inform the BE to synchronize the config file
+		err = a3config.UpdateCloudConf(a3config.RDCUrl, rdcUrl)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save RDC URL error: " + err.Error())
+		}
+
+		err = a3config.UpdateCloudConf(a3config.Vhm, VhmidStr)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
+		}
+		/*
+			To do, post the RDC token/RDC URL/VHMID to the other memebers
+		*/
+		//Updating the RDC token for the other nodes actively
+		//triggerUpdateNodesToken(ctx, true)
+		return dst, ConnCloudSuc
+	} else if statusCode == 401 {
+		return "", AuthFail
+	} else if statusCode == 403 {
+		return "", LimitedAccess
 	}
 
-	err = a3config.UpdateCloudConf(a3config.Vhm, VhmidStr)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
-	}
-
-	/*
-		To do, post the RDC token/RDC URL/VHMID to the other memebers
-	*/
-	//Updating the RDC token for the other nodes actively
-	//triggerUpdateNodesToken(ctx, true)
-
-	return dst, ConnCloudSuc
+	errMsg := fmt.Sprintf("Server(RDC) respons the code %d, please check the input parameters", statusCode)
+	return "", errMsg
 }

@@ -10,7 +10,8 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-
+	"github.com/inverse-inc/packetfence/go/ama/client"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -32,12 +33,14 @@ func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 	return join
 }
 
+// looks like we don't send GET from UI based on current logic
+// unused code
 func handleGetJoin(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 
 	// Data for demo
 	join := JoinData{
-		"192.168.10.200",
+		"10.155.103.199",
 		"admin@aerohive.com",
 		"aerohive",
 	}
@@ -50,6 +53,8 @@ func handleGetJoin(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
+
+// Login primary server with API: "https://PrimaryServer:9999/api/v1/login"
 func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	join := new(JoinData)
@@ -59,7 +64,20 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(err.Error())
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", join))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Join Auth POST cluster Primary=%s, admin=%s", join.PrimaryServer, join.Admin))
+
+	//write to pf.conf in order to use API client.ClusterAuth()
+	//TODO: which user should be use to auth??
+	a3config.WriteUserPassToPF(join.PrimaryServer, join.Admin, join.Passwd)
+	client := new(apibackclient.Client)
+	client.Host = join.PrimaryServer
+	err = client.ClusterAuth()
+	if err != nil {
+		log.LoggerWContext(ctx).Error("ClusterAuth error:" + err.Error())
+
+		//TODO: ignore now to walk through the whole flow
+		return []byte(err.Error())
+	}
 
 	return []byte(crud.PostOK)
 }

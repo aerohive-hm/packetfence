@@ -3,7 +3,6 @@
 	1) start the front end component damon
 	2) try to connect RDC using the current RDC token
  	3) monitorinig the message from UI and other nodes
- 	4)
 */
 
 package amac
@@ -34,6 +33,7 @@ const (
 	DisableCloudIntegration = 4
 	RdcTokenUpdate          = 5
 	RemoveNodeFromCluster   = 6
+	JoinClusterComplete     = 7
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -121,18 +121,17 @@ func Entry(ctx context.Context) {
 	var msg MsgStru
 
 	//check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
-	//if (enbale the cloud integration = true) {
-	//trying to connect to the cloud when damon start
-	result := connectToRdcWithoutPara(ctx)
-	/*
-		To to, hanle the error, include: RDC auth fail,
-		request RDC token from other nodes fail
-	*/
-	if result != 0 {
-		log.LoggerWContext(ctx).Info("Waiting events from UI or other nodes")
+	if globalSwitch == "enable" {
+		//trying to connect to the cloud when damon start
+		result := connectToRdcWithoutPara(ctx)
+		if result != 0 {
+			log.LoggerWContext(ctx).Info("Connect to cloud fail, waiting events from UI or other nodes")
+		} else {
+			log.LoggerWContext(ctx).Info("Connect to cloud successfully")
+		}
+	} else {
+		log.LoggerWContext(ctx).Info("Cloud integration is disable, waiting events from UI or other nodes")
 	}
-
-	//}
 
 	//loopConnect(ctx)
 	//start a goroutine, sending the keepalive only when the status is connected
@@ -173,18 +172,29 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	*/
 	case GdcConfigChange:
 
-	// To do, handle the result, include GDC auth fail, RDC auth fail, server down
 	case NetworkChange:
-		updateMsgToRdc(ctx)
+		updateMsgToRdcAsyn(ctx, NetworkChange)
+
 	case LicenseInfoChange:
+		updateMsgToRdcAsyn(ctx, LicenseInfoChange)
 
 	case DisableCloudIntegration:
 		updateConnStatus(AMA_STATUS_INIT)
 		globalSwitch = "disable"
+
 	case RdcTokenUpdate:
+		//To do, set the globalswitch to enable
 		connectToRdcWithoutPara(ctx)
-	// To do, handle the result,
+
 	case RemoveNodeFromCluster:
+		UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
+
+	case JoinClusterComplete:
+		//Read the conf file and install RDC URL
+		_ = update("")
+		if globalSwitch == "enable" {
+			connectToRdcWithoutPara(ctx)
+		}
 
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")
@@ -277,7 +287,8 @@ func dispathMsgFromRdc(ctx context.Context, message []byte) {
 	for _, resMsg := range keepAliveResp {
 		if resMsg.Data["msgType"] == "amac_token" {
 			//RDC token need to write file, if process restart we can read it
-			UpdateRdcToken(ctx, resMsg.Data["token"])
+			dst := fmt.Sprintf("Bearer %s", resMsg.Data["token"])
+			UpdateRdcToken(ctx, dst)
 			rdcTokenStr = resMsg.Data["token"]
 		}
 	}
