@@ -259,7 +259,17 @@ sub update_system_app {
     _commit_cluster_update_log("Unable to update A3 packages, attempting to rollback changes");
     exit $fail_code;
   }
+  _commit_cluster_update_log("Application update done");
   
+}
+
+sub check_update_system_status {
+  my $cmd ="$CAT_BIN $A3_CLUSTER_UPDATE_LOG_FILE | $GREP_BIN -i 'Application update done'";
+
+  if (call_system_cmd("$cmd >/dev/null") != 0) {
+    _commit_cluster_update_log("Update A3 application not finish yet, retry");
+    exit $fail_code;
+  }
 }
 
 
