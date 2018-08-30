@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 func GetA3Version() string {
@@ -51,8 +52,31 @@ func SetHostname(hostname string) {
 	ExecCmds(cmds)
 }
 
+func waitProcStop(proc string) {
+	for {
+		_, err := ExecShell(`pgrep ` + proc)
+		if err != nil {
+			break
+		}
+		time.Sleep(time.Duration(3) * time.Second)
+	}
+}
+
+func waitProcStart(proc string) {
+	for {
+		_, err := ExecShell(`pgrep ` + proc)
+		if err == nil {
+			break
+		}
+		time.Sleep(time.Duration(3) * time.Second)
+	}
+}
+
 /*
-func waitProc(daemon string) error {
-	cmd :=
+func stopProc(proc string) {
+	pids, err := ExecShell(`pgrep ` + proc)
+	if err == nil {
+		return
+	}
 }
 */

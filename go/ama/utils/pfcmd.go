@@ -7,7 +7,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 	"strconv"
 	"strings"
-	"time"
 )
 
 const (
@@ -40,9 +39,12 @@ func serviceCmdBackground(cmd string) (string, error) {
 	return ExecShell("setsid " + cmd + " &>/dev/null &")
 }
 
-func UpdatePfServices() (string, error) {
-	cmd := pfservice + "pf updatesystemd"
-	return ExecShell(cmd)
+func UpdatePfServices() []Clis {
+	cmds := []string{
+		pfservice + "pf updatesystemd",
+		pfcmd + "configreload hard",
+	}
+	return ExecCmds(cmds)
 }
 
 func updateCurrentlyAt() {
@@ -51,10 +53,13 @@ func updateCurrentlyAt() {
 }
 func initClusterDB() {
 	cmds := []string{
-		pfcmd + "configreload hard",
 		pfcmd + "checkup",
 		`systemctl set-default packetfence-cluster`,
 		`systemctl stop packetfence-mariadb`,
+	}
+	ExecCmds(cmds)
+	waitProcStop("mysqld")
+	cmds = []string{
 		pfcmd + "generatemariadbconfig",
 		A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
 	}
@@ -64,19 +69,16 @@ func initClusterDB() {
 
 // only Start Services during initial setup
 func InitStartService() error {
-	out, err := UpdatePfServices()
+	UpdatePfServices()
+
+	out, err := restartPfconfig()
 	if err != nil {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
-	out, err = restartPfconfig()
-	if err != nil {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
-	}
-
-	time.Sleep(time.Duration(15) * time.Second)
+	waitProcStart("pfconfig")
 	go initClusterDB()
-	time.Sleep(time.Duration(15) * time.Second)
+	waitProcStart("mysqld")
 
 	out, err = serviceCmdBackground(pfservice + "pf start")
 	if err != nil {

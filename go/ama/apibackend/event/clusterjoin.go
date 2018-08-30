@@ -12,6 +12,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -59,9 +60,8 @@ func SendClusterSync(ip, Status string) error {
 	return err
 }
 
-/*
 func stopServiceByJoin() error {
-	nodeList := FetchNodeList()
+	nodeList := a3share.FetchNodesInfo()
 
 	for _, node := range nodeList {
 		err := SendClusterSync(node.IpAddr, "StopServices")
@@ -74,7 +74,7 @@ func stopServiceByJoin() error {
 
 func notifyClusterStartSync() error {
 	ctx := context.Background()
-	nodeList := FetchNodeList()
+	nodeList := a3share.FetchNodesInfo()
 	for _, node := range nodeList {
 		err := SendClusterSync(node.IpAddr, "StartSync")
 		if err != nil {
@@ -83,7 +83,6 @@ func notifyClusterStartSync() error {
 	}
 	return nil
 }
-*/
 
 func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
