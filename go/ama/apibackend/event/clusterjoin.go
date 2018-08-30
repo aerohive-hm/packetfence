@@ -6,11 +6,14 @@ package event
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/client"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 type Join struct {
@@ -29,30 +32,87 @@ func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 |-`systemctl stop packetfence-mariadb`
 |-`pfcmd configreload hard`
 |-`bin/pfcmd checkup`
-|-`pf-mariadb --force-new-cluster &` 
+|-`pf-mariadb --force-new-cluster &`
 |-send event/cluster/sync start
 */
 func PrepareClusterNodeJoin() {
 	utils.ForceNewCluster()
-	
+	//notifyClusterStartSync()
 }
+
+func SendClusterSync(ip, Status string) error {
+	ctx := context.Background()
+	data := new(SyncData)
+
+	data.Status = Status
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("post cluster event sync with: %s", url))
+
+	client := new(apibackclient.Client)
+	client.Host = a3config.ReadClusterPrimary()
+	err := client.ClusterSend("POST", url, data.Status)
+
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+	}
+	return err
+}
+
+/*
+func stopServiceByJoin() error {
+	nodeList := FetchNodeList()
+
+	for _, node := range nodeList {
+		err := SendClusterSync(node.IpAddr, "StopServices")
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func notifyClusterStartSync() error {
+	ctx := context.Background()
+	nodeList := FetchNodeList()
+	for _, node := range nodeList {
+		err := SendClusterSync(node.IpAddr, "StartSync")
+		if err != nil {
+			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
+		}
+	}
+	return nil
+}
+*/
 
 func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	clusterData := new(a3config.ClusterEventJoinData)
+	var respdata a3config.ClusterEventRespData
+	var resp []byte
 
 	err := json.Unmarshal(d.ReqData, clusterData)
 	if err != nil {
-		return []byte(err.Error())
+		goto END
 	}
-	err, Respdata := a3config.UpdateEventClusterJoinData(ctx, *clusterData)
+	/*
+		err = stopServiceByJoin()
+		if err != nil {
+			goto END
+		}
+	*/
+	err, respdata = a3config.UpdateEventClusterJoinData(ctx, *clusterData)
 	if err != nil {
-		return []byte(err.Error())
+		goto END
 	}
-	Resp, _ := json.Marshal(Respdata)
+	resp, _ = json.Marshal(respdata)
 
 	// Prepare for cluster node sync
 	go PrepareClusterNodeJoin()
-	
-	return []byte(Resp)
+
+END:
+	if err != nil {
+		return []byte(fmt.Sprintf(`{"code":"fail","msg":"%s"}`, err.Error))
+	}
+	return resp
 }

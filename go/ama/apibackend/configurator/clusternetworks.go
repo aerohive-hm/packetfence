@@ -7,14 +7,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 	"net/http"
+	"time"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 type clusterNetworks struct {
@@ -41,19 +41,18 @@ func handleGetClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	clusternet := a3config.GetClusterNetworksData(ctx)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("get hostname %s from self", clusternet.HostName))
 
-	
 	for _, i := range clusternet.Items {
 		myIpAddr = i.IpAddr
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("get %s %s %s from self", i.Name, i.IpAddr, i.NetMask))
 	}
-	
-	// get cluster network data from primary	
+
+	// get cluster network data from primary
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/configurator/networks", a3config.ReadClusterPrimary())
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("read cluster network data from %s", url))
 
 	client := new(apibackclient.Client)
 	client.Host = a3config.ReadClusterPrimary()
-	err := client.ClusterSend(ctx, "GET", url, "")
+	err := client.ClusterSend("GET", url, "")
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return []byte(err.Error())
@@ -68,9 +67,9 @@ func handleGetClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	for _, i := range networkData.Items {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("get %s %s %s from self", i.Name, i.IpAddr, i.NetMask))
 		if i.Name == "eth0" {
-			i.IpAddr = myIpAddr			 
+			i.IpAddr = myIpAddr
 		}
-			
+
 		clusternet.Items = append(clusternet.Items, i)
 	}
 	clusternet.Items = clusternet.Items[1:]
@@ -83,11 +82,11 @@ func handleGetClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		return []byte(err.Error())
 	}
-		
+
 	return jsonData
 }
 
-func SyncDatafromPrimary (ip, user, password string) {
+func SyncDatafromPrimary(ip, user, password string) {
 	//wait a moment?
 	time.Sleep(60)
 	utils.SyncFromPrimary(ip, user, password)
@@ -95,8 +94,12 @@ func SyncDatafromPrimary (ip, user, password string) {
 
 func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	var webuser, webpass string
-	
+	var body []byte
+	var clusterRespData *a3config.ClusterEventRespData
+	var web a3config.ClusterEventRespItem
+	code := "fail"
+	ret := ""
+
 	//clusternet := new(a3config.ClusterNetworksData)
 
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/join", a3config.ReadClusterPrimary())
@@ -105,39 +108,45 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 
 	client := new(apibackclient.Client)
 	client.Host = a3config.ReadClusterPrimary()
-	err := client.ClusterSend(ctx, "POST", url, string(d.ReqData))
+	err := client.ClusterSend("POST", url, string(d.ReqData))
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
-		return []byte(err.Error())
+		goto END
 	}
 
-	body := client.RespData
+	body = client.RespData
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("read cluster join event data:%s", string(body)))
 
-	clusterRespData := new(a3config.ClusterEventRespData)
+	clusterRespData = new(a3config.ClusterEventRespData)
 	err = json.Unmarshal(body, clusterRespData)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Unmarshal error:" + err.Error())
-		return []byte(err.Error())
+		goto END
 	}
 	// write webservice account to pf.conf
-	for _, i := range clusterRespData.Items {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive join event data from primay: user=%s,password=%s", i.User, i.Password))
-		a3config.WriteUserPassToPF(a3config.ReadClusterPrimary(), i.User, i.Password)
-		webuser = i.User
-		webpass = i.Password
-	}
+	web = clusterRespData.Items[0]
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive join event data from primay: user=%s,password=%s", web.User, web.Password))
+	a3config.WriteUserPassToPF(a3config.ReadClusterPrimary(), web.User, web.Password)
 
+	utils.ExecShell(`systemctl start packetfence-api-frontend`)
+	/*
+		//ready to sync
+		if clusterRespData.Code == "ok" {
+			go SyncDatafromPrimary(a3config.ReadClusterPrimary(), webuser, webpass)
+		} else {
+			log.LoggerWContext(ctx).Error("cluster join fail")
+			//TODO return error
+		}
+	*/
+	code = "ok"
 
-	//ready to sync
-	if clusterRespData.Code == "ok" {
-		go SyncDatafromPrimary(a3config.ReadClusterPrimary(), webuser, webpass)
+END:
+	if err != nil {
+		ret = err.Error()
 	} else {
-		log.LoggerWContext(ctx).Error("cluster join fail")
-		//TODO return error
+		ret = ""
 	}
-	
 
-	return []byte(crud.PostOK)
+	return crud.FormPostRely(code, ret)
 }

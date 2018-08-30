@@ -154,7 +154,8 @@ func (c *Client) ClusterAuth() error {
 	return err
 }
 
-func (c *Client) ClusterSend(ctx context.Context, method, url string, body string) error {
+func (c *Client) ClusterSend(method, url string, body string) error {
+	ctx := context.Background()
 	if c.Token == "" {
 		err := c.ClusterAuth()
 		if err != nil {
