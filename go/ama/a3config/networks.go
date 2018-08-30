@@ -15,9 +15,9 @@ type Item struct {
 	Name     string `json:"name"`
 	IpAddr   string `json:"ip_addr"`
 	NetMask  string `json:"netmask"`
-	Vip      string `json:"vip",omitempty`
-	Type     string `json:"type,omitempty"`
-	Services string `json:"services,omitempty"`
+	Vip      string `json:"vip"`
+	Type     string `json:"type"`
+	Services string `json:"services"`
 }
 
 type ClusterNetworksData struct {
