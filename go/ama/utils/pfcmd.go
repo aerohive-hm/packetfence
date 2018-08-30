@@ -50,28 +50,16 @@ func updateCurrentlyAt() {
 	ExecShell(cmd)
 }
 func initClusterDB() {
-	clis := []Clis{
-		{
-			cmd: pfcmd + "configreload hard",
-		},
-		{
-			cmd: pfcmd + "checkup",
-		},
-		{
-			cmd: `systemctl set-default packetfence-cluster`,
-		},
-		{
-			cmd: `systemctl stop packetfence-mariadb`,
-		},
-		{
-			cmd: pfcmd + "generatemariadbconfig",
-		},
-		{
-			cmd: A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
-		},
+	cmds := []string{
+		pfcmd + "configreload hard",
+		pfcmd + "checkup",
+		`systemctl set-default packetfence-cluster`,
+		`systemctl stop packetfence-mariadb`,
+		pfcmd + "generatemariadbconfig",
+		A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
 	}
 
-	ExecClis(clis)
+	ExecCmds(cmds)
 }
 
 // only Start Services during initial setup
@@ -100,60 +88,48 @@ func InitStartService() error {
 }
 
 func ForceNewCluster() {
-	clis := []Clis{
-		{
-			cmd: pfcmd + "configreload hard",
-		},
-		{
-			cmd: pfcmd + "checkup",
-		},
-		{
-			cmd: "systemctl stop packetfence-mariadb",
-		},
-		{
-			cmd: pfcmd + "generatemariadbconfig",
-		},
-		{
-			cmd: A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
-		},
+	cmds := []string{
+		pfcmd + "configreload hard",
+		pfcmd + "checkup",
+		"systemctl stop packetfence-mariadb",
+		pfcmd + "generatemariadbconfig",
+		A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
 	}
 
-	ExecClis(clis)
+	ExecCmds(cmds)
+}
+
+// prepare for the new cluster mode
+func StopService() {
+	cmds := []string{
+		`systemctl start packetfence-mariadb`,
+	}
+	ExecCmds(cmds)
 }
 
 func SyncFromPrimary(ip, user, pass string) {
-	clis := []Clis{
-		{
-			cmd: `systemctl stop packetfence-iptables`,
-		},
-		{
-			cmd: fmt.Sprintf(A3Root+`/bin/cluster/sync --from=%s`+
-				`--api-user=%s --api-password=%s`, ip, user, pass),
-		},
-		{
-			cmd: `systemctl restart packetfence-config`,
-		},
-		{
-			cmd: pfcmd + "configreload",
-		},
-		{
-			cmd: `systemctl set-default packetfence-cluster`,
-		},
-		{
-			cmd: `rm -fr /var/lib/mysql/*`,
-		},
-		{
-			cmd: `systemctl restart packetfence-mariadb`,
-		},
-		{
-			cmd: pfservice + "haproxy-db restart",
-		},
-		{
-			cmd: pfservice + "httpd.webservices restart",
-		},
+	cmds := []string{
+		`systemctl stop packetfence-iptables`,
+		fmt.Sprintf(A3Root+`/bin/cluster/sync --from=%s`+
+			`--api-user=%s --api-password=%s`, ip, user, pass),
+		`systemctl restart packetfence-config`,
+		pfcmd + "configreload",
+		`systemctl set-default packetfence-cluster`,
+		`rm -fr /var/lib/mysql/*`,
+		`systemctl restart packetfence-mariadb`,
+		pfservice + "haproxy-db restart",
+		pfservice + "httpd.webservices restart",
 	}
 
-	ExecClis(clis)
+	ExecCmds(cmds)
+}
+
+func RecoverDB() {
+	cmds := []string{
+		`systemctl restart packetfence-mariadb`,
+	}
+
+	ExecCmds(cmds)
 }
 
 func ServiceStatus() error {
