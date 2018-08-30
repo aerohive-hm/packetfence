@@ -618,7 +618,7 @@ removes the file path to /usr/local/pf/conf/cluster-files.txt
 
 sub remove_file_from_cluster_sync {
     my ($file) = @_;
-    my $cluster_file = 'usr/local/pf/conf/cluster-files.txt';
+    my $cluster_file = '/usr/local/pf/conf/cluster-files.txt';
     my $target_dir = '/usr/local/pf/conf/ssl/tls_certs';
     my $in;
     my $logger = get_logger();
@@ -652,7 +652,7 @@ removes the file in input directory that is removed from cluster-file list
 sub sync_and_remove_cluster_file {
     my ($target_dir) = @_;
     my $logger = get_logger();
-    my $cluster_file = 'usr/local/pf/conf/cluster-files.txt';
+    my $cluster_file = '/usr/local/pf/conf/cluster-files.txt';
     my $in;
     my @cluster_list;
     unless (opendir(D, "$target_dir")) {
