@@ -37,6 +37,7 @@ var (
 	gdcTokenStr               string
 	rdcTokenStr               string
 	VhmidStr                  string
+	OwnerIdStr                string
 	connMsgUrl                string
 	fetchRdcTokenUrl          string
 	fetchRdcTokenUrlForOthers string
@@ -291,7 +292,7 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 
 		json.Unmarshal([]byte(body), &vhmres)
 
-		VhmidStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
+		OwnerIdStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
 		rdcUrl = vhmres.Data.Location
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("rdcUrl = %s", rdcUrl))
 

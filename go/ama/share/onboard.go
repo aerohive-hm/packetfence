@@ -135,7 +135,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 	onboardHeader.Hostname = a3config.GetHostname()
 	onboardHeader.SystemID = utils.GetA3SysId()
-	//onboardHeader.ClusterID = "Todo"
+	//onboardHeader.ClusterID = GetClusterId()
 	//When onboarding, Cloud will assign a unique messageid, so we could just make it empty;
 	//onboardHeader.MessageID = ""
 	return

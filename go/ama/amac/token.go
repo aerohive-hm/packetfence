@@ -137,7 +137,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
 	nodeInfo := rdcTokenReqFromRdc{}
 	nodeInfo.Header.SystemID = node.SystemID
 	nodeInfo.Header.Hostname = node.Hostname
-	nodeInfo.Header.OwnerId, _ = strconv.Atoi(VhmidStr)
+	nodeInfo.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
 
 	data, _ := json.Marshal(nodeInfo)
 	reader := bytes.NewReader(data)
@@ -338,7 +338,7 @@ func fillRdcTokenReq() rdcTokenReqFromRdc {
 
 	rdcTokenReq.Header.SystemID = utils.GetA3SysId()
 	rdcTokenReq.Header.Hostname = a3config.GetHostname()
-	rdcTokenReq.Header.OwnerId, _ = strconv.Atoi(VhmidStr)
+	rdcTokenReq.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
 	return rdcTokenReq
 }
 
@@ -405,7 +405,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 			log.LoggerWContext(ctx).Error("Save RDC URL error: " + err.Error())
 		}
 
-		err = a3config.UpdateCloudConf(a3config.Vhm, VhmidStr)
+		err = a3config.UpdateCloudConf(a3config.OwnerId, OwnerIdStr)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
 		}
