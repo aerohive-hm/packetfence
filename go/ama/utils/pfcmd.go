@@ -51,6 +51,7 @@ func updateCurrentlyAt() {
 	cmd := "cp -f " + A3Release + " " + A3CurrentlyAt
 	ExecShell(cmd)
 }
+
 func initClusterDB() {
 	cmds := []string{
 		pfcmd + "checkup",
@@ -67,6 +68,16 @@ func initClusterDB() {
 	ExecCmds(cmds)
 }
 
+func initStandAloneDb() {
+	cmds := []string{
+		pfcmd + "checkup",
+		`systemctl stop packetfence-mariadb`,
+	}
+	ExecCmds(cmds)
+	waitProcStop("mysqld")
+	ExecShell(`systemctl start packetfence-mariadb`)
+}
+
 // only Start Services during initial setup
 func InitStartService() error {
 	UpdatePfServices()
@@ -77,7 +88,11 @@ func InitStartService() error {
 	}
 
 	waitProcStart("pfconfig")
-	go initClusterDB()
+	if IsFileExist(A3Root + "conf/cluster.conf") {
+		go initClusterDB()
+	} else {
+		initStandAloneDb()
+	}
 	waitProcStart("mysqld")
 
 	out, err = serviceCmdBackground(pfservice + "pf start")
