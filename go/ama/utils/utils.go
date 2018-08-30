@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -91,7 +92,7 @@ func GenClusterID() string {
 	if err != nil {
 		return ""
 	}
-	return uuid
+	return strings.TrimRight(uuid, "\n")
 }
 
 func IsFileExist(path string) bool {
@@ -111,6 +112,8 @@ func CreateClusterId() error {
 		return err
 	}
 	clusterid := GenClusterID()
+
+	fmt.Println(len(clusterid), clusterid)
 	cmd := fmt.Sprintf("echo \"%s\" > %s", clusterid, path)
 	_, err = ExecShell(cmd)
 	if err != nil {
