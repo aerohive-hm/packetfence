@@ -156,12 +156,12 @@ func SyncFromPrimary(ip, user, pass string) {
 	ExecClis(clis)
 }
 
-func ServiceStatus() error {
+func ServiceStatus() string {
 	cmd := pfservice + "pf status"
-	ret, err := ExecShell(cmd)
+	ret, _ := ExecShell(cmd)
 	lines := strings.Split(ret, "\n")
 	if len(lines) < 1 {
-		return err
+		return ""
 	}
 
 	toBeStarted := 0
@@ -184,6 +184,7 @@ func ServiceStatus() error {
 		}
 		started++
 	}
-	fmt.Println(toBeStarted, started)
-	return nil
+
+	percent := strconv.Itoa((started + 1) * 100 / (started + toBeStarted))
+	return percent
 }
