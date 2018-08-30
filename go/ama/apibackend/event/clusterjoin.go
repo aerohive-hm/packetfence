@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 )
 
@@ -21,6 +22,19 @@ func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 	join.New()
 	join.Add("POST", handleUpdateEventClusterJoin)
 	return join
+}
+
+/*
+|-send event/cluster/sync stopservice( rc = ok)
+|-`systemctl stop packetfence-mariadb`
+|-`pfcmd configreload hard`
+|-`bin/pfcmd checkup`
+|-`pf-mariadb --force-new-cluster &` 
+|-send event/cluster/sync start
+*/
+func PrepareClusterNodeJoin() {
+	utils.ForceNewCluster()
+	
 }
 
 func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
@@ -36,5 +50,9 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(err.Error())
 	}
 	Resp, _ := json.Marshal(Respdata)
+
+	// Prepare for cluster node sync
+	go PrepareClusterNodeJoin()
+	
 	return []byte(Resp)
 }
