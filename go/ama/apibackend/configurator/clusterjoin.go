@@ -67,7 +67,7 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Join Auth POST cluster Primary=%s, admin=%s", join.PrimaryServer, join.Admin))
 
 	//write to pf.conf in order to use API client.ClusterAuth()
-	//TODO: which user should be use to auth??
+	//use administrative user to do authentication
 	a3config.WriteUserPassToPF(join.PrimaryServer, join.Admin, join.Passwd)
 	client := new(apibackclient.Client)
 	client.Host = join.PrimaryServer

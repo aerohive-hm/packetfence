@@ -7,12 +7,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 )
 
 type clusterNetworks struct {
@@ -85,13 +87,21 @@ func handleGetClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
+func SyncDatafromPrimary (ip, user, password string) {
+	//wait a moment?
+	time.Sleep(60)
+	utils.SyncFromPrimary(ip, user, password)
+}
+
 func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
+	var webuser, webpass string
+	
 	//clusternet := new(a3config.ClusterNetworksData)
 
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/join", a3config.ReadClusterPrimary())
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read cluster network data from %s", url))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("post cluster network data to primary with: %s", url))
 
 	client := new(apibackclient.Client)
 	client.Host = a3config.ReadClusterPrimary()
@@ -102,9 +112,32 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	body := client.RespData
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive from cluster primay data:%s", string(body)))	
-	//TODO check if need to write account to pf.conf
 
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read cluster join event data:%s", string(body)))
+
+	clusterRespData := new(a3config.ClusterEventRespData)
+	err = json.Unmarshal(body, clusterRespData)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Unmarshal error:" + err.Error())
+		return []byte(err.Error())
+	}
+	// write webservice account to pf.conf
+	for _, i := range clusterRespData.Items {
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive join event data from primay: user=%s,password=%s", i.User, i.Password))
+		a3config.WriteUserPassToPF(a3config.ReadClusterPrimary(), i.User, i.Password)
+		webuser = i.User
+		webpass = i.Password
+	}
+
+
+	//ready to sync
+	if clusterRespData.Code == "ok" {
+		go SyncDatafromPrimary(a3config.ReadClusterPrimary(), webuser, webpass)
+	} else {
+		log.LoggerWContext(ctx).Error("cluster join fail")
+		//TODO return error
+	}
+	
 
 	return []byte(crud.PostOK)
 }
