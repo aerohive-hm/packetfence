@@ -43,16 +43,12 @@ func GetA3SysId() string {
 //}
 
 func SetHostname(hostname string) {
-	clis := []Clis{
-		{
-			cmd: "hostnamectl set-hostname " + hostname,
-		},
-		{
-			cmd: `sed -i -r "s/HOSTNAME=[-_A-Za-z0-9]+/HOSTNAME=` +
-				hostname + `/" /etc/sysconfig/network`,
-		},
+	cmds := []string{
+		"hostnamectl set-hostname " + hostname,
+		`sed -i -r "s/HOSTNAME=[-_A-Za-z0-9]+/HOSTNAME=` +
+			hostname + `/" /etc/sysconfig/network`,
 	}
-	ExecClis(clis)
+	ExecCmds(cmds)
 }
 
 /*

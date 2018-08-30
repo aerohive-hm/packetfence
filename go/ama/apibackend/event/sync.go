@@ -6,12 +6,13 @@ package event
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	//"fmt"
 	"net/http"
 
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	//	"github.com/inverse-inc/packetfence/go/ama/fetch"
-	"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
+	//"github.com/inverse-inc/packetfence/go/log"
 )
 
 type SyncData struct {
@@ -22,6 +23,12 @@ type Sync struct {
 	crud.Crud
 }
 
+const (
+	stopService = "StopServices"
+	startSync   = "StartSync"
+	finishSync  = "FinishSync"
+)
+
 func ClusterSyncNew(ctx context.Context) crud.SectionCmd {
 	sync := new(Sync)
 	sync.New()
@@ -30,15 +37,27 @@ func ClusterSyncNew(ctx context.Context) crud.SectionCmd {
 }
 
 func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
-	ctx := r.Context()
 	sync := new(SyncData)
+	code := "ok"
+	ret := ""
 
 	err := json.Unmarshal(d.ReqData, sync)
 	if err != nil {
 		return []byte(err.Error())
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", sync))
+	if sync.Status == stopService {
+		utils.StopService()
+	} else if sync.Status == startSync {
+		ip := a3config.ReadClusterPrimary()
+		web := a3config.GetWebServices()["webservices"]
+		utils.SyncFromPrimary(ip, web["user"], web["pass"])
+	} else if sync.Status == finishSync {
+		utils.RecoverDB()
+	} else {
+		code = "fail"
+		ret = "Unkown status."
+	}
 
-	return []byte(crud.PostOK)
+	return crud.FormPostRely(code, ret)
 }

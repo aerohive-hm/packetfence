@@ -41,19 +41,22 @@ func ExecShell(s string) (string, error) {
 	return out.String(), err
 }
 
-func ExecClis(clis []Clis) {
-	for _, cli := range clis {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(cli.cmd))
-		cli.out, cli.err = ExecShell(cli.cmd)
+func ExecCmds(cmds []string) []Clis {
+	var result = []Clis{}
+
+	for _, cmd := range cmds {
+		log.LoggerWContext(ctx).Error(fmt.Sprintln(cmd))
+		cli := Clis{cmd: cmd}
+		cli.out, cli.err = ExecShell(cmd)
+
 		if cli.err != nil {
 			log.LoggerWContext(ctx).Error(cli.err.Error())
+			log.LoggerWContext(ctx).Error(fmt.Sprintln(cli.out))
 		}
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(cli.out))
+		result = append(result, cli)
 	}
-	/*
-		for _, cmd := range clis {
-		}
-	*/
+
+	return result
 }
 
 func execCommand(cmdName string, params []string) bool {
