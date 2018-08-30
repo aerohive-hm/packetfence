@@ -66,10 +66,14 @@ func UpdateManageInterface(i Item) error {
 }
 
 func UpdateVlanInterface(i Item) error {
-	name := []rune(i.Name) /*need to delete vlan for name*/
-	keyname := fmt.Sprintf("interface eth0.%s", string(name[4:]))
+	s := []rune(i.Name)
+	vlan := string(s[4:]) /*need to delete vlan for name*/
+	ifname := fmt.Sprintf("eth0.%s", vlan)
+
+	utils.UpdateVlanIface(ifname, vlan, i.IpAddr, i.NetMask)
 
 	var Type string
+	keyname := fmt.Sprintf("interface %s", ifname)
 	if i.Services != "" {
 		Type = fmt.Sprintf("internal,%s", strings.ToLower(i.Services))
 	} else {
@@ -215,22 +219,17 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 		return A3Commit("CLUSTER", section)
 
 	} else {
-		keyname = hostname
+		keyname = fmt.Sprintf("%s interface %s", hostname, i.Name)
 		section := Section{
-			keyname: {
+			hostname: {
 				"management_ip": i.IpAddr,
 			},
-		}
-		A3Commit("CLUSTER", section)
-		keyname = fmt.Sprintf("%s interface %s", hostname, i.Name)
-		section = Section{
 			keyname: {
 				"ip": i.IpAddr,
 			},
 		}
 		return A3Commit("CLUSTER", section)
 	}
-
 }
 
 func UpdateWebservicesAcct() error {
@@ -282,7 +281,6 @@ func CreateClusterId() error {
 		return nil
 	}
 	clusterid := utils.GenClusterID()
-	fmt.Println("CreateClusterId:", clusterid)
 	section := Section{
 		"Cluster Id": {
 			"id": clusterid,
