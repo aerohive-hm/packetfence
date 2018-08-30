@@ -21,7 +21,7 @@ type ClusterEventRespItem struct {
 }
 type ClusterEventRespData struct {
 	Code  string                 `json:"code"`
-	Items []ClusterEventRespItem `json:"items"`
+	Items []ClusterEventRespItem `json:"items"` 
 }
 
 func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterEventJoinData) (error, ClusterEventRespData) {
