@@ -34,8 +34,12 @@ func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterEventJoi
 	/*write data to cluster conf*/
 	var err error
 	var clusterRespData = ClusterEventRespData{}
-	for _, item := range clusterData.Items {
-		err = UpdateJoinClusterconf(item, clusterData.Hostname)
+	var i Item
+	for _, clusteritem := range clusterData.Items {
+		i.Name = clusteritem.Name
+		i.IpAddr = clusteritem.IpAddr
+		i.NetMask = clusteritem.NetMask
+		err = UpdateJoinClusterconf(i, clusterData.Hostname)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdateJoinClusterconf error:" + err.Error())
 			return err, clusterRespData
