@@ -57,8 +57,8 @@ func GetItemsValue(ctx context.Context) []Item {
 		item.IpAddr = iface.IpAddr
 		item.NetMask = utils.NetmaskLen2Str(value)
 		item.Vip = GetPrimaryClusterVip(iface.Name)
-		item.Type = strings.ToUpper(GetIfaceType(iface.Name))
-		item.Services = strings.ToUpper(strings.Join(GetIfaceServices(iface.Name), ","))
+		item.Type = GetIfaceType(iface.Name)
+		item.Services = strings.Join(GetIfaceServices(iface.Name), ",")
 		items = append(items, *item)
 	}
 	return items

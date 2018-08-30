@@ -175,7 +175,7 @@ func UpdatePrimaryClusterconf(i Item) error {
 		return nil
 	}
 
-	CreateClusterId()
+	utils.CreateClusterId()
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		name := []rune(i.Name) /*need to delete vlan for name*/
@@ -272,20 +272,5 @@ func WriteUserPassToPF(host, username, passw string) error {
 		},
 	}
 	return A3Commit("PF", section)
-
-}
-
-func CreateClusterId() error {
-
-	if utils.IsFileExist("/usr/local/pf/conf/clusterid.conf") {
-		return nil
-	}
-	clusterid := utils.GenClusterID()
-	section := Section{
-		"Cluster Id": {
-			"id": clusterid,
-		},
-	}
-	return A3Commit("CLUSTERID", section)
 
 }

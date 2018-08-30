@@ -100,3 +100,32 @@ func IsFileExist(path string) bool {
 	}
 	return true
 }
+
+func CreateClusterId() error {
+	path := "/usr/local/pf/conf/clusterid.conf"
+	if IsFileExist(path) {
+		return nil
+	}
+	_, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	clusterid := GenClusterID()
+	cmd := fmt.Sprintf("echo \"%s\" > %s", clusterid, path)
+	_, err = ExecShell(cmd)
+	if err != nil {
+		fmt.Println("%s:exec error", cmd)
+		return err
+	}
+	return nil
+}
+
+func GetClusterId() string {
+	cmd := "cat /usr/local/pf/conf/clusterid.conf"
+	out, err := ExecShell(cmd)
+	if err != nil {
+		fmt.Println("%s:exec error", cmd)
+		return ""
+	}
+	return out
+}
