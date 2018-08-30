@@ -53,7 +53,6 @@ func GetPrimaryClusterVip(ifname string) string {
 
 }
 
-
 func GetKeyFromSection(sectionId string, key string) string {
 	section := A3ReadFull("PF", sectionId)
 	if section == nil {
@@ -69,5 +68,15 @@ func ReadClusterPrimary() string {
 		return ""
 	}
 	return section["Cluster Primary"]["ip"]
+
+}
+
+func GetClusterId() string {
+
+	section := A3Read("CLUSTERID", "Cluster Id")
+	if section == nil {
+		return ""
+	}
+	return section["Cluster Id"]["id"]
 
 }
