@@ -143,9 +143,9 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		} else if statusCode == 200 {
 			return 0, ConnCloudSuc
 		}
-		return 0, OtherError
+		return -1, OtherError
 	}
-	return 0, OtherError
+	return -1, OtherError
 }
 
 /*
@@ -173,8 +173,8 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return res
 	}
-	updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
-	_, _ = UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
+	//updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
+	//_, _ = UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
 	return 0
 }
 

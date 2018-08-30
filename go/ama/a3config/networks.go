@@ -15,9 +15,9 @@ type Item struct {
 	Name     string `json:"name"`
 	IpAddr   string `json:"ip_addr"`
 	NetMask  string `json:"netmask"`
-	Vip      string `json:"vip",omitempty`
-	Type     string `json:"type,omitempty"`
-	Services string `json:"services,omitempty"`
+	Vip      string `json:"vip"`
+	Type     string `json:"type"`
+	Services string `json:"services"`
 }
 
 type ClusterNetworksData struct {
@@ -57,8 +57,8 @@ func GetItemsValue(ctx context.Context) []Item {
 		item.IpAddr = iface.IpAddr
 		item.NetMask = utils.NetmaskLen2Str(value)
 		item.Vip = GetPrimaryClusterVip(iface.Name)
-		item.Type = strings.ToUpper(GetIfaceType(iface.Name))
-		item.Services = strings.ToUpper(strings.Join(GetIfaceServices(iface.Name), ","))
+		item.Type = GetIfaceType(iface.Name)
+		item.Services = strings.Join(GetIfaceServices(iface.Name), ",")
 		items = append(items, *item)
 	}
 	return items

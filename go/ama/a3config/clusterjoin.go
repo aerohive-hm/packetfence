@@ -10,9 +10,15 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
+type ClusterItem struct {
+	Name    string `json:"name"`
+	IpAddr  string `json:"ip_addr"`
+	NetMask string `json:"netmask"`
+}
+
 type ClusterEventJoinData struct {
-	Hostname string `json:"hostname"`
-	Items    []Item `json:"items"`
+	Hostname string        `json:"hostname"`
+	Items    []ClusterItem `json:"items"`
 }
 
 type ClusterEventRespItem struct {
@@ -21,15 +27,19 @@ type ClusterEventRespItem struct {
 }
 type ClusterEventRespData struct {
 	Code  string                 `json:"code"`
-	Items []ClusterEventRespItem `json:"items"` 
+	Items []ClusterEventRespItem `json:"items"`
 }
 
 func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterEventJoinData) (error, ClusterEventRespData) {
 	/*write data to cluster conf*/
 	var err error
 	var clusterRespData = ClusterEventRespData{}
-	for _, item := range clusterData.Items {
-		err = UpdateJoinClusterconf(item, clusterData.Hostname)
+	var i Item
+	for _, clusteritem := range clusterData.Items {
+		i.Name = clusteritem.Name
+		i.IpAddr = clusteritem.IpAddr
+		i.NetMask = clusteritem.NetMask
+		err = UpdateJoinClusterconf(i, clusterData.Hostname)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdateJoinClusterconf error:" + err.Error())
 			return err, clusterRespData

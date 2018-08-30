@@ -169,6 +169,6 @@ func ServiceStatus() string {
 		started++
 	}
 
-	percent := strconv.Itoa((started + 1) * 100 / (started + toBeStarted))
+	percent := strconv.Itoa((started + 1) * 100 / toBeStarted)
 	return percent
 }

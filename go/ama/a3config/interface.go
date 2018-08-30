@@ -17,12 +17,12 @@ func GetIfaceElementVlaue(ifname, element string) string {
 }
 
 func GetIfaceType(ifname string) string {
-	iftype := strings.Split(GetIfaceElementVlaue(ifname, "type"), ",")
+	iftype := strings.Split(strings.ToUpper(GetIfaceElementVlaue(ifname, "type")), ",")
 	if strings.Contains(ifname, ".") {
 		netsection := A3Read("NETWORKS", "all")
 		for k, _ := range netsection {
 			if netsection[k]["gateway"] == GetIfaceElementVlaue(ifname, "ip") {
-				iftype = strings.Split(netsection[k]["type"], ",")
+				iftype = strings.Split(strings.ToUpper(netsection[k]["type"]), ",")
 				/*need to delete vlan- for type*/
 				Type := []rune(iftype[0])
 				return string(Type[5:])
@@ -34,13 +34,13 @@ func GetIfaceType(ifname string) string {
 
 func GetIfaceServices(ifname string) []string {
 	services := []string{}
-	iftype := GetIfaceElementVlaue(ifname, "type")
+	iftype := strings.ToUpper(GetIfaceElementVlaue(ifname, "type"))
 	if iftype == "" {
 		return services
 	}
 	s := strings.Split(iftype, ",")
 	l := len(s)
-	if strings.Contains(iftype, "high-availability") {
+	if strings.Contains(iftype, "HIGH-AVAILABILITY") {
 		services = s[1 : l-1]
 	} else {
 		services = s[1:]
