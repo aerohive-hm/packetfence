@@ -31,5 +31,5 @@ func handleGetServiceStatus(r *http.Request, d crud.HandlerData) []byte {
 	if msg == "" {
 		code = "fail"
 	}
-	return []byte(fmt.Sprintf(`{"code":"%s", "msg":"%s"}`, code, msg))
+	return []byte(fmt.Sprintf(`{"code":"%s", "percentage":"%s"}`, code, msg))
 }
