@@ -2,7 +2,9 @@ package utils
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func GetA3Version() string {
@@ -51,8 +53,39 @@ func SetHostname(hostname string) {
 	ExecCmds(cmds)
 }
 
-/*
-func waitProc(daemon string) error {
-	cmd :=
+func waitProcStop(proc string) {
+	cmd := "pgrep " + proc
+	for {
+		_, err := ExecShell(cmd)
+		if err == nil {
+			break
+		}
+		time.Sleep(time.Duration(3) * time.Second)
+	}
 }
-*/
+
+func waitProcStart(proc string) {
+	cmd := "pgrep " + proc
+	for {
+		_, err := ExecShell(cmd)
+		if err != nil {
+			break
+		}
+		time.Sleep(time.Duration(3) * time.Second)
+	}
+}
+
+func killPorc(proc string) error {
+	cmd := "pgrep " + proc
+	out, err := ExecShell(cmd)
+	if err != nil {
+		return nil
+	}
+
+	for pid := range cmd {
+		i, err := strconv.Atoi(pid)
+		if err != nil {
+			continue
+		}
+	}
+}

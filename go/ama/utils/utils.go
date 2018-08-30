@@ -34,10 +34,6 @@ func ExecShell(s string) (string, error) {
 	cmd.Stdout = &out
 
 	err := cmd.Run()
-	if err != nil {
-		fmt.Println("exec error!" + s)
-	}
-
 	return out.String(), err
 }
 
