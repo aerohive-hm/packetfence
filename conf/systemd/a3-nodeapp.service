@@ -11,4 +11,4 @@ Restart=on-failure
 RestartSec=20s
 
 [Install]
-WantedBy=packetfence.target
+WantedBy=packetfence-base.target
