@@ -143,9 +143,9 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		} else if statusCode == 200 {
 			return 0, ConnCloudSuc
 		}
-		return 0, OtherError
+		return -1, OtherError
 	}
-	return 0, OtherError
+	return -1, OtherError
 }
 
 /*
