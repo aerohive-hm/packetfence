@@ -115,15 +115,26 @@ func SyncFromPrimary(ip, user, pass string) {
 		fmt.Sprintf(A3Root+`/bin/cluster/sync --from=%s`+
 			`--api-user=%s --api-password=%s`, ip, user, pass),
 		`systemctl restart packetfence-config`,
+	}
+	ExecCmds(cmds)
+	waitProcStop("pfconfig")
+
+	cmds = []string{
 		pfcmd + "configreload",
 		`systemctl set-default packetfence-cluster`,
 		`rm -fr /var/lib/mysql/*`,
 		`systemctl restart packetfence-mariadb`,
-		pfservice + "haproxy-db restart",
-		pfservice + "httpd.webservices restart",
 	}
-
 	ExecCmds(cmds)
+	waitProcStart("mysqld")
+	/*
+		cmds = []string{
+			pfservice + "haproxy-db restart",
+			pfservice + "httpd.webservices restart",
+		}
+		ExecCmds(cmds)
+	*/
+	ExecShell(pfservice + "pf start")
 }
 
 func RecoverDB() {
