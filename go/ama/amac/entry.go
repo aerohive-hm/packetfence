@@ -30,7 +30,7 @@ const (
 	GdcConfigChange         = 1
 	NetworkChange           = 2
 	LicenseInfoChange       = 3
-	DisableCloudIntegration = 4
+	CloudIntegrateFunction  = 4
 	RdcTokenUpdate          = 5
 	RemoveNodeFromCluster   = 6
 	JoinClusterComplete     = 7
@@ -68,11 +68,11 @@ func GetAMAConnStatus() string {
 	var str string
 	switch ama_connect_status {
 	case AMA_STATUS_INIT:
-		str = "Init status"
+		str = "Disconnect"
 	case AMA_STATUS_CONNECING_GDC:
-		str = "Connecting GDC"
+		str = "Connecting"
 	case AMA_STATUS_CONNECING_RDC:
-		str = "Connecting RDC"
+		str = "Connecting"
 	case AMA_STATUS_ONBOARDING_SUC:
 		str = "Connected"
 	default:
@@ -158,6 +158,7 @@ func Entry(ctx context.Context) {
 	}
 }
 
+
 /*
 	Handling the message from web UI, such as items about GDC change,
 	network info change, or license info changes
@@ -178,9 +179,22 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	case LicenseInfoChange:
 		updateMsgToRdcAsyn(ctx, LicenseInfoChange)
 
-	case DisableCloudIntegration:
-		updateConnStatus(AMA_STATUS_INIT)
-		globalSwitch = "disable"
+	case CloudIntegrateFunction:
+		if msg.Data == "disable" {
+			updateConnStatus(AMA_STATUS_INIT)
+			err := UpdateConnSwitch(msg.Data)
+			if err != nil {
+				log.LoggerWContext(ctx).Error("Handle disable cloud integration event failed")
+			}
+		} else if msg.Data == "enable" {
+			connectToRdcWithoutPara(ctx)
+			err := UpdateConnSwitch(msg.Data)
+			if err != nil {
+				log.LoggerWContext(ctx).Error("Handle enable cloud integration event failed")
+			}
+		} else {
+			log.LoggerWContext(ctx).Error("Message data is illegal when handle CloudIntegrateFunction event")
+		}
 
 	case RdcTokenUpdate:
 		//To do, set the globalswitch to enable

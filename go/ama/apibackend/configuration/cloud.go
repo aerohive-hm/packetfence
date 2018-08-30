@@ -87,7 +87,6 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 
 	log.LoggerWContext(ctx).Error("int HandlePostCloudInfo")
 
-	code = "fail"
 	ret = ""
 
 	err := json.Unmarshal(d.ReqData, postInfo)
@@ -98,14 +97,9 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 
 	//This case means disable the cloud integration
 	if postInfo.Url == "" {
-		err = a3config.UpdateCloudConf(a3config.Switch, "disable")
-		if err != nil {
-			log.LoggerWContext(ctx).Error("Update cloud switch error: " + err.Error())
-		} else {
-			event.MsgType = amac.DisableCloudIntegration
-			event.Data = "disable"
-			amac.MsgChannel <- *event
-		}
+		event.MsgType = amac.CloudIntegrateFunction
+		event.Data = "disable"
+		amac.MsgChannel <- *event
 		code = "ok"
 		ret = "disable cloud integration successfully"
 		goto END

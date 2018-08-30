@@ -1,4 +1,4 @@
-/*join.go implements handling REST API:
+/*clusterjoin.go implements handling REST API:
  *	/a3/api/v1/event/cluster/join
  */
 package event

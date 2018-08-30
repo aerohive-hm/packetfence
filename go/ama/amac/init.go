@@ -19,10 +19,22 @@ var (
 	keepaliveInterval int
 )
 
+func UpdateConnSwitch(action string) error{
+	switchConf := a3config.ReadCloudConf(a3config.Switch)
+	if switchConf != action {
+		err := a3config.UpdateCloudConf(a3config.Switch, action)
+		if err != nil {
+			return err
+		}
+	}
+	globalSwitch = action
+	return nil
+}
+
 func init() {
 	_ = update("")
 	if len(globalSwitch) == 0 {
-		globalSwitch = "enable"
+		UpdateConnSwitch("disable")
 	}
 }
 
