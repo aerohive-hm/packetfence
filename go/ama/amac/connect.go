@@ -41,6 +41,7 @@ var (
 	fetchRdcTokenUrl          string
 	fetchRdcTokenUrlForOthers string
 	keepAliveUrl              string
+	updateMsgUrl              string
 )
 
 const (
@@ -48,7 +49,10 @@ const (
 	SrvNoResponse   = "Server is unavailable"
 	AuthFail        = "Authenticate fail, please check the input parameters"
 	UrlIsNull       = "URL is NULL"
-	ErrorMsgFromSrv = "Error messages from server"
+	ErrorMsgFromSrv = "Error messages from server, please check the input parameters"
+	LimitedAccess   = "Limited access, please use an administrator/operator account"
+	UpdateMsgSuc    = "Update message to cloud successfully"
+	InvalidToken    = "Token is invalid, update message to cloud fail, "
 	OtherError      = "System error"
 )
 
@@ -79,6 +83,7 @@ func installRdcUrl(ctx context.Context, rdcUrl string) {
 	fetchRdcTokenUrl = domain + "/amac/rest/token/apply/" + systemId
 	fetchRdcTokenUrlForOthers = domain + "/amac/rest/v1/token/" + systemId
 	keepAliveUrl = domain + "/amac/rest/v1/poll/" + systemId
+	updateMsgUrl = domain + "/amac/rest/v1/report/" + systemId
 	if ctx != nil {
 		log.LoggerWContext(ctx).Error(fmt.Sprintf("connMsgUrl:%s,fetchRdcTokenUrl:%s, keepAliveUrl:%s", connMsgUrl, fetchRdcTokenUrl, keepAliveUrl))
 	}
@@ -101,8 +106,6 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		log.LoggerWContext(ctx).Error(string(data))
 		reader := bytes.NewReader(data)
 
-		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		//url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/report/syn/%s", utils.GetA3SysId())
 		request, err := http.NewRequest("POST", connMsgUrl, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
@@ -129,7 +132,7 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 			from the other nodes
 		*/
 		if statusCode == 401 {
-			result := reqTokenFromOtherNodes(ctx)
+			result := ReqTokenFromOtherNodes(ctx, nil)
 			//result == 0 means get the token, try to onboarding again
 			if result == 0 {
 				continue
@@ -146,61 +149,6 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 }
 
 /*
-	This function is used to send update message if network/license changes
-*/
-func updateMsgToRdc(ctx context.Context) int {
-	for {
-		node_info := a3share.GetIntChgInfo(ctx)
-		data, _ := json.Marshal(node_info)
-		log.LoggerWContext(ctx).Error("begin to send initerface change to RDC")
-		log.LoggerWContext(ctx).Error(string(data))
-		reader := bytes.NewReader(data)
-
-		fmt.Println("begin to send initerface change to RDC")
-		//request, err := http.NewRequest("POST", "http://10.155.100.17:8008/rest/v1/report/1234567", reader)
-		//url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/report/syn/%s", utils.GetA3SysId())
-		request, err := http.NewRequest("POST", connMsgUrl, reader)
-		if err != nil {
-			log.LoggerWContext(ctx).Error(err.Error())
-			return -1
-		}
-
-		//Add header option, the tokenStr is from RDC now
-		request.Header.Add("Authorization", rdcTokenStr)
-		request.Header.Set("Content-Type", "application/json")
-		resp, err := client.Do(request)
-		if err != nil {
-			log.LoggerWContext(ctx).Error("Update message to RDC fail")
-			log.LoggerWContext(ctx).Error(err.Error())
-			return -1
-		}
-
-		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println("receive the response ", resp.Status)
-		//fmt.Println(string(body))
-		log.LoggerWContext(ctx).Error(string(body))
-		statusCode := resp.StatusCode
-		resp.Body.Close()
-		/*
-			statusCode = 401 means authenticate fail, need to request valid RDC token
-			from the other nodes
-		*/
-		if statusCode == 401 {
-			result := reqTokenFromOtherNodes(ctx)
-			//result == 0 means get the token, try to onboarding again
-			if result == 0 {
-				continue
-			} else {
-				//not get the token, return and wait for the event from UI or other nodes
-				return result
-			}
-		}
-		return 0
-	}
-	return 0
-}
-
-/*
 	This func only for the node who do not know the GDC pasword,
 	in this case, this node will request RDC token from the other nodes
 */
@@ -208,7 +156,7 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 	//Read the local RDC token, if exist, not send request to other nodes
 	token := readRdcToken(ctx)
 	if len(token) == 0 {
-		result := reqTokenFromOtherNodes(ctx)
+		result := ReqTokenFromOtherNodes(ctx, nil)
 		//result != 0 means not get the token, return and waiting event from UI
 		//or other nodes
 		if result != 0 {
@@ -226,6 +174,7 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 		return res
 	}
 	updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
+	_, _ = UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
 	return 0
 }
 
@@ -246,7 +195,15 @@ func connectToRdcWithPara(ctx context.Context) (int, string) {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return -1, reason
 	}
-	//updateMsgToRdc(ctx)
+	/* Debugging code of integrating test with HM
+	updateMsgToRdcAsyn(ctx, LicenseInfoChange)
+	updateMsgToRdcAsyn(ctx, NetworkChange)
+
+	{
+		nodeInfo := NodeInfo{"B0C5-2104-0349-64CD-2D25-AAAA-AAAA-AAAA", "testforrequestRDCtoken"}
+		_ = ReqTokenForOtherNode(ctx, nodeInfo)
+	}
+	*/
 	return 0, ConnCloudSuc
 }
 
@@ -286,11 +243,19 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return "", ErrorMsgFromSrv
 		}
-		//GDC token does not need to write file, it is one-time useful
-		//gdcTokenStr = dat["access_token"].(string)
-		gdcTokenStr = fmt.Sprintf("Bearer %s", dat["access_token"].(string))
+
+		statusCode := resp.StatusCode
 		resp.Body.Close()
-		return gdcTokenStr, ConnCloudSuc
+		if statusCode == 200 {
+			//GDC token does not need to write file, it is one-time useful
+			gdcTokenStr = fmt.Sprintf("Bearer %s", dat["access_token"].(string))
+			return gdcTokenStr, ConnCloudSuc
+		} else if statusCode == 401 {
+			return "", AuthFail
+		}
+
+		errMsg := fmt.Sprintf("Server(GDC) respons the code %d, please check the input parameters", statusCode)
+		return "", errMsg
 	}
 }
 
@@ -375,6 +340,7 @@ func LoopConnect(ctx context.Context, pass string) (int, string) {
 		updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
 		return 0, reason
 	} else {
+		updateConnStatus(AMA_STATUS_INIT)
 		return -1, reason
 	}
 

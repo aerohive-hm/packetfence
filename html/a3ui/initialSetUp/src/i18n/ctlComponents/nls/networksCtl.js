@@ -42,6 +42,8 @@ export let i18n ={
 	"modalNetmask": "Netmask",
 	"modalType": "Type",
 	"modalServices": "Services",
+	"save": "SAVE",
+	
 	
 }
 

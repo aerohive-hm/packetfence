@@ -95,6 +95,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		//a3Interface.Service = []string{"PORTAL"}
 		a3Interface.Type = a3config.GetIfaceType(ifullname)
 		a3Interface.Type = strings.ToUpper(a3Interface.Type)
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("interface %s type is %s", ifullname, a3Interface.Type))
 		a3Interface.Type = "MANAGEMENT"
 		a3Interface.Service = a3config.GetIfaceServices(ifullname)
 		for _, service := range a3Interface.Service {
@@ -108,7 +109,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 
 	onboardingData.Msgtype = "connect"
 	onboardingData.IpMode = "DHCP"
-	onboardingData.DefaultGateway = "8.8.8.8"
+	onboardingData.DefaultGateway = "10.155.104.254"
 	onboardingData.SoftwareVersion = utils.GetA3Version()
 	onboardingData.SystemUptime = time.Now().UnixNano() / int64(time.Millisecond)
 	//onboardingData.ClusterHostName = "Todo"
@@ -169,8 +170,16 @@ func (lic *A3License) GetValue(ctx context.Context) {
 			if err != nil {
 				log.LoggerWContext(context).Error("Scan data error: " + err.Error())
 			}
-			fmt.Println("endpoint_count :", count)
 			lic.LicensedCapacity += count
+		}
+		if lic.LicensedCapacity == 0 {
+			var trialCount int
+			err = db.QueryRow("SELECT endpoint_count FROM a3_entitlement where type = 'Trial'").Scan(&trialCount)
+			if err != nil {
+				log.LoggerWContext(context).Error("Query database error: " + err.Error())
+			} else {
+				lic.LicensedCapacity = trialCount
+			}
 		}
 	}
 	//Fetch NextExpirationDate
@@ -180,7 +189,6 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	if err != nil {
 		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
-		fmt.Println("NextExpirationDate :", times)
 		lic.NextExpirationDate = times.UnixNano() / int64(time.Millisecond)
 	}
 
@@ -191,7 +199,6 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	if err != nil {
 		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
-		fmt.Println("AverageUsedCapacity :", averge)
 		lic.AverageUsedCapacity = averge
 	}
 
@@ -202,7 +209,6 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	if err != nil {
 		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
-		fmt.Println("CurrentUsedCapacity :", currentUsed)
 		lic.CurrentUsedCapacity = currentUsed
 	}
 }

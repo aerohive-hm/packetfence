@@ -21,6 +21,9 @@ var (
 
 func init() {
 	_ = update("")
+	if len(globalSwitch) == 0 {
+		globalSwitch = "enable"
+	}
 }
 
 func update(pass string) error {

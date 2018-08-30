@@ -47,6 +47,7 @@ func ParseRequestToData(r *http.Request) (handlerData crud.HandlerData, err erro
 	if err != nil {
 		return handlerData, err
 	}
+	handlerData.UrlParam = r.URL.Query()
 	sections := strings.Split(r.URL.Path, "/") //r.URL.Path: /api/v1/cmd/subcmd
 	if len(sections) > 4 {
 		handlerData.Cmd = sections[3]

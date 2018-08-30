@@ -31,6 +31,17 @@ func GetA3SysId() string {
 	return out
 }
 
+//func SetA3SysId(Id string) error {
+//	cmd := fmt.Sprintf("echo \"%s\" > /etc/A3.systemid", Id)
+
+//	out, err := ExecShell(cmd)
+//	if err != nil {
+//		fmt.Println("%s:exec error", cmd)
+//		return err
+//	}
+//	return nil
+//}
+
 func SetHostname(hostname string) {
 	clis := []Clis{
 		{
