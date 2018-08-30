@@ -136,7 +136,7 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int) (int, string) {
 			from the other nodes
 		*/
 		if statusCode == 401 {
-			result := ReqTokenFromOtherNodes(ctx,  nil)
+			result := ReqTokenFromOtherNodes(ctx, nil)
 			//result == 0 means get the token, try to onboarding again
 			if result == 0 {
 				continue
@@ -149,4 +149,12 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int) (int, string) {
 		return -1, errMsg
 	}
 	return 0, UpdateMsgSuc
+}
+
+func JoinCompleteEvent() {
+	event := new(MsgStru)
+
+	event.MsgType = JoinClusterComplete
+	event.Data = "Join cluster complete"
+	MsgChannel <- *event
 }
