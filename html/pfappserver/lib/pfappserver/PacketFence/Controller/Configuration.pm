@@ -72,7 +72,9 @@ our %ALLOWED_SECTIONS = (
 
 =cut
 
-sub index :Path :Args(0) { }
+sub index :Path :Args(0) {
+  my ( $self, $c ) = @_;
+}
 
 
 =head2 section

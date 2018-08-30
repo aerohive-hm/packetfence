@@ -42,13 +42,13 @@ Usage: /uploadKey/<type>
 
 =cut
 
-sub uploadKey :Path('uploadKey') :Args(1) {
-    my ($self, $c, $type) = @_;
+sub uploadKey :Path('/uploadKey') :Args(0) {
+    my ($self, $c) = @_;
 
     my $logger = get_logger();
 
     $logger->info("jma_debug in uploadKey");
-    $logger->info("\ntype: $type");
+    # $logger->info("\ntype: $type");
 
     # if ($c->request->method eq 'POST'){
     #     my $filename  = $c->request->{uploads}->{file}->{filename};
