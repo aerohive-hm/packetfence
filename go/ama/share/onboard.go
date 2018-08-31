@@ -92,7 +92,6 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	onboardingData.DefaultGateway = "10.155.104.254"
 	onboardingData.SoftwareVersion = utils.GetA3Version()
 	onboardingData.SystemUptime = time.Now().UnixNano() / int64(time.Millisecond)
-	//onboardingData.ClusterHostName = "Todo"
 	onboardingData.ClusterPrimary = amadb.IsPrimaryCluster()
 	managementIface, errint := utils.GetIfaceList("eth0")
 	if errint < 0 {
@@ -117,8 +116,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 	onboardHeader.Hostname = a3config.GetHostname()
 	onboardHeader.SystemID = utils.GetA3SysId()
-	//onboardHeader.ClusterID = utils.GetClusterId()
-	onboardHeader.ClusterID = "AAAA-BBBB-CCCCC"
+	onboardHeader.ClusterID = utils.GetClusterId()
 
 	//When onboarding, Cloud will assign a unique messageid, so we could just make it empty;
 	//onboardHeader.MessageID = ""

@@ -143,13 +143,13 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		log.LoggerWContext(ctx).Error(string(body))
 		statusCode := resp.StatusCode
 		if statusCode == 200 {
+		   defer resp.Body.Close()
 			err = json.Unmarshal([]byte(body), &connRes)
 			if err != nil {
-				log.LoggerWContext(ctx).Error(err.Error())
-				resp.Body.Close()
+				log.LoggerWContext(ctx).Error(err.Error())				
 				return -1, ErrorMsgFromSrv
 			}
-			resp.Body.Close()
+
 			if connRes.Data.MsgType == "response" && connRes.Data.Successful == true {
 				return 0, connRes.Data.ErrorMessage
 			} else {
@@ -170,6 +170,7 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 				return -1, AuthFail
 			}
 		}
+		resp.Body.Close()
 		return -1, OtherError
 	}
 	return -1, OtherError
@@ -191,8 +192,6 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 			return result
 		}
 	}
-
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("token:%s", token))
 
 	log.LoggerWContext(ctx).Info("connectToRdcWithoutPara: begin to send onboarding request to RDC server")
 	res, _ := onbordingToRdc(ctx)
@@ -261,6 +260,7 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return "", SrvNoResponse
 		}
+		defer resp.Body.Close()
 
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))
@@ -272,7 +272,6 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 		}
 
 		statusCode := resp.StatusCode
-		resp.Body.Close()
 		if statusCode == 200 {
 			//GDC token does not need to write file, it is one-time useful
 			gdcTokenStr = fmt.Sprintf("Bearer %s", dat["access_token"].(string))
@@ -312,6 +311,7 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1, SrvNoResponse
 		}
+		defer resp.Body.Close()
 
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))
@@ -324,7 +324,6 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 
 		installRdcUrl(ctx, rdcUrl)
 
-		resp.Body.Close()
 		return 0, ConnCloudSuc
 	}
 }
@@ -370,19 +369,5 @@ func LoopConnect(ctx context.Context, pass string) (int, string) {
 		updateConnStatus(AMA_STATUS_INIT)
 		return -1, reason
 	}
-
-	/*
-		//Create a timer to connect the GDC and RDC
-		ticker := time.NewTicker(10 * time.Second)
-		for _ = range ticker.C {
-			result := connectToGdcRdc(ctx)
-			if result == 0 {
-				updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
-				ticker.Stop()
-				return
-			}
-			continue
-		}
-	*/
 	return 0, ConnCloudSuc
 }
