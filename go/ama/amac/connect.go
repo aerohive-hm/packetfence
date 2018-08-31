@@ -143,10 +143,10 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		log.LoggerWContext(ctx).Error(string(body))
 		statusCode := resp.StatusCode
 		if statusCode == 200 {
-		   defer resp.Body.Close()
+			defer resp.Body.Close()
 			err = json.Unmarshal([]byte(body), &connRes)
 			if err != nil {
-				log.LoggerWContext(ctx).Error(err.Error())				
+				log.LoggerWContext(ctx).Error(err.Error())
 				return -1, ErrorMsgFromSrv
 			}
 

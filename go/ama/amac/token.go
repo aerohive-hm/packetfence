@@ -157,7 +157,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
 		return res
 	}
 	defer resp.Body.Close()
-	
+
 	body, _ := ioutil.ReadAll(resp.Body)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %s", resp.Status))
 	log.LoggerWContext(ctx).Info(string(body))
@@ -269,7 +269,7 @@ func distributeToSingleNode(ctx context.Context, mem MemberList, selfRenew bool)
 			log.LoggerWContext(ctx).Error(err.Error())
 			return
 		}
-		statusCode := node.Status		
+		statusCode := node.Status
 
 		if statusCode == 200 {
 			fmt.Println("post token OK ")
@@ -348,7 +348,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return "", SrvNoResponse
 	}
-    defer resp.Body.Close()
+	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	log.LoggerWContext(ctx).Info(string(body))
 
