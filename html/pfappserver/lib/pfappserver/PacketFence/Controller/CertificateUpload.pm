@@ -17,7 +17,13 @@ use Moose;
 use pf::error qw(is_success is_error);
 
 use pf::log;
+use pf::util;
 use Data::Dumper;
+use File::Temp qw/ tempfile /;
+use File::Basename;
+use File::Path;
+use File::Spec::Functions;
+use File::Copy; #to move files over and change name
 
 BEGIN {extends 'Catalyst::Controller'; }
 
@@ -38,7 +44,7 @@ sub begin :Private {
 
 Upload Certificate Key
 
-Usage: /uploadKey/<type>
+Usage: /uploadKey
 
 =cut
 
@@ -50,65 +56,295 @@ sub uploadKey :Path('/uploadKey') :Args(0) {
     $logger->info("jma_debug in uploadKey");
     # $logger->info("\ntype: $type");
 
-    # if ($c->request->method eq 'POST'){
-    #     my $filename  = $c->request->{uploads}->{file}->{filename};
-    #     my $name      = $c->request->{query_parameters}->{name};
-    #     my $qualifier = $c->request->{query_parameters}->{qualifier};
-    #     my $source    = $c->request->{uploads}->{file}->{tempname};
-    #     my $targetdir = '/usr/local/pf/conf/ssl/tls_certs';
-    #     my $template  = 'cert-XXXXXX';
-    #     my $target    = "$targetdir/$name-$qualifier.pem";
-    #     my $tempfile  = "/usr/local/pf/conf/ssl/tls_certs/cert-XXXXXX.tmp";
-    #     my $filesize  = -s $source;
-    #
-    #     $logger->info("filename: $filename, size: $filesize, location: $source");
-    #
-    #     if ($filesize && $filesize > 1000000) {
-    #         $logger->warn("Uploaded file $filename is too large");
-    #         $c->response->status($STATUS::BAD_REQUEST);
-    #         $c->stash->{status_msg} = $c->loc("Certificate size is too big. Try again.");
-    #         return;
-    #     }
-    #
-    #     my $ret = system("/usr/bin/openssl x509 -noout -text -in $source");
-    #
-    #     if (($ret >> 8) != 0) {
-    #         $logger->warn("Uploaded file $filename is not a certificate in PEM format");
-    #         $c->response->status($STATUS::BAD_REQUEST);
-    #         $c->stash->{status_msg} = $c->loc("File is invalid. Try again.");
-    #         return;
-    #     }
-    #
-    #     my (undef, $tmp_filename) = tempfile($template, DIR => $targetdir, SUFFIX => ".tmp");
-    #
-    #     if ((system("/usr/bin/cp -f $source $tmp_filename") >> 8) != 0) {
-    #         $logger->warn("Failed to save file data: $!");
-    #         unlink($tmp_filename);
-    #
-    #         $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
-    #         $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
-    #         return;
-    #     }
-    #
-    #     if ( ! rename($tmp_filename, $target) ) {
-    #         $logger->warn("Failed to move certificate file $filename into place at $target: $!");
-    #         $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
-    #         $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
-    #         return;
-    #     }
-    #
-    #     if ( pf::cluster::add_file_to_cluster_sync($target) ) {
-    #         $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
-    #         $c->stash->{status_msg} = $c->loc("Unable to save certificate to cluster. Try again.");
-    #         return;
-    #     }
-    #
-    #     $c->stash->{filePath} = $target;
-    #     $logger->info("Saved certificate at $target");
-    # }
+    if ($c->request->method eq 'POST'){
+        my $filename  = $c->request->{uploads}->{file}->{filename};
+        my $name      = $c->request->{query_parameters}->{name};
+        my $qualifier = $c->request->{query_parameters}->{qualifier};
+        my $source    = $c->request->{uploads}->{file}->{tempname};
+        my $targetdir = '/usr/local/pf/conf/ssl';
+        my $template  = 'cert-XXXXXX';
+        my $tempfile  = "/usr/local/pf/conf/ssl/tls_certs/cert-XXXXXX.tmp";
+        my $filesize  = -s $source;
+
+        $logger->info("filename: $filename, size: $filesize, location: $source");
+
+        if ($filesize && $filesize > 8000) {
+            $logger->warn("Uploaded file $filename is too large");
+            $c->response->status($STATUS::BAD_REQUEST);
+            $c->stash->{status_msg} = $c->loc("Certificate key size is too big. Try again.");
+            return;
+        }
+
+        my $ret = system("/usr/bin/openssl rsa -in $source -check");
+
+        if (($ret >> 8) != 0) {
+            $logger->warn("Uploaded file $filename is not a certificate key in KEY format");
+            $c->response->status($STATUS::BAD_REQUEST);
+            $c->stash->{status_msg} = $c->loc("File is invalid. Try again.");
+            return;
+        }
+
+        my (undef, $tmp_filename) = tempfile($template, DIR => $targetdir, SUFFIX => ".key");
+
+        if ((system("/usr/bin/cp -f $source $tmp_filename") >> 8) != 0) {
+            $logger->warn("Failed to save file data: $!");
+            unlink($tmp_filename);
+
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to install certificate key. Try again.");
+            return;
+        }
+        #
+        # if ( ! rename($tmp_filename, $target) ) {
+        #     $logger->warn("Failed to move certificate file $filename into place at $target: $!");
+        #     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+        #     $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+        #     return;
+        # }
+
+        # if ( pf::cluster::add_file_to_cluster_sync($target) ) {
+        #     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+        #     $c->stash->{status_msg} = $c->loc("Unable to save certificate to cluster. Try again.");
+        #     return;
+        # }
+
+        $c->stash->{filePath} = $tmp_filename;
+        $logger->info("Saved certificate key at $tmp_filename");
+    }
 }
 
+=head2 uploadServerCert
 
+Upload Server Certificate
+
+Usage: /uploadServerCert
+
+=cut
+
+sub uploadServerCert :Path('/uploadServerCert') :Args(0) {
+    my ($self, $c) = @_;
+
+    my $logger = get_logger();
+
+    $logger->info("jma_debug inside uploadServerCert");
+
+    if ($c->request->method eq 'POST'){
+        my $filename  = $c->request->{uploads}->{file}->{filename};
+        my $source    = $c->request->{uploads}->{file}->{tempname};
+        my $targetdir = '/usr/local/pf/conf/ssl';
+        my $template  = 'cert-XXXXXX';
+        my $filesize  = -s $source;
+
+        $logger->info("filename: $filename, size: $filesize, location: $source");
+
+        if ($filesize && $filesize > 1000000) {
+            $logger->warn("Uploaded file $filename is too large");
+            $c->response->status($STATUS::BAD_REQUEST);
+            $c->stash->{status_msg} = $c->loc("Certificate size is too big. Try again.");
+            return;
+        }
+
+        my $ret = system("/usr/bin/openssl x509 -noout -text -in $source");
+
+        if (($ret >> 8) != 0) {
+            $logger->warn("Uploaded file $filename is not a certificate in PEM format");
+            $c->response->status($STATUS::BAD_REQUEST);
+            $c->stash->{status_msg} = $c->loc("File is invalid. Try again.");
+            return;
+        }
+
+        my (undef, $tmp_filename) = tempfile($template, DIR => $targetdir, SUFFIX => ".pem");
+
+        if ((system("/usr/bin/cp -f $source $tmp_filename") >> 8) != 0) {
+            $logger->warn("Failed to save file data: $!");
+            unlink($tmp_filename);
+
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to install certificate key. Try again.");
+            return;
+        }
+        #
+        # if ( ! rename($tmp_filename, $target) ) {
+        #     $logger->warn("Failed to move certificate file $filename into place at $target: $!");
+        #     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+        #     $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+        #     return;
+        # }
+
+        # if ( pf::cluster::add_file_to_cluster_sync($target) ) {
+        #     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+        #     $c->stash->{status_msg} = $c->loc("Unable to save certificate to cluster. Try again.");
+        #     return;
+        # }
+
+        $c->stash->{filePath} = $tmp_filename;
+        $logger->info("Saved certificate at $tmp_filename");
+    }
+
+}
+
+=head2 uploadCACert
+
+Upload CA Certificate
+
+Usage: /uploadCACert
+
+=cut
+
+sub uploadCACert :Path('/uploadCACert') :Args(0) {
+    my ($self, $c) = @_;
+
+    my $logger = get_logger();
+
+    $logger->info("jma_debug inside uploadCACert");
+
+    if ($c->request->method eq 'POST'){
+        my $filename  = $c->request->{uploads}->{file}->{filename};
+        my $source    = $c->request->{uploads}->{file}->{tempname};
+        my $targetdir = '/usr/local/pf/conf/ssl';
+        my $template  = 'cert-XXXXXX';
+        my $filesize  = -s $source;
+        my $target = '/usr/local/pf/raddb/certs/ca.pem';
+        $logger->info("filename: $filename, size: $filesize, location: $source");
+
+        if ($filesize && $filesize > 1000000) {
+            $logger->warn("Uploaded file $filename is too large");
+            $c->response->status($STATUS::BAD_REQUEST);
+            $c->stash->{status_msg} = $c->loc("Certificate size is too big. Try again.");
+            return;
+        }
+
+        my $ret = system("/usr/bin/openssl x509 -noout -text -in $source");
+
+        if (($ret >> 8) != 0) {
+            $logger->warn("Uploaded file $filename is not a certificate in PEM format");
+            $c->response->status($STATUS::BAD_REQUEST);
+            $c->stash->{status_msg} = $c->loc("File is invalid. Try again.");
+            return;
+        }
+
+        my (undef, $tmp_filename) = tempfile($template, DIR => $targetdir, SUFFIX => ".pem");
+
+        if ((system("/usr/bin/cp -f $source $tmp_filename") >> 8) != 0) {
+            $logger->warn("Failed to save file data: $!");
+            unlink($tmp_filename);
+
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to install CA certificate. Try again.");
+            return;
+        }
+
+        if ( ! rename($tmp_filename, $target) ) {
+            $logger->warn("Failed to move certificate file $filename into place at $target: $!");
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+            return;
+        }
+
+        if ( pf::cluster::add_file_to_cluster_sync($target) ) {
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to save certificate to cluster. Try again.");
+            return;
+        }
+
+        $c->stash->{filePath} = $tmp_filename;
+        $logger->info("Saved certificate at $tmp_filename");
+    }
+
+}
+=head2 verifyCert
+
+verify the key and server cert files
+Usage: /verifyCert
+
+=cut
+
+sub verifyCert :Path('/verifyCert') :Args(0) {
+    my ($self, $c) = @_;
+
+    my $logger = get_logger();
+    my $eap_key_path = '/usr/local/pf/raddb/certs/server.key';
+    my $eap_server_path = '/usr/local/pf/raddb/certs/server.crt';
+    my $https_key_path = '/usr/local/pf/conf/ssl/server.key';
+    my $https_server_path = '/usr/local/pf/conf/ssl/server.crt';
+    $logger->info("jma_debug inside verifyCert");
+
+    if ($c->request->method eq 'POST') {
+        my $qualifier = $c->request->{qualifier};
+        my $key_path = $c->request->{key_path};
+        my $cert_path = $c->request->{cert_path};
+
+        my $key_md5 = `openssl rsa -noout -modulus -in $key_path| openssl md5`;
+        my $cert_md5 = `openssl x509 -noout -modulus -in $cert_path| openssl md5`;
+
+        if ($key_md5 eq $cert_md5) {
+            #eap-tls certs will be put in raddb/certs
+            if ($qualifier eq "eap") {
+                if ( ! rename($key_path, $eap_key_path) ) {
+                    $logger->warn("Failed to move certificate file $key_path into place at $eap_key_path: $!");
+                    $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+                    $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+                    return;
+                }
+                if ( ! rename($cert_path, $eap_server_path) ) {
+                    $logger->warn("Failed to move certificate file $cert_path into place at $eap_server_path: $!");
+                    $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+                    $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+                    return;
+                }
+                $c->stash->{CN} = pf::util::get_cert_subject_cn($eap_server_path);
+            } elsif ($qualifier eq "https") {
+                #https certs will be put in conf/ssl
+                if ( ! rename($key_path, $https_key_path) ) {
+                    $logger->warn("Failed to move certificate file $key_path into place at $https_key_path: $!");
+                    $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+                    $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+                    return;
+                }
+                if ( ! rename($cert_path, $https_server_path) ) {
+                    $logger->warn("Failed to move certificate file $cert_path into place at $eap_server_path: $!");
+                    $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+                    $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+                    return;
+                }
+                system("cat $https_server_path $https_key_path > conf/ssl/server.pem");
+                $c->stash->{CN} = pf::util::get_cert_subject_cn($https_server_path);
+            }
+        } else {
+            $logger->warn("Failed to verify certificate file $key_path against $cert_path: $!");
+            $c->response->status($STATUS::UNPROCESSABLE_ENTITY);
+            $c->stash->{status_msg} = $c->loc("Unable to verify certificate. Try again.");
+            return;
+        }
+    }
+
+}
+
+=head2 readCert
+
+reads the Subject of the certs
+Usage: /readCert
+
+=cut
+
+sub readCert :Path('/readCert') :Args(0) {
+    my ($self, $c) = @_;
+    my $logger = get_logger();
+    my $eap_ca_path = '/usr/local/pf/raddb/certs/ca.pem';
+    my $eap_server_path = '/usr/local/pf/raddb/certs/server.crt';
+    my $https_server_path = '/usr/local/pf/conf/ssl/server.crt';
+    $logger->info("jma_debug inside readCert");
+
+    if ($c->request->method eq 'GET') {
+        my $qualifier = $c->request->{qualifier};
+        if ($qualifier eq "HTTPS") {
+            $c->stash->{CN} = pf::util::get_cert_subject_cn($https_server_path);
+        } elsif ($qualifier eq "eap") {
+            $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($eap_server_path);
+            $c->stash->{CN_CA} = pf::util::get_cert_subject_cn($eap_ca_path);
+        }
+    }
+}
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 
