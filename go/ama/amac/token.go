@@ -17,6 +17,7 @@ import (
 	innerClient "github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -249,7 +250,7 @@ func FetchSysIDForNode(node MemberList) string {
 	return ""
 }
 
-func distributeToSingleNode(ctx context.Context, mem MemberList, selfRenew bool) {
+func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew bool) {
 	var token []byte
 	if selfRenew == false {
 		token = ReqTokenForOtherNode(ctx, NodeInfo{})
@@ -324,12 +325,16 @@ func distributeToSingleNode(ctx context.Context, mem MemberList, selfRenew bool)
 	   and posting the new token to every node actively;
 	3) If selfRenew is true, will notice every node to renew RDC token by itself.
 */
-func triggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
-	nodeList := fetchNodeList()
-
+func TriggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
+	nodeList := a3share.FetchNodesInfo()
+	ownMgtIp := a3share.GetOwnMGTIp()
 	for _, node := range nodeList {
+		if node.IpAddr == ownMgtIp {
+			continue
+		}
 		go distributeToSingleNode(ctx, node, selfRenew)
 	}
+
 	return
 }
 
@@ -409,11 +414,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		if err != nil {
 			log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
 		}
-		/*
-			To do, post the RDC token/RDC URL/VHMID to the other memebers
-		*/
-		//Updating the RDC token for the other nodes actively
-		//triggerUpdateNodesToken(ctx, true)
+
 		return dst, ConnCloudSuc
 	} else if statusCode == 401 {
 		return "", AuthFail
