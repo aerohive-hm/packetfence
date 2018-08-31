@@ -46,7 +46,7 @@ type CloudGetData struct {
 
 type CloudGetInfo struct {
 	Head CloudGetHeader `json:"header"`
-	Data CloudGetData   `json:"data"`
+	Data []CloudGetData   `json:"data"`
 }
 
 type CloudPostInfo struct {
