@@ -3,17 +3,21 @@ package configurator
 import (
 	"context"
 	//	"encoding/json"
-	//  "fmt"
+	"fmt"
 	"net/http"
 	//	"strconv"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	//	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	//	"github.com/inverse-inc/packetfence/go/log"
 )
 
 type Service struct {
 	crud.Crud
+}
+
+type StatusRes struct {
+	Code string `json:"code"`
 }
 
 func ServicesNew(ctx context.Context) crud.SectionCmd {
@@ -25,5 +29,12 @@ func ServicesNew(ctx context.Context) crud.SectionCmd {
 
 func handleGetServiceStatus(r *http.Request, d crud.HandlerData) []byte {
 	//var ctx = r.Context()
-	return []byte(`{"code":"ok", "percentage":"100"}`)
+	code := "ok"
+
+	msg := utils.ServiceStatus()
+	if msg == "" {
+		code = "fail"
+	}
+	
+	return []byte(fmt.Sprintf(`{"code":"%s", "percentage":"%s"}`, code, msg))
 }

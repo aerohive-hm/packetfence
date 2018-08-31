@@ -220,6 +220,7 @@ class adminUserCtl extends Component {
     onClickCancel = () => {
         let self=this;
         self.props.form.resetFields();
+        self.props.changeStatus("getStart");
         
     }
 

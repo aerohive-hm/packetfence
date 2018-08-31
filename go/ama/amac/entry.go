@@ -27,13 +27,13 @@ const (
 	AMA_STATUS_UNKNOWN        = 100
 )
 const (
-	GdcConfigChange         = 1
-	NetworkChange           = 2
-	LicenseInfoChange       = 3
-	CloudIntegrateFunction  = 4
-	RdcTokenUpdate          = 5
-	RemoveNodeFromCluster   = 6
-	JoinClusterComplete     = 7
+	GdcConfigChange        = 1
+	NetworkChange          = 2
+	LicenseInfoChange      = 3
+	CloudIntegrateFunction = 4
+	RdcTokenUpdate         = 5
+	RemoveNodeFromCluster  = 6
+	JoinClusterComplete    = 7
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -68,13 +68,13 @@ func GetAMAConnStatus() string {
 	var str string
 	switch ama_connect_status {
 	case AMA_STATUS_INIT:
-		str = "Disconnect"
+		str = "disconnect"
 	case AMA_STATUS_CONNECING_GDC:
-		str = "Connecting"
+		str = "connecting"
 	case AMA_STATUS_CONNECING_RDC:
-		str = "Connecting"
+		str = "connecting"
 	case AMA_STATUS_ONBOARDING_SUC:
-		str = "Connected"
+		str = "connected"
 	default:
 		str = "Unknow"
 	}
@@ -157,7 +157,6 @@ func Entry(ctx context.Context) {
 		}
 	}
 }
-
 
 /*
 	Handling the message from web UI, such as items about GDC change,

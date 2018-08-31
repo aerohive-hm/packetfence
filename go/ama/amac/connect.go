@@ -37,6 +37,7 @@ var (
 	gdcTokenStr               string
 	rdcTokenStr               string
 	VhmidStr                  string
+	OwnerIdStr                string
 	connMsgUrl                string
 	fetchRdcTokenUrl          string
 	fetchRdcTokenUrlForOthers string
@@ -143,9 +144,9 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		} else if statusCode == 200 {
 			return 0, ConnCloudSuc
 		}
-		return 0, OtherError
+		return -1, OtherError
 	}
-	return 0, OtherError
+	return -1, OtherError
 }
 
 /*
@@ -177,8 +178,8 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return res
 	}
-	updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
-	_, _ = UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
+	//updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
+	//_, _ = UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
 	return 0
 }
 
@@ -295,7 +296,7 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 
 		json.Unmarshal([]byte(body), &vhmres)
 
-		VhmidStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
+		OwnerIdStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
 		rdcUrl = vhmres.Data.Location
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("rdcUrl = %s", rdcUrl))
 

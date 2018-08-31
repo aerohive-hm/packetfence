@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -34,26 +35,25 @@ func ExecShell(s string) (string, error) {
 	cmd.Stdout = &out
 
 	err := cmd.Run()
-	if err != nil {
-		fmt.Println("exec error!" + s)
-	}
-
 	return out.String(), err
 }
 
-func ExecClis(clis []Clis) {
-	for _, cli := range clis {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(cli.cmd))
-		cli.out, cli.err = ExecShell(cli.cmd)
+func ExecCmds(cmds []string) []Clis {
+	var result = []Clis{}
+
+	for _, cmd := range cmds {
+		log.LoggerWContext(ctx).Error(fmt.Sprintln(cmd))
+		cli := Clis{cmd: cmd}
+		cli.out, cli.err = ExecShell(cmd)
+
 		if cli.err != nil {
 			log.LoggerWContext(ctx).Error(cli.err.Error())
+			log.LoggerWContext(ctx).Error(fmt.Sprintln(cli.out))
 		}
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(cli.out))
+		result = append(result, cli)
 	}
-	/*
-		for _, cmd := range clis {
-		}
-	*/
+
+	return result
 }
 
 func execCommand(cmdName string, params []string) bool {
@@ -88,7 +88,8 @@ func GenClusterID() string {
 	if err != nil {
 		return ""
 	}
-	return uuid
+
+	return strings.TrimRight(uuid, "\n")
 }
 
 func IsFileExist(path string) bool {
@@ -96,4 +97,35 @@ func IsFileExist(path string) bool {
 		return !os.IsNotExist(err)
 	}
 	return true
+}
+
+func CreateClusterId() error {
+	path := "/usr/local/pf/conf/clusterid.conf"
+	if IsFileExist(path) {
+		return nil
+	}
+	_, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	clusterid := GenClusterID()
+
+	fmt.Println(len(clusterid), clusterid)
+	cmd := fmt.Sprintf("echo -n \"%s\" > %s", clusterid, path)
+	_, err = ExecShell(cmd)
+	if err != nil {
+		fmt.Println("%s:exec error", cmd)
+		return err
+	}
+	return nil
+}
+
+func GetClusterId() string {
+	cmd := "cat /usr/local/pf/conf/clusterid.conf"
+	out, err := ExecShell(cmd)
+	if err != nil {
+		fmt.Println("%s:exec error", cmd)
+		return ""
+	}
+	return out
 }
