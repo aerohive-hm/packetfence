@@ -16,6 +16,10 @@ type Service struct {
 	crud.Crud
 }
 
+type StatusRes struct {
+	Code string `json:"code"`
+}
+
 func ServicesNew(ctx context.Context) crud.SectionCmd {
 	service := new(Service)
 	service.New()
@@ -31,5 +35,6 @@ func handleGetServiceStatus(r *http.Request, d crud.HandlerData) []byte {
 	if msg == "" {
 		code = "fail"
 	}
+	
 	return []byte(fmt.Sprintf(`{"code":"%s", "percentage":"%s"}`, code, msg))
 }

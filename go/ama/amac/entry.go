@@ -68,13 +68,13 @@ func GetAMAConnStatus() string {
 	var str string
 	switch ama_connect_status {
 	case AMA_STATUS_INIT:
-		str = "Init status"
+		str = "disconnect"
 	case AMA_STATUS_CONNECING_GDC:
-		str = "Connecting GDC"
+		str = "connecting"
 	case AMA_STATUS_CONNECING_RDC:
-		str = "Connecting RDC"
+		str = "connecting"
 	case AMA_STATUS_ONBOARDING_SUC:
-		str = "Connected"
+		str = "connected"
 	default:
 		str = "Unknow"
 	}

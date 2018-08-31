@@ -15,7 +15,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/share"
-	//	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -30,12 +30,23 @@ type cloudPostRes struct {
 	Msg  string `json:"msg"`
 }
 
-type CloudGetInfo struct {
-	Url             string `json:"url"`
-	User            string `json:"user"`
-	Vhm             string `json:"vhm"`
+type CloudGetHeader struct {
+	RdcUrl  string `json:"rdcUrl"`
+	Region  string `json:"region"`
+	OwnerId string `json:"ownerId"`
+	VhmId   string `json:"vhmId"`
+	Mode    string `json:"mode"`
+}
+
+type CloudGetData struct {
+	Hostname        string `json:"hostname"`
 	Status          string `json:"status"`
-	LastConnectTime string `json:"lastConnectTime"`
+	LastContactTime string `json:"lastContactTime"`
+}
+
+type CloudGetInfo struct {
+	Head CloudGetHeader `json:"header"`
+	Data []CloudGetData   `json:"data"`
 }
 
 type CloudPostInfo struct {
@@ -56,17 +67,40 @@ func CloudNew(ctx context.Context) crud.SectionCmd {
 	return cloud
 }
 
+func getRunMode() string {
+	if !utils.IsFileExist("/usr/local/pf/conf/cluster.conf") {
+		return "standalone"
+	} else {
+		return "cluster"
+	}
+}
+
 func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var GetInfo CloudGetInfo
+	//var memberArray []amac.MemberList
+	var dataArray []CloudGetData
+	var self CloudGetData
 
 	var ctx = r.Context()
 	log.LoggerWContext(ctx).Error("into handleGetCloudInfo")
 
-	GetInfo.Url = a3config.ReadCloudConf(a3config.GDCUrl)
-	GetInfo.User = a3config.ReadCloudConf(a3config.User)
-	GetInfo.Vhm = a3config.ReadCloudConf(a3config.Vhm)
-	GetInfo.Status = amac.GetAMAConnStatus()
-	GetInfo.LastConnectTime = fmt.Sprintf("%v", amac.ReadLastConTime())
+	GetInfo.Head.RdcUrl = a3config.ReadCloudConf(a3config.RDCUrl)
+	GetInfo.Head.OwnerId = a3config.ReadCloudConf(a3config.OwnerId)
+	GetInfo.Head.VhmId = a3config.ReadCloudConf(a3config.Vhm)
+	GetInfo.Head.Mode = getRunMode()
+	//GetInfo.Head.region = //to do
+
+	self.Hostname = a3config.GetHostname()
+	self.Status = amac.GetAMAConnStatus()
+	self.LastContactTime = fmt.Sprintf("%v", amac.ReadLastConTime())
+
+	dataArray = append(dataArray, self)
+
+	//memberArray = amac.FetchNodeList()
+	//for _, mem := range memberArray {
+
+	//to do, call the API
+	//}
 
 	jsonData, err := json.Marshal(GetInfo)
 	if err != nil {
@@ -80,6 +114,8 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var ret string
 	var reason string
 	var result int
+	//var memberArray []amac.MemberList
+
 	ctx := r.Context()
 	postInfo := new(CloudPostInfo)
 	code := "fail"
@@ -108,6 +144,12 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		}
 		code = "ok"
 		ret = "disable cloud integration successfully"
+
+		//memberArray = amac.FetchNodeList()
+		//for _, mem := range memberArray {
+		//to do, call the API to notify disable the cloud integration
+		//}
+
 		goto END
 	}
 
@@ -133,6 +175,12 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	if result == 0 {
 		code = "ok"
 		ret = "connect to cloud successfully"
+
+		//memberArray = amac.FetchNodeList()
+		//for _, mem := range memberArray {
+		//to do, call the API to notify enable the cloud integration
+		//}
+
 	} else {
 		ret = reason
 	}

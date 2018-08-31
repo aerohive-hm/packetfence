@@ -12,6 +12,7 @@ const (
 	Switch   = "switch" //Enable/Disable connection.
 	Interval = "keepalive_interval"
 	Vhm      = "vhm"
+	OwnerId  = "owenerId"
 )
 
 func UpdateCloudConf(key string, value string) error {

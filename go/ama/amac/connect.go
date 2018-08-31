@@ -37,6 +37,7 @@ var (
 	gdcTokenStr               string
 	rdcTokenStr               string
 	VhmidStr                  string
+	OwnerIdStr                string
 	connMsgUrl                string
 	fetchRdcTokenUrl          string
 	fetchRdcTokenUrlForOthers string
@@ -62,6 +63,20 @@ type response struct {
 }
 type VhmidResponse struct {
 	Data response `json:"data"`
+}
+
+type connectResponseData struct {
+	MsgType      string `json:"msgType"`
+	MessageID    string `json:"messageId"`
+	Successful   bool   `json:"successful"`
+	ErrorCode    int    `json:"errorCode"`
+	ErrorMessage string `json:"errorMessage"`
+	ResponseData string `json:"responseData"`
+}
+
+type connectResponse struct {
+	Header tokenCommonHeader   `json:"header"`
+	Data   connectResponseData `json:"data"`
 }
 
 /*
@@ -93,6 +108,8 @@ func installRdcUrl(ctx context.Context, rdcUrl string) {
 	Send onboarding info to HM once obataining the RDC's token
 */
 func onbordingToRdc(ctx context.Context) (int, string) {
+	connRes := connectResponse{}
+
 	if connMsgUrl == "" {
 		log.LoggerWContext(ctx).Error("RDC URL is NULL")
 		return -1, UrlIsNull
@@ -122,16 +139,28 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-
 		log.LoggerWContext(ctx).Error(fmt.Sprintf("receive the response %d", resp.StatusCode))
 		log.LoggerWContext(ctx).Error(string(body))
 		statusCode := resp.StatusCode
-		resp.Body.Close()
-		/*
-			statusCode = 401 means authenticate fail, need to request valid RDC token
-			from the other nodes
-		*/
-		if statusCode == 401 {
+		if statusCode == 200 {
+			defer resp.Body.Close()
+			err = json.Unmarshal([]byte(body), &connRes)
+			if err != nil {
+				log.LoggerWContext(ctx).Error(err.Error())
+				return -1, ErrorMsgFromSrv
+			}
+
+			if connRes.Data.MsgType == "response" && connRes.Data.Successful == true {
+				return 0, connRes.Data.ErrorMessage
+			} else {
+				return -1, connRes.Data.ErrorMessage
+			}
+		} else if statusCode == 401 {
+			resp.Body.Close()
+			/*
+				statusCode = 401 means authenticate fail, need to request valid RDC token
+				from the other nodes
+			*/
 			result := ReqTokenFromOtherNodes(ctx, nil)
 			//result == 0 means get the token, try to onboarding again
 			if result == 0 {
@@ -140,9 +169,8 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 				//not get the token, return and wait for the event from UI or other nodes
 				return -1, AuthFail
 			}
-		} else if statusCode == 200 {
-			return 0, ConnCloudSuc
 		}
+		resp.Body.Close()
 		return -1, OtherError
 	}
 	return -1, OtherError
@@ -164,8 +192,6 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 			return result
 		}
 	}
-
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("token:%s", token))
 
 	log.LoggerWContext(ctx).Info("connectToRdcWithoutPara: begin to send onboarding request to RDC server")
 	res, _ := onbordingToRdc(ctx)
@@ -234,6 +260,7 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return "", SrvNoResponse
 		}
+		defer resp.Body.Close()
 
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))
@@ -245,7 +272,6 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 		}
 
 		statusCode := resp.StatusCode
-		resp.Body.Close()
 		if statusCode == 200 {
 			//GDC token does not need to write file, it is one-time useful
 			gdcTokenStr = fmt.Sprintf("Bearer %s", dat["access_token"].(string))
@@ -285,19 +311,19 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1, SrvNoResponse
 		}
+		defer resp.Body.Close()
 
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))
 
 		json.Unmarshal([]byte(body), &vhmres)
 
-		VhmidStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
+		OwnerIdStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
 		rdcUrl = vhmres.Data.Location
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("rdcUrl = %s", rdcUrl))
 
 		installRdcUrl(ctx, rdcUrl)
 
-		resp.Body.Close()
 		return 0, ConnCloudSuc
 	}
 }
@@ -343,19 +369,5 @@ func LoopConnect(ctx context.Context, pass string) (int, string) {
 		updateConnStatus(AMA_STATUS_INIT)
 		return -1, reason
 	}
-
-	/*
-		//Create a timer to connect the GDC and RDC
-		ticker := time.NewTicker(10 * time.Second)
-		for _ = range ticker.C {
-			result := connectToGdcRdc(ctx)
-			if result == 0 {
-				updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
-				ticker.Stop()
-				return
-			}
-			continue
-		}
-	*/
 	return 0, ConnCloudSuc
 }
