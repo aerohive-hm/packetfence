@@ -22,6 +22,7 @@ use pf::config qw(%Config);
 use pf::file_paths qw($conf_dir);
 use pf::util;
 use pf::log;
+use pf::cluster;
 use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Controller' }
@@ -53,6 +54,7 @@ sub auto :Private {
         $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
         $c->stash->{is_eula_accepted} = pf::a3_eula_acceptance::is_eula_accepted();
         $c->stash->{get_trial_status} = pf::a3_entitlement::get_trial_status();
+        $c->stash->{is_cluster_enabled} = $pf::cluster::cluster_enabled;
     }
 
     return 1;

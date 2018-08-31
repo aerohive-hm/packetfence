@@ -127,6 +127,11 @@ sub create {
         if (is_error($status)) {
             return ($status, $status_msg);
         }
+        if ( pf::cluster::add_file_to_cluster_sync($server_filename) ) {
+            $status = $STATUS::INTERNAL_SERVER_ERROR;
+            $status_msg = "Unable to save cloned certificates to cluster Try again.";
+            return ($status, $status_msg);
+        }
         $assignments->{server_cert_path} = $server_filename;
     }
 
@@ -134,6 +139,11 @@ sub create {
         ($status, $status_msg) = copy_cert($assignments->{ca_cert_path}, $ca_filename);
         if (is_error($status)) {
             unlink($server_filename);
+            return ($status, $status_msg);
+        }
+        if ( pf::cluster::add_file_to_cluster_sync($ca_filename) ) {
+            $status = $STATUS::INTERNAL_SERVER_ERROR;
+            $status_msg = "Unable to save cloned certificates to cluster Try again.";
             return ($status, $status_msg);
         }
         $assignments->{ca_cert_path} = $ca_filename;
