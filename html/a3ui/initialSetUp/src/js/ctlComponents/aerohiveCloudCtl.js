@@ -120,7 +120,7 @@ class aerohiveCloudCtl extends Component {
             newWrongMessage.userWrongMessage=self.state.i18n.cloudAdminUserIsRequired;
         }else
         if(isEmail(user.toString().trim())===false){
-            newWrongMessage.userWrongMessage=self.state.i18n.cloudAdminUserFormatIsIncorrect;
+            newWrongMessage.userWrongMessage=self.state.i18n.emailFormatIsIncorrect;
         }else{
             newWrongMessage.userWrongMessage="";
         }

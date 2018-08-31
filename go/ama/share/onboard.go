@@ -42,7 +42,7 @@ type A3OnboardingData struct {
 	SoftwareVersion string        `json:"softwareVersion"`
 	SystemUptime    int64         `json:"systemUpTime"`
 	Vip             string        `json:"vip"`
-	ClusterHostName string        `json:"clusterHostName"`
+	ClusterHostName string        `json:"clusterHostName,omitempty"`
 	ClusterPrimary  bool          `json:"clusterPrimary"`
 	Interfaces      []A3Interface `json:"interfaces"`
 	License         A3License     `json:"license"`
@@ -63,8 +63,6 @@ type A3OnboardingInfo struct {
 var contextOnboard = log.LoggerNewContext(context.Background())
 
 func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
-	var ifullname string
-	var services []string
 	ifaces, errint := utils.GetIfaceList("all")
 	if errint < 0 {
 		fmt.Errorf("Get interfaces infomation failed.")
@@ -79,36 +77,18 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 			a3Interface.Parent = iface.Master
 		}
 
-		//a3Interface = strings.Split(iface.Name, ".")
-		iname := strings.Split(iface.Name, ".")
-
-		if len(iname) > 1 {
-			ifullname = fmt.Sprintf("VLAN%s", iname[1])
-		} else {
-			ifullname = iname[0]
-		}
 		a3Interface.Vlan, _ = strconv.Atoi(iface.Vlan)
 		a3Interface.IpAddress = iface.IpAddr
-		a3Interface.Netmask = "255.255.255.0"
-		a3Interface.Vip = iface.Vip
-		//a3Interface.Type = "MANAGEMENT"
-		//a3Interface.Service = []string{"PORTAL"}
-		a3Interface.Type = a3config.GetIfaceType(ifullname)
-		a3Interface.Type = strings.ToUpper(a3Interface.Type)
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("interface %s type is %s", ifullname, a3Interface.Type))
-		a3Interface.Type = "MANAGEMENT"
-		a3Interface.Service = a3config.GetIfaceServices(ifullname)
-		for _, service := range a3Interface.Service {
-			service = strings.ToUpper(service)
-			services = append(services, service)
-			log.LoggerWContext(ctx).Error(service)
-		}
-		a3Interface.Service = services
+		value, _ := strconv.Atoi(iface.NetMask)
+		a3Interface.Netmask = utils.NetmaskLen2Str(value)
+		a3Interface.Vip = a3config.GetPrimaryClusterVip(iface.Name)
+		a3Interface.Type = a3config.GetIfaceType(iface.Name)
+		a3Interface.Service = a3config.GetIfaceServices(iface.Name)
 		onboardingData.Interfaces = append(onboardingData.Interfaces, *a3Interface)
 	}
 
 	onboardingData.Msgtype = "connect"
-	onboardingData.IpMode = "DHCP"
+	onboardingData.IpMode = "STATIC"
 	onboardingData.DefaultGateway = "10.155.104.254"
 	onboardingData.SoftwareVersion = utils.GetA3Version()
 	onboardingData.SystemUptime = time.Now().UnixNano() / int64(time.Millisecond)
@@ -122,8 +102,9 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	for _, iface := range managementIface {
 		onboardingData.MacAddress = strings.ToUpper(strings.Replace(iface.HwAddr, ":", "", -1))
 		onboardingData.IpAddress = iface.IpAddr
-		onboardingData.Netmask = "255.255.255.0"
-		onboardingData.Vip = iface.Vip
+		value, _ := strconv.Atoi(iface.NetMask)
+		onboardingData.Netmask = utils.NetmaskLen2Str(value)
+		onboardingData.Vip = a3config.GetPrimaryClusterVip(iface.Name)
 		break
 	}
 	//Fetch license info
@@ -135,7 +116,8 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 	onboardHeader.Hostname = a3config.GetHostname()
 	onboardHeader.SystemID = utils.GetA3SysId()
-	//onboardHeader.ClusterID = GetClusterId()
+	onboardHeader.ClusterID = utils.GetClusterId()
+
 	//When onboarding, Cloud will assign a unique messageid, so we could just make it empty;
 	//onboardHeader.MessageID = ""
 	return

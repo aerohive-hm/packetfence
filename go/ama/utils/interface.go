@@ -257,3 +257,23 @@ func NetmaskStr2Len(mask string) int {
 
 	return num
 }
+
+func UpdateVlanIface(ifname string, vlan, ip, mask string) {
+
+	if IfaceExists(ifname) {
+		iface, _ := GetIfaceList(ifname)
+		oldip := iface[0].IpAddr
+		oldmask := iface[0].NetMask
+		if oldip != ip || oldmask != mask {
+			DelIfaceIIpAddr(ifname, oldip)
+			SetIfaceIIpAddr(ifname, ip, mask)
+			SetIfaceUp(ifname)
+		}
+
+	} else {
+		CreateVlanIface("eth0", vlan)
+		SetIfaceIIpAddr(ifname, ip, mask)
+		SetIfaceUp(ifname)
+	}
+
+}
