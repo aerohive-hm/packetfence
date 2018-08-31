@@ -65,7 +65,7 @@ type A3TokenResFromRdc struct {
 }
 
 //Fetch node list from cluster.conf
-func FetchNodeList() []MemberList {
+func fetchNodeList() []MemberList {
 	conf := a3config.A3Read("CLUSTER", "all")
 	if conf == nil {
 		return nil
@@ -220,7 +220,7 @@ func ReqTokenFromOtherNodes(ctx context.Context, node *MemberList) int {
 	memList := []MemberList{}
 
 	if node == nil {
-		memList = append(memList, FetchNodeList()...)
+		memList = append(memList, fetchNodeList()...)
 	} else {
 		memList = append(memList, *node)
 	}
@@ -325,7 +325,7 @@ func distributeToSingleNode(ctx context.Context, mem MemberList, selfRenew bool)
 	3) If selfRenew is true, will notice every node to renew RDC token by itself.
 */
 func triggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
-	nodeList := FetchNodeList()
+	nodeList := fetchNodeList()
 
 	for _, node := range nodeList {
 		go distributeToSingleNode(ctx, node, selfRenew)
