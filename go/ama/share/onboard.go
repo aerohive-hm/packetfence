@@ -105,6 +105,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		value, _ := strconv.Atoi(iface.NetMask)
 		onboardingData.Netmask = utils.NetmaskLen2Str(value)
 		onboardingData.Vip = a3config.GetPrimaryClusterVip(iface.Name)
+		onboardingData.ClusterHostName = a3config.GetPrimaryClusterVip(iface.Name)
 		break
 	}
 	//Fetch license info
@@ -116,7 +117,8 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 	onboardHeader.Hostname = a3config.GetHostname()
 	onboardHeader.SystemID = utils.GetA3SysId()
-	onboardHeader.ClusterID = utils.GetClusterId()
+	//onboardHeader.ClusterID = utils.GetClusterId()
+	onboardHeader.ClusterID = "AAAA-BBBB-CCCCC"
 
 	//When onboarding, Cloud will assign a unique messageid, so we could just make it empty;
 	//onboardHeader.MessageID = ""
