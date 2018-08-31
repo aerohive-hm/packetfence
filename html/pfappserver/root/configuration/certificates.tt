@@ -38,6 +38,8 @@
                       <br>
                       <label><h6>Server Certificate (file type:  .pem)</h6></label>
                       <input id="serverCert" name="serverCert_upload" class="serverCert" type="file">
+                      <button>Download</button>
+                      <button>View More</button>
                     </div>
                     <br>
                     <div class="caFile">
@@ -70,20 +72,4 @@
     </div>
 </div>
 
-<script>
-
-$(document).ready(function(){
-  alert("in process files");
-  var base_url = window.location.origin;
-  return $.ajax({
-      type: 'POST',
-      url: base_url + '/uploadKey',
-      success: function(data){
-        alert("post went through");
-      },
-      error: function(data){
-        alert("did not go through");
-      }
-  });
-});
-</script>
+<script type="text/javascript" src="[% c.uri_for('/static/js/certificates.js') %]"></script>
