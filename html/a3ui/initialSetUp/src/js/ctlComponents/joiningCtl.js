@@ -68,7 +68,7 @@ class joiningCtl extends Component {
                 }  
             });
 
-        },3000)
+        },10000)
 
 
     }
