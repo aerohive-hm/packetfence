@@ -1,12 +1,13 @@
 
 .global-div-licensingCtl{
     float:left;
-    width:1280px;
+    width:1240px;
 }
 
 .left-div-licensingCtl{
     float:left;
     width:234px;
+    margin-left:20px;
 }
 .img-div-licensingCtl{
     float:left;
@@ -26,12 +27,12 @@
     float:left;
     margin-top:90px;
     margin-left:86px;
-    width:960px;
+    width:900px;
 }
 
 .thirty-day-trial-div-licensingCtl{
     float:left;
-    width:400px;
+    width:370px;
     height:319px;
     background: #1774bc;
 }
@@ -39,7 +40,7 @@
     float:left;
     width:40px;
     height:40px;
-    margin-left:180px;
+    margin-left:165px;
     margin-top:30px;
 }
 .thirty-day-trial-img-img-licensingCtl{
@@ -49,7 +50,7 @@
 }
 .thirty-day-trial-text-div-licensingCtl{
     float:left;
-    width:400px;
+    width:370px;
     height:50px;
     line-height: 50px;
     color: #ffffff;
@@ -67,7 +68,7 @@
     text-align: center; 
     background: #ffffff;
     font-size: 18px;
-    margin-left:44px;
+    margin-left:29px;
     cursor: pointer;
 }
 
@@ -77,7 +78,7 @@
 
 .enter-entitlement-key-div-licensingCtl{
     float:left;
-    width:400px;
+    width:370px;
     height:319px;
     background: #a8b7c7;
 }
@@ -85,7 +86,7 @@
     float:left;
     width:40px;
     height:40px;
-    margin-left:180px;
+    margin-left:165px;
     margin-top:30px;
 }
 .enter-entitlement-key-img-img-licensingCtl{
@@ -95,7 +96,7 @@
 }
 .enter-entitlement-key-text-div-licensingCtl{
     float:left;
-    width:400px;
+    width:370px;
     height:50px;
     line-height: 50px;
     color: #ffffff;
@@ -113,7 +114,7 @@
     text-align: center; 
     background: #ffffff;
     font-size: 18px;
-    margin-left:44px;
+    margin-left:29px;
     cursor: pointer;
 }
 
