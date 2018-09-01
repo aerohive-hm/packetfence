@@ -38,7 +38,7 @@ export let i18n ={
 	"next": "NEXT",
 	"cancel": "CANCEL",
 	"modalName": "Name",
-	"modalIpAddress": "Ip Address",
+	"modalIpAddress": "IP Address",
 	"modalNetmask": "Netmask",
 	"modalType": "Type",
 	"modalServices": "Services",

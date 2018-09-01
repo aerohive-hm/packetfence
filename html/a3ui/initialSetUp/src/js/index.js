@@ -32,7 +32,7 @@ class App extends Component {
         this.state = {
             i18n:{},
             loading : false,
-            show:"getStart",
+            show:"joinCluster",
             // getStart
             // adminUser
             // networks
@@ -51,7 +51,7 @@ class App extends Component {
     componentDidMount() {
         let self=this;
         self.getRightI18n();
-        self.getStep();
+        //self.getStep();
     }
 
     getRightI18n= () => {

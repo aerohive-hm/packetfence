@@ -1059,6 +1059,7 @@ class networksCtl extends Component {
                     visible={addVlanVisible}
                     width={302}
                     footer={null}
+                    maskClosable={false}
                     onCancel={self.onCancelAddVlan.bind(self)}
                 >
          
