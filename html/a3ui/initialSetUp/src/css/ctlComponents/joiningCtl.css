@@ -1,12 +1,13 @@
 
 .global-div-joiningCtl{
     float:left;
-    width:1280px;
+    width:1240px;
 }
 
 .left-div-joiningCtl{
     float:left;
     width:234px;
+    margin-left:20px;
 }
 .img-div-joiningCtl{
     float:left;
