@@ -162,7 +162,7 @@
     height:28px;
     line-height: 28px;
     cursor: pointer;
-    color:#2c69ff;
+    color:#2c6aff;
 }
 
 
@@ -204,7 +204,7 @@
 }
 .ipAddr-text-div-networksCtl{
     cursor: pointer;
-    color:#2c69ff;
+    color:#2c6aff;
 }
 
 
@@ -243,7 +243,7 @@
 }
 .netmask-text-div-networksCtl{
     cursor: pointer;
-    color:#2c69ff;
+    color:#2c6aff;
 }
 
 
@@ -285,7 +285,7 @@
 }
 .vip-text-div-networksCtl{
     cursor: pointer;
-    color:#2c69ff;
+    color:#2c6aff;
 }
 
 
@@ -311,7 +311,7 @@
     margin-left: 6px;
     height: 28px;
     line-height: 28px;
-    color:#2c69ff;
+    color:#2c6aff;
 
 }
 
@@ -336,23 +336,23 @@
     margin-left: 6px;
     height: 28px;
     line-height: 28px;
-    color:#2c69ff;
+    color:#2c6aff;
 }
 
 .form-button-div-networksCtl{
     float:left;
-    width:960px;
+    width:900px;
     margin-top:10px;
 }
 .form-button-cancel-div-networksCtl{
     float:right;
-    margin-right:16px;
+    margin-right:12px;
     width:78px;
     height:32px;
 }
 .form-button-next-div-networksCtl{
     float:right;
-    width:78px;
+    width:70px;
     height:32px;
 }
 .form-button-cancel-antd-button-networksCtl{
@@ -360,8 +360,9 @@
     height:32px;
 }
 .form-button-next-antd-button-networksCtl{
-    width:78px;
+    width:70px;
     height:32px;
+    background:#2c6aff;
 }
 
 

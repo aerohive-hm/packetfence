@@ -23,3 +23,9 @@
 .ant-input{
     border: 1px solid #a8b7c7;
 }
+
+.ant-table-thead > tr > th {
+    background: #f4f6f9 !important ;
+    font-weight: bold !important ;
+    color: #54698d !important ;
+}
