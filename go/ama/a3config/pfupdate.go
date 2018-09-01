@@ -83,17 +83,30 @@ func UpdateVlanInterface(i Item) error {
 	} else {
 		Type = "internal"
 	}
-
-	section := Section{
-		keyname: {
-			"ip":          i.IpAddr,
-			"type":        Type,
-			"mask":        i.NetMask,
-			"enforcement": "vlan",
-		},
+	if i.Vip == "" || i.Vip == "0.0.0.0" {
+		section := Section{
+			keyname: {
+				"ip":          i.IpAddr,
+				"type":        Type,
+				"mask":        i.NetMask,
+				"enforcement": "vlan",
+			},
+		}
+		return A3Commit("PF", section)
+	} else {
+		section := Section{
+			keyname: {
+				"ip":          i.IpAddr,
+				"type":        Type,
+				"mask":        i.NetMask,
+				"enforcement": "vlan",
+				"vip":         i.Vip,
+			},
+		}
+		return A3Commit("PF", section)
 	}
-	return A3Commit("PF", section)
 }
+
 func UpdateNetconf(i Item) error {
 	var Type string = ""
 

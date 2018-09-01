@@ -49,6 +49,16 @@ func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) Clust
 			continue
 		}
 		p.IpAddr = "0.0.0.0"
+		for _, i := range Items {
+			/*only append cluster vlan interface*/
+			if !VlanInface(i.Name) {
+				continue
+			}
+			if i.Name == p.Name {
+				p.IpAddr = i.IpAddr
+				break
+			}
+		}
 		clusterNetworksData.Items = append(clusterNetworksData.Items, p)
 	}
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", clusterNetworksData))
