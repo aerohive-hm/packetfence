@@ -26,7 +26,10 @@ func GetPrimaryNetworksData(ctx context.Context) (error, a3config.NetworksData) 
 	}
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("read primary network data:%s", string(client.RespData)))
 
-	err = json.Unmarshal(client.RespData, networkData)
+	err = json.Unmarshal(client.RespData, &networkData)
+	if err != nil {
+		return err, networkData
+	}
 
 	return err, networkData
 
@@ -34,7 +37,7 @@ func GetPrimaryNetworksData(ctx context.Context) (error, a3config.NetworksData) 
 
 func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.ClusterNetworksData) (error, a3config.ClusterEventRespData) {
 	RespData := a3config.ClusterEventRespData{}
-	jsonClusterData, err := json.Marshal(clusterData)
+	jsonClusterData, err := json.Marshal(&clusterData)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return err, RespData
@@ -51,7 +54,7 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 	}
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("read cluster join event data:%s", string(client.RespData)))
 
-	err = json.Unmarshal(client.RespData, RespData)
+	err = json.Unmarshal(client.RespData, &RespData)
 
 	return err, RespData
 }

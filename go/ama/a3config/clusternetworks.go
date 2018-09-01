@@ -26,12 +26,21 @@ func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) Clust
 	clusterNetworksData.HostName = GetHostname()
 	Items := GetItemsValue(ctx)
 
-	for _, i := range Items {
-		/*only append cluster management interface*/
-		if VlanInface(i.Name) {
+	for _, p := range primaryData.Items {
+		if VlanInface(p.Name) {
 			continue
 		}
-		clusterNetworksData.Items = append(clusterNetworksData.Items, i)
+		for _, i := range Items {
+			/*only append cluster management interface*/
+			if VlanInface(i.Name) {
+				continue
+			}
+			if i.Name == p.Name {
+				p.IpAddr = i.IpAddr
+				clusterNetworksData.Items = append(clusterNetworksData.Items, p)
+				break
+			}
+		}
 	}
 
 	for _, i := range primaryData.Items {
