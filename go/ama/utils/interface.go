@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 type Iface struct {
@@ -258,22 +260,26 @@ func NetmaskStr2Len(mask string) int {
 	return num
 }
 
-func UpdateVlanIface(ifname string, vlan, ip, mask string) {
-
+func UpdateVlanIface(ifname string, vlan, ip, mask string) int {
+	var i int
 	if IfaceExists(ifname) {
 		iface, _ := GetIfaceList(ifname)
 		oldip := iface[0].IpAddr
 		oldmask := iface[0].NetMask
 		if oldip != ip || oldmask != mask {
-			DelIfaceIIpAddr(ifname, oldip)
-			SetIfaceIIpAddr(ifname, ip, mask)
-			SetIfaceUp(ifname)
+			i = DelIfaceIIpAddr(ifname, oldip)
+			i += SetIfaceIIpAddr(ifname, ip, mask)
+			i += SetIfaceUp(ifname)
 		}
 
 	} else {
 		CreateVlanIface("eth0", vlan)
-		SetIfaceIIpAddr(ifname, ip, mask)
-		SetIfaceUp(ifname)
+		i = SetIfaceIIpAddr(ifname, ip, mask)
+		i += SetIfaceUp(ifname)
 	}
-
+	if i != 0 {
+		log.LoggerWContext(ctx).Error("UpdateVlanIface Error")
+		return -1
+	}
+	return 0
 }
