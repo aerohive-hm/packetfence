@@ -42,8 +42,8 @@ func serviceCmdBackground(cmd string) (string, error) {
 
 func UpdatePfServices() []Clis {
 	cmds := []string{
-		pfservice + "pf updatesystemd",
 		pfcmd + "configreload hard",
+		pfservice + "pf updatesystemd",
 	}
 	return ExecCmds(cmds)
 }
@@ -64,7 +64,7 @@ func initClusterDB() {
 
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
-		A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
+		A3Root + `systemctl start packetfence-mariadb`,
 	}
 	ExecCmds(cmds)
 }
