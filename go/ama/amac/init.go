@@ -75,3 +75,15 @@ func update(pass string) error {
 
 	return nil
 }
+
+func updateRDCInfo() {
+	rdcUrl = a3config.ReadCloudConf(a3config.RDCUrl)
+	//Not check the rdcUrl if NULL
+	if len(rdcUrl) != 0 {
+		installRdcUrl(nil, rdcUrl)
+	}
+
+	globalSwitch = a3config.ReadCloudConf(a3config.Switch)
+
+	VhmidStr = a3config.ReadCloudConf(a3config.Vhm)
+}

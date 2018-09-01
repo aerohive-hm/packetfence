@@ -55,9 +55,17 @@ type NodeInfo struct {
 	Hostname string
 }
 
+type CloudInfo struct {
+	RdcUrl string	`json:"rdcurl"`
+	VhmID  string	`json:"vhmID"`
+	Switch string 	`json:"switch"`
+	Token  string 	`json:"rdctoken"`
+	PriNode string	`json:"primarynode"`
+}
+
 type tokenResData struct {
-	MsgType string `json:"msgType"`
-	Data    string `json:"token"`
+	MsgType string 		`json:"msgType"`
+	Data    string 		`json:"token"`
 }
 
 type A3TokenResFromRdc struct {
@@ -109,7 +117,7 @@ func readRdcToken(ctx context.Context) string {
 	return rdcTokenStr
 }
 
-func UpdateRdcToken(ctx context.Context, s string) {
+func UpdateRdcToken(ctx context.Context, s string, reOnboard bool) {
 	tokenLock.Lock()
 	file, error := os.OpenFile("/usr/local/pf/conf/token.txt", os.O_RDWR|os.O_CREATE, 0600)
 	if error != nil {
@@ -122,6 +130,13 @@ func UpdateRdcToken(ctx context.Context, s string) {
 	//update the variable to aviod multi IO
 	rdcTokenStr = s
 	tokenLock.Unlock()
+
+	if reOnboard == true {
+		updateRDCInfo()
+		event := new(MsgStru)
+		event.MsgType = RdcTokenUpdate
+		MsgChannel <- *event
+	}
 	return
 }
 
@@ -130,9 +145,9 @@ func UpdateRdcToken(ctx context.Context, s string) {
 	for the other nodes, this func will be called by webUI
 	it is public
 */
-func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
+func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 	//	var url string
-	var res []byte
+	res := ""
 	tokenRes := A3TokenResFromRdc{}
 
 	nodeInfo := rdcTokenReqFromRdc{}
@@ -174,13 +189,11 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
 	}
 	resp.Body.Close()
 
-	return []byte(body)
+	return tokenRes.Data.Data
 }
 
 //This API was used by nodes without GDC and RDC token.
 func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
-	tokenRes := A3TokenResFromRdc{}
-
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken?systemID=%s&hostname=%s", mem.IpAddr, utils.GetA3SysId(), a3config.GetHostname())
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
 
@@ -192,23 +205,10 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 		return ""
 	}
 
+	//The body content is token
 	body := node.RespData
 
-	err = json.Unmarshal([]byte(body), &tokenRes)
-	if err != nil {
-		fmt.Println("json Unmarshal fail")
-		log.LoggerWContext(ctx).Error(err.Error())
-		return ""
-	}
-
-	if tokenRes.Data.MsgType != "amac_token" {
-		log.LoggerWContext(ctx).Error("Incorrect message type")
-		return ""
-	}
-
-	//resp.Body.Close()
-
-	return tokenRes.Data.Data
+	return string(body)
 }
 
 /*
@@ -235,7 +235,7 @@ func ReqTokenFromOtherNodes(ctx context.Context, node *MemberList) int {
 		token = reqTokenFromSingleNode(ctx, mem)
 		if len(token) > 0 {
 			dst := fmt.Sprintf("Bearer %s", token)
-			UpdateRdcToken(ctx, dst)
+			UpdateRdcToken(ctx, dst, true)
 			return 0
 		}
 	}
@@ -251,21 +251,23 @@ func FetchSysIDForNode(node MemberList) string {
 }
 
 func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew bool) {
-	var token []byte
+	cloudInfo := CloudInfo{}
 	if selfRenew == false {
-		token = ReqTokenForOtherNode(ctx, NodeInfo{})
+		cloudInfo.Token = ReqTokenForOtherNode(ctx, NodeInfo{})
 	} else {
-		tokenRes := A3TokenResFromRdc{}
-		tokenRes.Data.MsgType = "renew_token"
-		token, _ = json.Marshal(tokenRes)
+		cloudInfo.RdcUrl = rdcUrl
+		cloudInfo.Switch = globalSwitch
+		cloudInfo.VhmID = VhmidStr
+		cloudInfo.PriNode = a3share.GetOwnMGTIp()
 	}
+	jsonData, _ := json.Marshal(cloudInfo)
 	//reader := bytes.NewReader(token)
 	//Using loop to make sure post successfully
 	for {
 		url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken", mem.IpAddr)
 		node := new(innerClient.Client)
 		node.Host = mem.IpAddr
-		err := node.ClusterSend("POST", url, string(token))
+		err := node.ClusterSend("POST", url, string(jsonData))
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return
@@ -402,7 +404,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	if statusCode == 200 {
 		dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Data)
 		//RDC token need to write file, if process restart we can read it
-		UpdateRdcToken(ctx, dst)
+		UpdateRdcToken(ctx, dst, false)
 		//Save RDC url and VHM to config file if get the RDC token
 		//To do, inform the BE to synchronize the config file
 		err = a3config.UpdateCloudConf(a3config.RDCUrl, rdcUrl)
