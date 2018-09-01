@@ -15,7 +15,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/share"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -46,7 +45,7 @@ type CloudGetData struct {
 
 type CloudGetInfo struct {
 	Head CloudGetHeader `json:"header"`
-	Data []CloudGetData   `json:"data"`
+	Data []CloudGetData `json:"data"`
 }
 
 type CloudPostInfo struct {
@@ -68,11 +67,14 @@ func CloudNew(ctx context.Context) crud.SectionCmd {
 }
 
 func getRunMode() string {
-	if !utils.IsFileExist("/usr/local/pf/conf/cluster.conf") {
-		return "standalone"
-	} else {
-		return "cluster"
-	}
+	/*
+		if a3config.CheckClusterEnable() {
+			return "cluster"
+		} else {
+			return "standalone"
+		}
+	*/
+	return ""
 }
 
 func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
@@ -88,7 +90,7 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	GetInfo.Head.OwnerId = a3config.ReadCloudConf(a3config.OwnerId)
 	GetInfo.Head.VhmId = a3config.ReadCloudConf(a3config.Vhm)
 	GetInfo.Head.Mode = getRunMode()
-	//GetInfo.Head.region = //to do
+	GetInfo.Head.Region = amac.GetRdcRegin(GetInfo.Head.RdcUrl)
 
 	self.Hostname = a3config.GetHostname()
 	self.Status = amac.GetAMAConnStatus()

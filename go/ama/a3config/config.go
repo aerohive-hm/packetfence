@@ -10,12 +10,13 @@ import (
 const ConfRoot = "/usr/local/pf/conf"
 
 var ConfDict = map[string]string{
-	"PF":       "pf.conf",
-	"PFD":      "pf.conf.defaults",
-	"NETWORKS": "networks.conf",
-	"CLUSTER":  "cluster.conf",
-	"A3DB":     "dbinfo.A3",
-	"CLOUD":    "cloud.conf",
+	"PF":        "pf.conf",
+	"PFD":       "pf.conf.defaults",
+	"NETWORKS":  "networks.conf",
+	"CLUSTER":   "cluster.conf",
+	"A3DB":      "dbinfo.A3",
+	"CLOUD":     "cloud.conf",
+	"RDCREGION": "rdc_region.conf",
 }
 
 type keyHash map[string]string
