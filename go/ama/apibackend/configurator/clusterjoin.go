@@ -28,29 +28,8 @@ type Join struct {
 func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 	join := new(Join)
 	join.New()
-	join.Add("GET", handleGetJoin)
 	join.Add("POST", handleUpdateJoin)
 	return join
-}
-
-// looks like we don't send GET from UI based on current logic
-// unused code
-func handleGetJoin(r *http.Request, d crud.HandlerData) []byte {
-	ctx := r.Context()
-
-	// Data for demo
-	join := JoinData{
-		"10.155.103.199",
-		"admin@aerohive.com",
-		"aerohive",
-	}
-
-	jsonData, err := json.Marshal(join)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
-		return []byte(err.Error())
-	}
-	return jsonData
 }
 
 // Login primary server with API: "https://PrimaryServer:9999/api/v1/login"
@@ -65,7 +44,8 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(err.Error())
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Join Auth POST cluster Primary=%s, admin=%s", join.PrimaryServer, join.Admin))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Join Auth POST cluster Primary = %s, admin = %s",
+		join.PrimaryServer, join.Admin))
 
 	//write to pf.conf in order to use API client.ClusterAuth()
 	//use administrative user to do authentication
@@ -74,10 +54,11 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	client.Host = join.PrimaryServer
 	err = client.ClusterAuth()
 	if err != nil {
-		log.LoggerWContext(ctx).Error("ClusterAuth error:" + err.Error())
+		log.LoggerWContext(ctx).Error("ClusterAuth error: " + err.Error())
 		ret := err.Error()
 		return crud.FormPostRely(code, ret)
 	}
+
 	code = "ok"
 	return crud.FormPostRely(code, ret)
 }

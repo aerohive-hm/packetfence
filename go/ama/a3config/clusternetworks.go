@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -15,7 +16,7 @@ type ClusterNetworksData struct {
 	Items    []Item `json:"items"`
 }
 
-func SyncDatafromPrimary(ip, user, password string) {
+func syncDataFromPrimary(ip, user, password string) {
 	//wait a moment?
 	time.Sleep(60)
 	utils.SyncFromPrimary(ip, user, password)
@@ -56,20 +57,22 @@ func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) Clust
 
 }
 
-func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworksData, respDate ClusterEventRespData) error {
+func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworksData, respData ClusterEventRespData) error {
 
-	web := respDate.Items[0]
+	web := respData.Items[0]
 	err := UpdateWebservices(web.User, web.Password)
 
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateWebservices error:" + err.Error())
 		return err
 	}
+
 	err = UpdateHostname(networksData.HostName)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
 		return err
 	}
+
 	utils.SetHostname(networksData.HostName)
 
 	for _, item := range networksData.Items {
@@ -78,11 +81,13 @@ func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworks
 			log.LoggerWContext(ctx).Error("UpdateInterface error:" + err.Error())
 			return err
 		}
+
 		err = UpdateNetconf(item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
 			return err
 		}
+
 		err = writeOneNetworkConfig(ctx, item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("WriteNetworkConfigs error:" + err.Error())
@@ -90,6 +95,10 @@ func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworks
 		}
 	}
 
-	//utils.ExecShell(`systemctl start packetfence-api-frontend`)
+	utils.ExecShell(`systemctl start packetfence-api-frontend`)
+
+	ama.InitClusterStatus("server")
+	go syncDataFromPrimary(ReadClusterPrimary(), web.User, web.Password)
+
 	return err
 }
