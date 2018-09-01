@@ -19,3 +19,7 @@
 .ant-table-thead > tr > th{
     color: #ffffff;
 }
+
+.ant-input{
+    border: 1px solid #a8b7c7;
+}
