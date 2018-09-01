@@ -543,6 +543,11 @@ class clusterNetworkingCtl extends Component {
                             columns={columns} 
                             dataSource={dataTable} 
                             pagination={false}
+                            rowClassName={
+                                (record,index)=>
+                                     index%2===0?"table-single-row-div-clusterNetworkingCtl":"table-double-row-div-clusterNetworkingCtl"
+                                
+                            }
                         />
                     </div>
 

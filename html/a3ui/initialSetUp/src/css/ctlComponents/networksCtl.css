@@ -97,6 +97,12 @@
     width:900px;
     margin-top:6px;
 }
+.table-single-row-div-networksCtl{
+    background: #ffffff;
+}
+.table-double-row-div-networksCtl{
+    background: #f4f6f9;
+}
 
 .name-etho-div-networksCtl{
     float:left;

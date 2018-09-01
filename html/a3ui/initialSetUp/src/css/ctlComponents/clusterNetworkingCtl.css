@@ -80,6 +80,14 @@
     margin-top:6px;
 }
 
+.table-single-row-div-clusterNetworkingCtl{
+    background: #ffffff;
+}
+.table-double-row-div-clusterNetworkingCtl{
+    background: #f4f6f9;
+}
+
+
 .name-etho-div-clusterNetworkingCtl{
     float:left;
     height: 28px;
