@@ -3,6 +3,7 @@ package a3config
 
 import (
 	//"context"
+	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -70,8 +71,10 @@ func UpdateVlanInterface(i Item) error {
 	vlan := string(s[4:]) /*need to delete vlan for name*/
 	ifname := fmt.Sprintf("eth0.%s", vlan)
 
-	utils.UpdateVlanIface(ifname, vlan, i.IpAddr, i.NetMask)
-
+	err := utils.UpdateVlanIface(ifname, vlan, i.IpAddr, i.NetMask)
+	if err != 0 {
+		return errors.New("UpdateVlanInterface error")
+	}
 	var Type string
 	keyname := fmt.Sprintf("interface %s", ifname)
 	if i.Services != "" {
@@ -202,7 +205,7 @@ func UpdatePrimaryClusterconf(i Item) error {
 func UpdateJoinClusterconf(i Item, hostname string) error {
 	var keyname string
 
-	if !utils.IsFileExist("/usr/local/pf/conf/cluster.conf") {
+	if !CheckClusterEnable() {
 		return nil
 	}
 
@@ -269,6 +272,18 @@ func WriteUserPassToPF(host, username, passw string) error {
 		"webservices": {
 			"user": username,
 			"pass": passw,
+		},
+	}
+	return A3Commit("PF", section)
+
+}
+
+func UpdateWebservices(user, password string) error {
+
+	section := Section{
+		"webservices": {
+			"user": user,
+			"pass": password,
 		},
 	}
 	return A3Commit("PF", section)

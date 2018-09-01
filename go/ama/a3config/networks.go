@@ -20,16 +20,6 @@ type Item struct {
 	Services string `json:"services"`
 }
 
-type ClusterNetworksData struct {
-	HostName string `json:"hostname"`
-	Items    []Item `json:"items"`
-}
-
-type ClusterNetworksData1 struct {
-	HostName string `json:"hostname"`
-	Items    []Item `json:"itmes"`
-}
-
 type NetworksData struct {
 	ClusterEnable bool   `json:"cluster_enable"`
 	HostName      string `json:"hostname"`
@@ -79,7 +69,11 @@ func UpdateItemsValue(ctx context.Context, items []Item) error {
 			log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
 			return err
 		}
-
+		err = writeOneNetworkConfig(ctx, item)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("writeOneNetworkConfig error:" + err.Error())
+			return err
+		}
 		err = UpdatePrimaryClusterconf(item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
@@ -114,20 +108,6 @@ func GetNetworksData(ctx context.Context) NetworksData {
 	return networksData
 }
 
-func GetClusterNetworksData(ctx context.Context) ClusterNetworksData {
-	var context context.Context
-	clusterNetworksData := ClusterNetworksData{}
-
-	if ctx == nil {
-		context = contextNetworks
-	} else {
-		context = ctx
-	}
-	clusterNetworksData.Items = GetItemsValue(context)
-	clusterNetworksData.HostName = GetHostname()
-	return clusterNetworksData
-}
-
 func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	var context context.Context
 
@@ -150,50 +130,28 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	}
 	return err
 }
-func UpdateClusterNetworksData(ctx context.Context, clusterNetworksData ClusterNetworksData) error {
-	var context context.Context
-
-	if ctx == nil {
-		context = contextNetworks
-	} else {
-		context = ctx
-	}
-
-	err := UpdateHostname(clusterNetworksData.HostName)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
-		return err
-	}
-	utils.SetHostname(clusterNetworksData.HostName)
-	err = UpdateItemsValue(context, clusterNetworksData.Items)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())
-		return err
-	}
-	return err
-}
-
 
 const (
-	networtConfDir     = "/etc/sysconfig/"
+	networtConfDir    = "/etc/sysconfig/"
 	interfaceConfDir  = "network-scripts/"
-	networkConfFile = "network"
+	networkConfFile   = "network"
 	interfaceConfFile = "ifcfg-"
-	varDir           = "/usr/local/pf/var/"
+	varDir            = "/usr/local/pf/var/"
 )
-
 
 // Write one network interface into system files
 // create ifcfg-xxx file and write IpAddr, Netmask
 // write gateway to system files
-func writeOneNetworkConfig(ifname, ip, netmask string, ctx context.Context) error {
-
+func writeOneNetworkConfig(ctx context.Context, item Item) error {
+	ifname := ChangeUiInterfacename(item.Name)
+	ip := item.IpAddr
+	netmask := item.NetMask
 	var section Section
 	// write to /usr/local/pf/var/ firstly
 	ifcfgFile := varDir + interfaceConfFile + ifname
 
 	//eth0, eth0.xx
-	if  len(ifname) > len("eth0") {
+	if len(ifname) > len("eth0") {
 		section = Section{
 			"": {
 				"DEVICE": ifname,
@@ -204,7 +162,7 @@ func writeOneNetworkConfig(ifname, ip, netmask string, ctx context.Context) erro
 		section = Section{
 			"": {
 				"DEVICE": ifname,
-				"VLAN": "yes",
+				"VLAN":   "yes",
 			},
 		}
 	}
@@ -216,11 +174,11 @@ func writeOneNetworkConfig(ifname, ip, netmask string, ctx context.Context) erro
 	}
 	section = Section{
 		"": {
-			"ONBOOT": "yes",
-			"BOOTPROTO": "static",
+			"ONBOOT":        "yes",
+			"BOOTPROTO":     "static",
 			"NM_CONTROLLED": "no",
-			"IPADDR": ip,
-			"NETMASK": netmask,
+			"IPADDR":        ip,
+			"NETMASK":       netmask,
 		},
 	}
 	err = A3Commit(ifcfgFile, section)
@@ -238,12 +196,11 @@ func writeOneNetworkConfig(ifname, ip, netmask string, ctx context.Context) erro
 		return err
 	}
 
-	
 	// don't need write gateway
-	if  len(ifname) > len("eth0") {
+	if len(ifname) > len("eth0") {
 		return nil
 	}
-	
+
 	//write gateway
 	section = Section{
 		"": {
@@ -258,7 +215,7 @@ func writeOneNetworkConfig(ifname, ip, netmask string, ctx context.Context) erro
 		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error())
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -267,7 +224,7 @@ func writeOneNetworkConfig(ifname, ip, netmask string, ctx context.Context) erro
 func WriteNetworkConfigs(ctx context.Context, networksData NetworksData) error {
 
 	for _, item := range networksData.Items {
-		err := writeOneNetworkConfig(item.Name, item.IpAddr, item.NetMask, ctx)
+		err := writeOneNetworkConfig(ctx, item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("writeOneNetworkConfig error:" + err.Error())
 			return err

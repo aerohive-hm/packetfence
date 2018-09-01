@@ -99,3 +99,15 @@ func DelSystemInterface(ctx context.Context, i Item) error {
 	}
 	return nil
 }
+
+func ChangeUiInterfacename(uiifname string) string {
+	var ifname string
+	if VlanInface(uiifname) {
+		name := []rune(uiifname) /*need to delete vlan for name*/
+		ifname = fmt.Sprintf("eth0.%s", string(name[4:]))
+
+	} else {
+		ifname = uiifname
+	}
+	return ifname
+}
