@@ -1,12 +1,13 @@
 
 .global-div-networksCtl{
     float:left;
-    width:1280px;
+    width:1240px;
 }
 
 .left-div-networksCtl{
     float:left;
     width:234px;
+    margin-left:20px;
 }
 .img-div-networksCtl{
     float:left;
@@ -26,18 +27,18 @@
     float:left;
     margin-top:90px;
     margin-left:86px;
-    width:960px;
+    width:900px;
     height:300px;
 }
 
 .form-item-div-networksCtl{
     float:left;
-    width:960px;
+    width:900px;
     margin-top:10px;
 }
 .form-item-title-div-networksCtl{
     float:left;
-    width:960px;
+    width:900px;
     height:17px;
     line-height: 17px;
     color:#333333;
@@ -52,7 +53,7 @@
 .form-item-wrong-div-networksCtl{
     float:left;
     margin-left:20px;
-    width:670px;
+    width:610px;
     height:32px;
     line-height: 32px;
     color:#f44336;
@@ -63,7 +64,7 @@
 
 .interfaces-div-networksCtl{
     float:left;
-    width:960px;
+    width:900px;
     margin-top:20px;
     height:17px;
     line-height: 17px;
@@ -73,7 +74,7 @@
 }
 .enable-clustering-div-networksCtl{
     float:left;
-    width:960px;
+    width:900px;
     height:20px;
     margin-top: 4px;
 }
@@ -93,7 +94,7 @@
 
 .table-div-networksCtl{
     float:left;
-    width:960px;
+    width:900px;
     margin-top:6px;
 }
 

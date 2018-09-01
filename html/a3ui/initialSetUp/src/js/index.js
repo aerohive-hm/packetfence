@@ -32,7 +32,7 @@ class App extends Component {
         this.state = {
             i18n:{},
             loading : false,
-            show:"licensing",
+            show:"networks",
             // getStart
             // adminUser
             // networks
