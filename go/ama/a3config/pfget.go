@@ -71,4 +71,13 @@ func ReadClusterPrimary() string {
 
 }
 
-
+func CheckClusterEnable() bool {
+	section := A3Read("CLUSTER", "CLUSTER")
+	if section == nil {
+		return false
+	}
+	if section["CLUSTER"]["CLUSTER"] != "" {
+		return true
+	}
+	return false
+}
