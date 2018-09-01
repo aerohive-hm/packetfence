@@ -32,7 +32,7 @@ class App extends Component {
         this.state = {
             i18n:{},
             loading : false,
-            show:"adminUser",
+            show:"aerohiveCloud",
             // getStart
             // adminUser
             // networks
