@@ -36,6 +36,8 @@ func handleGetClusterStatus(r *http.Request, d crud.HandlerData) []byte {
 	case ama.SyncDB:
 		i = "60"
 	case ama.SyncFinished:
+		i = "100"
+	default:
 		code = "fail"
 		i = "not in cluster join mode"
 	}
