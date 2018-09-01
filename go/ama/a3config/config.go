@@ -110,6 +110,16 @@ func A3Commit(key string, sections Section) error {
 	return conf.save(sections)
 }
 
+func A3CommitPath(path string, sections Section) error {
+	conf := new(A3Conf)
+	err := conf.loadCfg(path)
+	if err != nil {
+		return err
+	}
+
+	return conf.save(sections)
+}
+
 func A3Read(key string, sectionId string) Section {
 	conf := new(A3Conf)
 	err := conf.loadCfg(ConfRoot + "/" + ConfDict[key])

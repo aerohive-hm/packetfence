@@ -146,9 +146,12 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	ifname := ChangeUiInterfacename(item.Name)
 	ip := item.IpAddr
 	netmask := item.NetMask
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig:ifname=%s ,ip =%s, netmask =%s", ifname, ip, netmask))
+
 	var section Section
 	// write to /usr/local/pf/var/ firstly
 	ifcfgFile := varDir + interfaceConfFile + ifname
+	sysifCfgFile := networtConfDir + interfaceConfDir + interfaceConfFile + ifname
 
 	//eth0, eth0.xx
 	if len(ifname) > len("eth0") {
@@ -166,10 +169,15 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 			},
 		}
 	}
-	err := A3Commit(ifcfgFile, section)
+	err := A3CommitPath(ifcfgFile, section)
 
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error())
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
+		return err
+	}
+	err = A3CommitPath(sysifCfgFile, section)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
 		return err
 	}
 	section = Section{
@@ -181,18 +189,17 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 			"NETMASK":       netmask,
 		},
 	}
-	err = A3Commit(ifcfgFile, section)
+	err = A3CommitPath(ifcfgFile, section)
 
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error())
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
 		return err
 	}
 	//just write another copy to /etc/sysconfig/
-	sysifCfgFile := networtConfDir + interfaceConfDir + interfaceConfFile + ifname
 
-	err = A3Commit(sysifCfgFile, section)
+	err = A3CommitPath(sysifCfgFile, section)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error())
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
 		return err
 	}
 
@@ -210,9 +217,9 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 
 	sysGatewayCfgFile := networtConfDir + networkConfFile
 
-	err = A3Commit(sysGatewayCfgFile, section)
+	err = A3CommitPath(sysGatewayCfgFile, section)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error())
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysGatewayCfgFile)
 		return err
 	}
 

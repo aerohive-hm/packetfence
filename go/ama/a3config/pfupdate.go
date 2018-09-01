@@ -3,13 +3,14 @@ package a3config
 
 import (
 	//"context"
+	"context"
 	"errors"
 	"fmt"
 	"net"
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/utils"
-	//"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 func UpdateEmail(email string) error {
@@ -206,6 +207,7 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 	var keyname string
 
 	if !CheckClusterEnable() {
+		log.LoggerWContext(context.Background()).Info(fmt.Sprintf(" Cluster Disenabled"))
 		return nil
 	}
 
