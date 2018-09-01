@@ -409,7 +409,7 @@ class clusterNetworkingCtl extends Component {
             title: self.state.i18n.ipAddress,
             dataIndex: 'ip_addr',
             key: 'ip_addr',
-            render: (text, record, index) => {
+            /*render: (text, record, index) => {
                 return (
                     <div>
                         {
@@ -437,7 +437,7 @@ class clusterNetworkingCtl extends Component {
                         }
                     </div>
                 );
-            } 
+            } */
         });
         columns.push({
             title:self.state.i18n.netmask,
