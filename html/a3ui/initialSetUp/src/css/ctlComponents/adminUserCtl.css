@@ -1,12 +1,14 @@
 
 .global-div-adminUserCtl{
     float:left;
-    width:1280px;
+    width:1240px;
+
 }
 
 .left-div-adminUserCtl{
     float:left;
     width:234px;
+    margin-left:20px;
 }
 .img-div-adminUserCtl{
     float:left;
@@ -26,18 +28,18 @@
     float:left;
     margin-top:90px;
     margin-left:86px;
-    width:960px;
+    width:900px;
     height:300px;
 }
 
 .form-item-div-adminUserCtl{
     float:left;
-    width:960px;
+    width:900px;
     margin-top:10px;
 }
 .form-item-title-div-adminUserCtl{
     float:left;
-    width:960px;
+    width:900px;
     height:17px;
     line-height: 17px;
     color:#333333;
@@ -52,7 +54,7 @@
 .form-item-wrong-div-adminUserCtl{
     float:left;
     margin-left:20px;
-    width:670px;
+    width:610px;
     height:32px;
     line-height: 32px;
     color:#f44336;
@@ -62,12 +64,12 @@
 .form-item-pass-score-div-adminUserCtl{
     float:left;
     margin-left:20px;
-    width:670px;
+    width:610px;
     height:32px;
 }
 .form-item-pass-score-0-div-adminUserCtl{
     float:left;
-    width:670px;
+    width:610px;
     height:17px;
     line-height: 17px;
     color:#a8b7c7;
@@ -75,7 +77,7 @@
 }
 .form-item-pass-score-1-div-adminUserCtl{
     float:left;
-    width:670px;
+    width:610px;
     height:17px;
     line-height: 17px;
     color:#ec0800;
@@ -84,7 +86,7 @@
 }
 .form-item-pass-score-2-div-adminUserCtl{
     float:left;
-    width:670px;
+    width:610px;
     height:17px;
     line-height: 17px;
     color:#ffaf00;
@@ -97,7 +99,7 @@
     color:#9ac251;
     font-size: 12px;
     margin-left:20px;
-    width:670px;
+    width:610px;
     height:32px;
 }
 .form-item-pass-score-4-div-adminUserCtl{
@@ -106,14 +108,14 @@
     color:#9ac251;
     font-size: 12px;
     margin-left:20px;
-    width:670px;
+    width:610px;
     height:32px;
     color:#00b700;
 
 }
 .form-item-pass-score-message-div-adminUserCtl{
     float:left;
-    width:670px;
+    width:610px;
     height:15px;
     line-height: 15px;
     color:#333333;
