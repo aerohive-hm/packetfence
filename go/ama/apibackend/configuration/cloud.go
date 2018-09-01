@@ -67,13 +67,13 @@ func CloudNew(ctx context.Context) crud.SectionCmd {
 }
 
 func getRunMode() string {
-	/*
-		if a3config.CheckClusterEnable() {
-			return "cluster"
-		} else {
-			return "standalone"
-		}
-	*/
+
+	if a3config.CheckClusterEnable() {
+		return "cluster"
+	} else {
+		return "standalone"
+	}
+
 	return ""
 }
 
