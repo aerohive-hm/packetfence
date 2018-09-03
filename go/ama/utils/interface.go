@@ -60,7 +60,7 @@ func isIfaceActive(ifname string) bool {
 	return false
 }
 
-func isVlanIface(ifname string) bool {
+func IsVlanIface(ifname string) bool {
 	vlan, _ := getIfaceVlan(ifname)
 	if vlan == "" {
 		return false
@@ -74,7 +74,7 @@ func DelVlanIface(ifname string) error {
 		return nil
 	}
 
-	if !isVlanIface(ifname) {
+	if !IsVlanIface(ifname) {
 		msg = fmt.Sprintf("%s is not vlan interface", ifname)
 		return errors.New(msg)
 	}

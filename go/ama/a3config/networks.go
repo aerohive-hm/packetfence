@@ -169,7 +169,7 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	sysifCfgFile := networtConfDir + interfaceConfDir + interfaceConfFile + ifname
 
 	//eth0, eth0.xx
-	if isVlanIface(ifname) {
+	if utils.IsVlanIface(ifname) {
 		section = Section{
 			"": {
 				"DEVICE": ifname,
@@ -219,7 +219,7 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	}
 
 	// don't need write gateway
-	if isVlanIface(ifname) {
+	if utils.IsVlanIface(ifname) {
 		return nil
 	}
 
