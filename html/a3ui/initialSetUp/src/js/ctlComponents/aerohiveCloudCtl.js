@@ -34,7 +34,8 @@ class aerohiveCloudCtl extends Component {
                 passWrongMessage:"",
                 
             },
-            passScore:-1
+            passScore:-1,
+            loading:false,
         };
 
     }
@@ -207,14 +208,29 @@ class aerohiveCloudCtl extends Component {
                     user:values.user,
                     pass:values.pass,
                 }
-
+                self.setState({
+                    loading : true,
+                })
                 new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
-                        self.props.changeStatus("startingManagement");
+                        self.setState({
+                            loading : false,
+                        },function(){
+                            self.props.changeStatus("startingManagement");
+                        })
+                        
                     }else{
+                        self.setState({
+                            loading : false,
+                        })
                         message.destroy();
                         message.error(data.msg);
                     }
+
+                },()=>{
+                    self.setState({
+                        loading : false,
+                    })
 
                 }) 
 
@@ -233,14 +249,29 @@ class aerohiveCloudCtl extends Component {
         let param={
             url:"",
         }
-
+        self.setState({
+            loading : true,
+        })
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
-                self.props.changeStatus("startingManagement");
+                self.setState({
+                    loading : false,
+                },function(){
+                    self.props.changeStatus("startingManagement");
+                })
+                
             }else{
+                self.setState({
+                    loading : false,
+                })
                 message.destroy();
                 message.error(data.msg);
             }
+
+        },()=>{
+            self.setState({
+                loading : false,
+            })
 
         }) 
         
@@ -249,7 +280,7 @@ class aerohiveCloudCtl extends Component {
 
 
     render() {
-        const {wrongMessage} = this.state;
+        const {wrongMessage,loading} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
@@ -258,6 +289,7 @@ class aerohiveCloudCtl extends Component {
         });
         return (
             <div className="global-div-aerohiveCloudCtl">
+            <Spin spinning={loading}>
                 <div className="left-div-aerohiveCloudCtl">
                     <div className="guidance-div-aerohiveCloudCtl">
                         <div className="guidance-title-div-aerohiveCloudCtl">
@@ -388,6 +420,7 @@ class aerohiveCloudCtl extends Component {
                 </div>
 
                 <div className="clear-float-div-common" ></div >
+            </Spin>
             </div>
             
         )

@@ -81,6 +81,11 @@ class clusterNetworkingCtl extends Component {
 
         new RequestApi('get',url,param,xCsrfToken,(data)=>{
             self.getTrueData(data);
+        },()=>{
+            self.setState({
+                loading : false,
+            })
+
         });
 
         //self.getTrueData(mock.networks);
@@ -264,14 +269,29 @@ class clusterNetworkingCtl extends Component {
                     hostname:values.hostname,
                     items:self.getItems(),
                 }
-
+                self.setState({
+                    loading : true,
+                })
                 new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
-                        self.props.changeStatus("joining");
+                        self.setState({
+                            loading : false,
+                        },function(){
+                            self.props.changeStatus("joining");
+                        })
+                        
                     }else{
+                        self.setState({
+                            loading : false,
+                        })
                         message.destroy();
                         message.error(data.msg);
                     }
+
+                },()=>{
+                    self.setState({
+                        loading : false,
+                    })
 
                 }) 
 
@@ -337,6 +357,9 @@ class clusterNetworkingCtl extends Component {
             "type":dataCopy[index].type,
             "services":dataCopy[index].services.join(","),
         }
+        self.setState({
+            loading : true,
+        })
 
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
@@ -344,11 +367,20 @@ class clusterNetworkingCtl extends Component {
                 self.setState({
                     dataTable : dataCopy,
                     isEditing: false,
+                    loading : false,
                 }) 
             }else{
+                self.setState({
+                    loading : false,
+                })
                 message.destroy();
                 message.error(data.msg);
             }
+
+        },()=>{
+            self.setState({
+                loading : false,
+            })
 
         }) 
 

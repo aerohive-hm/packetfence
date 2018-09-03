@@ -71,7 +71,7 @@ class startingCtl extends Component {
 
             });
 
-        },3000)
+        },10000)
 
         // self.setState({
         //     loading:false,
@@ -152,6 +152,7 @@ class startingCtl extends Component {
 
         return (
             <div className="global-div-startingCtl">
+                <Spin spinning={loading}>
                 <div className="left-div-startingCtl">
                     <div className="img-div-startingCtl">
                        <img src={startingAndReadyImg} className="img-img-startingCtl" />
@@ -165,10 +166,8 @@ class startingCtl extends Component {
 
                     <div className="clear-float-div-common" ></div >
                 </div>
-                
-
-
-
+                </Spin>
+            
                 <div className="clear-float-div-common" ></div >
             </div>
             

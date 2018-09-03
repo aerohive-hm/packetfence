@@ -86,6 +86,11 @@ class networksCtl extends Component {
 
         new RequestApi('get',url,param,xCsrfToken,(data)=>{
             self.getTrueData(data);
+        },()=>{
+            self.setState({
+                loading : false,
+            })
+
         });
 
         //self.getTrueData(mock.networks);
@@ -126,6 +131,11 @@ class networksCtl extends Component {
 
         new RequestApi('get',url,param,xCsrfToken,(data)=>{
             self.getTrueDataTable(data);
+        },()=>{
+            self.setState({
+                loading : false,
+            })
+
         });
 
         //self.getTrueData(mock.networks);
@@ -424,13 +434,30 @@ class networksCtl extends Component {
                     items:self.getItems(),
                 }
 
+                self.setState({
+                    loading : true,
+                })
+
                 new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
-                        self.props.changeStatus("licensing");
+                        self.setState({
+                            loading : false,
+                        },function(){
+                            self.props.changeStatus("licensing");
+                        })
+                        
                     }else{
+                        self.setState({
+                            loading : false,
+                        })
                         message.destroy();
                         message.error(data.msg);
                     }
+
+                },()=>{
+                    self.setState({
+                        loading : false,
+                    })
 
                 }) 
 
@@ -505,18 +532,29 @@ class networksCtl extends Component {
                 "services":value.join(","),
             } 
         }
-
+        self.setState({
+            loading : true,
+        })
 
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
                 dataCopy[index][column]=value;
                 self.setState({ 
                     dataTable : dataCopy, 
+                    loading : false,
                 });
             }else{
+                self.setState({
+                    loading : false,
+                })
                 message.destroy();
                 message.error(data.msg);
             }
+
+        },()=>{
+            self.setState({
+                loading : false,
+            })
 
         })
 
@@ -554,17 +592,30 @@ class networksCtl extends Component {
             "services":dataCopy[index].services.join(","),
         }
 
+        self.setState({
+            loading : true,
+        })
+
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
                 dataCopy[index].clicked="";
                 self.setState({
                     dataTable : dataCopy,
                     isEditing: false,
+                    loading : false,
                 }) 
             }else{
+                self.setState({
+                    loading : false,
+                })
                 message.destroy();
                 message.error(data.msg);
             }
+
+        },()=>{
+            self.setState({
+                loading : false,
+            })
 
         }) 
 
@@ -653,17 +704,30 @@ class networksCtl extends Component {
                     "type":values.type,
                     "services":values.services.join(","),
                 }
-
+                self.setState({
+                    loading : true,
+                })
                 new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
                         self.setState({ 
                             addVlanVisible:false,
+                            loading : false,
+                        },function(){
+                            self.getDataTable();
                         });
-                        self.getDataTable();
+                        
                     }else{
+                        self.setState({
+                            loading : false,
+                        })                   
                         message.destroy();
                         message.error(data.msg);
                     }
+
+                },()=>{
+                    self.setState({
+                        loading : false,
+                    })
 
                 }) 
 
@@ -706,17 +770,28 @@ class networksCtl extends Component {
                     "type":dataCopy[index].type,
                     "services":dataCopy[index].services.join(","),
                 }
-
+                self.setState({
+                    loading : true,
+                })
                 new RequestApi('delete',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
                         dataCopy.splice(index,1);
                         self.setState({ 
                             dataTable : dataCopy,
+                            loading : false,
                         });
                     }else{
+                        self.setState({
+                            loading : false,
+                        })
                         message.destroy();
                         message.error(data.msg);
                     }
+
+                },()=>{
+                    self.setState({
+                        loading : false,
+                    })
 
                 }) 
 

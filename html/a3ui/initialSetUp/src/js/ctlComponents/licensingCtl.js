@@ -37,6 +37,7 @@ class licensingCtl extends Component {
             enterEntitlementKeyVisible:false,
             endUserLicenseAgreementVisible:false,
             enableEndUserLicenseAgreement:false,
+            loading:false,
         };
 
 
@@ -139,18 +140,29 @@ class licensingCtl extends Component {
                     trial:"0",
                     key:values.key,
                 }
-
+                self.setState({
+                    loading : true,
+                })
                 new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
                         self.setState({ 
                             key:values.key,
                             enterEntitlementKeyVisible:false,
                             endUserLicenseAgreementVisible:true,
+                            loading : false,
                         });
                     }else{
+                        self.setState({
+                            loading : false,
+                        })
                         message.destroy();
                         message.error(data.msg);
                     }
+
+                },()=>{
+                    self.setState({
+                        loading : false,
+                    })
 
                 }) 
 
@@ -182,17 +194,30 @@ class licensingCtl extends Component {
             eula_accept:true,
             key:self.state.key,
         }
-
+        self.setState({
+            loading : true,
+        })
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
                 self.setState({ 
                     endUserLicenseAgreementVisible:false,
+                    loading : false,
+                },function(){
+                    self.props.changeStatus("aerohiveCloud");
                 });
-                self.props.changeStatus("aerohiveCloud");
+                
             }else{
+                self.setState({
+                    loading : false,
+                })
                 message.destroy();
                 message.error(data.msg);
             }
+
+        },()=>{
+            self.setState({
+                loading : false,
+            })
 
         }) 
 
@@ -207,14 +232,29 @@ class licensingCtl extends Component {
         let param={
             trial:"1",
         }
-
+        self.setState({
+            loading : true,
+        })
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
-                self.props.changeStatus("aerohiveCloud");
+                self.setState({
+                    loading : false,
+                },function(){
+                    self.props.changeStatus("aerohiveCloud");
+                })
+                
             }else{
+                self.setState({
+                    loading : false,
+                })
                 message.destroy();
                 message.error(data.msg);
             }
+
+        },()=>{
+            self.setState({
+                loading : false,
+            })
 
         }) 
 
@@ -240,7 +280,7 @@ class licensingCtl extends Component {
 
 
     render() {
-        const {wrongMessage,enterEntitlementKeyVisible,endUserLicenseAgreementVisible,enableEndUserLicenseAgreement} = this.state;
+        const {wrongMessage,enterEntitlementKeyVisible,endUserLicenseAgreementVisible,enableEndUserLicenseAgreement,loading} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
@@ -249,6 +289,7 @@ class licensingCtl extends Component {
         });
         return (
             <div className="global-div-licensingCtl">
+            <Spin spinning={loading}>
                 <div className="left-div-licensingCtl">
                     <Guidance 
                         title={self.state.i18n.licensing} 
@@ -567,6 +608,7 @@ class licensingCtl extends Component {
                 </Modal>
 
                 <div className="clear-float-div-common" ></div >
+            </Spin>
             </div>
             
         )
