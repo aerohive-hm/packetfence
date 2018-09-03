@@ -106,6 +106,10 @@ func InitStartService() error {
 }
 
 func ForceNewCluster() {
+	if isProcAlive("pf-mariadb") {
+		return
+	}
+
 	cmds := []string{
 		pfcmd + "configreload hard",
 		pfcmd + "checkup",
@@ -113,12 +117,12 @@ func ForceNewCluster() {
 	}
 	ExecCmds(cmds)
 	waitProcStop("mysqld")
+
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
 		A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
 	}
 	ExecCmds(cmds)
-
 }
 
 // prepare for the new cluster mode
@@ -164,11 +168,8 @@ func SyncFromPrimary(ip, user, pass string) {
 }
 
 func RecoverDB() {
-	cmds := []string{
-		`systemctl restart packetfence-mariadb`,
-	}
-
-	ExecCmds(cmds)
+	killPorc("pf-mariadb")
+	ExecShell(`systemctl restart packetfence-mariadb`)
 }
 
 func ServiceStatus() string {
