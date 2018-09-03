@@ -14,7 +14,6 @@ open(UPDATE_CLUSTER_LOG,   '>>', $A3_CLUSTER_UPDATE_LOG_FILE)   || die "Unable t
 
 my $ret;
 
-
 sub commit_cluster_update_log {
   my $msg = shift @_;
   my $current_time = POSIX::strftime("%Y-%m-%d %H:%M:%S",localtime);
@@ -49,6 +48,11 @@ for my $node_ip (@all_nodes_ip) {
   }
 }
 
+#backup db and app
+for my $node_ip (@all_nodes_ip) {
+  pf::a3_cluster_update::remote_api_call_post($node_ip, 'node/syscall',{'cmd'=>'/bin/perl', 'opts'=>['-I/usr/local/pf/lib', '-Mpf::a3_cluster_update', '-e', 'pf::a3_cluster_update::dump_app_db()']});
+}
+
 #disable cluster check 
 pf::a3_cluster_update::disable_cluster_check();
 for my $node_ip (@all_nodes_ip) {
@@ -61,7 +65,6 @@ pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'node/sysc
 #update A3 rpm on first node to update
 $ret = pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'node/syscall', {'cmd'=>'/bin/perl', 'opts'=>['-I/usr/local/pf/lib', '-Mpf::a3_cluster_update', '-e', 'pf::a3_cluster_update::update_system_app()']});
 if ($ret != 0) {
-  #roll back application and start pf service
   commit_cluster_update_log("start rollback for app on node $first_node_ip_to_update");
   pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'node/syscall', {'cmd'=>'/bin/perl', 'opts'=>['-I/usr/local/pf/lib', '-Mpf::a3_cluster_update', '-e', 'pf::a3_cluster_update::roll_back_app()']});
   pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'node/syscall', {'cmd'=>'/usr/local/pf/bin/pfcmd', 'opts'=>['service', 'pf','start']});

@@ -100,7 +100,9 @@ internal call for commit log
 sub _commit_cluster_update_log {
   my $msg = shift @_;
   my $current_time = POSIX::strftime("%Y-%m-%d %H:%M:%S",localtime);
-  print UPDATE_CLUSTER_LOG "[ $current_time ] $msg\n";
+  my $hostname = `hostname -f`;
+  chomp $hostname;
+  print UPDATE_CLUSTER_LOG "[ $hostname $current_time ] $msg\n";
 }
 
 
@@ -639,13 +641,23 @@ Backup A3 app
 sub dump_app {
   _commit_cluster_update_log("Starting Application data backup");
 
-  if (call_system_cm_cmd("$TAR_BIN -C /usr/local -czf $A3_UPDATE_APP_DUMP pf --exclude='pf/logs' --exclude='pf/var'") != 0) {
+  if (call_system_cmd("$TAR_BIN -C /usr/local -czf $A3_UPDATE_APP_DUMP pf --exclude='pf/logs' --exclude='pf/var'") != 0) {
     commit_update_log("Unable to back up application data: $!");
-    commit_progress_log("error");
-    die "Application data backup failed!\n";
+    exit $fail_code
   }
 
   _commit_cluster_update_log("Application data backup completed");
+}
+
+=head2 dump_app_db 
+
+Backup app and db
+
+=cut
+
+sub dump_app_db {
+  dump_app();
+  dump_db();
 }
 
 =head2 unpack_app_back
