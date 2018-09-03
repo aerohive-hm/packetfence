@@ -87,7 +87,7 @@ sub rest_sys_call {
   }
   my $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'node/syscall', {'cmd'=>"$cmd", 'opts'=>$ref_opt});
 
-  commit_cluster_update_log("The cmd is $cmd and the opts is ".@$ref_opt);
+  commit_cluster_update_log("The cmd is $cmd and the opts is @$ref_opt");
   return $ret;
 }
 
@@ -99,7 +99,7 @@ sub rest_sys_call_async {
   }
   my $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'node/syscall', {'cmd'=>"$cmd", 'opts'=>$ref_opt, 'method'=>'async'});
 
-  commit_cluster_update_log("The cmd is $cmd and the opts is ".@$ref_opt);
+  commit_cluster_update_log("The cmd is $cmd and the opts is @$ref_opt");
   return $ret;
 
 }
@@ -143,7 +143,7 @@ sub apply_db_schema {
 sub sync_files_from_master {
   for my $ip (@remains_nodes_ip_to_update) {
     rest_sys_call($ip, '/usr/bin/systemctl', 'restart', 'packetfence-config');
-    rest_sys_call($ip, '/usr/local/pf/bin/cluster/sync', "--from=$$first_node_ip_to_update", "--api-user=packet", "--api-password=fence");
+    rest_sys_call($ip, '/usr/local/pf/bin/cluster/sync', "--from=$first_node_ip_to_update", "--api-user=packet", "--api-password=fence");
     rest_sys_call($ip, '/usr/local/pf/bin/pfcmd', 'configreload', 'hard');
   }
 }
