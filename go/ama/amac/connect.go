@@ -31,13 +31,14 @@ var (
 	}
 
 	//init the client structure
-	client = &http.Client{Transport: tr, Timeout: 10 * time.Second}
+	client = &http.Client{Transport: tr, Timeout: 30 * time.Second}
 
 	//Store the token to avoid multiple IO
 	gdcTokenStr               string
 	rdcTokenStr               string
 	VhmidStr                  string
 	OwnerIdStr                string
+	OrgIdStr                  string
 	connMsgUrl                string
 	fetchRdcTokenUrl          string
 	fetchRdcTokenUrlForOthers string
@@ -59,7 +60,7 @@ const (
 
 type response struct {
 	Location string `json:"location"`
-	OwnerId  int    `json:"ownerId"`
+	OwnerId  int64  `json:"ownerId"`
 }
 type VhmidResponse struct {
 	Data response `json:"data"`

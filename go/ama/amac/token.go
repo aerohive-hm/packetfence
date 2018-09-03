@@ -40,9 +40,8 @@ type tokenCommonHeader struct {
 	ClusterID string `json:"clusterId"`
 	Hostname  string `json:"hostname"`
 	VhmId     string `json:"vhmId"`
-	VhmName   string `json:"vhmName"`
-	OwnerId   int    `json:"ownerId"`
-	OrgId     int    `json:"orgId"`
+	OwnerId   int64  `json:"ownerId"`
+	OrgId     int64  `json:"orgId"`
 	MessageID string `json:"messageId,omitempty"`
 }
 
@@ -138,8 +137,13 @@ func GetRdcRegin(rdcUrl string) string {
 	//Reading the conf file
 	region := a3config.ReadRdcRegion(a2)
 
+	/*
+		Region will return null in two cases:
+		1) on-premise deployment
+		2) Adding a new RDC, but not sychronize to the static mapping file
+	*/
 	if region == "" {
-		return "local"
+		return ""
 	} else {
 		return region
 	}
@@ -158,7 +162,8 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
 	nodeInfo := rdcTokenReqFromRdc{}
 	nodeInfo.Header.SystemID = node.SystemID
 	nodeInfo.Header.Hostname = node.Hostname
-	nodeInfo.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	//nodeInfo.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	nodeInfo.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)
 
 	data, _ := json.Marshal(nodeInfo)
 	reader := bytes.NewReader(data)
@@ -330,7 +335,8 @@ func fillRdcTokenReq() rdcTokenReqFromRdc {
 
 	rdcTokenReq.Header.SystemID = utils.GetA3SysId()
 	rdcTokenReq.Header.Hostname = a3config.GetHostname()
-	rdcTokenReq.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	//rdcTokenReq.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	rdcTokenReq.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)
 	return rdcTokenReq
 }
 
@@ -396,9 +402,24 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 			log.LoggerWContext(ctx).Error("Save RDC URL error: " + err.Error())
 		}
 
+		//save ownerId
 		err = a3config.UpdateCloudConf(a3config.OwnerId, OwnerIdStr)
 		if err != nil {
-			log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
+			log.LoggerWContext(ctx).Error("Save ownerId error: " + err.Error())
+		}
+
+		//Save vhmid
+		VhmidStr = tokenRes.Header.VhmId
+		err = a3config.UpdateCloudConf(a3config.Vhm, VhmidStr)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save vhmId error: " + err.Error())
+		}
+
+		//save orgid
+		OrgIdStr := fmt.Sprintf("%d", tokenRes.Header.OrgId)
+		err = a3config.UpdateCloudConf(a3config.OrgId, OrgIdStr)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save orgId error: " + err.Error())
 		}
 		/*
 			To do, post the RDC token/RDC URL/VHMID to the other memebers
