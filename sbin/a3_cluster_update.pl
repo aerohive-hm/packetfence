@@ -81,29 +81,25 @@ sub rest_module_call {
 
 sub rest_sys_call {
   my ($ip, $cmd, @params) = @_;
-  my $opts ;
+  my $ref_opt = [];
   for my $param (@params) {
-    $opts .= "'".$param."',";
+    push ($ref_opt, $param);
   }
-  #remove last ','
-  chop $opts;
-  my $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'node/syscall', {'cmd'=>"$cmd", 'opts'=>["$opts"]});
+  my $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'node/syscall', {'cmd'=>"$cmd", 'opts'=>$ref_opt});
 
-  commit_cluster_update_log("The cmd is $cmd and the opts is ".$opts);
+  commit_cluster_update_log("The cmd is $cmd and the opts is ".@$ref_opt);
   return $ret;
 }
 
 sub rest_sys_call_async {
   my ($ip, $cmd, @params) = @_;
-  my $opts ;
+  my $ref_opt = [];
   for my $param (@params) {
-    $opts .= "'".$param."',";
+    push ($ref_opt, $param);
   }
-  #remove last ','
-  chop $opts;
-  my $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'node/syscall', {'cmd'=>"$cmd", 'opts'=>["$opts"], 'method'=>'async'});
+  my $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'node/syscall', {'cmd'=>"$cmd", 'opts'=>$ref_opt, 'method'=>'async'});
 
-  commit_cluster_update_log("The cmd is $cmd and the opts is ".$opts);
+  commit_cluster_update_log("The cmd is $cmd and the opts is ".@$ref_opt);
   return $ret;
 
 }
