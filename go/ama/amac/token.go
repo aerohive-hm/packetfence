@@ -17,6 +17,7 @@ import (
 	innerClient "github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -40,9 +41,8 @@ type tokenCommonHeader struct {
 	ClusterID string `json:"clusterId"`
 	Hostname  string `json:"hostname"`
 	VhmId     string `json:"vhmId"`
-	VhmName   string `json:"vhmName"`
-	OwnerId   int    `json:"ownerId"`
-	OrgId     int    `json:"orgId"`
+	OwnerId   int64  `json:"ownerId"`
+	OrgId     int64  `json:"orgId"`
 	MessageID string `json:"messageId,omitempty"`
 }
 
@@ -55,9 +55,18 @@ type NodeInfo struct {
 	Hostname string
 }
 
+type CloudInfo struct {
+	RdcUrl string	`json:"rdcurl"`
+	VhmID  string	`json:"vhmID"`
+	Switch string 	`json:"switch"`
+	OrgID  string 	`json:"orgId"`
+	Token  string 	`json:"rdctoken"`
+	PriNode string	`json:"primarynode"`
+}
+
 type tokenResData struct {
-	MsgType string `json:"msgType"`
-	Data    string `json:"token"`
+	MsgType string 		`json:"msgType"`
+	Data    string 		`json:"token"`
 }
 
 type A3TokenResFromRdc struct {
@@ -66,7 +75,7 @@ type A3TokenResFromRdc struct {
 }
 
 //Fetch node list from cluster.conf
-func FetchNodeList() []MemberList {
+func fetchNodeList() []MemberList {
 	conf := a3config.A3Read("CLUSTER", "all")
 	if conf == nil {
 		return nil
@@ -109,7 +118,7 @@ func readRdcToken(ctx context.Context) string {
 	return rdcTokenStr
 }
 
-func UpdateRdcToken(ctx context.Context, s string) {
+func UpdateRdcToken(ctx context.Context, s string, reOnboard bool) {
 	tokenLock.Lock()
 	file, error := os.OpenFile("/usr/local/pf/conf/token.txt", os.O_RDWR|os.O_CREATE, 0600)
 	if error != nil {
@@ -122,6 +131,13 @@ func UpdateRdcToken(ctx context.Context, s string) {
 	//update the variable to aviod multi IO
 	rdcTokenStr = s
 	tokenLock.Unlock()
+
+	if reOnboard == true {
+		updateRDCInfo()
+		event := new(MsgStru)
+		event.MsgType = RdcTokenUpdate
+		MsgChannel <- *event
+	}
 	return
 }
 
@@ -138,8 +154,13 @@ func GetRdcRegin(rdcUrl string) string {
 	//Reading the conf file
 	region := a3config.ReadRdcRegion(a2)
 
+	/*
+		Region will return null in two cases:
+		1) on-premise deployment
+		2) Adding a new RDC, but not sychronize to the static mapping file
+	*/
 	if region == "" {
-		return "local"
+		return ""
 	} else {
 		return region
 	}
@@ -150,15 +171,16 @@ func GetRdcRegin(rdcUrl string) string {
 	for the other nodes, this func will be called by webUI
 	it is public
 */
-func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
+func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 	//	var url string
-	var res []byte
+	res := ""
 	tokenRes := A3TokenResFromRdc{}
 
 	nodeInfo := rdcTokenReqFromRdc{}
 	nodeInfo.Header.SystemID = node.SystemID
 	nodeInfo.Header.Hostname = node.Hostname
-	nodeInfo.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	//nodeInfo.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	nodeInfo.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)
 
 	data, _ := json.Marshal(nodeInfo)
 	reader := bytes.NewReader(data)
@@ -194,13 +216,11 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) []byte {
 		return res
 	}
 
-	return []byte(body)
+	return tokenRes.Data.Data
 }
 
 //This API was used by nodes without GDC and RDC token.
 func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
-	tokenRes := A3TokenResFromRdc{}
-
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken?systemID=%s&hostname=%s", mem.IpAddr, utils.GetA3SysId(), a3config.GetHostname())
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
 
@@ -212,23 +232,10 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 		return ""
 	}
 
+	//The body content is token
 	body := node.RespData
 
-	err = json.Unmarshal([]byte(body), &tokenRes)
-	if err != nil {
-		fmt.Println("json Unmarshal fail")
-		log.LoggerWContext(ctx).Error(err.Error())
-		return ""
-	}
-
-	if tokenRes.Data.MsgType != "amac_token" {
-		log.LoggerWContext(ctx).Error("Incorrect message type")
-		return ""
-	}
-
-	//resp.Body.Close()
-
-	return tokenRes.Data.Data
+	return string(body)
 }
 
 /*
@@ -241,7 +248,7 @@ func ReqTokenFromOtherNodes(ctx context.Context, node *MemberList) int {
 	memList := []MemberList{}
 
 	if node == nil {
-		memList = append(memList, FetchNodeList()...)
+		memList = append(memList, fetchNodeList()...)
 	} else {
 		memList = append(memList, *node)
 	}
@@ -255,7 +262,7 @@ func ReqTokenFromOtherNodes(ctx context.Context, node *MemberList) int {
 		token = reqTokenFromSingleNode(ctx, mem)
 		if len(token) > 0 {
 			dst := fmt.Sprintf("Bearer %s", token)
-			UpdateRdcToken(ctx, dst)
+			UpdateRdcToken(ctx, dst, true)
 			return 0
 		}
 	}
@@ -270,22 +277,25 @@ func FetchSysIDForNode(node MemberList) string {
 	return ""
 }
 
-func distributeToSingleNode(ctx context.Context, mem MemberList, selfRenew bool) {
-	var token []byte
+func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew bool) {
+	cloudInfo := CloudInfo{}
 	if selfRenew == false {
-		token = ReqTokenForOtherNode(ctx, NodeInfo{})
+		cloudInfo.Token = ReqTokenForOtherNode(ctx, NodeInfo{})
 	} else {
-		tokenRes := A3TokenResFromRdc{}
-		tokenRes.Data.MsgType = "renew_token"
-		token, _ = json.Marshal(tokenRes)
+		cloudInfo.RdcUrl = rdcUrl
+		cloudInfo.Switch = globalSwitch
+		cloudInfo.VhmID = VhmidStr
+		cloudInfo.PriNode = a3share.GetOwnMGTIp()
+		cloudInfo.OrgID = OrgIdStr
 	}
+	jsonData, _ := json.Marshal(cloudInfo)
 	//reader := bytes.NewReader(token)
 	//Using loop to make sure post successfully
 	for {
 		url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken", mem.IpAddr)
 		node := new(innerClient.Client)
 		node.Host = mem.IpAddr
-		err := node.ClusterSend("POST", url, string(token))
+		err := node.ClusterSend("POST", url, string(jsonData))
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return
@@ -316,12 +326,16 @@ func distributeToSingleNode(ctx context.Context, mem MemberList, selfRenew bool)
 	   and posting the new token to every node actively;
 	3) If selfRenew is true, will notice every node to renew RDC token by itself.
 */
-func triggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
-	nodeList := FetchNodeList()
-
+func TriggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
+	nodeList := a3share.FetchNodesInfo()
+	ownMgtIp := a3share.GetOwnMGTIp()
 	for _, node := range nodeList {
+		if node.IpAddr == ownMgtIp {
+			continue
+		}
 		go distributeToSingleNode(ctx, node, selfRenew)
 	}
+
 	return
 }
 
@@ -330,7 +344,8 @@ func fillRdcTokenReq() rdcTokenReqFromRdc {
 
 	rdcTokenReq.Header.SystemID = utils.GetA3SysId()
 	rdcTokenReq.Header.Hostname = a3config.GetHostname()
-	rdcTokenReq.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	//rdcTokenReq.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	rdcTokenReq.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)
 	return rdcTokenReq
 }
 
@@ -388,7 +403,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	if statusCode == 200 {
 		dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Data)
 		//RDC token need to write file, if process restart we can read it
-		UpdateRdcToken(ctx, dst)
+		UpdateRdcToken(ctx, dst, false)
 		//Save RDC url and VHM to config file if get the RDC token
 		//To do, inform the BE to synchronize the config file
 		err = a3config.UpdateCloudConf(a3config.RDCUrl, rdcUrl)
@@ -396,15 +411,26 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 			log.LoggerWContext(ctx).Error("Save RDC URL error: " + err.Error())
 		}
 
+		//save ownerId
 		err = a3config.UpdateCloudConf(a3config.OwnerId, OwnerIdStr)
 		if err != nil {
-			log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
+			log.LoggerWContext(ctx).Error("Save ownerId error: " + err.Error())
 		}
-		/*
-			To do, post the RDC token/RDC URL/VHMID to the other memebers
-		*/
-		//Updating the RDC token for the other nodes actively
-		//triggerUpdateNodesToken(ctx, true)
+
+		//Save vhmid
+		VhmidStr = tokenRes.Header.VhmId
+		err = a3config.UpdateCloudConf(a3config.Vhm, VhmidStr)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save vhmId error: " + err.Error())
+		}
+
+		//save orgid
+		OrgIdStr := fmt.Sprintf("%d", tokenRes.Header.OrgId)
+		err = a3config.UpdateCloudConf(a3config.OrgId, OrgIdStr)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save orgId error: " + err.Error())
+		}
+
 		return dst, ConnCloudSuc
 	} else if statusCode == 401 {
 		return "", AuthFail

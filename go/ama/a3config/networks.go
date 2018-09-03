@@ -3,6 +3,7 @@ package a3config
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -55,7 +56,7 @@ func GetItemsValue(ctx context.Context) []Item {
 
 }
 
-func UpdateItemsValue(ctx context.Context, items []Item) error {
+func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
 	var err error
 
 	for _, item := range items {
@@ -74,7 +75,7 @@ func UpdateItemsValue(ctx context.Context, items []Item) error {
 			log.LoggerWContext(ctx).Error("writeOneNetworkConfig error:" + err.Error())
 			return err
 		}
-		err = UpdatePrimaryClusterconf(item)
+		err = UpdatePrimaryClusterconf(enable, item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
 			return err
@@ -116,19 +117,32 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	} else {
 		context = ctx
 	}
-	//TODO Write networksData.ClusterEnable
+	//first check if contines management type
+	if !IsContainManageType(ctx, networksData.Items) {
+		err := errors.New("the interface does not contain management type ")
+		log.LoggerWContext(ctx).Error("UpdateNetworksData error:" + err.Error())
+		return err
+	}
 	err := UpdateHostname(networksData.HostName)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
 		return err
 	}
 	utils.SetHostname(networksData.HostName)
-	err = UpdateItemsValue(context, networksData.Items)
+	err = UpdateItemsValue(context, networksData.ClusterEnable, networksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())
 		return err
 	}
 	return err
+}
+func IsContainManageType(ctx context.Context, items []Item) bool {
+	for _, item := range items {
+		if strings.Contains(item.Type, "MANAGEMENT") {
+			return true
+		}
+	}
+	return false
 }
 
 const (
@@ -149,23 +163,24 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig:ifname=%s ,ip =%s, netmask =%s", ifname, ip, netmask))
 
 	var section Section
-	// write to /usr/local/pf/var/ firstly
+	// write to /usr/local/pf/var/ifcfg- firstly
 	ifcfgFile := varDir + interfaceConfFile + ifname
+	// write to /etc/sysconfig/network-scripts/ifcfg-
 	sysifCfgFile := networtConfDir + interfaceConfDir + interfaceConfFile + ifname
 
 	//eth0, eth0.xx
-	if len(ifname) > len("eth0") {
+	if utils.IsVlanIface(ifname) {
 		section = Section{
 			"": {
 				"DEVICE": ifname,
-				"HWADDR": "",
+				"VLAN":   "yes",
 			},
 		}
 	} else {
 		section = Section{
 			"": {
 				"DEVICE": ifname,
-				"VLAN":   "yes",
+				"HWADDR": "",
 			},
 		}
 	}
@@ -204,7 +219,7 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	}
 
 	// don't need write gateway
-	if len(ifname) > len("eth0") {
+	if utils.IsVlanIface(ifname) {
 		return nil
 	}
 
@@ -214,7 +229,7 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 			"GATEWAY": utils.GetA3DefaultGW(),
 		},
 	}
-
+	// /etc/sysconfig/network
 	sysGatewayCfgFile := networtConfDir + networkConfFile
 
 	err = A3CommitPath(sysGatewayCfgFile, section)

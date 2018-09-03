@@ -11,9 +11,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"errors"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/apibackend/event"
+	innerClient "github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -78,19 +81,18 @@ func getRunMode() string {
 }
 
 func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
-	var GetInfo CloudGetInfo
-	//var memberArray []amac.MemberList
+	var getInfo CloudGetInfo
 	var dataArray []CloudGetData
 	var self CloudGetData
 
 	var ctx = r.Context()
 	log.LoggerWContext(ctx).Error("into handleGetCloudInfo")
 
-	GetInfo.Head.RdcUrl = a3config.ReadCloudConf(a3config.RDCUrl)
-	GetInfo.Head.OwnerId = a3config.ReadCloudConf(a3config.OwnerId)
-	GetInfo.Head.VhmId = a3config.ReadCloudConf(a3config.Vhm)
-	GetInfo.Head.Mode = getRunMode()
-	GetInfo.Head.Region = amac.GetRdcRegin(GetInfo.Head.RdcUrl)
+	getInfo.Head.RdcUrl = a3config.ReadCloudConf(a3config.RDCUrl)
+	getInfo.Head.OwnerId = a3config.ReadCloudConf(a3config.OwnerId)
+	getInfo.Head.VhmId = a3config.ReadCloudConf(a3config.Vhm)
+	getInfo.Head.Mode = getRunMode()
+	getInfo.Head.Region = amac.GetRdcRegin(getInfo.Head.RdcUrl)
 
 	self.Hostname = a3config.GetHostname()
 	self.Status = amac.GetAMAConnStatus()
@@ -98,13 +100,26 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 
 	dataArray = append(dataArray, self)
 
-	//memberArray = amac.FetchNodeList()
-	//for _, mem := range memberArray {
+	nodeList := a3share.FetchNodesInfo()
+	ownMgtIp := a3share.GetOwnMGTIp()
+	for _, node := range nodeList {
+		other := CloudGetData{}
+		if node.IpAddr == ownMgtIp {
+			continue
+		}
+		amaStatus := ReqAMAStatusfromOneNode(ctx, node)
+		if amaStatus == nil {
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Can't get AMA status info from node %s.", node.IpAddr))
+			continue
+		}
+		other.Hostname = amaStatus.Hostname
+		other.Status = amaStatus.Status
+		other.LastContactTime = amaStatus.LastConnTime
+		dataArray = append(dataArray, other)
+	}
+	getInfo.Data = dataArray
 
-	//to do, call the API
-	//}
-
-	jsonData, err := json.Marshal(GetInfo)
+	jsonData, err := json.Marshal(getInfo)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		return []byte(err.Error())
@@ -116,7 +131,6 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var ret string
 	var reason string
 	var result int
-	//var memberArray []amac.MemberList
 
 	ctx := r.Context()
 	postInfo := new(CloudPostInfo)
@@ -125,7 +139,6 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 
 	log.LoggerWContext(ctx).Error("int HandlePostCloudInfo")
 
-	code = "fail"
 	ret = ""
 
 	err := json.Unmarshal(d.ReqData, postInfo)
@@ -136,21 +149,20 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 
 	//This case means disable the cloud integration
 	if postInfo.Url == "" {
-		err = a3config.UpdateCloudConf(a3config.Switch, "disable")
-		if err != nil {
-			log.LoggerWContext(ctx).Error("Update cloud switch error: " + err.Error())
-		} else {
-			event.MsgType = amac.DisableCloudIntegration
-			event.Data = "disable"
-			amac.MsgChannel <- *event
-		}
+		event.MsgType = amac.CloudIntegrateFunction
+		event.Data = "disable"
+		amac.MsgChannel <- *event
 		code = "ok"
 		ret = "disable cloud integration successfully"
 
-		//memberArray = amac.FetchNodeList()
-		//for _, mem := range memberArray {
-		//to do, call the API to notify disable the cloud integration
-		//}
+		nodeList := a3share.FetchNodesInfo()
+		ownMgtIp := a3share.GetOwnMGTIp()
+		for _, node := range nodeList {
+			if node.IpAddr == ownMgtIp {
+				continue
+			}
+			go EnableNodeConnGDC(ctx, node, false)
+		}
 
 		goto END
 	}
@@ -178,11 +190,8 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		code = "ok"
 		ret = "connect to cloud successfully"
 
-		//memberArray = amac.FetchNodeList()
-		//for _, mem := range memberArray {
-		//to do, call the API to notify enable the cloud integration
-		//}
-
+		//Need discuss here: is the trigger time correct?
+		amac.TriggerUpdateNodesToken(ctx, true)
 	} else {
 		ret = reason
 	}
@@ -197,4 +206,71 @@ END:
 		ret = err.Error()
 	}
 	return crud.FormPostRely(code, ret)
+}
+
+//Request AMA status from one node.
+func ReqAMAStatusfromOneNode(ctx context.Context, node a3share.NodeInfo) *event.AMAStatus {
+	amaInfo := event.AMAStatus{}
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/ama/status", node.IpAddr)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Query AMA info from node %s", node.IpAddr))
+
+	client := new(innerClient.Client)
+	client.Host = node.IpAddr
+	err := client.ClusterSend("GET", url, "")
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return nil
+	}
+
+	body := client.RespData
+
+	err = json.Unmarshal([]byte(body), &amaInfo)
+	if err != nil {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Json Unmarshal failed: %s", err.Error()))
+		return nil
+	}
+
+	return &amaInfo
+}
+
+// Enable or DIsable special node connect to GDC.
+func EnableNodeConnGDC(ctx context.Context, node a3share.NodeInfo, enable bool) error {
+	action := event.AMAAction{}
+	if enable == true {
+		action.Action = "enable"
+	} else {
+		action.Action = "disable"
+	}
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Send POST message to %s node %s connects to GDC", action.Action, node.IpAddr))
+
+	jsonData, _ := json.Marshal(action)
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/ama/action", node.IpAddr)
+
+	client := new(innerClient.Client)
+	client.Host = node.IpAddr
+	err := client.ClusterSend("POST", url, string(jsonData))
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return err
+	}
+
+	statusCode := client.Status
+	if statusCode == 200 {
+		respData := new(a3share.RespData)
+		err = json.Unmarshal([]byte(client.RespData), respData)
+		if err != nil {
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Json Unmarshal failed: %s", err.Error()))
+			return err
+		}
+		if respData.Code == "ok" {
+			log.LoggerWContext(ctx).Info(fmt.Sprintf("%s node %s connects to GDC successfully.", action.Action, node.IpAddr))
+			return nil
+		} else {
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("%s node %s connects to GDC failed, return message %s.", action.Action, node.IpAddr, respData.Msg))
+			errors.New(respData.Msg)
+		}
+	} else {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("%s node %s connects to GDC failed, return code %d.", action.Action, node.IpAddr, statusCode))
+	}
+	return errors.New("Action error")
 }
