@@ -40,7 +40,6 @@ type tokenCommonHeader struct {
 	ClusterID string `json:"clusterId"`
 	Hostname  string `json:"hostname"`
 	VhmId     string `json:"vhmId"`
-	VhmName   string `json:"vhmName"`
 	OwnerId   int    `json:"ownerId"`
 	OrgId     int    `json:"orgId"`
 	MessageID string `json:"messageId,omitempty"`
@@ -138,8 +137,13 @@ func GetRdcRegin(rdcUrl string) string {
 	//Reading the conf file
 	region := a3config.ReadRdcRegion(a2)
 
+	/*
+		Region will return null in two cases:
+		1) on-premise deployment
+		2) Adding a new RDC, but not sychronize to the static mapping file
+	*/
 	if region == "" {
-		return "local"
+		return ""
 	} else {
 		return region
 	}
@@ -398,7 +402,13 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 
 		err = a3config.UpdateCloudConf(a3config.OwnerId, OwnerIdStr)
 		if err != nil {
-			log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
+			log.LoggerWContext(ctx).Error("Save ownerId error: " + err.Error())
+		}
+
+		VhmidStr = tokenRes.Header.VhmId
+		err = a3config.UpdateCloudConf(a3config.Vhm, VhmidStr)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save vhmId error: " + err.Error())
 		}
 		/*
 			To do, post the RDC token/RDC URL/VHMID to the other memebers
