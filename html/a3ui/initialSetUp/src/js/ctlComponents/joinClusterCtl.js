@@ -34,6 +34,7 @@ class joinClusterCtl extends Component {
                 passwdWrongMessage:"",
                 
             },
+            loading:false,
         };
 
 
@@ -205,14 +206,29 @@ class joinClusterCtl extends Component {
                     "passwd":values.passwd,
 
                 }
-
+                self.setState({
+                    loading : true,
+                })
                 new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
-                        self.props.changeStatus("clusterNetworking");
+                        self.setState({
+                            loading : false,
+                        },function(){
+                            self.props.changeStatus("clusterNetworking");
+                        })
+                        
                     }else{
+                        self.setState({
+                            loading : false,
+                        })
                         message.destroy();
                         message.error(data.msg);
                     }
+
+                },()=>{
+                    self.setState({
+                        loading : false,
+                    })
 
                 }) 
 
@@ -226,7 +242,7 @@ class joinClusterCtl extends Component {
 
 
     render() {
-        const {wrongMessage} = this.state;
+        const {wrongMessage,loading} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
@@ -235,6 +251,7 @@ class joinClusterCtl extends Component {
         });
         return (
             <div className="global-div-joinClusterCtl">
+            <Spin spinning={loading}>
                 <div className="left-div-joinClusterCtl">
                     <Guidance 
                         title={self.state.i18n.joinCluster} 
@@ -349,6 +366,7 @@ class joinClusterCtl extends Component {
                 </div>
 
                 <div className="clear-float-div-common" ></div >
+            </Spin>
             </div>
             
         )

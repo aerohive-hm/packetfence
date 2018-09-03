@@ -75,7 +75,7 @@ class joiningCtl extends Component {
 
             });
 
-        },10000)
+        },3000)
 
 
     }
@@ -118,6 +118,7 @@ class joiningCtl extends Component {
 
         return (
             <div className="global-div-joiningCtl">
+            <Spin spinning={loading}>
                 <div className="left-div-joiningCtl">
                     <div className="img-div-joiningCtl">
                        <img src={startingAndReadyImg} className="img-img-joiningCtl" />
@@ -139,8 +140,9 @@ class joiningCtl extends Component {
                 
 
 
-
+              
                 <div className="clear-float-div-common" ></div >
+            </Spin>
             </div>
             
         )

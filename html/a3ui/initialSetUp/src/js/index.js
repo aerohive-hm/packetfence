@@ -89,6 +89,11 @@ class App extends Component {
                 loading : false,
                 show:data.step,
             })
+        },()=>{
+            self.setState({
+                loading : false,
+            })
+
         });
 
     }
