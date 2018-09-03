@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use REST::Client;
 use JSON;
 use Readonly;
 use POSIX;
