@@ -86,4 +86,6 @@ func updateRDCInfo() {
 	globalSwitch = a3config.ReadCloudConf(a3config.Switch)
 
 	VhmidStr = a3config.ReadCloudConf(a3config.Vhm)
+
+	OrgIdStr = a3config.ReadCloudConf(a3config.OrgId)
 }

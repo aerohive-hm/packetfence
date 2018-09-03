@@ -91,6 +91,12 @@ func handlePostToken(r *http.Request, d crud.HandlerData) []byte {
 			log.LoggerWContext(ctx).Error("Update cloud config error: " + err.Error())
 		}
 
+		//update OrgID
+		err = a3config.UpdateCloudConf(a3config.OrgId, cloudInfo.OrgID)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Update cloud config error: " + err.Error())
+		}
+
 		node := amac.MemberList{IpAddr: cloudInfo.PriNode}
 		amac.ReqTokenFromOtherNodes(ctx, &node)
 	} else {

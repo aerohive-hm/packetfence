@@ -59,6 +59,7 @@ type CloudInfo struct {
 	RdcUrl string	`json:"rdcurl"`
 	VhmID  string	`json:"vhmID"`
 	Switch string 	`json:"switch"`
+	OrgID  string 	`json:"orgId"`
 	Token  string 	`json:"rdctoken"`
 	PriNode string	`json:"primarynode"`
 }
@@ -285,6 +286,7 @@ func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew
 		cloudInfo.Switch = globalSwitch
 		cloudInfo.VhmID = VhmidStr
 		cloudInfo.PriNode = a3share.GetOwnMGTIp()
+		cloudInfo.OrgID = OrgIdStr
 	}
 	jsonData, _ := json.Marshal(cloudInfo)
 	//reader := bytes.NewReader(token)
