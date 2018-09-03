@@ -101,6 +101,8 @@ func InitStartService() error {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
+	ama.InitClusterStatus("primary")
+
 	updateCurrentlyAt()
 	return nil
 }

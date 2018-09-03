@@ -108,8 +108,8 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	resp, _ = json.Marshal(respdata)
 
 	// Prepare for cluster node sync
-	go PrepareClusterNodeJoin()
 	ama.InitClusterStatus("primary")
+	go PrepareClusterNodeJoin()
 
 END:
 	if err != nil {

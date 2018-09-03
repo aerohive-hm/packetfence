@@ -9,6 +9,7 @@ import (
 
 type ClusterPrimaryStatus int
 
+// status of primary server during join
 const (
 	_           ClusterPrimaryStatus = iota
 	PrepareSync                      // notify cluster members to close db service
@@ -18,6 +19,7 @@ const (
 
 type ClusterJoinStatusType int
 
+// status of node server during join
 const (
 	_ ClusterJoinStatusType = iota
 	Waitng2Sync

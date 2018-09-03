@@ -35,7 +35,7 @@ const (
 func ClusterSyncNew(ctx context.Context) crud.SectionCmd {
 	sync := new(Sync)
 	sync.New()
-	sync.Add("GET", handleUpdateSync)
+	sync.Add("GET", handleGetSync)
 	sync.Add("POST", handleUpdateSync)
 	return sync
 }
@@ -43,12 +43,13 @@ func ClusterSyncNew(ctx context.Context) crud.SectionCmd {
 // get status of primary server
 func handleGetSync(r *http.Request, d crud.HandlerData) []byte {
 	t := ama.ClusterStatus
+
 	if !t.IsPrimary {
 		return []byte(`{"code":"fail", "msg":"not a primary server."}`)
 	}
 
 	var s string
-	if t.Status == ama.Ready4Sync {
+	if t.Status == ama.PrepareSync {
 		s = stopService
 	} else if t.Status == ama.Ready4Sync {
 		s = startSync
