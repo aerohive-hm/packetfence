@@ -117,13 +117,13 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	} else {
 		context = ctx
 	}
-	//first check if contines management type
-	if !IsContainManageType(ctx, networksData.Items) {
-		err := errors.New("the interface does not contain management type ")
-		log.LoggerWContext(ctx).Error("UpdateNetworksData error:" + err.Error())
+
+	err := CheckItemValid(ctx, networksData.Items)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("CheckItemValid error:" + err.Error())
 		return err
 	}
-	err := UpdateHostname(networksData.HostName)
+	err = UpdateHostname(networksData.HostName)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
 		return err
@@ -136,13 +136,38 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	}
 	return err
 }
-func IsContainManageType(ctx context.Context, items []Item) bool {
+
+func CheckItemIpValid(ctx context.Context, items []Item) error {
+	msg := ""
 	for _, item := range items {
-		if strings.Contains(item.Type, "MANAGEMENT") {
-			return true
+		if !IsSameIpRange(item.IpAddr, item.Vip, item.NetMask) {
+			msg = fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", item.IpAddr, item.Vip)
+			return errors.New(msg)
 		}
 	}
-	return false
+	return nil
+}
+func CheckItemTypeValid(ctx context.Context, items []Item) error {
+	msg := ""
+	for _, item := range items {
+		if strings.Contains(item.Type, "MANAGEMENT") {
+			return nil
+		}
+	}
+	msg = fmt.Sprintf("the interface does not contain management type")
+	return errors.New(msg)
+}
+
+func CheckItemValid(ctx context.Context, items []Item) error {
+	err := CheckItemIpValid(ctx, items)
+	if err != nil {
+		return err
+	}
+	err = CheckItemTypeValid(ctx, items)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 const (

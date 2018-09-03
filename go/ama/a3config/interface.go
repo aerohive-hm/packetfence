@@ -3,6 +3,7 @@ package a3config
 import (
 	"context"
 	"fmt"
+	"net"
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -113,4 +114,23 @@ func ChangeUiInterfacename(uiifname string) string {
 		ifname = uiifname
 	}
 	return ifname
+}
+
+func IpBitwiseAndMask(ip, mask string) string {
+	n := utils.NetmaskStr2Len(mask)
+	ipv4Addr := net.ParseIP(ip)
+	ipv4Mask := net.CIDRMask(n, 32)
+
+	str := fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask))
+	return str
+}
+func IsSameIpRange(ip1, ip2, mask string) bool {
+
+	str1 := IpBitwiseAndMask(ip1, mask)
+	str2 := IpBitwiseAndMask(ip2, mask)
+	if str1 == str2 {
+		return true
+	}
+	return false
+
 }

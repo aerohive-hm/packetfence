@@ -59,9 +59,13 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 		ret = err.Error()
 		return crud.FormPostRely(code, ret)
 	}
-	_, clusterRespData := a3share.UpdatePrimaryNetworksData(ctx, *clusternetdata)
+	err, clusterRespData := a3share.UpdatePrimaryNetworksData(ctx, *clusternetdata)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdatePrimaryNetworksData error:" + err.Error())
+		ret := err.Error()
+		return crud.FormPostRely(code, ret)
+	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read primary clusterRespData  %v", clusterRespData))
 	err = a3config.UpdateClusterNetworksData(ctx, *clusternetdata, clusterRespData)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateClusterNetworksData error:" + err.Error())
