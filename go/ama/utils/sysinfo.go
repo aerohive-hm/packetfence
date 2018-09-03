@@ -42,6 +42,14 @@ func SetHostname(hostname string) {
 	ExecCmds(cmds)
 }
 
+func isProcAlive(proc string) bool {
+	_, err := ExecShell(`pgrep ` + proc)
+	if err == nil {
+		return false
+	}
+	return true
+}
+
 func waitProcStop(proc string) {
 	for {
 		_, err := ExecShell(`pgrep ` + proc)
@@ -62,23 +70,19 @@ func waitProcStart(proc string) {
 	}
 }
 
-/*
-func killPorc(proc string) error {
+func killPorc(proc string) {
 	cmd := "pgrep " + proc
 	out, err := ExecShell(cmd)
 	if err != nil {
-		return nil
+		return
 	}
 
-	for pid := range cmd {
-		i, err := strconv.Atoi(pid)
-		if err != nil {
-			continue
-		}
-		pids, err := ExecShell(`pgrep ` + proc)
-		if err == nil {
-			return
+	pids := strings.Split(out, "\n")
+	for _, pid := range pids {
+		if pid != "" {
+			ExecShell(`kill ` + pid)
 		}
 	}
+
+	waitProcStop(proc)
 }
-*/

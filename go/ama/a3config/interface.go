@@ -77,18 +77,15 @@ func UpdateSystemInterface(ctx context.Context, i Item) error {
 func DelSystemInterface(ctx context.Context, i Item) error {
 	var err error
 	var sectionId string
-
+	ifname := ChangeUiInterfacename(i.Name)
+	sectionId = fmt.Sprintf("interface %s", ifname)
 	if VlanInface(i.Name) {
-		name := []rune(i.Name) /*need to delete vlan for name*/
-		keyname := fmt.Sprintf("eth0.%s", string(name[4:]))
-		sectionId = fmt.Sprintf("interface %s", keyname)
-		utils.DelVlanIface(keyname)
-	} else {
-		sectionId = fmt.Sprintf("interface %s", strings.ToLower(i.Name))
+		utils.DelVlanIface(ifname)
 	}
-
 	err = A3Delete("PF", sectionId)
-
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Deleteinterface error:" + err.Error())
+	}
 	err = DeleteNetconf(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("DeleteNetconf error:" + err.Error())
@@ -98,4 +95,16 @@ func DelSystemInterface(ctx context.Context, i Item) error {
 		log.LoggerWContext(ctx).Error("DeletePrimaryClusterconf error:" + err.Error())
 	}
 	return nil
+}
+
+func ChangeUiInterfacename(uiifname string) string {
+	var ifname string
+	if VlanInface(uiifname) {
+		name := []rune(uiifname) /*need to delete vlan for name*/
+		ifname = fmt.Sprintf("eth0.%s", string(name[4:]))
+
+	} else {
+		ifname = uiifname
+	}
+	return ifname
 }

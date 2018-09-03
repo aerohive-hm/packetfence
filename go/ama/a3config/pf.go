@@ -13,6 +13,7 @@ const (
 	Interval = "keepalive_interval"
 	Vhm      = "vhm"
 	OwnerId  = "owenerId"
+	OrgId    = "orgId"
 )
 
 func UpdateCloudConf(key string, value string) error {
@@ -34,4 +35,12 @@ func ReadCloudConf(key string) string {
 
 func ReadCloudConfAll() Section {
 	return A3Read("CLOUD", "general")
+}
+
+func ReadRdcRegion(key string) string {
+	if len(key) == 0 {
+		return ""
+	}
+	section := A3Read("RDCREGION", "default")
+	return section["default"][key]
 }

@@ -20,16 +20,6 @@ type Item struct {
 	Services string `json:"services"`
 }
 
-type ClusterNetworksData struct {
-	HostName string `json:"hostname"`
-	Items    []Item `json:"items"`
-}
-
-type ClusterNetworksData1 struct {
-	HostName string `json:"hostname"`
-	Items    []Item `json:"itmes"`
-}
-
 type NetworksData struct {
 	ClusterEnable bool   `json:"cluster_enable"`
 	HostName      string `json:"hostname"`
@@ -79,7 +69,11 @@ func UpdateItemsValue(ctx context.Context, items []Item) error {
 			log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
 			return err
 		}
-
+		err = writeOneNetworkConfig(ctx, item)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("writeOneNetworkConfig error:" + err.Error())
+			return err
+		}
 		err = UpdatePrimaryClusterconf(item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
@@ -114,20 +108,6 @@ func GetNetworksData(ctx context.Context) NetworksData {
 	return networksData
 }
 
-func GetClusterNetworksData(ctx context.Context) ClusterNetworksData {
-	var context context.Context
-	clusterNetworksData := ClusterNetworksData{}
-
-	if ctx == nil {
-		context = contextNetworks
-	} else {
-		context = ctx
-	}
-	clusterNetworksData.Items = GetItemsValue(context)
-	clusterNetworksData.HostName = GetHostname()
-	return clusterNetworksData
-}
-
 func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	var context context.Context
 
@@ -150,25 +130,113 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	}
 	return err
 }
-func UpdateClusterNetworksData(ctx context.Context, clusterNetworksData ClusterNetworksData) error {
-	var context context.Context
 
-	if ctx == nil {
-		context = contextNetworks
+const (
+	networtConfDir    = "/etc/sysconfig/"
+	interfaceConfDir  = "network-scripts/"
+	networkConfFile   = "network"
+	interfaceConfFile = "ifcfg-"
+	varDir            = "/usr/local/pf/var/"
+)
+
+// Write one network interface into system files
+// create ifcfg-xxx file and write IpAddr, Netmask
+// write gateway to system files
+func writeOneNetworkConfig(ctx context.Context, item Item) error {
+	ifname := ChangeUiInterfacename(item.Name)
+	ip := item.IpAddr
+	netmask := item.NetMask
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig:ifname=%s ,ip =%s, netmask =%s", ifname, ip, netmask))
+
+	var section Section
+	// write to /usr/local/pf/var/ firstly
+	ifcfgFile := varDir + interfaceConfFile + ifname
+	sysifCfgFile := networtConfDir + interfaceConfDir + interfaceConfFile + ifname
+
+	//eth0, eth0.xx
+	if len(ifname) > len("eth0") {
+		section = Section{
+			"": {
+				"DEVICE": ifname,
+				"HWADDR": "",
+			},
+		}
 	} else {
-		context = ctx
+		section = Section{
+			"": {
+				"DEVICE": ifname,
+				"VLAN":   "yes",
+			},
+		}
+	}
+	err := A3CommitPath(ifcfgFile, section)
+
+	if err != nil {
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
+		return err
+	}
+	err = A3CommitPath(sysifCfgFile, section)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
+		return err
+	}
+	section = Section{
+		"": {
+			"ONBOOT":        "yes",
+			"BOOTPROTO":     "static",
+			"NM_CONTROLLED": "no",
+			"IPADDR":        ip,
+			"NETMASK":       netmask,
+		},
+	}
+	err = A3CommitPath(ifcfgFile, section)
+
+	if err != nil {
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
+		return err
+	}
+	//just write another copy to /etc/sysconfig/
+
+	err = A3CommitPath(sysifCfgFile, section)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
+		return err
 	}
 
-	err := UpdateHostname(clusterNetworksData.HostName)
+	// don't need write gateway
+	if len(ifname) > len("eth0") {
+		return nil
+	}
+
+	//write gateway
+	section = Section{
+		"": {
+			"GATEWAY": utils.GetA3DefaultGW(),
+		},
+	}
+
+	sysGatewayCfgFile := networtConfDir + networkConfFile
+
+	err = A3CommitPath(sysGatewayCfgFile, section)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysGatewayCfgFile)
 		return err
 	}
-	utils.SetHostname(clusterNetworksData.HostName)
-	err = UpdateItemsValue(context, clusterNetworksData.Items)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())
-		return err
+
+	return nil
+}
+
+// Set network interface into system files
+// Only handle CentOS /usr/local/pf/html/pfappserver/root/interface/interface_rhel.tt
+func WriteNetworkConfigs(ctx context.Context, networksData NetworksData) error {
+
+	for _, item := range networksData.Items {
+		err := writeOneNetworkConfig(ctx, item)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("writeOneNetworkConfig error:" + err.Error())
+			return err
+		}
 	}
-	return err
+
+	return nil
 }

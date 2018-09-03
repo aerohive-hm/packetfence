@@ -4,6 +4,7 @@ import (
 	//"errors"
 	"fmt"
 	//"regexp"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/log"
 	"strconv"
 	"strings"
@@ -41,8 +42,8 @@ func serviceCmdBackground(cmd string) (string, error) {
 
 func UpdatePfServices() []Clis {
 	cmds := []string{
-		pfservice + "pf updatesystemd",
 		pfcmd + "configreload hard",
+		pfservice + "pf updatesystemd",
 	}
 	return ExecCmds(cmds)
 }
@@ -63,7 +64,7 @@ func initClusterDB() {
 
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
-		A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
+		A3Root + `systemctl start packetfence-mariadb`,
 	}
 	ExecCmds(cmds)
 }
@@ -105,6 +106,10 @@ func InitStartService() error {
 }
 
 func ForceNewCluster() {
+	if isProcAlive("pf-mariadb") {
+		return
+	}
+
 	cmds := []string{
 		pfcmd + "configreload hard",
 		pfcmd + "checkup",
@@ -112,12 +117,12 @@ func ForceNewCluster() {
 	}
 	ExecCmds(cmds)
 	waitProcStop("mysqld")
+
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
 		A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
 	}
 	ExecCmds(cmds)
-
 }
 
 // prepare for the new cluster mode
@@ -129,15 +134,19 @@ func StopService() {
 }
 
 func SyncFromPrimary(ip, user, pass string) {
+	ama.SetClusterStatus(ama.SyncFiles)
 	cmds := []string{
 		`systemctl stop packetfence-iptables`,
-		fmt.Sprintf(A3Root+`/bin/cluster/sync --from=%s`+
+		fmt.Sprintf(A3Root+`/bin/cluster/sync --from=%s `+
 			`--api-user=%s --api-password=%s`, ip, user, pass),
-		`systemctl restart packetfence-config`,
+		`systemctl stop packetfence-config`,
 	}
 	ExecCmds(cmds)
 	waitProcStop("pfconfig")
+	ExecShell(`systemctl start packetfence-config`)
+	waitProcStart("pfconfig")
 
+	ama.SetClusterStatus(ama.SyncDB)
 	cmds = []string{
 		pfcmd + "configreload",
 		`systemctl set-default packetfence-cluster`,
@@ -146,6 +155,8 @@ func SyncFromPrimary(ip, user, pass string) {
 	}
 	ExecCmds(cmds)
 	waitProcStart("mysqld")
+	ama.SetClusterStatus(ama.SyncFinished)
+
 	/*
 		cmds = []string{
 			pfservice + "haproxy-db restart",
@@ -157,11 +168,8 @@ func SyncFromPrimary(ip, user, pass string) {
 }
 
 func RecoverDB() {
-	cmds := []string{
-		`systemctl restart packetfence-mariadb`,
-	}
-
-	ExecCmds(cmds)
+	killPorc("pf-mariadb")
+	ExecShell(`systemctl restart packetfence-mariadb`)
 }
 
 func ServiceStatus() string {

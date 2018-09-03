@@ -82,7 +82,7 @@ start the service (called from systemd)
 sub _start {
     my ($self) = @_;
     my $result = 0;
-    unless ( $self->isAlive() ) {
+    unless ( $self->isAlive() || $self->isInstallation() ) {
         $result = $self->startService();
     }
     return $result;
@@ -147,6 +147,16 @@ sub pid {
         return -1;
     }
     else { return 0; }
+}
+
+=head2 isInstallation
+
+if the initial setup is done.
+
+=cut
+
+sub isInstallation {
+    return !(-e "$install_dir/conf/currently-at");
 }
 
 =head1 AUTHOR

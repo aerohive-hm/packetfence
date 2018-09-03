@@ -89,10 +89,9 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 
 	onboardingData.Msgtype = "connect"
 	onboardingData.IpMode = "STATIC"
-	onboardingData.DefaultGateway = "10.155.104.254"
+	onboardingData.DefaultGateway = utils.GetA3DefaultGW()
 	onboardingData.SoftwareVersion = utils.GetA3Version()
 	onboardingData.SystemUptime = time.Now().UnixNano() / int64(time.Millisecond)
-	//onboardingData.ClusterHostName = "Todo"
 	onboardingData.ClusterPrimary = amadb.IsPrimaryCluster()
 	managementIface, errint := utils.GetIfaceList("eth0")
 	if errint < 0 {
@@ -105,6 +104,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		value, _ := strconv.Atoi(iface.NetMask)
 		onboardingData.Netmask = utils.NetmaskLen2Str(value)
 		onboardingData.Vip = a3config.GetPrimaryClusterVip(iface.Name)
+		onboardingData.ClusterHostName = a3config.GetPrimaryClusterVip(iface.Name)
 		break
 	}
 	//Fetch license info

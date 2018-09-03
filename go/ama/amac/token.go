@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -40,9 +41,8 @@ type tokenCommonHeader struct {
 	ClusterID string `json:"clusterId"`
 	Hostname  string `json:"hostname"`
 	VhmId     string `json:"vhmId"`
-	VhmName   string `json:"vhmName"`
-	OwnerId   int    `json:"ownerId"`
-	OrgId     int    `json:"orgId"`
+	OwnerId   int64  `json:"ownerId"`
+	OrgId     int64  `json:"orgId"`
 	MessageID string `json:"messageId,omitempty"`
 }
 
@@ -140,6 +140,31 @@ func UpdateRdcToken(ctx context.Context, s string, reOnboard bool) {
 	return
 }
 
+//Reading the RDC's region based on the URL
+func GetRdcRegin(rdcUrl string) string {
+	if rdcUrl == "" {
+		return ""
+	}
+	//Removing the https://, the key not includ to contain https://
+	//Becaust the limitation of the ini package
+	a1 := strings.Split(rdcUrl, "//")[1]
+	a2 := strings.Split(a1, "/")[0]
+
+	//Reading the conf file
+	region := a3config.ReadRdcRegion(a2)
+
+	/*
+		Region will return null in two cases:
+		1) on-premise deployment
+		2) Adding a new RDC, but not sychronize to the static mapping file
+	*/
+	if region == "" {
+		return ""
+	} else {
+		return region
+	}
+}
+
 /*
 	This function needs to be called if request RDC token
 	for the other nodes, this func will be called by webUI
@@ -153,7 +178,8 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 	nodeInfo := rdcTokenReqFromRdc{}
 	nodeInfo.Header.SystemID = node.SystemID
 	nodeInfo.Header.Hostname = node.Hostname
-	nodeInfo.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	//nodeInfo.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	nodeInfo.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)
 
 	data, _ := json.Marshal(nodeInfo)
 	reader := bytes.NewReader(data)
@@ -172,6 +198,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return res
 	}
+	defer resp.Body.Close()
 
 	body, _ := ioutil.ReadAll(resp.Body)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %s", resp.Status))
@@ -187,7 +214,6 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 		log.LoggerWContext(ctx).Error("Incorrect message type")
 		return res
 	}
-	resp.Body.Close()
 
 	return tokenRes.Data.Data
 }
@@ -273,36 +299,7 @@ func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew
 			return
 		}
 		statusCode := node.Status
-		/*
-			url := fmt.Sprintf("https://%s:1443/a3/api/v1/event/rdctoken", mem.IpAddr)
-			log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to post token to %s", url))
-			request, err := http.NewRequest("POST", url, reader)
-			if err != nil {
-				log.LoggerWContext(ctx).Error(err.Error())
-				return
-			}
 
-			//Using the packetfence token if communicating with cluster members
-			//To do, get a real packetfence token, take the expiration of token
-			//into account
-			request.Header.Add("Packetfence-Token", "packetfence token")
-			request.Header.Set("Content-Type", "application/json")
-			resp, err := client.Do(request)
-			if err != nil {
-				log.LoggerWContext(ctx).Error(err.Error())
-				return
-			}
-
-			body, _ := ioutil.ReadAll(resp.Body)
-			fmt.Println("receive the response ", resp.Status)
-			fmt.Println(string(body))
-			statusCode := resp.StatusCode
-			resp.Body.Close()
-		*/
-		/*
-			statusCode = 401 means authenticate fail, need to request valid RDC token
-			from the other nodes
-		*/
 		if statusCode == 200 {
 			fmt.Println("post token OK ")
 			return
@@ -345,7 +342,8 @@ func fillRdcTokenReq() rdcTokenReqFromRdc {
 
 	rdcTokenReq.Header.SystemID = utils.GetA3SysId()
 	rdcTokenReq.Header.Hostname = a3config.GetHostname()
-	rdcTokenReq.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	//rdcTokenReq.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
+	rdcTokenReq.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)
 	return rdcTokenReq
 }
 
@@ -384,7 +382,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return "", SrvNoResponse
 	}
-
+	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	log.LoggerWContext(ctx).Info(string(body))
 
@@ -399,7 +397,6 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		return "", ErrorMsgFromSrv
 	}
 	statusCode := resp.StatusCode
-	resp.Body.Close()
 
 	if statusCode == 200 {
 		dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Data)
@@ -412,9 +409,24 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 			log.LoggerWContext(ctx).Error("Save RDC URL error: " + err.Error())
 		}
 
+		//save ownerId
 		err = a3config.UpdateCloudConf(a3config.OwnerId, OwnerIdStr)
 		if err != nil {
-			log.LoggerWContext(ctx).Error("Save vhm error: " + err.Error())
+			log.LoggerWContext(ctx).Error("Save ownerId error: " + err.Error())
+		}
+
+		//Save vhmid
+		VhmidStr = tokenRes.Header.VhmId
+		err = a3config.UpdateCloudConf(a3config.Vhm, VhmidStr)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save vhmId error: " + err.Error())
+		}
+
+		//save orgid
+		OrgIdStr := fmt.Sprintf("%d", tokenRes.Header.OrgId)
+		err = a3config.UpdateCloudConf(a3config.OrgId, OrgIdStr)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save orgId error: " + err.Error())
 		}
 
 		return dst, ConnCloudSuc

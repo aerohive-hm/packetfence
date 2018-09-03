@@ -11,15 +11,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"errors"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/event"
 	innerClient "github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/share"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
-	"errors"
 )
 
 type cloudPostReq struct {
@@ -49,7 +48,7 @@ type CloudGetData struct {
 
 type CloudGetInfo struct {
 	Head CloudGetHeader `json:"header"`
-	Data []CloudGetData   `json:"data"`
+	Data []CloudGetData `json:"data"`
 }
 
 type CloudPostInfo struct {
@@ -71,11 +70,14 @@ func CloudNew(ctx context.Context) crud.SectionCmd {
 }
 
 func getRunMode() string {
-	if !utils.IsFileExist("/usr/local/pf/conf/cluster.conf") {
-		return "standalone"
-	} else {
+
+	if a3config.CheckClusterEnable() {
 		return "cluster"
+	} else {
+		return "standalone"
 	}
+
+	return ""
 }
 
 func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
@@ -90,7 +92,7 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	getInfo.Head.OwnerId = a3config.ReadCloudConf(a3config.OwnerId)
 	getInfo.Head.VhmId = a3config.ReadCloudConf(a3config.Vhm)
 	getInfo.Head.Mode = getRunMode()
-	//GetInfo.Head.region = //to do
+	getInfo.Head.Region = amac.GetRdcRegin(getInfo.Head.RdcUrl)
 
 	self.Hostname = a3config.GetHostname()
 	self.Status = amac.GetAMAConnStatus()
@@ -207,7 +209,7 @@ END:
 }
 
 //Request AMA status from one node.
-func ReqAMAStatusfromOneNode(ctx context.Context, node a3share.NodeInfo) *event.AMAStatus{
+func ReqAMAStatusfromOneNode(ctx context.Context, node a3share.NodeInfo) *event.AMAStatus {
 	amaInfo := event.AMAStatus{}
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/ama/status", node.IpAddr)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Query AMA info from node %s", node.IpAddr))
@@ -230,7 +232,6 @@ func ReqAMAStatusfromOneNode(ctx context.Context, node a3share.NodeInfo) *event.
 
 	return &amaInfo
 }
-
 
 // Enable or DIsable special node connect to GDC.
 func EnableNodeConnGDC(ctx context.Context, node a3share.NodeInfo, enable bool) error {

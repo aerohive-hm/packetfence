@@ -3,22 +3,16 @@ package a3config
 
 import (
 	"context"
-	//"fmt"
+	"fmt"
 	//"strings"
 
 	//"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
-type ClusterItem struct {
-	Name    string `json:"name"`
-	IpAddr  string `json:"ip_addr"`
-	NetMask string `json:"netmask"`
-}
-
 type ClusterEventJoinData struct {
-	Hostname string        `json:"hostname"`
-	Items    []ClusterItem `json:"items"`
+	Hostname string `json:"hostname"`
+	Items    []Item `json:"items"`
 }
 
 type ClusterEventRespItem struct {
@@ -32,13 +26,11 @@ type ClusterEventRespData struct {
 
 func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterEventJoinData) (error, ClusterEventRespData) {
 	/*write data to cluster conf*/
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("ClusterEventJoinData %v", clusterData))
 	var err error
 	var clusterRespData = ClusterEventRespData{}
-	var i Item
-	for _, clusteritem := range clusterData.Items {
-		i.Name = clusteritem.Name
-		i.IpAddr = clusteritem.IpAddr
-		i.NetMask = clusteritem.NetMask
+
+	for _, i := range clusterData.Items {
 		err = UpdateJoinClusterconf(i, clusterData.Hostname)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdateJoinClusterconf error:" + err.Error())
@@ -51,6 +43,6 @@ func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterEventJoi
 	item.User = Section["webservices"]["user"]
 	item.Password = Section["webservices"]["pass"]
 	clusterRespData.Items = append(clusterRespData.Items, *item)
-
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("ClusterEventRespData %v", clusterRespData))
 	return err, clusterRespData
 }

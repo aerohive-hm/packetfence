@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	//"errors"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -144,11 +144,20 @@ func (c *Client) ClusterAuth() error {
 		return err
 	}
 
+	if c.Status >= 400 {
+		return errors.New(fmt.Sprintf("Status code = %d", c.Status))
+	}
+
 	t := new(token)
 	err = json.Unmarshal(c.RespData, t)
 	if err != nil {
 		return err
 	}
+
+	if t.Tk == "" {
+		return errors.New("no token found in response.")
+	}
+
 	c.Token = "Bearer " + t.Tk
 
 	return err

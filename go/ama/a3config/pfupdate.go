@@ -3,12 +3,14 @@ package a3config
 
 import (
 	//"context"
+	"context"
+	"errors"
 	"fmt"
 	"net"
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/utils"
-	//"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 func UpdateEmail(email string) error {
@@ -70,8 +72,10 @@ func UpdateVlanInterface(i Item) error {
 	vlan := string(s[4:]) /*need to delete vlan for name*/
 	ifname := fmt.Sprintf("eth0.%s", vlan)
 
-	utils.UpdateVlanIface(ifname, vlan, i.IpAddr, i.NetMask)
-
+	err := utils.UpdateVlanIface(ifname, vlan, i.IpAddr, i.NetMask)
+	if err != 0 {
+		return errors.New("UpdateVlanInterface error")
+	}
 	var Type string
 	keyname := fmt.Sprintf("interface %s", ifname)
 	if i.Services != "" {
@@ -79,7 +83,6 @@ func UpdateVlanInterface(i Item) error {
 	} else {
 		Type = "internal"
 	}
-
 	section := Section{
 		keyname: {
 			"ip":          i.IpAddr,
@@ -90,6 +93,7 @@ func UpdateVlanInterface(i Item) error {
 	}
 	return A3Commit("PF", section)
 }
+
 func UpdateNetconf(i Item) error {
 	var Type string = ""
 
@@ -202,7 +206,8 @@ func UpdatePrimaryClusterconf(i Item) error {
 func UpdateJoinClusterconf(i Item, hostname string) error {
 	var keyname string
 
-	if !utils.IsFileExist("/usr/local/pf/conf/cluster.conf") {
+	if !CheckClusterEnable() {
+		log.LoggerWContext(context.Background()).Info(fmt.Sprintf(" Cluster Disenabled"))
 		return nil
 	}
 
@@ -269,6 +274,18 @@ func WriteUserPassToPF(host, username, passw string) error {
 		"webservices": {
 			"user": username,
 			"pass": passw,
+		},
+	}
+	return A3Commit("PF", section)
+
+}
+
+func UpdateWebservices(user, password string) error {
+
+	section := Section{
+		"webservices": {
+			"user": user,
+			"pass": password,
 		},
 	}
 	return A3Commit("PF", section)
