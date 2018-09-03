@@ -1,12 +1,11 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/inverse-inc/packetfence/go/log"
 )
 
 type Iface struct {
@@ -30,23 +29,26 @@ func getIfaceVlan(ifname string) (string, int) {
 	return "", 0
 }
 
-func CreateVlanIface(ifname string, vlan string) int {
+func CreateVlanIface(ifname string, vlan string) error {
+	msg := ""
 	if ifname == "all" || ifname == "lo" {
-		return -1
+		msg = fmt.Sprintf("interface name(%s) err", ifname)
+		return errors.New(msg)
 	}
 
 	iface, _ := GetIfaceList(ifname)
 	if len(iface) == 0 {
-		return -1
+		msg = fmt.Sprintf("get interface info err")
+		return errors.New(msg)
 	}
 
 	cmd := fmt.Sprintf("sudo vconfig add %s %s", ifname, vlan)
 	_, err := ExecShell(cmd)
 	if err != nil {
-		return -1
+		return err
 	}
 
-	return 0
+	return nil
 }
 
 func isIfaceActive(ifname string) bool {
@@ -58,7 +60,7 @@ func isIfaceActive(ifname string) bool {
 	return false
 }
 
-func isVlanIface(ifname string) bool {
+func IsVlanIface(ifname string) bool {
 	vlan, _ := getIfaceVlan(ifname)
 	if vlan == "" {
 		return false
@@ -66,32 +68,34 @@ func isVlanIface(ifname string) bool {
 	return true
 }
 
-func DelVlanIface(ifname string) int {
+func DelVlanIface(ifname string) error {
+	msg := ""
 	if !IfaceExists(ifname) {
-		return 0
+		return nil
 	}
 
-	if !isVlanIface(ifname) {
-		return -1
+	if !IsVlanIface(ifname) {
+		msg = fmt.Sprintf("%s is not vlan interface", ifname)
+		return errors.New(msg)
 	}
 
 	cmd := fmt.Sprintf("sudo vconfig rem %s", ifname)
 	_, err := ExecShell(cmd)
 	if err != nil {
-		return -1
+		return err
 	}
 
 	//Todo: update pfconfig
-	return 0
+	return nil
 }
 
-func SetIfaceUp(ifname string) int {
+func SetIfaceUp(ifname string) error {
 	cmd := fmt.Sprintf("sudo ip link set %s up", ifname)
 	_, err := ExecShell(cmd)
 	if err != nil {
-		return -1
+		return err
 	}
-	return 0
+	return nil
 }
 
 func SetIfaceDown(ifname string) int {
@@ -197,22 +201,22 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 	return list, 0
 }
 
-func SetIfaceIIpAddr(ifname, ip, mask string) int {
+func SetIfaceIIpAddr(ifname, ip, mask string) error {
 	i := NetmaskStr2Len(mask)
 	cmd := fmt.Sprintf("sudo ip addr add %s/%d broadcast 255.255.255.255 dev %s", ip, i, ifname)
 	_, err := ExecShell(cmd)
 	if err != nil {
-		return -1
+		return err
 	}
-	return 0
+	return nil
 }
-func DelIfaceIIpAddr(ifname, ip string) int {
+func DelIfaceIIpAddr(ifname, ip string) error {
 	cmd := fmt.Sprintf("sudo ip addr del %s dev %s", ip, ifname)
 	_, err := ExecShell(cmd)
 	if err != nil {
-		return -1
+		return err
 	}
-	return 0
+	return nil
 }
 
 func NetmaskLen2Str(a int) string {
@@ -260,26 +264,39 @@ func NetmaskStr2Len(mask string) int {
 	return num
 }
 
-func UpdateVlanIface(ifname string, vlan, ip, mask string) int {
-	var i int
+func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
+	var err error
 	if IfaceExists(ifname) {
 		iface, _ := GetIfaceList(ifname)
 		oldip := iface[0].IpAddr
 		oldmask := iface[0].NetMask
 		if oldip != ip || oldmask != mask {
-			i = DelIfaceIIpAddr(ifname, oldip)
-			i += SetIfaceIIpAddr(ifname, ip, mask)
-			i += SetIfaceUp(ifname)
+			err = DelIfaceIIpAddr(ifname, oldip)
+			if err != nil {
+				return err
+			}
+
+			err = SetIfaceIIpAddr(ifname, ip, mask)
+			if err != nil {
+				return err
+			}
+
+			err = SetIfaceUp(ifname)
+			if err != nil {
+				return err
+			}
 		}
 
 	} else {
 		CreateVlanIface("eth0", vlan)
-		i = SetIfaceIIpAddr(ifname, ip, mask)
-		i += SetIfaceUp(ifname)
+		err = SetIfaceIIpAddr(ifname, ip, mask)
+		if err != nil {
+			return err
+		}
+		err = SetIfaceUp(ifname)
+		if err != nil {
+			return err
+		}
 	}
-	if i != 0 {
-		log.LoggerWContext(ctx).Error("UpdateVlanIface Error")
-		return -1
-	}
-	return 0
+	return nil
 }

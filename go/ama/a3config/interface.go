@@ -62,14 +62,17 @@ func UpdateSystemInterface(ctx context.Context, i Item) error {
 	err = UpdateInterface(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update Interface error:" + err.Error())
+		return err
 	}
 	err = UpdateNetconf(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
+		return err
 	}
-	err = UpdatePrimaryClusterconf(i)
+	err = UpdatePrimaryClusterconf(false, i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
+		return err
 	}
 	return err
 }
@@ -85,14 +88,17 @@ func DelSystemInterface(ctx context.Context, i Item) error {
 	err = A3Delete("PF", sectionId)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Deleteinterface error:" + err.Error())
+		return err
 	}
 	err = DeleteNetconf(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("DeleteNetconf error:" + err.Error())
+		return err
 	}
 	err = DeletePrimaryClusterconf(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("DeletePrimaryClusterconf error:" + err.Error())
+		return err
 	}
 	return nil
 }
