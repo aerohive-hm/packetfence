@@ -229,7 +229,7 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 			"GATEWAY": utils.GetA3DefaultGW(),
 		},
 	}
-
+	// /etc/sysconfig/network
 	sysGatewayCfgFile := networtConfDir + networkConfFile
 
 	err = A3CommitPath(sysGatewayCfgFile, section)

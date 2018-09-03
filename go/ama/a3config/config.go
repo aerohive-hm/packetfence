@@ -55,7 +55,7 @@ func (conf *A3Conf) loadCfg(path string) error {
 	if err != nil {
 		return err
 	}
-
+	ini.PrettyFormat = false
 	conf.path = path
 	conf.cfg = cfg
 	return nil
