@@ -78,5 +78,6 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 		web.User, web.Password)
 
 	code = "ok"
+
 	return crud.FormPostRely(code, ret)
 }
