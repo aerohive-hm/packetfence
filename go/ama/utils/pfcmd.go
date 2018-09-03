@@ -133,12 +133,14 @@ func SyncFromPrimary(ip, user, pass string) {
 	ama.SetClusterStatus(ama.SyncFiles)
 	cmds := []string{
 		`systemctl stop packetfence-iptables`,
-		fmt.Sprintf(A3Root+`/bin/cluster/sync --from=%s`+
+		fmt.Sprintf(A3Root+`/bin/cluster/sync --from=%s `+
 			`--api-user=%s --api-password=%s`, ip, user, pass),
-		`systemctl restart packetfence-config`,
+		`systemctl stop packetfence-config`,
 	}
 	ExecCmds(cmds)
 	waitProcStop("pfconfig")
+	ExecShell(`systemctl start packetfence-config`)
+	waitProcStart("pfconfig")
 
 	ama.SetClusterStatus(ama.SyncDB)
 	cmds = []string{

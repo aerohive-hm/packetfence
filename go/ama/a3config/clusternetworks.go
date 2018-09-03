@@ -18,7 +18,7 @@ type ClusterNetworksData struct {
 
 func syncDataFromPrimary(ip, user, password string) {
 	//wait a moment?
-	time.Sleep(60)
+	time.Sleep(15 * time.Second)
 	utils.SyncFromPrimary(ip, user, password)
 }
 
