@@ -13,6 +13,7 @@ const (
 	Interval = "keepalive_interval"
 	Vhm      = "vhm"
 	OwnerId  = "owenerId"
+	OrgId    = "orgId"
 )
 
 func UpdateCloudConf(key string, value string) error {

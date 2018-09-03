@@ -3,12 +3,10 @@ package configurator
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/log"
 )
 
 type Interface struct {
@@ -25,33 +23,45 @@ func InterfaceNew(ctx context.Context) crud.SectionCmd {
 
 func handleUpdateInterface(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
+	code := "fail"
+	ret := ""
+
 	i := new(a3config.Item)
 
 	err := json.Unmarshal(d.ReqData, i)
 	if err != nil {
-		return []byte(err.Error())
+		ret = err.Error()
+		return crud.FormPostRely(code, ret)
 	}
 
 	err = a3config.UpdateSystemInterface(ctx, *i)
 	if err != nil {
-		return []byte(err.Error())
+		ret = err.Error()
+		return crud.FormPostRely(code, ret)
 	}
-	return []byte(crud.PostOK)
+
+	code = "ok"
+	return crud.FormPostRely(code, ret)
 }
 
 func handleDelInterface(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
+	code := "fail"
+	ret := ""
+
 	i := new(a3config.Item)
 
 	err := json.Unmarshal(d.ReqData, i)
 	if err != nil {
-		return []byte(err.Error())
+		ret = err.Error()
+		return crud.FormPostRely(code, ret)
 	}
 	err = a3config.DelSystemInterface(ctx, *i)
 	if err != nil {
-		return []byte(err.Error())
+		ret = err.Error()
+		return crud.FormPostRely(code, ret)
 	}
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", i))
 
-	return []byte(crud.PostOK)
+	code = "ok"
+	return crud.FormPostRely(code, ret)
 }

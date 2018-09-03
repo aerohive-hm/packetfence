@@ -31,13 +31,14 @@ var (
 	}
 
 	//init the client structure
-	client = &http.Client{Transport: tr, Timeout: 10 * time.Second}
+	client = &http.Client{Transport: tr, Timeout: 30 * time.Second}
 
 	//Store the token to avoid multiple IO
 	gdcTokenStr               string
 	rdcTokenStr               string
 	VhmidStr                  string
 	OwnerIdStr                string
+	OrgIdStr                  string
 	connMsgUrl                string
 	fetchRdcTokenUrl          string
 	fetchRdcTokenUrlForOthers string
@@ -48,18 +49,18 @@ var (
 const (
 	ConnCloudSuc    = "Connect to cloud successfully"
 	SrvNoResponse   = "Server is unavailable"
-	AuthFail        = "Authenticate fail, please check the input parameters"
+	AuthFail        = "Authenticate fail, please check the credential"
 	UrlIsNull       = "URL is NULL"
-	ErrorMsgFromSrv = "Error messages from server, please check the input parameters"
+	ErrorMsgFromSrv = "Access server fail, please check the cloud URL"
 	LimitedAccess   = "Limited access, please use an administrator/operator account"
 	UpdateMsgSuc    = "Update message to cloud successfully"
-	InvalidToken    = "Token is invalid, update message to cloud fail, "
+	InvalidToken    = "Token is invalid, update message to cloud fail"
 	OtherError      = "System error"
 )
 
 type response struct {
 	Location string `json:"location"`
-	OwnerId  int    `json:"ownerId"`
+	OwnerId  int64  `json:"ownerId"`
 }
 type VhmidResponse struct {
 	Data response `json:"data"`
@@ -181,6 +182,10 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 	in this case, this node will request RDC token from the other nodes
 */
 func connectToRdcWithoutPara(ctx context.Context) int {
+	if GetConnStatus() == AMA_STATUS_ONBOARDING_SUC {
+		log.LoggerWContext(ctx).Info("Current status is onboarding successful, needn't onboard again.")
+		return 0
+	}
 	//Read the local RDC token, if exist, not send request to other nodes
 	token := readRdcToken(ctx)
 	if len(token) == 0 {
@@ -199,7 +204,7 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return res
 	}
-	//updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
+	updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
 	//_, _ = UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
 	return 0
 }
@@ -276,7 +281,9 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 			//GDC token does not need to write file, it is one-time useful
 			gdcTokenStr = fmt.Sprintf("Bearer %s", dat["access_token"].(string))
 			return gdcTokenStr, ConnCloudSuc
-		} else if statusCode == 401 {
+		} else if statusCode == 404 {
+			return "", ErrorMsgFromSrv
+		} else {
 			return "", AuthFail
 		}
 

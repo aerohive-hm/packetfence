@@ -19,10 +19,22 @@ var (
 	keepaliveInterval int
 )
 
+func UpdateConnSwitch(action string) error{
+	switchConf := a3config.ReadCloudConf(a3config.Switch)
+	if switchConf != action {
+		err := a3config.UpdateCloudConf(a3config.Switch, action)
+		if err != nil {
+			return err
+		}
+	}
+	globalSwitch = action
+	return nil
+}
+
 func init() {
 	_ = update("")
 	if len(globalSwitch) == 0 {
-		globalSwitch = "enable"
+		UpdateConnSwitch("disable")
 	}
 }
 
@@ -62,4 +74,18 @@ func update(pass string) error {
 	globalSwitch = a3config.ReadCloudConf(a3config.Switch)
 
 	return nil
+}
+
+func updateRDCInfo() {
+	rdcUrl = a3config.ReadCloudConf(a3config.RDCUrl)
+	//Not check the rdcUrl if NULL
+	if len(rdcUrl) != 0 {
+		installRdcUrl(nil, rdcUrl)
+	}
+
+	globalSwitch = a3config.ReadCloudConf(a3config.Switch)
+
+	VhmidStr = a3config.ReadCloudConf(a3config.Vhm)
+
+	OrgIdStr = a3config.ReadCloudConf(a3config.OrgId)
 }

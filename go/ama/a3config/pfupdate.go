@@ -4,7 +4,7 @@ package a3config
 import (
 	//"context"
 	"context"
-	"errors"
+
 	"fmt"
 	"net"
 	"strings"
@@ -73,8 +73,8 @@ func UpdateVlanInterface(i Item) error {
 	ifname := fmt.Sprintf("eth0.%s", vlan)
 
 	err := utils.UpdateVlanIface(ifname, vlan, i.IpAddr, i.NetMask)
-	if err != 0 {
-		return errors.New("UpdateVlanInterface error")
+	if err != nil {
+		return err
 	}
 	var Type string
 	keyname := fmt.Sprintf("interface %s", ifname)
@@ -172,10 +172,10 @@ func DeletePrimaryClusterconf(i Item) error {
 
 }
 
-func UpdatePrimaryClusterconf(i Item) error {
+func UpdatePrimaryClusterconf(enable bool, i Item) error {
 	var keyname string
 
-	if i.Vip == "" || i.Vip == "0.0.0.0" {
+	if !enable {
 		return nil
 	}
 
