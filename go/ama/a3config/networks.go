@@ -163,23 +163,24 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig:ifname=%s ,ip =%s, netmask =%s", ifname, ip, netmask))
 
 	var section Section
-	// write to /usr/local/pf/var/ firstly
+	// write to /usr/local/pf/var/ifcfg- firstly
 	ifcfgFile := varDir + interfaceConfFile + ifname
+	// write to /etc/sysconfig/network-scripts/ifcfg-
 	sysifCfgFile := networtConfDir + interfaceConfDir + interfaceConfFile + ifname
 
 	//eth0, eth0.xx
-	if len(ifname) > len("eth0") {
+	if isVlanIface(ifname) {
 		section = Section{
 			"": {
 				"DEVICE": ifname,
-				"HWADDR": "",
+				"VLAN":   "yes",
 			},
 		}
 	} else {
 		section = Section{
 			"": {
 				"DEVICE": ifname,
-				"VLAN":   "yes",
+				"HWADDR": "",
 			},
 		}
 	}
@@ -218,7 +219,7 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	}
 
 	// don't need write gateway
-	if len(ifname) > len("eth0") {
+	if isVlanIface(ifname) {
 		return nil
 	}
 
