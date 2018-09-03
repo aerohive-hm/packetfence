@@ -172,10 +172,10 @@ func DeletePrimaryClusterconf(i Item) error {
 
 }
 
-func UpdatePrimaryClusterconf(i Item) error {
+func UpdatePrimaryClusterconf(enable bool, i Item) error {
 	var keyname string
 
-	if i.Vip == "" || i.Vip == "0.0.0.0" {
+	if !enable {
 		return nil
 	}
 

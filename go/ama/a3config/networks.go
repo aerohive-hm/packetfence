@@ -56,7 +56,7 @@ func GetItemsValue(ctx context.Context) []Item {
 
 }
 
-func UpdateItemsValue(ctx context.Context, items []Item) error {
+func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
 	var err error
 
 	for _, item := range items {
@@ -75,7 +75,7 @@ func UpdateItemsValue(ctx context.Context, items []Item) error {
 			log.LoggerWContext(ctx).Error("writeOneNetworkConfig error:" + err.Error())
 			return err
 		}
-		err = UpdatePrimaryClusterconf(item)
+		err = UpdatePrimaryClusterconf(enable, item)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
 			return err
@@ -129,7 +129,7 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 		return err
 	}
 	utils.SetHostname(networksData.HostName)
-	err = UpdateItemsValue(context, networksData.Items)
+	err = UpdateItemsValue(context, networksData.ClusterEnable, networksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())
 		return err
