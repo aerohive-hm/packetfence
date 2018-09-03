@@ -61,6 +61,10 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("read primary clusterRespData  %v", clusterRespData))
 	err = a3config.UpdateClusterNetworksData(ctx, *clusternetdata, clusterRespData)
 
+	web := clusterRespData.Items[0]
+	go a3share.SyncDataFromPrimary(a3config.ReadClusterPrimary(),
+		web.User, web.Password)
+
 	code = "ok"
 	if err != nil {
 		ret = err.Error()

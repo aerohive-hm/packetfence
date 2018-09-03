@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/client"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -73,4 +75,13 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 	}
 
 	return err, RespData
+}
+
+func SyncDataFromPrimary(ip, user, password string) {
+	//wait a moment?
+	time.Sleep(15 * time.Second)
+	utils.SyncFromPrimary(ip, user, password)
+	apibackclient.SendClusterSync(ip, "FinishSync")
+	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
+
 }

@@ -6,12 +6,14 @@ package event
 import (
 	"context"
 	"encoding/json"
-	//"fmt"
+	"fmt"
 	"net/http"
 
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	//"github.com/inverse-inc/packetfence/go/log"
 )
@@ -33,8 +35,27 @@ const (
 func ClusterSyncNew(ctx context.Context) crud.SectionCmd {
 	sync := new(Sync)
 	sync.New()
+	sync.Add("GET", handleUpdateSync)
 	sync.Add("POST", handleUpdateSync)
 	return sync
+}
+
+// get status of primary server
+func handleGetSync(r *http.Request, d crud.HandlerData) []byte {
+	t := ama.ClusterStatus
+	if !t.IsPrimary {
+		return []byte(`{"code":"fail", "msg":"not a primary server."}`)
+	}
+
+	var s string
+	if t.Status == ama.Ready4Sync {
+		s = stopService
+	} else if t.Status == ama.Ready4Sync {
+		s = startSync
+	} else if t.Status == ama.FinishSync {
+		s = finishSync
+	}
+	return []byte(fmt.Sprintf(`{"code":"ok", "status":%s}`, s))
 }
 
 func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
@@ -55,9 +76,10 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		utils.SyncFromPrimary(ip, web["user"], web["pass"])
 
 		amac.JoinCompleteEvent()
-		SendClusterSync(ip, "FinishSync")
+		apibackclient.SendClusterSync(ip, "FinishSync")
 	} else if sync.Status == finishSync {
 		utils.RecoverDB()
+		ama.SetClusterStatus(ama.FinishSync)
 	} else {
 		code = "fail"
 		ret = "Unkown status."

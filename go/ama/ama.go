@@ -13,7 +13,6 @@ const (
 	_           ClusterPrimaryStatus = iota
 	PrepareSync                      // notify cluster members to close db service
 	Ready4Sync
-	StartSync
 	FinishSync
 )
 
