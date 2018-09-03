@@ -76,7 +76,7 @@ func CheckClusterEnable() bool {
 	if section == nil {
 		return false
 	}
-	if section["CLUSTER"]["CLUSTER"] != "" {
+	if section["CLUSTER"]["management_ip"] != "" {
 		return true
 	}
 	return false

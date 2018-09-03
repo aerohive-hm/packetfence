@@ -51,16 +51,14 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	ret := ""
 	ctx := r.Context()
 
-	log.LoggerWContext(ctx).Info("go to lzj 0")
 	clusternetdata := new(a3config.ClusterNetworksData)
 	err := json.Unmarshal(d.ReqData, clusternetdata)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		return []byte(err.Error())
 	}
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("up %v", clusternetdata))
 	_, clusterRespData := a3share.UpdatePrimaryNetworksData(ctx, *clusternetdata)
-
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read primary clusterRespData  %v", clusterRespData))
 	err = a3config.UpdateClusterNetworksData(ctx, *clusternetdata, clusterRespData)
 
 	code = "ok"

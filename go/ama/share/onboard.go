@@ -89,7 +89,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 
 	onboardingData.Msgtype = "connect"
 	onboardingData.IpMode = "STATIC"
-	onboardingData.DefaultGateway = "10.155.104.254"
+	onboardingData.DefaultGateway = utils.GetA3DefaultGW()
 	onboardingData.SoftwareVersion = utils.GetA3Version()
 	onboardingData.SystemUptime = time.Now().UnixNano() / int64(time.Millisecond)
 	onboardingData.ClusterPrimary = amadb.IsPrimaryCluster()

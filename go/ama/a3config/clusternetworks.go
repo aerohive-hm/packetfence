@@ -44,13 +44,13 @@ func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) Clust
 		}
 	}
 
-	for _, i := range primaryData.Items {
+	for _, p := range primaryData.Items {
 		/*only append primary vlan interface*/
-		if !VlanInface(i.Name) {
+		if !VlanInface(p.Name) {
 			continue
 		}
-		i.IpAddr = "0.0.0.0"
-		clusterNetworksData.Items = append(clusterNetworksData.Items, i)
+		p.IpAddr = "0.0.0.0"
+		clusterNetworksData.Items = append(clusterNetworksData.Items, p)
 	}
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", clusterNetworksData))
 	return clusterNetworksData
@@ -61,6 +61,7 @@ func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworks
 
 	web := respData.Items[0]
 	err := UpdateWebservices(web.User, web.Password)
+
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateWebservices error:" + err.Error())
 		return err

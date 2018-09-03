@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -122,6 +123,26 @@ func UpdateRdcToken(ctx context.Context, s string) {
 	rdcTokenStr = s
 	tokenLock.Unlock()
 	return
+}
+
+//Reading the RDC's region based on the URL
+func GetRdcRegin(rdcUrl string) string {
+	if rdcUrl == "" {
+		return ""
+	}
+	//Removing the https://, the key not includ to contain https://
+	//Becaust the limitation of the ini package
+	a1 := strings.Split(rdcUrl, "//")[1]
+	a2 := strings.Split(a1, "/")[0]
+
+	//Reading the conf file
+	region := a3config.ReadRdcRegion(a2)
+
+	if region == "" {
+		return "local"
+	} else {
+		return region
+	}
 }
 
 /*

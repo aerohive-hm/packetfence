@@ -35,3 +35,11 @@ func ReadCloudConf(key string) string {
 func ReadCloudConfAll() Section {
 	return A3Read("CLOUD", "general")
 }
+
+func ReadRdcRegion(key string) string {
+	if len(key) == 0 {
+		return ""
+	}
+	section := A3Read("RDCREGION", "default")
+	return section["default"][key]
+}
