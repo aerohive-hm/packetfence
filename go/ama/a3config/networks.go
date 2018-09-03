@@ -3,6 +3,7 @@ package a3config
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -116,7 +117,12 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	} else {
 		context = ctx
 	}
-	//TODO Write networksData.ClusterEnable
+	//first check if contines management type
+	if !IsContainManageType(ctx, networksData.Items) {
+		err := errors.New("the interface does not contain management type ")
+		log.LoggerWContext(ctx).Error("UpdateNetworksData error:" + err.Error())
+		return err
+	}
 	err := UpdateHostname(networksData.HostName)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
@@ -129,6 +135,14 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 		return err
 	}
 	return err
+}
+func IsContainManageType(ctx context.Context, items []Item) bool {
+	for _, item := range items {
+		if strings.Contains(item.Type, "MANAGEMENT") {
+			return true
+		}
+	}
+	return false
 }
 
 const (
