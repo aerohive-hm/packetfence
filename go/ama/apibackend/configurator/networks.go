@@ -39,13 +39,20 @@ func handleGetNetwork(r *http.Request, d crud.HandlerData) []byte {
 
 func handleUpdateNetwork(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	net := new(a3config.NetworksData)
+	code := "fail"
+	ret := ""
 
+	net := new(a3config.NetworksData)
 	err := json.Unmarshal(d.ReqData, net)
 	if err != nil {
-		return []byte(err.Error())
+		ret = err.Error()
+		return crud.FormPostRely(code, ret)
 	}
-	a3config.UpdateNetworksData(ctx, *net)
-
-	return []byte(crud.PostOK)
+	err = a3config.UpdateNetworksData(ctx, *net)
+	if err != nil {
+		ret = err.Error()
+		return crud.FormPostRely(code, ret)
+	}
+	code = "ok"
+	return crud.FormPostRely(code, ret)
 }

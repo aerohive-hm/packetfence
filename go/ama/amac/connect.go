@@ -49,12 +49,12 @@ var (
 const (
 	ConnCloudSuc    = "Connect to cloud successfully"
 	SrvNoResponse   = "Server is unavailable"
-	AuthFail        = "Authenticate fail, please check the input parameters"
+	AuthFail        = "Authenticate fail, please check the credential"
 	UrlIsNull       = "URL is NULL"
-	ErrorMsgFromSrv = "Error messages from server, please check the input parameters"
+	ErrorMsgFromSrv = "Access server fail, please check the cloud URL"
 	LimitedAccess   = "Limited access, please use an administrator/operator account"
 	UpdateMsgSuc    = "Update message to cloud successfully"
-	InvalidToken    = "Token is invalid, update message to cloud fail, "
+	InvalidToken    = "Token is invalid, update message to cloud fail"
 	OtherError      = "System error"
 )
 
@@ -204,7 +204,7 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 		log.LoggerWContext(ctx).Error("Onboarding failed")
 		return res
 	}
-	//updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
+	updateConnStatus(AMA_STATUS_ONBOARDING_SUC)
 	//_, _ = UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
 	return 0
 }
@@ -281,7 +281,9 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 			//GDC token does not need to write file, it is one-time useful
 			gdcTokenStr = fmt.Sprintf("Bearer %s", dat["access_token"].(string))
 			return gdcTokenStr, ConnCloudSuc
-		} else if statusCode == 401 {
+		} else if statusCode == 404 {
+			return "", ErrorMsgFromSrv
+		} else {
 			return "", AuthFail
 		}
 
