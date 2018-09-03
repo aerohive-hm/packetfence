@@ -1029,6 +1029,11 @@ class networksCtl extends Component {
                             columns={columns} 
                             dataSource={dataTable} 
                             pagination={false}
+                            rowClassName={
+                                (record,index)=>
+                                     index%2===0?"table-single-row-div-networksCtl":"table-double-row-div-networksCtl"
+                                
+                            }
                         />
                     </div>
 
@@ -1059,6 +1064,7 @@ class networksCtl extends Component {
                     visible={addVlanVisible}
                     width={302}
                     footer={null}
+                    maskClosable={false}
                     onCancel={self.onCancelAddVlan.bind(self)}
                 >
          

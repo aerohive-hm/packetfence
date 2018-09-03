@@ -53,19 +53,26 @@ class joiningCtl extends Component {
         this.timer = setInterval(()=>{
 
             RequestApi('get',url,param,xCsrfToken,(data)=>{
-                if(data.percentage==="100"){
-                    clearInterval(self.timer);
-                    self.setState({
-                        percentage : 0,
-                        loading:false,
-                    },function(){
-                        self.props.changeStatus("startingRegistration");
-                    })
+                if(data.code==="ok"){
+                    if(data.percentage==="100"){
+                        clearInterval(self.timer);
+                        self.setState({
+                            percentage : 0,
+                            loading:false,
+                        },function(){
+                            self.props.changeStatus("startingRegistration");
+                        })
+                    }else{
+                        self.setState({
+                            percentage : parseInt(data.percentage),
+                        }) 
+                    } 
                 }else{
-                    self.setState({
-                        percentage : parseInt(data.percentage),
-                    }) 
-                }  
+                    message.destroy();
+                    message.error(data.msg);
+                }
+
+
             });
 
         },10000)

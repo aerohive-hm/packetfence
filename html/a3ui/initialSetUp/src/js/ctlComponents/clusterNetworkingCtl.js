@@ -409,7 +409,7 @@ class clusterNetworkingCtl extends Component {
             title: self.state.i18n.ipAddress,
             dataIndex: 'ip_addr',
             key: 'ip_addr',
-            render: (text, record, index) => {
+            /*render: (text, record, index) => {
                 return (
                     <div>
                         {
@@ -437,41 +437,12 @@ class clusterNetworkingCtl extends Component {
                         }
                     </div>
                 );
-            } 
+            } */
         });
         columns.push({
             title:self.state.i18n.netmask,
             dataIndex: 'netmask',
             key: 'netmask',
-            render: (text, record, index) => {
-                return (
-                    <div>
-                        {
-                            dataTable[index].clicked==="netmask"?
-                            <div className=""  >
-                                <div className="netmask-edit-input-div-clusterNetworkingCtl">
-                                    <Input
-                                        value={text}
-                                        autoFocus
-                                        onChange={self.onEdit.bind(self,index,"netmask")}
-                                    />
-                                </div>
-                                <div className="netmask-edit-ok-div-clusterNetworkingCtl" onClick={self.onClickEditOk.bind(self,index,"netmask")}>
-                                    <img className="netmask-edit-ok-img-clusterNetworkingCtl" src={editYesImg} />
-                                </div>
-                                <div className="netmask-edit-no-div-clusterNetworkingCtl" onClick={self.onClickEditNo.bind(self,index,"netmask")}>
-                                    <img className="netmask-edit-no-img-clusterNetworkingCtl" src={editNoImg} />
-                                </div>
-                                <div className="clear-float-div-common" ></div >
-                            </div>
-                            :
-                            <div className="netmask-text-div-clusterNetworkingCtl" onClick={self.onClickText.bind(self,index,"netmask")} >
-                                {text}
-                            </div>
-                        }
-                    </div>
-                );
-            } 
         });
         columns.push({
             title:self.state.i18n.vip,
@@ -572,6 +543,11 @@ class clusterNetworkingCtl extends Component {
                             columns={columns} 
                             dataSource={dataTable} 
                             pagination={false}
+                            rowClassName={
+                                (record,index)=>
+                                     index%2===0?"table-single-row-div-clusterNetworkingCtl":"table-double-row-div-clusterNetworkingCtl"
+                                
+                            }
                         />
                     </div>
 
