@@ -83,7 +83,6 @@ func UpdateVlanInterface(i Item) error {
 	} else {
 		Type = "internal"
 	}
-
 	section := Section{
 		keyname: {
 			"ip":          i.IpAddr,
@@ -94,6 +93,7 @@ func UpdateVlanInterface(i Item) error {
 	}
 	return A3Commit("PF", section)
 }
+
 func UpdateNetconf(i Item) error {
 	var Type string = ""
 
