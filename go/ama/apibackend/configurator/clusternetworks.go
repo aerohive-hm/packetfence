@@ -32,9 +32,11 @@ func ClusterNetworksNew(ctx context.Context) crud.SectionCmd {
 // Send request to call master API: /a3/api/v1/configurator/networks
 func handleGetClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
+
 	/*get primary networksdate*/
 	_, primaryData := a3share.GetPrimaryNetworksData(ctx)
 	clusternetdata := a3config.GetClusterNetworksData(ctx, primaryData)
+
 	jsonData, err := json.Marshal(clusternetdata)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())

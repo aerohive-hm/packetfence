@@ -5,13 +5,12 @@ package configurator
 
 import (
 	"context"
-	"encoding/json"
-	//  "fmt"
+	"fmt"
 	"net/http"
-	//	"strconv"
 
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/log"
+	//"github.com/inverse-inc/packetfence/go/log"
 )
 
 type ClusterStatus struct {
@@ -26,17 +25,26 @@ func ClusterStatusNew(ctx context.Context) crud.SectionCmd {
 }
 
 func handleGetClusterStatus(r *http.Request, d crud.HandlerData) []byte {
-	var ctx = r.Context()
+	var i string
+	code := "ok"
 
-	//Data for demo
-	status := map[string]string{
-		"percentage": "100",
+	switch ama.ClusterStatus.Status {
+	case ama.Waitng2Sync:
+		i = "10"
+	case ama.SyncFiles:
+		i = "30"
+	case ama.SyncDB:
+		i = "60"
+	case ama.SyncFinished:
+		i = "100"
+	default:
+		code = "fail"
+		i = "not in cluster join mode"
 	}
 
-	jsonData, err := json.Marshal(status)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
-		return []byte(err.Error())
+	if code == "ok" {
+		return []byte(fmt.Sprintf(`{"code":"ok", "percentage":%s}`, i))
 	}
-	return jsonData
+
+	return []byte(fmt.Sprintf(`{"code":%s, "msg":%s}`, code, i))
 }
