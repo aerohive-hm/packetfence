@@ -69,6 +69,7 @@ Readonly::Scalar my $TAR_BIN                      => "$BIN_DIR/tar";
 Readonly::Scalar my $CENTOS_BASE                  => 'mirrorlist.centos.org';
 
 open(UPDATE_CLUSTER_LOG,   '>>', $A3_CLUSTER_UPDATE_LOG_FILE)   || die "Unable to open update log file";
+
 my $a3_pkg = 'A3';
 my $a3_db = 'A3';
 my $db_user = 'root';
@@ -264,6 +265,12 @@ sub update_system_app {
   _commit_cluster_update_log("Application update done");
   
 }
+
+=head2 check_update_system_status
+
+check update system status
+
+=cut
 
 sub check_update_system_status {
   my $cmd ="$CAT_BIN $A3_CLUSTER_UPDATE_LOG_FILE | $GREP_BIN -i 'Application update done'";
@@ -474,9 +481,11 @@ sub remote_api_call_post {
   my ($IP, $URI, $data) = @_;
   my $url = "http://$IP:$node_port/".$URI;
   my $client = REST::Client->new({timeout=>3600});
+
   $client->addHeader('Content-Type', 'application/json');
   $client->addHeader('charset', 'UTF-8');
   $client->addHeader('Accept', 'application/json'); 
+
   my $json_data = encode_json($data);
   $client->POST($url, $json_data);
   if( $client->responseCode() ne '200' ){
