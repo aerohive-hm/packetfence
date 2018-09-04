@@ -10,10 +10,10 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama"
-	//"github.com/inverse-inc/packetfence/go/ama/a3config"
-	//"github.com/inverse-inc/packetfence/go/ama/amac"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	//"github.com/inverse-inc/packetfence/go/ama/client"
+	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	//"github.com/inverse-inc/packetfence/go/log"
 )
