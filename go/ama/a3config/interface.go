@@ -3,6 +3,7 @@ package a3config
 import (
 	"context"
 	"fmt"
+	"net"
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -62,14 +63,17 @@ func UpdateSystemInterface(ctx context.Context, i Item) error {
 	err = UpdateInterface(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update Interface error:" + err.Error())
+		return err
 	}
 	err = UpdateNetconf(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
+		return err
 	}
-	err = UpdatePrimaryClusterconf(i)
+	err = UpdatePrimaryClusterconf(false, i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
+		return err
 	}
 	return err
 }
@@ -77,25 +81,25 @@ func UpdateSystemInterface(ctx context.Context, i Item) error {
 func DelSystemInterface(ctx context.Context, i Item) error {
 	var err error
 	var sectionId string
-
+	ifname := ChangeUiInterfacename(i.Name)
+	sectionId = fmt.Sprintf("interface %s", ifname)
 	if VlanInface(i.Name) {
-		name := []rune(i.Name) /*need to delete vlan for name*/
-		keyname := fmt.Sprintf("eth0.%s", string(name[4:]))
-		sectionId = fmt.Sprintf("interface %s", keyname)
-		utils.DelVlanIface(keyname)
-	} else {
-		sectionId = fmt.Sprintf("interface %s", strings.ToLower(i.Name))
+		utils.DelVlanIface(ifname)
 	}
-
 	err = A3Delete("PF", sectionId)
-
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Deleteinterface error:" + err.Error())
+		return err
+	}
 	err = DeleteNetconf(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("DeleteNetconf error:" + err.Error())
+		return err
 	}
 	err = DeletePrimaryClusterconf(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("DeletePrimaryClusterconf error:" + err.Error())
+		return err
 	}
 	return nil
 }
@@ -110,4 +114,23 @@ func ChangeUiInterfacename(uiifname string) string {
 		ifname = uiifname
 	}
 	return ifname
+}
+
+func IpBitwiseAndMask(ip, mask string) string {
+	n := utils.NetmaskStr2Len(mask)
+	ipv4Addr := net.ParseIP(ip)
+	ipv4Mask := net.CIDRMask(n, 32)
+
+	str := fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask))
+	return str
+}
+func IsSameIpRange(ip1, ip2, mask string) bool {
+
+	str1 := IpBitwiseAndMask(ip1, mask)
+	str2 := IpBitwiseAndMask(ip2, mask)
+	if str1 == str2 {
+		return true
+	}
+	return false
+
 }

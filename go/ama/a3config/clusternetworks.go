@@ -4,7 +4,6 @@ package a3config
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -14,12 +13,6 @@ import (
 type ClusterNetworksData struct {
 	HostName string `json:"hostname"`
 	Items    []Item `json:"items"`
-}
-
-func syncDataFromPrimary(ip, user, password string) {
-	//wait a moment?
-	time.Sleep(60)
-	utils.SyncFromPrimary(ip, user, password)
 }
 
 func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) ClusterNetworksData {
@@ -50,6 +43,16 @@ func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) Clust
 			continue
 		}
 		p.IpAddr = "0.0.0.0"
+		for _, i := range Items {
+			/*only append cluster vlan interface*/
+			if !VlanInface(i.Name) {
+				continue
+			}
+			if i.Name == p.Name {
+				p.IpAddr = i.IpAddr
+				break
+			}
+		}
 		clusterNetworksData.Items = append(clusterNetworksData.Items, p)
 	}
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", clusterNetworksData))
@@ -98,7 +101,6 @@ func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworks
 	utils.ExecShell(`systemctl start packetfence-api-frontend`)
 
 	ama.InitClusterStatus("server")
-	go syncDataFromPrimary(ReadClusterPrimary(), web.User, web.Password)
 
 	return err
 }

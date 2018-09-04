@@ -101,11 +101,17 @@ func InitStartService() error {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
+	ama.InitClusterStatus("primary")
+
 	updateCurrentlyAt()
 	return nil
 }
 
 func ForceNewCluster() {
+	if isProcAlive("pf-mariadb") {
+		return
+	}
+
 	cmds := []string{
 		pfcmd + "configreload hard",
 		pfcmd + "checkup",
@@ -113,12 +119,16 @@ func ForceNewCluster() {
 	}
 	ExecCmds(cmds)
 	waitProcStop("mysqld")
+
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
 		A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
 	}
 	ExecCmds(cmds)
+	waitProcStart("mysqld")
 
+	ExecShell(pfservice + "pf restart")
+	ama.SetClusterStatus(ama.Ready4Sync)
 }
 
 // prepare for the new cluster mode
@@ -133,12 +143,14 @@ func SyncFromPrimary(ip, user, pass string) {
 	ama.SetClusterStatus(ama.SyncFiles)
 	cmds := []string{
 		`systemctl stop packetfence-iptables`,
-		fmt.Sprintf(A3Root+`/bin/cluster/sync --from=%s`+
+		fmt.Sprintf(A3Root+`/bin/cluster/sync --from=%s `+
 			`--api-user=%s --api-password=%s`, ip, user, pass),
-		`systemctl restart packetfence-config`,
+		`systemctl stop packetfence-config`,
 	}
 	ExecCmds(cmds)
 	waitProcStop("pfconfig")
+	ExecShell(`systemctl start packetfence-config`)
+	waitProcStart("pfconfig")
 
 	ama.SetClusterStatus(ama.SyncDB)
 	cmds = []string{
@@ -158,15 +170,11 @@ func SyncFromPrimary(ip, user, pass string) {
 		}
 		ExecCmds(cmds)
 	*/
-	ExecShell(pfservice + "pf start")
 }
 
 func RecoverDB() {
-	cmds := []string{
-		`systemctl restart packetfence-mariadb`,
-	}
-
-	ExecCmds(cmds)
+	killPorc("pf-mariadb")
+	ExecShell(`systemctl restart packetfence-mariadb`)
 }
 
 func ServiceStatus() string {

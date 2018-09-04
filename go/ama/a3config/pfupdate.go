@@ -4,7 +4,7 @@ package a3config
 import (
 	//"context"
 	"context"
-	"errors"
+
 	"fmt"
 	"net"
 	"strings"
@@ -73,8 +73,8 @@ func UpdateVlanInterface(i Item) error {
 	ifname := fmt.Sprintf("eth0.%s", vlan)
 
 	err := utils.UpdateVlanIface(ifname, vlan, i.IpAddr, i.NetMask)
-	if err != 0 {
-		return errors.New("UpdateVlanInterface error")
+	if err != nil {
+		return err
 	}
 	var Type string
 	keyname := fmt.Sprintf("interface %s", ifname)
@@ -83,7 +83,6 @@ func UpdateVlanInterface(i Item) error {
 	} else {
 		Type = "internal"
 	}
-
 	section := Section{
 		keyname: {
 			"ip":          i.IpAddr,
@@ -94,6 +93,7 @@ func UpdateVlanInterface(i Item) error {
 	}
 	return A3Commit("PF", section)
 }
+
 func UpdateNetconf(i Item) error {
 	var Type string = ""
 
@@ -102,10 +102,7 @@ func UpdateNetconf(i Item) error {
 		return nil
 	}
 
-	a := utils.NetmaskStr2Len(i.NetMask)
-	ipv4Addr := net.ParseIP(i.IpAddr)
-	ipv4Mask := net.CIDRMask(a, 32)
-	keyname := fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask)) // ip & mask
+	keyname := IpBitwiseAndMask(i.IpAddr, i.NetMask) // ip & mask
 	s := strings.Split(keyname, ".")
 	dhcpstart := fmt.Sprintf("%s.%s.%s.10", s[0], s[1], s[2])
 	dhcpend := fmt.Sprintf("%s.%s.%s.246", s[0], s[1], s[2])
@@ -172,10 +169,10 @@ func DeletePrimaryClusterconf(i Item) error {
 
 }
 
-func UpdatePrimaryClusterconf(i Item) error {
+func UpdatePrimaryClusterconf(enable bool, i Item) error {
 	var keyname string
 
-	if i.Vip == "" || i.Vip == "0.0.0.0" {
+	if !enable {
 		return nil
 	}
 

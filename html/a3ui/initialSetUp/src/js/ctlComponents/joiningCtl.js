@@ -53,22 +53,29 @@ class joiningCtl extends Component {
         this.timer = setInterval(()=>{
 
             RequestApi('get',url,param,xCsrfToken,(data)=>{
-                if(data.percentage==="100"){
-                    clearInterval(self.timer);
-                    self.setState({
-                        percentage : 0,
-                        loading:false,
-                    },function(){
-                        self.props.changeStatus("startingRegistration");
-                    })
+                if(data.code==="ok"){
+                    if(data.percentage==="100"){
+                        clearInterval(self.timer);
+                        self.setState({
+                            percentage : 0,
+                            loading:false,
+                        },function(){
+                            self.props.changeStatus("startingRegistration");
+                        })
+                    }else{
+                        self.setState({
+                            percentage : parseInt(data.percentage),
+                        }) 
+                    } 
                 }else{
-                    self.setState({
-                        percentage : parseInt(data.percentage),
-                    }) 
-                }  
+                    message.destroy();
+                    message.error(data.msg);
+                }
+
+
             });
 
-        },10000)
+        },3000)
 
 
     }
@@ -111,6 +118,7 @@ class joiningCtl extends Component {
 
         return (
             <div className="global-div-joiningCtl">
+            <Spin spinning={loading}>
                 <div className="left-div-joiningCtl">
                     <div className="img-div-joiningCtl">
                        <img src={startingAndReadyImg} className="img-img-joiningCtl" />
@@ -132,8 +140,9 @@ class joiningCtl extends Component {
                 
 
 
-
+              
                 <div className="clear-float-div-common" ></div >
+            </Spin>
             </div>
             
         )

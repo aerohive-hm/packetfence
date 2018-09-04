@@ -35,11 +35,19 @@ func GetA3SysId() string {
 
 func SetHostname(hostname string) {
 	cmds := []string{
-		"hostnamectl set-hostname " + hostname,
+		fmt.Sprintf(`hostnamectl set-hostname "%s" --static`, hostname),
 		`sed -i -r "s/HOSTNAME=[-_A-Za-z0-9]+/HOSTNAME=` +
 			hostname + `/" /etc/sysconfig/network`,
 	}
 	ExecCmds(cmds)
+}
+
+func isProcAlive(proc string) bool {
+	_, err := ExecShell(`pgrep ` + proc)
+	if err == nil {
+		return false
+	}
+	return true
 }
 
 func waitProcStop(proc string) {
@@ -62,23 +70,19 @@ func waitProcStart(proc string) {
 	}
 }
 
-/*
-func killPorc(proc string) error {
+func killPorc(proc string) {
 	cmd := "pgrep " + proc
 	out, err := ExecShell(cmd)
 	if err != nil {
-		return nil
+		return
 	}
 
-	for pid := range cmd {
-		i, err := strconv.Atoi(pid)
-		if err != nil {
-			continue
-		}
-		pids, err := ExecShell(`pgrep ` + proc)
-		if err == nil {
-			return
+	pids := strings.Split(out, "\n")
+	for _, pid := range pids {
+		if pid != "" {
+			ExecShell(`kill ` + pid)
 		}
 	}
+
+	waitProcStop(proc)
 }
-*/
