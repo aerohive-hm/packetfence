@@ -102,10 +102,7 @@ func UpdateNetconf(i Item) error {
 		return nil
 	}
 
-	a := utils.NetmaskStr2Len(i.NetMask)
-	ipv4Addr := net.ParseIP(i.IpAddr)
-	ipv4Mask := net.CIDRMask(a, 32)
-	keyname := fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask)) // ip & mask
+	keyname := IpBitwiseAndMask(i.IpAddr, i.NetMask) // ip & mask
 	s := strings.Split(keyname, ".")
 	dhcpstart := fmt.Sprintf("%s.%s.%s.10", s[0], s[1], s[2])
 	dhcpend := fmt.Sprintf("%s.%s.%s.246", s[0], s[1], s[2])

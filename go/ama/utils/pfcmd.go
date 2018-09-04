@@ -101,6 +101,8 @@ func InitStartService() error {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
+	ama.InitClusterStatus("primary")
+
 	updateCurrentlyAt()
 	return nil
 }
@@ -123,6 +125,10 @@ func ForceNewCluster() {
 		A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
 	}
 	ExecCmds(cmds)
+	waitProcStart("mysqld")
+
+	ExecShell(pfservice + "pf restart")
+	ama.SetClusterStatus(ama.Ready4Sync)
 }
 
 // prepare for the new cluster mode
@@ -164,7 +170,6 @@ func SyncFromPrimary(ip, user, pass string) {
 		}
 		ExecCmds(cmds)
 	*/
-	ExecShell(pfservice + "pf start")
 }
 
 func RecoverDB() {

@@ -27,13 +27,13 @@ const (
 	AMA_STATUS_UNKNOWN        = 100
 )
 const (
-	GdcConfigChange         = 1
-	NetworkChange           = 2
-	LicenseInfoChange       = 3
-	DisableCloudIntegration = 4
-	RdcTokenUpdate          = 5
-	RemoveNodeFromCluster   = 6
-	JoinClusterComplete     = 7
+	GdcConfigChange        = 1
+	NetworkChange          = 2
+	LicenseInfoChange      = 3
+	CloudIntegrateFunction = 4
+	RdcTokenUpdate         = 5
+	RemoveNodeFromCluster  = 6
+	JoinClusterComplete    = 7
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -178,9 +178,22 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	case LicenseInfoChange:
 		updateMsgToRdcAsyn(ctx, LicenseInfoChange)
 
-	case DisableCloudIntegration:
-		updateConnStatus(AMA_STATUS_INIT)
-		globalSwitch = "disable"
+	case CloudIntegrateFunction:
+		if msg.Data == "disable" {
+			updateConnStatus(AMA_STATUS_INIT)
+			err := UpdateConnSwitch(msg.Data)
+			if err != nil {
+				log.LoggerWContext(ctx).Error("Handle disable cloud integration event failed")
+			}
+		} else if msg.Data == "enable" {
+			connectToRdcWithoutPara(ctx)
+			err := UpdateConnSwitch(msg.Data)
+			if err != nil {
+				log.LoggerWContext(ctx).Error("Handle enable cloud integration event failed")
+			}
+		} else {
+			log.LoggerWContext(ctx).Error("Message data is illegal when handle CloudIntegrateFunction event")
+		}
 
 	case RdcTokenUpdate:
 		//To do, set the globalswitch to enable
@@ -288,7 +301,7 @@ func dispathMsgFromRdc(ctx context.Context, message []byte) {
 		if resMsg.Data["msgType"] == "amac_token" {
 			//RDC token need to write file, if process restart we can read it
 			dst := fmt.Sprintf("Bearer %s", resMsg.Data["token"])
-			UpdateRdcToken(ctx, dst)
+			UpdateRdcToken(ctx, dst, false)
 			rdcTokenStr = resMsg.Data["token"]
 		}
 	}

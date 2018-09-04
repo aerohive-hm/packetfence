@@ -182,6 +182,10 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 	in this case, this node will request RDC token from the other nodes
 */
 func connectToRdcWithoutPara(ctx context.Context) int {
+	if GetConnStatus() == AMA_STATUS_ONBOARDING_SUC {
+		log.LoggerWContext(ctx).Info("Current status is onboarding successful, needn't onboard again.")
+		return 0
+	}
 	//Read the local RDC token, if exist, not send request to other nodes
 	token := readRdcToken(ctx)
 	if len(token) == 0 {

@@ -81,6 +81,11 @@ class clusterNetworkingCtl extends Component {
 
         new RequestApi('get',url,param,xCsrfToken,(data)=>{
             self.getTrueData(data);
+        },()=>{
+            self.setState({
+                loading : false,
+            })
+
         });
 
         //self.getTrueData(mock.networks);
@@ -264,14 +269,29 @@ class clusterNetworkingCtl extends Component {
                     hostname:values.hostname,
                     items:self.getItems(),
                 }
-
+                self.setState({
+                    loading : true,
+                })
                 new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
-                        self.props.changeStatus("joining");
+                        self.setState({
+                            loading : false,
+                        },function(){
+                            self.props.changeStatus("joining");
+                        })
+                        
                     }else{
+                        self.setState({
+                            loading : false,
+                        })
                         message.destroy();
                         message.error(data.msg);
                     }
+
+                },()=>{
+                    self.setState({
+                        loading : false,
+                    })
 
                 }) 
 
@@ -337,6 +357,9 @@ class clusterNetworkingCtl extends Component {
             "type":dataCopy[index].type,
             "services":dataCopy[index].services.join(","),
         }
+        self.setState({
+            loading : true,
+        })
 
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
@@ -344,11 +367,20 @@ class clusterNetworkingCtl extends Component {
                 self.setState({
                     dataTable : dataCopy,
                     isEditing: false,
+                    loading : false,
                 }) 
             }else{
+                self.setState({
+                    loading : false,
+                })
                 message.destroy();
                 message.error(data.msg);
             }
+
+        },()=>{
+            self.setState({
+                loading : false,
+            })
 
         }) 
 
@@ -437,41 +469,12 @@ class clusterNetworkingCtl extends Component {
                         }
                     </div>
                 );
-            } 
+            }
         });
         columns.push({
             title:self.state.i18n.netmask,
             dataIndex: 'netmask',
             key: 'netmask',
-            render: (text, record, index) => {
-                return (
-                    <div>
-                        {
-                            dataTable[index].clicked==="netmask"?
-                            <div className=""  >
-                                <div className="netmask-edit-input-div-clusterNetworkingCtl">
-                                    <Input
-                                        value={text}
-                                        autoFocus
-                                        onChange={self.onEdit.bind(self,index,"netmask")}
-                                    />
-                                </div>
-                                <div className="netmask-edit-ok-div-clusterNetworkingCtl" onClick={self.onClickEditOk.bind(self,index,"netmask")}>
-                                    <img className="netmask-edit-ok-img-clusterNetworkingCtl" src={editYesImg} />
-                                </div>
-                                <div className="netmask-edit-no-div-clusterNetworkingCtl" onClick={self.onClickEditNo.bind(self,index,"netmask")}>
-                                    <img className="netmask-edit-no-img-clusterNetworkingCtl" src={editNoImg} />
-                                </div>
-                                <div className="clear-float-div-common" ></div >
-                            </div>
-                            :
-                            <div className="netmask-text-div-clusterNetworkingCtl" onClick={self.onClickText.bind(self,index,"netmask")} >
-                                {text}
-                            </div>
-                        }
-                    </div>
-                );
-            } 
         });
         columns.push({
             title:self.state.i18n.vip,
@@ -572,6 +575,11 @@ class clusterNetworkingCtl extends Component {
                             columns={columns} 
                             dataSource={dataTable} 
                             pagination={false}
+                            rowClassName={
+                                (record,index)=>
+                                     index%2===0?"table-single-row-div-clusterNetworkingCtl":"table-double-row-div-clusterNetworkingCtl"
+                                
+                            }
                         />
                     </div>
 
