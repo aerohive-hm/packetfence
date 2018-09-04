@@ -123,13 +123,20 @@ func ForceNewCluster() {
 	ExecCmds(cmds)
 	waitProcStart("mysqld")
 
+	cmds = []string{
+		pfservice + "pf restart",
+	}
+	ExecCmds(cmds)
+	
+	log.LoggerWContext(ctx).Error(fmt.Sprintln("ForceNewCluster pf restart done"))
+
 	ama.SetClusterStatus(ama.Ready4Sync)
 }
 
 // prepare for the new cluster mode
 func StopService() {
 	cmds := []string{
-		`systemctl start packetfence-mariadb`,
+		`systemctl stop packetfence-mariadb`,
 	}
 	ExecCmds(cmds)
 }
