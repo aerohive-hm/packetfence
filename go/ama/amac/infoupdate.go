@@ -77,8 +77,14 @@ func updateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 				continue
 			} else {
 				//not get the token, return and wait for the event from UI or other nodes
+				log.LoggerWContext(ctx).Error(InvalidToken)
 				return result
 			}
+		} else if statusCode == 200 {
+			return 0
+		} else {
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Update message faile, server(RDC) respons the code %d", statusCode))
+			return -1
 		}
 		return 0
 	}
@@ -106,8 +112,8 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int) (int, string) {
 	}
 
 	data, _ := json.Marshal(nodeInfo)
-	log.LoggerWContext(ctx).Error("begin to send remove node msg to RDC")
-	log.LoggerWContext(ctx).Error(string(data))
+	log.LoggerWContext(ctx).Info("begin to send remove node msg to RDC")
+	log.LoggerWContext(ctx).Info(string(data))
 	reader := bytes.NewReader(data)
 	for {
 		request, err := http.NewRequest("POST", connMsgUrl, reader)
@@ -121,14 +127,14 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int) (int, string) {
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
-			log.LoggerWContext(ctx).Error("remove node message to RDC fail")
-			log.LoggerWContext(ctx).Error(err.Error())
+			log.LoggerWContext(ctx).Info("remove node message to RDC fail")
+			log.LoggerWContext(ctx).Info(err.Error())
 			return -1, SrvNoResponse
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("receive the response %d", resp.StatusCode))
-		log.LoggerWContext(ctx).Error(string(body))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %d", resp.StatusCode))
+		log.LoggerWContext(ctx).Info(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
 		/*
@@ -142,11 +148,15 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int) (int, string) {
 				continue
 			} else {
 				//not get the token, return and wait for the event from UI or other nodes
+				log.LoggerWContext(ctx).Error(fmt.Sprintf("Update message faile, server(RDC) respons the code %d", statusCode))
 				return -1, InvalidToken
 			}
+		} else if statusCode == 200 {
+			return 0, UpdateMsgSuc
+		} else {
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Update message faile, server(RDC) respons the code %d", statusCode))
+			return -1, InvalidToken
 		}
-		errMsg := fmt.Sprintf("Update message faile, server(RDC) respons the code %d", statusCode)
-		return -1, errMsg
 	}
 	return 0, UpdateMsgSuc
 }

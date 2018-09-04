@@ -58,7 +58,7 @@ func GetItemsValue(ctx context.Context) []Item {
 
 func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
 	var err error
- 
+
 	for _, item := range items {
 		err = UpdateInterface(item)
 		if err != nil {
@@ -139,17 +139,33 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 
 func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 	msg := ""
-	if !enable {
-		return nil
-	}
+	eth0ip := ""
+
+	/*ip and vip should be the same net range*/
 	for _, item := range items {
-		if !IsSameIpRange(item.IpAddr, item.Vip, item.NetMask) {
+		if enable && !IsSameIpRange(item.IpAddr, item.Vip, item.NetMask) {
 			msg = fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", item.IpAddr, item.Vip)
+			return errors.New(msg)
+		}
+		if item.Name == "eth0" {
+			eth0ip = item.IpAddr
+		}
+	}
+
+	/*eth0 ip and vlan ip should not be the same net range*/
+	for _, item := range items {
+		if !VlanInface(item.Name) {
+			continue
+		}
+
+		if IsSameIpRange(item.IpAddr, eth0ip, item.NetMask) {
+			msg = fmt.Sprintf("eth0 ip(%s) and vlan (%s) should not be the same net range", eth0ip, item.IpAddr)
 			return errors.New(msg)
 		}
 	}
 	return nil
 }
+
 func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	msg := ""
 	for _, item := range items {

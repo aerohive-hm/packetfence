@@ -15,9 +15,9 @@ import (
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	innerClient "github.com/inverse-inc/packetfence/go/ama/client"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
-	"github.com/inverse-inc/packetfence/go/ama/share"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -56,17 +56,17 @@ type NodeInfo struct {
 }
 
 type CloudInfo struct {
-	RdcUrl string	`json:"rdcurl"`
-	VhmID  string	`json:"vhmID"`
-	Switch string 	`json:"switch"`
-	OrgID  string 	`json:"orgId"`
-	Token  string 	`json:"rdctoken"`
-	PriNode string	`json:"primarynode"`
+	RdcUrl  string `json:"rdcurl"`
+	VhmID   string `json:"vhmID"`
+	Switch  string `json:"switch"`
+	OrgID   string `json:"orgId"`
+	Token   string `json:"rdctoken"`
+	PriNode string `json:"primarynode"`
 }
 
 type tokenResData struct {
-	MsgType string 		`json:"msgType"`
-	Data    string 		`json:"token"`
+	MsgType string `json:"msgType"`
+	Data    string `json:"token"`
 }
 
 type A3TokenResFromRdc struct {
@@ -303,7 +303,6 @@ func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew
 		statusCode := node.Status
 
 		if statusCode == 200 {
-			fmt.Println("post token OK ")
 			return
 		} else if statusCode == 504 { //Gateway Timeout
 			//keep on trying to post util success
@@ -436,7 +435,6 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	} else if statusCode == 403 {
 		return "", LimitedAccess
 	}
-
-	errMsg := fmt.Sprintf("Server(RDC) respons the code %d, please check the input parameters", statusCode)
-	return "", errMsg
+	log.LoggerWContext(ctx).Error(fmt.Sprintf("Server(RDC) respons the code %d, please check the credential", statusCode))
+	return "", AccessFail
 }
