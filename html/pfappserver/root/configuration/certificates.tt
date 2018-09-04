@@ -23,7 +23,6 @@
               </li>
             </ul>
             <div class="tab-content">
-
               <div id="eap_tls" class="tab-pane fade in active">
                 <div style="padding-left: 50px;">
                   <form class="eap_tls_form">
@@ -33,7 +32,7 @@
                       <span>A server key and server certificate is required. If a CA certificate exists, upload that as well.</span>
                       <br><br>
                       <input id="serverKey_path" name="serverKey_path" type="hidden" value="">
-                      <label><h6>Key (file type:  .key)</h6></label>
+                      <label><h6>Key (file type:  .key) <a style="padding-left: 10px;" href="#">View More</a></h6></label>
                       <input id="serverKey" name="serverKey_upload" class="serverKey" type="file"/>
                       <br>
                       <label><h6>Server Certificate (file type:  .pem)</h6></label>
@@ -46,7 +45,7 @@
                       <h6>CA Certificate Upload (file type:  .pem)</h6>
                       <input class="ca" type="file">
                     </div>
-                    <button class="btn btn-success" style="float:right;">Submit</button>
+                    <button id="certificate-upload" class="btn btn-success" style="float:right;">Submit</button>
                   </form>
                 </div>
               </div>

@@ -1,15 +1,10 @@
 $(document).ready(function(){
-  $("#link-account").on("click", function(e) {
-    e.preventDefault();
-    $(".disconnected").hide();
-    $(".cluster-cloud").show();
-  });
 
-  $("#unlink-account2").on("click", function(e) {
-    e.preventDefault();
-    $(".cluster-cloud").hide();
-    $(".disconnected").show();
-  });
+  document.getElementById("link-account").onclick = function (){
+    console.log("clicked on link account");
+    // e.preventDefault();
+    linkAerohiveAccount();
+  }
 });
 
 //function to switch back and forth depending on setrings
@@ -17,9 +12,30 @@ $(document).ready(function(){
 
 //function to submit form
 function linkAerohiveAccount(){
-  //get button id
+  console.log("inside link aerohive account");
+  var base_url = window.location.origin;
+  var form = document.forms.namedItem("cloudForm");
+  // var form = $('#cloudForm').serializeArray();
+  var formData = new FormData(form);
+  console.log("formelement: ");
+  console.log(form);
+  console.log("formData: ");
+  req = new XMLHttpRequest();
 
+  req.open("POST", "/a3/api/v1/configuration/cluster")
+  req.send(formData);
+  $.ajax({
+      type: 'POST',
+      url: base_url + '/a3/api/v1/configuration/cloud',
+      data: formData,
+      success: function(data){
+          alert(data);
+          return data;
+      },
+      error: function(data){
+          alert('something went wrong');
+      }
+  });
 }
-
 
 //function to response from data put in table for cloud
