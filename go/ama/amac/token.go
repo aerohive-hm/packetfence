@@ -22,7 +22,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -176,11 +175,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 	res := ""
 	tokenRes := A3TokenResFromRdc{}
 
-	nodeInfo := rdcTokenReqFromRdc{}
-	nodeInfo.Header.SystemID = node.SystemID
-	nodeInfo.Header.Hostname = node.Hostname
-	//nodeInfo.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
-	nodeInfo.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)
+	nodeInfo := fillRdcTokenReqHeader()
 
 	data, _ := json.Marshal(nodeInfo)
 	reader := bytes.NewReader(data)
@@ -205,18 +200,25 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %s", resp.Status))
 	log.LoggerWContext(ctx).Info(string(body))
 
-	err = json.Unmarshal([]byte(body), &tokenRes)
-	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
+	statusCode := resp.StatusCode
+	//Unmarshal only when statusCode equal 200
+	if statusCode == 200 {
+		err = json.Unmarshal([]byte(body), &tokenRes)
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			return res
+		}
+
+		if tokenRes.Data.MsgType != "amac_token" {
+			log.LoggerWContext(ctx).Error("Incorrect message type")
+			return res
+		}
+
+		return tokenRes.Data.Data
+	} else {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Request RDC token fail, receive the response %s", resp.Status))
 		return res
 	}
-
-	if tokenRes.Data.MsgType != "amac_token" {
-		log.LoggerWContext(ctx).Error("Incorrect message type")
-		return res
-	}
-
-	return tokenRes.Data.Data
 }
 
 //This API was used by nodes without GDC and RDC token.
@@ -338,13 +340,18 @@ func TriggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
 	return
 }
 
-func fillRdcTokenReq() rdcTokenReqFromRdc {
+func fillRdcTokenReqHeader() rdcTokenReqFromRdc {
 	rdcTokenReq := rdcTokenReqFromRdc{}
 
 	rdcTokenReq.Header.SystemID = utils.GetA3SysId()
+	rdcTokenReq.Header.ClusterID = utils.GetClusterId()
 	rdcTokenReq.Header.Hostname = a3config.GetHostname()
-	//rdcTokenReq.Header.OwnerId, _ = strconv.Atoi(OwnerIdStr)
-	rdcTokenReq.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)
+	//Only SystemID, ClusterID and Hostname is necessary when request RDC token
+	/*
+		rdcTokenReq.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)
+		rdcTokenReq.Header.VhmId = VhmidStr
+		rdcTokenReq.Header.OrgId =
+	*/
 	return rdcTokenReq
 }
 
@@ -360,14 +367,13 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		return "", UrlIsNull
 	}
 
-	node_info := fillRdcTokenReq()
+	node_info := fillRdcTokenReqHeader()
 	data, _ := json.Marshal(node_info)
 
-	log.LoggerWContext(ctx).Info("begin to fetch RDC token")
-	log.LoggerWContext(ctx).Error(string(data))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to fetch RDC token from %s", fetchRdcTokenUrl))
+	log.LoggerWContext(ctx).Info(string(data))
 	reader := bytes.NewReader(data)
 
-	log.LoggerWContext(ctx).Error(fetchRdcTokenUrl)
 	request, err := http.NewRequest("POST", fetchRdcTokenUrl, reader)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
@@ -375,7 +381,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	}
 
 	//Taking the GDC token to request a RDC token
-	log.LoggerWContext(ctx).Error(gdcTokenStr)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Including the GDC token %s", gdcTokenStr))
 	request.Header.Add("Authorization", gdcTokenStr)
 	request.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(request)
