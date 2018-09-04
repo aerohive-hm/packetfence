@@ -78,6 +78,7 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 }
 
 type syncData struct {
+	Code   string `json:"code"`
 	Status string `json:"status"`
 }
 
@@ -103,7 +104,7 @@ func waitPrimarySync(ip string) error {
 			continue
 		}
 
-		if msg.Status == "" {
+		if msg.Status == "StartSync" {
 			break
 		}
 
@@ -119,6 +120,8 @@ func SyncDataFromPrimary(ip, user, password string) {
 	if err != nil {
 		return
 	}
+	ctx := context.Background()
+	log.LoggerWContext(ctx).Info("czhong: StartSync...")
 	utils.SyncFromPrimary(ip, user, password)
 	apibackclient.SendClusterSync(ip, "FinishSync")
 	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
