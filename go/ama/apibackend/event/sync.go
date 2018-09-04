@@ -19,6 +19,7 @@ import (
 )
 
 type SyncData struct {
+	Code   string `json:"code"`
 	Status string `json:"status"`
 }
 

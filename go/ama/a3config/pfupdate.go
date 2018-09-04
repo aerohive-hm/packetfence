@@ -253,12 +253,12 @@ func UpdateWebservicesAcct() error {
 
 func UpdateGaleraUser() error {
 
-	rsection := A3ReadFull("PF", "database")
+	rsection := A3ReadFull("A3DB", "DEFAULT")["DEFAULT"]
 
 	wsection := Section{
 		"active_active": {
-			"galera_replication_username": rsection["database"]["user"],
-			"galera_replication_password": rsection["database"]["pass"],
+			"galera_replication_username": rsection["dbroot_user"],
+			"galera_replication_password": rsection["dbroot_pass"],
 		},
 	}
 
@@ -291,4 +291,10 @@ func UpdateWebservices(user, password string) error {
 	}
 	return A3Commit("PF", section)
 
+}
+
+func UpdateClusterFile() {
+	cmd := `echo /usr/local/pf/conf/cloud.conf ` +
+		`/usr/local/pf/conf/clusterid.conf >> /usr/local/pf/conf/cluster-files.txt`
+	utils.ExecShell(cmd)
 }

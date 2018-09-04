@@ -122,12 +122,11 @@ func ForceNewCluster() {
 
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
-		A3Root + `/sbin/pf-mariadb --force-new-cluster &`,
+		A3Root + `/sbin/pf-mariadb --force-new-cluster &>/dev/null &`,
 	}
 	ExecCmds(cmds)
 	waitProcStart("mysqld")
 
-	ExecShell(pfservice + "pf restart")
 	ama.SetClusterStatus(ama.Ready4Sync)
 }
 
@@ -162,26 +161,25 @@ func SyncFromPrimary(ip, user, pass string) {
 	ama.SetClusterStatus(ama.SyncDB)
 	cmds = []string{
 		pfcmd + "configreload",
+		pfservice + "haproxy-db restart",
+		pfservice + "httpd.webservices restart",
 		`systemctl set-default packetfence-cluster`,
 		`rm -fr /var/lib/mysql/*`,
-		`systemctl restart packetfence-mariadb`,
+		`systemctl start packetfence-mariadb`,
 	}
 	ExecCmds(cmds)
 	waitProcStart("mysqld")
 	ama.SetClusterStatus(ama.SyncFinished)
-
-	/*
-		cmds = []string{
-			pfservice + "haproxy-db restart",
-			pfservice + "httpd.webservices restart",
-		}
-		ExecCmds(cmds)
-	*/
 }
 
 func RecoverDB() {
 	killPorc("pf-mariadb")
-	ExecShell(`systemctl restart packetfence-mariadb`)
+	cmds := []string{
+		`systemctl restart packetfence-mariadb`,
+		pfservice + "pf restart",
+	}
+
+	ExecCmds(cmds)
 }
 
 func ServiceStatus() string {
