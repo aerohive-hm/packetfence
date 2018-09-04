@@ -10,10 +10,10 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama"
-	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	"github.com/inverse-inc/packetfence/go/ama/amac"
+	//"github.com/inverse-inc/packetfence/go/ama/a3config"
+	//"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/client"
+	//"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	//"github.com/inverse-inc/packetfence/go/log"
 )
@@ -73,12 +73,14 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 	if sync.Status == stopService {
 		utils.StopService()
 	} else if sync.Status == startSync {
-		ip := a3config.ReadClusterPrimary()
-		web := a3config.GetWebServices()["webservices"]
-		utils.SyncFromPrimary(ip, web["user"], web["pass"])
+		/*
+			ip := a3config.ReadClusterPrimary()
+			web := a3config.GetWebServices()["webservices"]
+			utils.SyncFromPrimary(ip, web["user"], web["pass"])
 
-		amac.JoinCompleteEvent()
-		apibackclient.SendClusterSync(ip, "FinishSync")
+			amac.JoinCompleteEvent()
+			apibackclient.SendClusterSync(ip, "FinishSync")
+		*/
 	} else if sync.Status == finishSync {
 		utils.RecoverDB()
 		ama.SetClusterStatus(ama.FinishSync)

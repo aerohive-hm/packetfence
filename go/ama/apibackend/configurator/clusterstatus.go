@@ -43,8 +43,8 @@ func handleGetClusterStatus(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	if code == "ok" {
-		return []byte(fmt.Sprintf(`{"code":"ok", "percentage":%s}`, i))
+		return []byte(fmt.Sprintf(`{"code":"ok", "percentage":"%s"}`, i))
 	}
 
-	return []byte(fmt.Sprintf(`{"code":%s, "msg":%s}`, code, i))
+	return []byte(fmt.Sprintf(`{"code":"%s", "msg":"%s"}`, code, i))
 }

@@ -36,7 +36,7 @@ func GetA3SysId() string {
 func SetHostname(hostname string) {
 	cmds := []string{
 		fmt.Sprintf(`hostnamectl set-hostname "%s" --static`, hostname),
-		`sed -i -r "s/HOSTNAME=[-_A-Za-z0-9]+/HOSTNAME=` +
+		`sed -i -r "s/HOSTNAME=[-_\.A-Za-z0-9]+/HOSTNAME=` +
 			hostname + `/" /etc/sysconfig/network`,
 		fmt.Sprintf(`echo 127.0.0.1 %s >> /etc/hosts`, hostname),
 	}

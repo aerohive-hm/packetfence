@@ -108,10 +108,6 @@ func InitStartService() error {
 }
 
 func ForceNewCluster() {
-	if isProcAlive("pf-mariadb") {
-		return
-	}
-
 	cmds := []string{
 		pfcmd + "configreload hard",
 		pfcmd + "checkup",
