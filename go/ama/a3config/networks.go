@@ -58,7 +58,7 @@ func GetItemsValue(ctx context.Context) []Item {
 
 func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
 	var err error
-
+ 
 	for _, item := range items {
 		err = UpdateInterface(item)
 		if err != nil {
@@ -118,7 +118,7 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 		context = ctx
 	}
 
-	err := CheckItemValid(ctx, networksData.Items)
+	err := CheckItemValid(ctx, networksData.ClusterEnable, networksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("CheckItemValid error:" + err.Error())
 		return err
@@ -137,8 +137,11 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	return err
 }
 
-func CheckItemIpValid(ctx context.Context, items []Item) error {
+func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 	msg := ""
+	if !enable {
+		return nil
+	}
 	for _, item := range items {
 		if !IsSameIpRange(item.IpAddr, item.Vip, item.NetMask) {
 			msg = fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", item.IpAddr, item.Vip)
@@ -158,8 +161,8 @@ func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	return errors.New(msg)
 }
 
-func CheckItemValid(ctx context.Context, items []Item) error {
-	err := CheckItemIpValid(ctx, items)
+func CheckItemValid(ctx context.Context, enable bool, items []Item) error {
+	err := CheckItemIpValid(ctx, enable, items)
 	if err != nil {
 		return err
 	}
