@@ -10,7 +10,7 @@ export let i18n ={
 	"enter": "ENTER",
 	"entitlementKey": "ENTITLEMENT KEY",
 	"enterAnEntitlementKey": "ENTER AN ENTITLEMENT KEY",
-	"key": "key:",
+	"key": "Key:",
 	"submit": "SUBMIT",
 	"cancel": "CANCEL",
 	"enterEntitlementKey": "Enter Entitlement Key",

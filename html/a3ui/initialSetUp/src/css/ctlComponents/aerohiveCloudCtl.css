@@ -183,3 +183,16 @@
     color:#333333;
 
 }
+
+.cloud-message-div-aerohiveCloudCtl{
+    width:350px;
+}
+.cloud-message-item-div-aerohiveCloudCtl{
+    float:left;
+    margin-top:18px;
+    width:350px;
+    line-height: 16px;
+    font-size: 14px;
+    color:#333333;
+
+}

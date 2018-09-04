@@ -3,7 +3,7 @@ export let i18n ={
 	"emailFormatIsIncorrect": "Email format is incorrect.",
 	"passwordIsRequired": "Password is required.",
 	"confirmPasswordIsRequired": "Confirm Password is required.",
-	"passwordDoNotMatch": "Password do not match.",
+	"passwordDoNotMatch": "Passwords do not match.",
 	"veryWeak": "Very Weak",
 	"weak": "Weak",
 	"average": "Average",
@@ -15,6 +15,6 @@ export let i18n ={
 	"password": "Password",
 	"confirmPassword": "Confirm Password",
 	"next": "NEXT",
-	"cancel": "CANCEL",
+	"cancel": "BACK",
 	
 }
