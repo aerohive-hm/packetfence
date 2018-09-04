@@ -1,6 +1,5 @@
 $(document).ready(function(){
 
-
 });
 
 //function to get cluster table data
@@ -27,10 +26,17 @@ function submitClusterNode(){
         if (errMsg != null ) {
             document.getElementById('errorMessage').innerHTML = errMsg;
             $("#success-alert").show();
-            setTimeout(function (){
+            setTimeout(function(){
               $("#success-alert").slideUp(500);
             }, 3000);
         }
       }
   });
+}
+
+function removeClusterNode(){
+   var base_url = window.location.origin;
+   $.ajax({
+
+   });
 }
