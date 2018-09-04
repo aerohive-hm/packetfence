@@ -86,7 +86,7 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var self CloudGetData
 
 	var ctx = r.Context()
-	log.LoggerWContext(ctx).Error("into handleGetCloudInfo")
+	log.LoggerWContext(ctx).Info("into handleGetCloudInfo")
 
 	getInfo.Head.RdcUrl = a3config.ReadCloudConf(a3config.RDCUrl)
 	getInfo.Head.OwnerId = a3config.ReadCloudConf(a3config.OwnerId)
@@ -137,7 +137,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	code := "fail"
 	event := new(amac.MsgStru)
 
-	log.LoggerWContext(ctx).Error("int HandlePostCloudInfo")
+	log.LoggerWContext(ctx).Info("int HandlePostCloudInfo")
 
 	ret = ""
 

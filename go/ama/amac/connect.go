@@ -44,6 +44,7 @@ var (
 	fetchRdcTokenUrlForOthers string
 	keepAliveUrl              string
 	updateMsgUrl              string
+	synGdcTokenUrl            string
 )
 
 const (
@@ -87,7 +88,7 @@ type connectResponse struct {
 func installRdcUrl(ctx context.Context, rdcUrl string) {
 
 	if ctx != nil {
-		log.LoggerWContext(ctx).Error("into installRdcUrl")
+		log.LoggerWContext(ctx).Info("Assemble other URLs based on RDC URL")
 	}
 	systemId := utils.GetA3SysId()
 
@@ -101,8 +102,10 @@ func installRdcUrl(ctx context.Context, rdcUrl string) {
 	fetchRdcTokenUrlForOthers = domain + "/amac/rest/v1/token/" + systemId
 	keepAliveUrl = domain + "/amac/rest/v1/poll/" + systemId
 	updateMsgUrl = domain + "/amac/rest/v1/report/" + systemId
+	synGdcTokenUrl = fmt.Sprintf("%shm-webapp/security/csrftoken", rdcUrl)
+
 	if ctx != nil {
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("connMsgUrl:%s,fetchRdcTokenUrl:%s, keepAliveUrl:%s", connMsgUrl, fetchRdcTokenUrl, keepAliveUrl))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("connMsgUrl:%s,fetchRdcTokenUrl:%s, keepAliveUrl:%s, synGdcTokenUrl:%s", connMsgUrl, fetchRdcTokenUrl, keepAliveUrl, synGdcTokenUrl))
 	}
 }
 
@@ -120,9 +123,8 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		node_info := a3share.GetOnboardingInfo(ctx)
 		data, _ := json.Marshal(node_info)
 
-		log.LoggerWContext(ctx).Error("begin to send onboarding request to RDC, connMsgUrl=")
-		log.LoggerWContext(ctx).Error(connMsgUrl)
-		log.LoggerWContext(ctx).Error(string(data))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to send onboarding request to RDC, connMsgUrl=%s", connMsgUrl))
+		log.LoggerWContext(ctx).Info(string(data))
 		reader := bytes.NewReader(data)
 
 		request, err := http.NewRequest("POST", connMsgUrl, reader)
@@ -141,8 +143,8 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("receive the response %d", resp.StatusCode))
-		log.LoggerWContext(ctx).Error(string(body))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %d", resp.StatusCode))
+		log.LoggerWContext(ctx).Info(string(body))
 		statusCode := resp.StatusCode
 		if statusCode == 200 {
 			defer resp.Body.Close()
@@ -184,7 +186,7 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 */
 func connectToRdcWithoutPara(ctx context.Context) int {
 	if GetConnStatus() == AMA_STATUS_ONBOARDING_SUC {
-		log.LoggerWContext(ctx).Info("Current status is onboarding successful, needn't onboard again.")
+		log.LoggerWContext(ctx).Info("Current status is onboarding successful, don't need to onboard again.")
 		return 0
 	}
 	//Read the local RDC token, if exist, not send request to other nodes
@@ -306,7 +308,7 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 	if len(vhmidUrl) == 0 {
 		return -1, UrlIsNull
 	}
-	log.LoggerWContext(ctx).Info("begin to fetch vhm and RDC URL")
+	log.LoggerWContext(ctx).Info("begin to fetch vhmid and RDC url")
 	for {
 		request, err := http.NewRequest("GET", vhmidUrl, nil)
 		if err != nil {
@@ -346,6 +348,41 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 	}
 }
 
+/*
+	This function is used to trigger the GDC token synchronizaiton from GDC to RDC
+	and don't care about response messages, this operation should be
+*/
+func triggerGdcTokenSync(ctx context.Context) {
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to trigger GDC token sync, URL = %s", synGdcTokenUrl))
+	request, err := http.NewRequest("GET", synGdcTokenUrl, nil)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	//fill the token
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("GDC token in header= %s", gdcTokenStr))
+	request.Header.Add("Authorization", gdcTokenStr)
+	resp, err := client.Do(request)
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return
+	}
+	defer resp.Body.Close()
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	log.LoggerWContext(ctx).Info(string(body))
+
+	statusCode := resp.StatusCode
+	if statusCode == 200 {
+		log.LoggerWContext(ctx).Info("Trigger GDC token synchronizaiton successfully")
+		return
+	} else {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Trigger GDC token synchronizaiton fail, receive the response %d", resp.StatusCode))
+		return
+	}
+	return
+}
+
 //Connect to GDC, get the token and vhmid
 func connetToGdc(ctx context.Context) (int, string) {
 	token, reason := fetchTokenFromGdc(ctx)
@@ -357,6 +394,7 @@ func connetToGdc(ctx context.Context) (int, string) {
 	if err != 0 {
 		return -1, reason
 	}
+	triggerGdcTokenSync(ctx)
 	return 0, ConnCloudSuc
 }
 
