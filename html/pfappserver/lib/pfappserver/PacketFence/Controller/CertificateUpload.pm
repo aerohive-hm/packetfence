@@ -88,8 +88,9 @@ sub uploadKey :Path('/uploadKey') :Args(0) {
         if (($ret >> 8) != 0) {
             $logger->warn("Uploaded file $filename is not a certificate key in KEY format");
             $c->response->status($STATUS::BAD_REQUEST);
-            $logger->info("jma_debug c: " .Dumper($c));
+
             $c->stash->{status_msg} = $c->loc("File is invalid. Try again.");
+            $logger->info("jma_debug c: " .Dumper($c));
             return;
         }
 
