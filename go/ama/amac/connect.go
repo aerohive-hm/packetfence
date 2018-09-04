@@ -340,16 +340,16 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 
 func synGdcToken(ctx context.Context) {
 
-	log.LoggerWContext(ctx).Info("begin to trigger sync GDC token")
+	log.LoggerWContext(ctx).Error(fmt.Sprintf("begin to trigger sync GDC token, URL = %s", synGdcTokenUrl))
 
-	log.LoggerWContext(ctx).Info(synGdcTokenUrl)
 	request, err := http.NewRequest("GET", synGdcTokenUrl, nil)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 	//fill the token
-	//request.Header.Add("Authorization", gdcTokenStr)
+	log.LoggerWContext(ctx).Error(fmt.Sprintf("GDC token in header= %s", gdcTokenStr))
+	request.Header.Add("Authorization", gdcTokenStr)
 	resp, err := client.Do(request)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
