@@ -292,7 +292,7 @@ sub verifyCert :Path('/verifyCert') :Args(0) {
                     $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
                     return;
                 }
-                $c->stash->{CN} = pf::util::get_cert_subject_cn($eap_server_path);
+                $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($eap_server_path);
             } elsif ($qualifier eq "https") {
                 #https certs will be put in conf/ssl
                 if ( ! rename($key_path, $https_key_path) ) {
@@ -308,7 +308,7 @@ sub verifyCert :Path('/verifyCert') :Args(0) {
                     return;
                 }
                 system("cat $https_server_path $https_key_path > conf/ssl/server.pem");
-                $c->stash->{CN} = pf::util::get_cert_subject_cn($https_server_path);
+                $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($https_server_path);
             }
         } else {
             $logger->warn("Failed to verify certificate file $key_path against $cert_path: $!");
@@ -344,6 +344,17 @@ sub readCert :Path('/readCert') :Args(0) {
             $c->stash->{CN_CA} = pf::util::get_cert_subject_cn($eap_ca_path);
         }
     }
+}
+
+=head2 downloadCert
+
+downloads the certs
+Usage: /downloadCert
+
+=cut
+
+sub downloadCert :Path('/readCert') :Args(0) {
+
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
