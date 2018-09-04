@@ -38,12 +38,16 @@ func UpdateInterface(i Item) error {
 	if isvlan {
 		err = UpdateVlanInterface(i)
 	} else {
-		err = UpdateManageInterface(i)
+		err = UpdateEthInterface(i)
 	}
 	return err
 }
 
-func UpdateManageInterface(i Item) error {
+func UpdateEthInterface(i Item) error {
+	err := utils.UpdateEthIface(i.Name, i.IpAddr, i.NetMask)
+	if err != nil {
+		return err
+	}
 	keyname := fmt.Sprintf("interface %s", i.Name)
 
 	var Type string
