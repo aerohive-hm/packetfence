@@ -129,3 +129,13 @@ func GetClusterId() string {
 	}
 	return out
 }
+
+func UseDefaultClusterConf() error {
+	cmd := "cp -f /usr/local/pf/conf/cluster.conf.example /usr/local/pf/conf/cluster.conf"
+	_, err := ExecShell(cmd)
+	if err != nil {
+		fmt.Println("%s:exec error", cmd)
+		return err
+	}
+	return nil
+}

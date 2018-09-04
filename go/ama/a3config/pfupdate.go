@@ -149,21 +149,21 @@ func DeleteNetconf(i Item) error {
 func DeletePrimaryClusterconf(i Item) error {
 	var sectionid string
 	isvlan := VlanInface(i.Name)
-	if isvlan {
-		name := []rune(i.Name) /*need to delete vlan for name*/
-		sectionid = fmt.Sprintf("CLUSTER interface eth0.%s", string(name[4:]))
-		A3Delete("CLUSTER", sectionid)
+	ifname := ChangeUiInterfacename(i.Name)
 
-		sectionid = fmt.Sprintf("%s interface eth0.%s", GetHostname(), string(name[4:]))
+	if isvlan {
+		sectionid = fmt.Sprintf("CLUSTER interface %s", ifname)
+		A3Delete("CLUSTER", sectionid)
+		sectionid = fmt.Sprintf("%s interface %s", GetHostname(), ifname)
 		return A3Delete("CLUSTER", sectionid)
 	} else {
 		sectionid = "CLUSTER"
 		A3Delete("CLUSTER", sectionid)
-		sectionid = "CLUSTER interface eth0"
+		sectionid = fmt.Sprintf("CLUSTER interface %s", ifname)
 		A3Delete("CLUSTER", sectionid)
 		sectionid = GetHostname()
 		A3Delete("CLUSTER", sectionid)
-		sectionid = GetHostname() + "interface eth0"
+		sectionid = fmt.Sprintf("%s interface %s", GetHostname(), ifname)
 		return A3Delete("CLUSTER", sectionid)
 	}
 
@@ -173,9 +173,13 @@ func UpdatePrimaryClusterconf(enable bool, i Item) error {
 	var keyname string
 
 	if !enable {
+		/* cp cluster.conf.example to replace cluster.conf */
+		utils.UseDefaultClusterConf()
 		return nil
 	}
-
+	if i.Vip == "" || i.Vip == "0.0.0.0" {
+		return nil
+	}
 	utils.CreateClusterId()
 	isvlan := VlanInface(i.Name)
 	if isvlan {
