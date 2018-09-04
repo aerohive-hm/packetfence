@@ -15,6 +15,6 @@ export let i18n ={
 	"password": "Password",
 	"confirmPassword": "Confirm Password",
 	"next": "NEXT",
-	"cancel": "CANCEL",
+	"cancel": "BACK",
 	
 }

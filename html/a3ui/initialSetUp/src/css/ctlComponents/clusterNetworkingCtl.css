@@ -106,6 +106,7 @@
     float:left;
     height: 28px;
     line-height: 28px;
+    padding-right:4px;
 }
 
 .name-text-div-clusterNetworkingCtl{

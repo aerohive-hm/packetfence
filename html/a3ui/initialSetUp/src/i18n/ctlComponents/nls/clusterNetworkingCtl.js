@@ -21,9 +21,11 @@ export let i18n ={
 	"networks": "Networks",
 	"networksMessage": "Please confirm the information in the table at right. If there is an error in IP or netmask you may change it here.",
 	"hostName": "Host Name",
-	"interfaces": "interfaces",
+	"interfaces": "Interfaces",
 	"next": "NEXT",
 	"cancel": "CANCEL",
+	"invalidHostName": "invalid Host Name.",
+	"pleaseFinishTheEditFirst": "Please finish the edit first.",
 	
 }
 

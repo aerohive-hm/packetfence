@@ -10,7 +10,7 @@ export let i18n ={
 	"clusterAdmin": "Cluster Admin",
 	"adminPassword": "Admin Password",
 	"next": "JOIN",
-	"cancel": "CANCEL",
+	"cancel": "BACK",
 	
 }
 
