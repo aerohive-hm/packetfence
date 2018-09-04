@@ -379,19 +379,18 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	body, _ := ioutil.ReadAll(resp.Body)
 	log.LoggerWContext(ctx).Info(string(body))
 
-	err = json.Unmarshal([]byte(body), &tokenRes)
-	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
-		return "", ErrorMsgFromSrv
-	}
-
-	if tokenRes.Data.MsgType != "amac_token" {
-		log.LoggerWContext(ctx).Error("Incorrect message type")
-		return "", ErrorMsgFromSrv
-	}
 	statusCode := resp.StatusCode
 
 	if statusCode == 200 {
+		err = json.Unmarshal([]byte(body), &tokenRes)
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			return "", ErrorMsgFromSrv
+		}
+		if tokenRes.Data.MsgType != "amac_token" {
+			log.LoggerWContext(ctx).Error("Incorrect message type")
+			return "", ErrorMsgFromSrv
+		}
 		dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Data)
 		//RDC token need to write file, if process restart we can read it
 		UpdateRdcToken(ctx, dst)
