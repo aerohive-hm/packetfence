@@ -51,10 +51,11 @@ const (
 	SrvNoResponse   = "Server is unavailable"
 	AuthFail        = "Authenticate fail, please check the credential"
 	UrlIsNull       = "URL is NULL"
-	ErrorMsgFromSrv = "Access server fail, please check the cloud URL"
+	ErrorMsgFromSrv = "Connect to cloud fail, please check the cloud URL"
 	LimitedAccess   = "Limited access, please use an administrator/operator account"
 	UpdateMsgSuc    = "Update message to cloud successfully"
 	InvalidToken    = "Token is invalid, update message to cloud fail"
+	AccessFail      = "Connect to cloud fail"
 	OtherError      = "System error"
 )
 
@@ -269,26 +270,28 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))
-		dat := make(map[string]interface{})
-		err = json.Unmarshal([]byte(body), &dat)
-		if err != nil {
-			log.LoggerWContext(ctx).Error(err.Error())
-			return "", ErrorMsgFromSrv
-		}
 
 		statusCode := resp.StatusCode
+		//unmarshal if status == 200
 		if statusCode == 200 {
+			dat := make(map[string]interface{})
+			err = json.Unmarshal([]byte(body), &dat)
+			if err != nil {
+				log.LoggerWContext(ctx).Error(err.Error())
+				return "", ErrorMsgFromSrv
+			}
+
 			//GDC token does not need to write file, it is one-time useful
 			gdcTokenStr = fmt.Sprintf("Bearer %s", dat["access_token"].(string))
 			return gdcTokenStr, ConnCloudSuc
 		} else if statusCode == 404 {
 			return "", ErrorMsgFromSrv
 		} else {
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Server(GDC) respons the code %d, please check the credential", statusCode))
 			return "", AuthFail
 		}
 
-		errMsg := fmt.Sprintf("Server(GDC) respons the code %d, please check the input parameters", statusCode)
-		return "", errMsg
+		return "", AccessFail
 	}
 }
 
@@ -323,15 +326,23 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))
 
-		json.Unmarshal([]byte(body), &vhmres)
+		statusCode := resp.StatusCode
+		//unmarshal if statuscode == 200
+		if statusCode == 200 {
+			err = json.Unmarshal([]byte(body), &vhmres)
+			if err != nil {
+				log.LoggerWContext(ctx).Error(err.Error())
+				return -1, ErrorMsgFromSrv
+			}
+			OwnerIdStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
+			rdcUrl = vhmres.Data.Location
+			log.LoggerWContext(ctx).Info(fmt.Sprintf("rdcUrl = %s", rdcUrl))
 
-		OwnerIdStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
-		rdcUrl = vhmres.Data.Location
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("rdcUrl = %s", rdcUrl))
-
-		installRdcUrl(ctx, rdcUrl)
-
-		return 0, ConnCloudSuc
+			installRdcUrl(ctx, rdcUrl)
+			return 0, ConnCloudSuc
+		} else {
+			return -1, AccessFail
+		}
 	}
 }
 
