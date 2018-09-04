@@ -33,7 +33,7 @@ use pf::file_paths qw(
     $radius_ca_cert
 );
 
-BEGIN {extends 'pfappserver::Base::Controller'; }
+BEGIN {extends 'Catalyst::Controller';}
 
 =head1 METHODS
 
