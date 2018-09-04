@@ -302,25 +302,25 @@ func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
 }
 
 func UpdateEthIface(ifname string, ip, mask string) error {
-	var err error
-	iface, _ := GetIfaceList(ifname)
-	oldip := iface[0].IpAddr
-	oldmask := iface[0].NetMask
-	if oldip != ip || oldmask != mask {
-		err = DelIfaceIIpAddr(ifname, oldip)
-		if err != nil {
-			return err
-		}
+	//	var err error
+	//	iface, _ := GetIfaceList(ifname)
+	//	oldip := iface[0].IpAddr
+	//	oldmask := iface[0].NetMask
+	//	if oldip != ip || oldmask != mask {
+	//		err = DelIfaceIIpAddr(ifname, oldip)
+	//		if err != nil {
+	//			return err
+	//		}
 
-		err = SetIfaceIIpAddr(ifname, ip, mask)
-		if err != nil {
-			return err
-		}
+	//		err = SetIfaceIIpAddr(ifname, ip, mask)
+	//		if err != nil {
+	//			return err
+	//		}
 
-		err = SetIfaceUp(ifname)
-		if err != nil {
-			return err
-		}
-	}
+	//		err = SetIfaceUp(ifname)
+	//		if err != nil {
+	//			return err
+	//		}
+	//	}
 	return nil
 }
