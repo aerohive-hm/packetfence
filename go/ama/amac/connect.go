@@ -44,6 +44,7 @@ var (
 	fetchRdcTokenUrlForOthers string
 	keepAliveUrl              string
 	updateMsgUrl              string
+	synGdcTokenUrl            string
 )
 
 const (
@@ -297,7 +298,7 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 	if len(vhmidUrl) == 0 {
 		return -1, UrlIsNull
 	}
-	log.LoggerWContext(ctx).Info("begin to fetch vhm and RDC URL")
+	log.LoggerWContext(ctx).Info("begin to fetch vhmid and RDC url")
 	for {
 		request, err := http.NewRequest("GET", vhmidUrl, nil)
 		if err != nil {
@@ -322,11 +323,47 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 		OwnerIdStr = fmt.Sprintf("%d", vhmres.Data.OwnerId)
 		rdcUrl = vhmres.Data.Location
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("rdcUrl = %s", rdcUrl))
+		synGdcTokenUrl = fmt.Sprintf("%shm-webapp/security/csrftoken", rdcUrl)
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("synGdcTokenUrl = %s", synGdcTokenUrl))
 
 		installRdcUrl(ctx, rdcUrl)
 
 		return 0, ConnCloudSuc
 	}
+}
+
+func synGdcToken(ctx context.Context) {
+
+	log.LoggerWContext(ctx).Info("begin to trigger sync GDC token")
+
+	log.LoggerWContext(ctx).Info(synGdcTokenUrl)
+	request, err := http.NewRequest("GET", synGdcTokenUrl, nil)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	//fill the token
+	//request.Header.Add("Authorization", gdcTokenStr)
+	resp, err := client.Do(request)
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return
+	}
+	defer resp.Body.Close()
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	log.LoggerWContext(ctx).Info(string(body))
+
+	statusCode := resp.StatusCode
+	if statusCode == 200 {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("receive the response %d", resp.StatusCode))
+		return
+	} else if statusCode == 401 {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("receive the response %d", resp.StatusCode))
+		return
+	}
+	log.LoggerWContext(ctx).Error(fmt.Sprintf("receive the response %d", resp.StatusCode))
+	return
 }
 
 //Connect to GDC, get the token and vhmid
@@ -340,6 +377,7 @@ func connetToGdc(ctx context.Context) (int, string) {
 	if err != 0 {
 		return -1, reason
 	}
+	synGdcToken(ctx)
 	return 0, ConnCloudSuc
 }
 
