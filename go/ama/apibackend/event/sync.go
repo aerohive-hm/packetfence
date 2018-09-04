@@ -19,6 +19,7 @@ import (
 )
 
 type SyncData struct {
+	Code   string `json:"code"`
 	Status string `json:"status"`
 }
 
@@ -56,7 +57,7 @@ func handleGetSync(r *http.Request, d crud.HandlerData) []byte {
 	} else if t.Status == ama.FinishSync {
 		s = finishSync
 	}
-	return []byte(fmt.Sprintf(`{"code":"ok", "status":%s}`, s))
+	return []byte(fmt.Sprintf(`{"code":"ok", "status":"%s"}`, s))
 }
 
 func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
