@@ -18,6 +18,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/event"
 	innerClient "github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/share"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -127,6 +128,17 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
+func startService() {
+	if utils.IsFileExist(utils.A3CurrentlyAt) {
+		return
+	}
+
+	a3config.UpdateGaleraUser()
+	a3config.UpdateWebservicesAcct()
+	a3config.UpdateClusterFile()
+	utils.InitStartService()
+	amac.JoinCompleteEvent()
+}
 func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var ret string
 	var reason string
@@ -199,7 +211,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 END:
 	//start A3 all the services
 	if code == "ok" {
-		go a3share.StartService()
+		go startService()
 	}
 
 	if err != nil {
