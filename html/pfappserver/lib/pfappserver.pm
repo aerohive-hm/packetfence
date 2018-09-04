@@ -103,7 +103,7 @@ __PACKAGE__->config(
 
     'View::JSON' => {
        # TODO to discuss: always add to exposed stash or use a standard 'resultset' instead?
-       expose_stash    => [ qw(status status_msg filePath error interfaces networks switches config services success items time_offset trial entitlement update_info update_progress) ], # defaults to everything
+       expose_stash    => [ qw(status status_msg filePath error interfaces networks switches config services success items time_offset trial entitlement update_info update_progress CN_Server CN_CA Cert_Content) ], # defaults to everything
     },
 
     'View::HTML' => {
