@@ -104,11 +104,12 @@ func waitPrimarySync(ip string) error {
 			time.Sleep(10 * time.Second)
 			continue
 		}
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("read sync status=%s from primary", msg.Status))
 
 		if msg.Status == "StartSync" {
 			break
 		}
-
+		
 		time.Sleep(10 * time.Second)
 	}
 
