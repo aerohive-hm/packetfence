@@ -46,9 +46,9 @@ func SetHostname(hostname string) {
 func isProcAlive(proc string) bool {
 	_, err := ExecShell(`pgrep ` + proc)
 	if err == nil {
-		return false
+		return true
 	}
-	return true
+	return false
 }
 
 func waitProcStop(proc string) {

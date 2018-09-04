@@ -94,7 +94,8 @@ func waitPrimarySync(ip string) error {
 		err := client.ClusterSend("GET", url, "")
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
-			return err
+			time.Sleep(10 * time.Second)
+			continue
 		}
 
 		err = json.Unmarshal(client.RespData, &msg)
