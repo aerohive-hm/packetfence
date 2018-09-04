@@ -24,6 +24,14 @@ use File::Basename;
 use File::Path;
 use File::Spec::Functions;
 use File::Copy; #to move files over and change name
+use pf::file_paths qw(
+    $server_cert
+    $server_key
+    $server_pem
+    $radius_server_key
+    $radius_server_cert
+    $radius_ca_cert
+);
 
 BEGIN {extends 'Catalyst::Controller'; }
 
@@ -178,7 +186,7 @@ sub uploadServerCert :Path('/uploadServerCert') :Args(0) {
         # }
 
         $c->stash->{filePath} = $tmp_filename;
-        $logger->info("Saved certificate at $tmp_filename");
+        $logger->info("Saved server certificate at $tmp_filename");
     }
 
 }
@@ -204,7 +212,7 @@ sub uploadCACert :Path('/uploadCACert') :Args(0) {
         my $targetdir = '/usr/local/pf/conf/ssl';
         my $template  = 'cert-XXXXXX';
         my $filesize  = -s $source;
-        my $target = '/usr/local/pf/raddb/certs/ca.pem';
+
         $logger->info("filename: $filename, size: $filesize, location: $source");
 
         if ($filesize && $filesize > 1000000) {
@@ -234,21 +242,15 @@ sub uploadCACert :Path('/uploadCACert') :Args(0) {
             return;
         }
 
-        if ( ! rename($tmp_filename, $target) ) {
-            $logger->warn("Failed to move certificate file $filename into place at $target: $!");
+        if ( ! rename($tmp_filename, $radius_ca_cert) ) {
+            $logger->warn("Failed to move certificate file $filename into place at $radius_ca_cert: $!");
             $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
             $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
             return;
         }
 
-        if ( pf::cluster::add_file_to_cluster_sync($target) ) {
-            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
-            $c->stash->{status_msg} = $c->loc("Unable to save certificate to cluster. Try again.");
-            return;
-        }
-
-        $c->stash->{filePath} = $tmp_filename;
-        $logger->info("Saved certificate at $tmp_filename");
+        $c->stash->{filePath} = $radius_ca_cert;
+        $logger->info("Saved radius CA certificate at $radius_ca_cert");
     }
 
 }
@@ -263,10 +265,6 @@ sub verifyCert :Path('/verifyCert') :Args(0) {
     my ($self, $c) = @_;
 
     my $logger = get_logger();
-    my $eap_key_path = '/usr/local/pf/raddb/certs/server.key';
-    my $eap_server_path = '/usr/local/pf/raddb/certs/server.crt';
-    my $https_key_path = '/usr/local/pf/conf/ssl/server.key';
-    my $https_server_path = '/usr/local/pf/conf/ssl/server.crt';
     $logger->info("jma_debug inside verifyCert");
 
     if ($c->request->method eq 'POST') {
@@ -280,38 +278,38 @@ sub verifyCert :Path('/verifyCert') :Args(0) {
         if ($key_md5 eq $cert_md5) {
             #eap-tls certs will be put in raddb/certs
             if ($qualifier eq "eap") {
-                if ( ! rename($key_path, $eap_key_path) ) {
-                    $logger->warn("Failed to move certificate file $key_path into place at $eap_key_path: $!");
+                if ( ! rename($key_path, $radius_server_key) ) {
+                    $logger->warn("Failed to move certificate file $key_path into place at $radius_server_key: $!");
                     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
                     $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
                     return;
                 }
-                if ( ! rename($cert_path, $eap_server_path) ) {
-                    $logger->warn("Failed to move certificate file $cert_path into place at $eap_server_path: $!");
+                if ( ! rename($cert_path, $radius_server_cert) ) {
+                    $logger->warn("Failed to move certificate file $cert_path into place at $radius_server_cert: $!");
                     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
                     $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
                     return;
                 }
-                $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($eap_server_path);
+                $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($radius_server_cert);
             } elsif ($qualifier eq "https") {
                 #https certs will be put in conf/ssl
-                if ( ! rename($key_path, $https_key_path) ) {
-                    $logger->warn("Failed to move certificate file $key_path into place at $https_key_path: $!");
+                if ( ! rename($key_path, $server_key) ) {
+                    $logger->warn("Failed to move certificate file $key_path into place at $server_key: $!");
                     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
                     $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
                     return;
                 }
-                if ( ! rename($cert_path, $https_server_path) ) {
-                    $logger->warn("Failed to move certificate file $cert_path into place at $eap_server_path: $!");
+                if ( ! rename($cert_path, $server_cert) ) {
+                    $logger->warn("Failed to move certificate file $cert_path into place at $server_cert: $!");
                     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
                     $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
                     return;
                 }
-                system("cat $https_server_path $https_key_path > conf/ssl/server.pem");
-                $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($https_server_path);
+                system("cat $server_cert $server_key > $server_pem");
+                $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($server_cert);
             }
         } else {
-            $logger->warn("Failed to verify certificate file $key_path against $cert_path: $!");
+            $logger->warn("Failed to verify certificate file $key_path against $cert_path");
             $c->response->status($STATUS::UNPROCESSABLE_ENTITY);
             $c->stash->{status_msg} = $c->loc("Unable to verify certificate. Try again.");
             return;
@@ -330,31 +328,56 @@ Usage: /readCert
 sub readCert :Path('/readCert') :Args(0) {
     my ($self, $c) = @_;
     my $logger = get_logger();
-    my $eap_ca_path = '/usr/local/pf/raddb/certs/ca.pem';
-    my $eap_server_path = '/usr/local/pf/raddb/certs/server.crt';
-    my $https_server_path = '/usr/local/pf/conf/ssl/server.crt';
     $logger->info("jma_debug inside readCert");
 
     if ($c->request->method eq 'GET') {
         my $qualifier = $c->request->{qualifier};
         if ($qualifier eq "HTTPS") {
-            $c->stash->{CN} = pf::util::get_cert_subject_cn($https_server_path);
+            $c->stash->{CN} = pf::util::get_cert_subject_cn($server_cert);
         } elsif ($qualifier eq "eap") {
-            $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($eap_server_path);
-            $c->stash->{CN_CA} = pf::util::get_cert_subject_cn($eap_ca_path);
+            $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($radius_server_cert);
+            $c->stash->{CN_CA} = pf::util::get_cert_subject_cn($radius_ca_cert);
         }
     }
 }
 
 =head2 downloadCert
 
-downloads the certs
+downloads the specified certs
 Usage: /downloadCert
 
 =cut
 
-sub downloadCert :Path('/readCert') :Args(0) {
+sub downloadCert :Path('/downloadCert') :Args(0) {
+    my ($self, $c) = @_;
+    my $logger = get_logger();
+    my $cert_path;
+    my $cert;
+    my $in;
+    $logger->info("jma_debug inside readCert");
 
+    if ($c->request->method eq 'GET') {
+        my $qualifier = $c->request->{qualifier};
+        if ($qualifier eq 'https') {
+            $cert_path = $server_cert;
+        } elsif ($qualifier eq 'eap') {
+            $cert_path = $radius_server_cert;
+        } else {
+            $c->response->status($STATUS::BAD_REQUEST);
+            $c->stash->{status_msg} = $c->loc("Unable to download the certificate");
+            return;
+        }
+
+        unless (open($in, '<', $cert_path) ) {
+            $logger->error("Failed to open $cert_path to sync $!");
+            return;
+        }
+        #read the cert
+        read $in, $cert, -s $in;
+        close($in);
+
+        $c->stash->{Cert_Content} = $cert;
+    }
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
