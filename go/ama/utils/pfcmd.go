@@ -123,12 +123,12 @@ func ForceNewCluster() {
 	ExecCmds(cmds)
 	waitProcStart("mysqld")
 
-	cmds = []string{
-		pfservice + "pf restart",
+	cmds = []string {
+		"systemctl restart packetfence-etcd",
 	}
 	ExecCmds(cmds)
 	
-	log.LoggerWContext(ctx).Error(fmt.Sprintln("ForceNewCluster pf restart done"))
+	log.LoggerWContext(ctx).Error(fmt.Sprintln("ForceNewCluster done"))
 
 	ama.SetClusterStatus(ama.Ready4Sync)
 }
