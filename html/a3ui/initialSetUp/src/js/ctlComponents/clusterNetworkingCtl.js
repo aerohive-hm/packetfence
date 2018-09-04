@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isPositiveInteger} from "../../libs/util";     
+import {RequestApi,UnixToDate,urlEncode,formatNum,isEmail,isIp,isPositiveInteger,isHostname} from "../../libs/util";     
 import '../../css/ctlComponents/clusterNetworkingCtl.css';
 import '../../libs/common.css';
 
@@ -123,6 +123,9 @@ class clusterNetworkingCtl extends Component {
 
         if(!hostname||hostname.toString().trim()===""){
             newWrongMessage.hostnameWrongMessage=self.state.i18n.hostNameIsRequired;
+        }else
+        if(isHostname(hostname.toString().trim())===false){
+            newWrongMessage.hostnameWrongMessage=self.state.i18n.invalidHostName;
         }else{
             newWrongMessage.hostnameWrongMessage="";
         }
@@ -249,6 +252,12 @@ class clusterNetworkingCtl extends Component {
 
     handleSubmit = (e) => {
         let self=this;
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
+
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {

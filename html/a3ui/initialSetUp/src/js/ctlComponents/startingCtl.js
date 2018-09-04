@@ -142,6 +142,9 @@ class startingCtl extends Component {
                             <div className="a3-starting-up-div-startingCtl">
                                 {self.state.i18n.a3ServicesAreNowStartingUp}
                             </div>
+                            <div className="a3-starting-up-div-startingCtl">
+                                {self.state.i18n.timeToFinishTheStartup}
+                            </div>
                             <div className="progress-div-startingCtl">
                                 <Progress percent={percentage} />
                             </div>

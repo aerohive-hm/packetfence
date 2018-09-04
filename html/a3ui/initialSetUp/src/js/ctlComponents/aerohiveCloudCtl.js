@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactPasswordStrength from 'react-password-strength';
 import zxcvbn from 'zxcvbn';
-import { Form, Button,Switch,Icon,message,Input, Checkbox,Row,Tree,Radio  ,Select,Spin,Tooltip ,Table,Modal } from 'antd';
+import { Form, Button,Switch,Icon,message,Input, Checkbox,Row,Tree,Radio  ,Select,Spin,Tooltip ,Popover,Table,Modal } from 'antd';
 const { TextArea } = Input;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -287,6 +287,27 @@ class aerohiveCloudCtl extends Component {
         message.config({
             duration: 10,
         });
+
+        let createAnAerohiveCloudAccountHtml=  <div className="cloud-message-div-aerohiveCloudCtl"> 
+            <div className="cloud-message-item-div-aerohiveCloudCtl" style={{marginTop:"0px"}}> 
+                {self.state.i18n.cloudMessage1}
+            </div>
+            <div className="cloud-message-item-div-aerohiveCloudCtl"> 
+                <strong>
+                {self.state.i18n.cloudMessage2}
+                </strong>
+            </div>
+            <div className="cloud-message-item-div-aerohiveCloudCtl"> 
+                {self.state.i18n.cloudMessage3}
+            </div>
+            <div className="cloud-message-item-div-aerohiveCloudCtl"> 
+                {self.state.i18n.cloudMessage4}
+            </div>
+            <div className="clear-float-div-common" ></div >
+        </div>
+
+
+
         return (
             <div className="global-div-aerohiveCloudCtl">
             <Spin spinning={loading}>
@@ -397,11 +418,15 @@ class aerohiveCloudCtl extends Component {
                     </div>
                     <div className="form-button-div-aerohiveCloudCtl">
                         <div className="form-button-create-div-aerohiveCloudCtl">
+                            <Popover content={createAnAerohiveCloudAccountHtml} placement="rightBottom" title="" trigger="hover"
+                            
+                            >
                             <Button 
                                 className="form-button-create-antd-button-aerohiveCloudCtl" 
                                 onClick={self.onClickCreateAnAerohiveCloudAccount.bind(self)}
                                 
                             >{self.state.i18n.createAnAerohiveCloudAccount}</Button>
+                            </Popover>
                         </div>
                     </div>
                     <div className="form-button-continue-div-aerohiveCloudCtl"
