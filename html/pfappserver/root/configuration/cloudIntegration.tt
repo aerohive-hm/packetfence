@@ -5,20 +5,21 @@
 <!--initial page disconnected-->
     <div class="pages" style="height: 500px;">
       <div class="disconnected" style="width: 100%; display: flex;">
+        <div id="form-messages"></div>
         <div class="cloud-form" style="width: 350px;">
-          <form>
-              <label class="form-horizontal control-label" style="float:left; width: 130px;" for="cloud-host">Cloud Host</label>
-              <input class="form-inline help-inline" type="text" name="cloud-host" id="cloud-host" value="cloud.aerohive.com"><br>
+          <form enctype="multipart/form-data" method="post" id="cloudForm" name="cloudForm">
+              <label class="form-horizontal control-label" style="float:left; width: 130px;" for="url">Cloud Host</label>
+              <input class="cloud-host form-inline help-inline" type="text" name="url" id="url" placeholder="cloud.aerohive.com"><br>
               <br/>
-              <label class="form-horizontal control-label" style="float:left; width:130px;" for="cloud-admin">Cloud Admin</label>
-              <input class="form-inline help-inline" type="text" name="cloud-admin" id="cloud-admin" value="admin@example.com"><br>
+              <label class="form-horizontal control-label" style="float:left; width:130px;" for="user">Cloud Admin</label>
+              <input class="cloud-admin form-inline help-inline" type="text" name="user" id="user" placeholder="admin@example.com"><br>
               <br/>
-              <label class="form-horizontal control-label" style="float:left; width:130px;" for="cloud-pw">Password</label>
-              <input class="form-inline help-inline" type="text" name="cloud-pw" id="cloud-pw" value="*********"><br>
+              <label class="form-horizontal control-label" style="float:left; width:130px;" for="pass">Password</label>
+              <input class="cloud-pw form-inline help-inline" type="text" name="pass" id="pass" placeholder="*********"><br>
+              <br/>
+              <label style="float:left; width:130px;">  </label>
+              <input class="btn btn-primary" id="link-account" style="float:right; width: 194px;" value="Link with Aerohive Account" />
           </form>
-          <br/>
-          <label style="float:left; width:130px;">  </label>
-          <button class="btn btn-primary" id="link-account" style="width: 220px;">Link with Aerohive Account</button>
         </div>
 
         <div class="aero-cloud-info" style="margin-left: 100px; margin-top: -10px; padding: 0px 10px 0px 10px; text-align: left; width: 350px;">
@@ -103,15 +104,15 @@
 </div>
 <script type="text/javascript" src="[% c.uri_for('/static/js/cloudIntegration.js') %]"></script>
 <script>
-  $("#link-account").on("click", function(e) {
-    e.preventDefault();
-    $(".disconnected").hide();
-    $(".cluster-cloud").show();
-  });
-
-  $("#unlink-account2").on("click", function(e) {
-    e.preventDefault();
-    $(".cluster-cloud").hide();
-    $(".disconnected").show();
-  });
+  // $("#link-account").on("click", function(e) {
+  //   e.preventDefault();
+  //   $(".disconnected").hide();
+  //   $(".cluster-cloud").show();
+  // });
+  //
+  // $("#unlink-account2").on("click", function(e) {
+  //   e.preventDefault();
+  //   $(".cluster-cloud").hide();
+  //   $(".disconnected").show();
+  // });
 </script>

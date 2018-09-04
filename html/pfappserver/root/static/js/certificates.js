@@ -2,7 +2,18 @@
 $(document).ready(function(){
   // alert("js connected!");
 
-  processKey();
+  document.getElementById("certificate-upload").onclick = function(e){
+      uploadKey();
+  }
+
+// uploadKey();
+
+  // readCert();
+  //
+  // uploadCACert();
+  //
+  // uploadServerCert();
+
   document.getElementById("serverKey").onchange = function(){
     checkKey();
   };
@@ -142,12 +153,12 @@ function keySizeValidation(input){
     }
 }
 
-function processKey(input, qualifier){
+function uploadKey(){
     // alert("in process key");
     var base_url = window.location.origin;
-    var form = document.forms.namedItem();
-    var fd = new FormData(form[0]);
-    fd.append("file", input.files[0]);
+    // var form = document.forms.namedItem();
+    // var fd = new FormData(form[0]);
+    // fd.append("file", input.files[0]);
 
     return $.ajax({
         type: 'POST',
@@ -157,15 +168,77 @@ function processKey(input, qualifier){
           alert("post went through");
         },
         error: function(data){
-          alert("did not go through");
+          // alert("did not go through");
+          console.log(data);
         }
     });
 }
 
-function processServerCert(){
-    alert("in process server");
-}
+// function readCert(){
+//     // alert("in process key");
+//     var base_url = window.location.origin;
+//     // var form = document.forms.namedItem();
+//     // var fd = new FormData(form[0]);
+//     // fd.append("file", input.files[0]);
+//
+//     return $.ajax({
+//         type: 'POST',
+//         url: base_url + '/readCert',
+//         dataType: 'json',
+//         success: function(data){
+//           alert("post went through");
+//         },
+//         error: function(data){
+//           alert("did not go through");
+//         }
+//     });
+// }
+//
+//
+// function uploadCACert(){
+//     // alert("in process key");
+//     var base_url = window.location.origin;
+//     // var form = document.forms.namedItem();
+//     // var fd = new FormData(form[0]);
+//     // fd.append("file", input.files[0]);
+//
+//     return $.ajax({
+//         type: 'POST',
+//         url: base_url + '/uploadCACert',
+//         dataType: 'json',
+//         success: function(data){
+//           alert("post went through");
+//         },
+//         error: function(data){
+//           alert("did not go through");
+//         }
+//     });
+// }
+//
+// function uploadServerCert(){
+//     // alert("in process key");
+//     // var form = document.forms.namedItem();
+//     // var fd = new FormData(form[0]);
+//     // fd.append("file", input.files[0]);
+//     var base_url = window.location.origin;
+//
+//     return $.ajax({
+//         type: 'POST',
+//         url: base_url + '/uploadServerCert',
+//         dataType: 'json',
+//         success: function(data){
+//           alert("post went through");
+//         },
+//         error: function(data){
+//           alert("did not go through");
+//         }
+//     });
+// }
 
-function processCACert(){
-    alert("in process ca");
-}
+// function processServerCert(){
+//     alert("in process server");
+// }
+//
+// function processCACert(){
+//     alert("in process ca");
+// }
