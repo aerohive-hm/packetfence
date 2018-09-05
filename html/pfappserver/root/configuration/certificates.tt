@@ -25,7 +25,7 @@
             <div class="tab-content">
               <div id="eap_tls" class="tab-pane fade in active">
                 <div style="padding-left: 50px;">
-                  <form class="eap_tls_form">
+                  <form class="eap_tls_form" name="eap_tls_form" id="eap_tls_form">
                     <label><h4>EAP-TLS</h4></label>
                     <div class="server">
                       <h6>Server Certificate and Key Upload</h6>

@@ -20,13 +20,14 @@ function linkAerohiveAccount(){
   console.log("formelement: ");
   console.log(form);
   console.log("formData: ");
-  req = new XMLHttpRequest();
-
-  req.open("POST", "/a3/api/v1/configuration/cluster")
-  req.send(formData);
+  // req = new XMLHttpRequest();
+  //
+  // req.open("POST", "/a3/api/v1/configuration/cloud")
+  // req.send(formData);
   $.ajax({
       type: 'POST',
       url: base_url + '/a3/api/v1/configuration/cloud',
+      dataType: json,
       data: formData,
       success: function(data){
           alert(data);

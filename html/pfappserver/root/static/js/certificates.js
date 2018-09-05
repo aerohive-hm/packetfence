@@ -3,10 +3,13 @@ $(document).ready(function(){
   // alert("js connected!");
 
   document.getElementById("certificate-upload").onclick = function(e){
-      uploadKey();
+    e.preventDefault();
+    var servKey = document.getElementById('serverKey');
+    console.log("upload key value" + servKey.value);
+    uploadKey(servKey);
   }
 
-// uploadKey();
+ // uploadKey();
 
   // readCert();
   //
@@ -15,11 +18,13 @@ $(document).ready(function(){
   // uploadServerCert();
 
   document.getElementById("serverKey").onchange = function(){
-    checkKey();
+    // checkKey();
+    var servKey = document.getElementById('serverKey');
+    alert("upload key value" + servKey.value);
   };
-  document.getElementById("serverCert").onchange = function(){
-    checkCert();
-  };
+  // document.getElementById("serverCert").onchange = function(){
+  //   checkCert();
+  // };
 
   var servKey = document.getElementById('serverKey');
   var servKeyExists = document.getElementById('serverKey_path');
@@ -60,14 +65,11 @@ function checkKey(){
         document.getElementById("serverKey_upload").innerHTML = fileName;
         return true;
       } else {
-          //text to change back to choose file
           alert("Key is incorrect, upload again.");
       }
     } else {
-
     }
   }
-
 }
 
 function checkCert(){
@@ -153,23 +155,27 @@ function keySizeValidation(input){
     }
 }
 
-function uploadKey(){
-    // alert("in process key");
+function uploadKey(input){
+    alert("in process key");
+    console.log("input" + input);
     var base_url = window.location.origin;
-    // var form = document.forms.namedItem();
-    // var fd = new FormData(form[0]);
-    // fd.append("file", input.files[0]);
+    var form = document.forms.namedItem('eap_tls_form');
+    var fd = new FormData(form[0]);
+    fd.append("file", input.files[0]);
 
     return $.ajax({
         type: 'POST',
         url: base_url + '/uploadKey',
+        data: fd,
         dataType: 'json',
+        processData: false,
+        contentType: false,
         success: function(data){
           alert("post went through");
         },
         error: function(data){
           // alert("did not go through");
-          console.log(data);
+          console.log(data.responseJSON.status_msg);
         }
     });
 }
