@@ -150,3 +150,37 @@ func UseDefaultClusterConf() error {
 
 	return nil
 }
+
+func ClearFileContent(path string) error {
+
+	if IsFileExist(path) {
+		cmd := "> " + path
+		_, err := ExecShell(cmd)
+		if err != nil {
+			fmt.Println("%s:exec error", cmd)
+			return err
+		}
+	}
+	return nil
+}
+
+func GetDnsServer() (string, string) {
+	dns1 := ""
+	dns2 := ""
+	cmd := "cat /etc/resolv.conf | awk '{print $2}'"
+	out, err := ExecShell(cmd)
+	if err != nil {
+		fmt.Println("%s:exec error", cmd)
+		return "", ""
+	}
+	s := strings.Split(out, "\n")
+	l := len(s)
+
+	if l > 2 {
+		dns1 = s[1]
+		if l > 3 {
+			dns2 = s[2]
+		}
+	}
+	return dns1, dns2
+}

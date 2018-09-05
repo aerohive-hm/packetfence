@@ -143,12 +143,17 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 
 	/*ip and vip should be the same net range*/
 	for _, item := range items {
-		if enable && !IsSameIpRange(item.IpAddr, item.Vip, item.NetMask) {
+		if enable && !utils.IsSameIpRange(item.IpAddr, item.Vip, item.NetMask) {
 			msg = fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", item.IpAddr, item.Vip)
 			return errors.New(msg)
 		}
 		if item.Name == "eth0" {
 			eth0ip = item.IpAddr
+		}
+		/*mask should be valid*/
+		err := CheckMaskValid(item.NetMask)
+		if err != nil {
+			return err
 		}
 	}
 
@@ -158,7 +163,7 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 			continue
 		}
 
-		if IsSameIpRange(item.IpAddr, eth0ip, item.NetMask) {
+		if utils.IsSameIpRange(item.IpAddr, eth0ip, item.NetMask) {
 			msg = fmt.Sprintf("eth0 ip(%s) and vlan (%s) should not be the same net range", eth0ip, item.IpAddr)
 			return errors.New(msg)
 		}
@@ -175,6 +180,37 @@ func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	}
 	msg = fmt.Sprintf("the interface does not contain management type")
 	return errors.New(msg)
+}
+
+func CheckMaskValid(mask string) error {
+
+	var i, value int = 0, 0
+
+	msg := fmt.Sprintf("mask(%s) is invalid", mask)
+
+	if mask == "0.0.0.0" {
+		return errors.New(msg)
+	}
+
+	sections := strings.Split(mask, ".")
+	l := len(sections)
+	if l != 4 {
+		return errors.New(msg)
+	}
+
+	for k := 0; k < l; k++ {
+		i = 0
+		value, _ = strconv.Atoi(sections[k])
+
+		for (value & 128) != 0 {
+			i++
+			value = value << 1
+		}
+		if i > 0 && i < 8 && (value&255) != 0 {
+			return errors.New(msg)
+		}
+	}
+	return nil
 }
 
 func CheckItemValid(ctx context.Context, enable bool, items []Item) error {
@@ -212,6 +248,11 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	// write to /etc/sysconfig/network-scripts/ifcfg-
 	sysifCfgFile := networtConfDir + interfaceConfDir + interfaceConfFile + ifname
 
+	err := utils.ClearFileContent(sysifCfgFile)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
+		return err
+	}
 	//eth0, eth0.xx
 	if utils.IsVlanIface(ifname) {
 		section = Section{
@@ -228,7 +269,7 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 			},
 		}
 	}
-	err := A3CommitPath(ifcfgFile, section)
+	err = A3CommitPath(ifcfgFile, section)
 
 	if err != nil {
 		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
@@ -254,8 +295,8 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
 		return err
 	}
-	//just write another copy to /etc/sysconfig/
 
+	//just write another copy to /etc/sysconfig/
 	err = A3CommitPath(sysifCfgFile, section)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
@@ -266,7 +307,20 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	if utils.IsVlanIface(ifname) {
 		return nil
 	}
+	/* write dns to sysifcfgfile for eth0*/
+	dns1, dns2 := utils.GetDnsServer()
+	section = Section{
+		"": {
+			"DNS1": dns1,
+			"DNS2": dns2,
+		},
+	}
 
+	err = A3CommitPath(sysifCfgFile, section)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
+		return err
+	}
 	//write gateway
 	section = Section{
 		"": {
