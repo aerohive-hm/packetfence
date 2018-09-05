@@ -212,6 +212,7 @@ END:
 	//start A3 all the services
 	if code == "ok" {
 		go startService()
+		a3config.RecordSetupStep(a3config.StepStartingManagement, code)
 	}
 
 	if err != nil {

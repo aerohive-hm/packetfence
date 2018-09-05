@@ -86,6 +86,6 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 		web.User, web.Password)
 
 	code = "ok"
-
+	a3config.RecordSetupStep(a3config.StepJoining, code)
 	return crud.FormPostRely(code, ret)
 }

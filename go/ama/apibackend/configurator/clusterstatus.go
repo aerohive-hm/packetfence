@@ -10,6 +10,7 @@ import (
 
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	//"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -37,6 +38,7 @@ func handleGetClusterStatus(r *http.Request, d crud.HandlerData) []byte {
 		i = "60"
 	case ama.SyncFinished:
 		i = "100"
+		a3config.RecordSetupStep(a3config.StepStartRegistration, code)
 	default:
 		code = "fail"
 		i = "not in cluster join mode"
