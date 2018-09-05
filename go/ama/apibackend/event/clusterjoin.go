@@ -52,7 +52,7 @@ func sendClusterSync(ip, Status string) error {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("post cluster event sync with: %s", url))
 
 	client := new(apibackclient.Client)
-	client.Host = a3config.ReadClusterPrimary()
+	client.Host = ip
 	err := client.ClusterSend("POST", url, data.Status)
 
 	if err != nil {
@@ -95,12 +95,12 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		goto END
 	}
-	
+
 	err = stopServiceByJoin()
 	if err != nil {
 		//goto END
 	}
-	
+
 	err, respdata = a3config.UpdateEventClusterJoinData(ctx, *clusterData)
 	if err != nil {
 		goto END

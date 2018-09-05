@@ -73,6 +73,8 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 		return crud.FormPostRely(code, ret)
 	}
 
+	a3config.UpdateClusterFile()
+
 	web := clusterRespData.Items[0]
 	go a3share.SyncDataFromPrimary(a3config.ReadClusterPrimary(),
 		web.User, web.Password)
