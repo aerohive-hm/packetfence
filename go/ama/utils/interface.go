@@ -333,34 +333,34 @@ func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
 }
 
 func UpdateEthIface(ifname string, ip, mask string) error {
-	var err error
-	gateway := GetA3DefaultGW()
-	iface, _ := GetIfaceList(ifname)
-	oldip := iface[0].IpAddr
-	oldmask := iface[0].NetMask
-	if oldip != ip || oldmask != mask {
-		/*new ip must be the same net range with the old ip */
-		if !IsSameIpRange(ip, oldip, mask) {
-			msg := fmt.Sprintf("new ip(%s) is not same net range with oldip(%s)", ip, oldip)
-			return errors.New(msg)
-		}
-		err = DelIfaceIIpAddr(ifname, oldip)
-		if err != nil {
-			return err
-		}
+	// var err error
+	// gateway := GetA3DefaultGW()
+	// iface, _ := GetIfaceList(ifname)
+	// oldip := iface[0].IpAddr
+	// oldmask := iface[0].NetMask
+	// if oldip != ip || oldmask != mask {
+	// 	/*new ip must be the same net range with the old ip */
+	// 	if !IsSameIpRange(ip, oldip, mask) {
+	// 		msg := fmt.Sprintf("new ip(%s) is not same net range with oldip(%s)", ip, oldip)
+	// 		return errors.New(msg)
+	// 	}
+	// 	err = DelIfaceIIpAddr(ifname, oldip)
+	// 	if err != nil {
+	// 		return err
+	// 	}
 
-		err = SetIfaceIIpAddr(ifname, ip, mask)
-		if err != nil {
-			return err
-		}
-		err = setInterfaceGateway(ifname, gateway)
-		if err != nil {
-			return err
-		}
-		err = SetIfaceUp(ifname)
-		if err != nil {
-			return err
-		}
-	}
+	// 	err = SetIfaceIIpAddr(ifname, ip, mask)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	err = setInterfaceGateway(ifname, gateway)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	err = SetIfaceUp(ifname)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
 	return nil
 }
