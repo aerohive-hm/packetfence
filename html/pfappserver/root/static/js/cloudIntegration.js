@@ -30,13 +30,11 @@ function linkAerohiveAccount(){
       dataType: json,
       data: formData,
       success: function(data){
-          alert(data);
-          return data;
+        console.log(data);
+
       },
       error: function(data){
           alert('something went wrong');
       }
   });
 }
-
-//function to response from data put in table for cloud

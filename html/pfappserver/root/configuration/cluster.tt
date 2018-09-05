@@ -20,10 +20,10 @@
           <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
           <form>
               <label class="form-horizontal control-label" style="float:left; width: 130px;" for="sharedKey">Shared Key</label>
-              <input class="form-inline help-inline" type="text" name="sharedKey" id="male" value="*****"><br>
+              <input class="form-inline help-inline" type="text" name="sharedKey" id="sharedKey" placeholder="*********"><br>
               <br/>
               <label class="form-horizontal control-label" style="float:left; width:130px;" for="virtual_router_id">Virtual Router IP</label>
-              <input class="form-inline help-inline" type="text" name="virtual_router_id" id="other" value="50"><br>
+              <input class="form-inline help-inline" type="text" name="virtual_router_id" id="other" placeholder="50"><br>
           </form>
           <br>
           <label style="float:left; width:130px;">  </label>
