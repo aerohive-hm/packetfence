@@ -94,6 +94,7 @@ func waitPrimarySync(ip string) error {
 		err := client.ClusterSend("GET", url, "")
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
+			client.Token = "" //clear the token
 			time.Sleep(10 * time.Second)
 			continue
 		}
@@ -109,23 +110,27 @@ func waitPrimarySync(ip string) error {
 		if msg.Status == "StartSync" {
 			break
 		}
-		
+
 		time.Sleep(10 * time.Second)
 	}
 
 	return nil
 }
 
-func SyncDataFromPrimary(ip, user, password string) {
+func ActiveSyncFromPrimary(ip, user, password string) {
 	//wait a moment?
 	err := waitPrimarySync(ip)
 	if err != nil {
 		return
 	}
 	ctx := context.Background()
-	log.LoggerWContext(ctx).Info("czhong: StartSync...")
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("start to sync from primary=%s and restart necessary service", ip))
 	utils.SyncFromPrimary(ip, user, password)
-	apibackclient.SendClusterSync(ip, "FinishSync")
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("notify to primary with FinishSync and start pf service"))
 	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
+	utils.ExecShell(`systemctl restart packetfence-api-frontend`)
+	apibackclient.SendClusterSync(ip, "FinishSync")
+
+	utils.UpdateCurrentlyAt()
 
 }

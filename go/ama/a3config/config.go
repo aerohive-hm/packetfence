@@ -17,6 +17,7 @@ var ConfDict = map[string]string{
 	"A3DB":      "dbinfo.A3",
 	"CLOUD":     "cloud.conf",
 	"RDCREGION": "rdc_region.conf",
+	"STEP":      "step.conf",
 }
 
 type keyHash map[string]string

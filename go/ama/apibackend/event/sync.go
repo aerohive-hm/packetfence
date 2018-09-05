@@ -11,11 +11,11 @@ import (
 
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	"github.com/inverse-inc/packetfence/go/ama/amac"
+	//"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
-	//"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 type SyncData struct {
@@ -28,9 +28,10 @@ type Sync struct {
 }
 
 const (
-	stopService = "StopServices"
-	startSync   = "StartSync"
-	finishSync  = "FinishSync"
+	stopService      = "StopServices"
+	startSync        = "StartSync"
+	finishSync       = "FinishSync"
+	primaryRecovered = "PrimaryRecovered"
 )
 
 func ClusterSyncNew(ctx context.Context) crud.SectionCmd {
@@ -61,6 +62,7 @@ func handleGetSync(r *http.Request, d crud.HandlerData) []byte {
 }
 
 func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
+	var ctx = context.Background()
 	sync := new(SyncData)
 	code := "ok"
 	ret := ""
@@ -70,18 +72,25 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(err.Error())
 	}
 
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive sync %s from %s", sync.Status, r.Host))
 	if sync.Status == stopService {
+		//primary tell slave node to stop service
+		//but POST from primary to slave node is not work
 		utils.StopService()
 	} else if sync.Status == startSync {
+		//primary tell slave node to start sync
 		ip := a3config.ReadClusterPrimary()
 		web := a3config.GetWebServices()["webservices"]
 		utils.SyncFromPrimary(ip, web["user"], web["pass"])
+		utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf restart")
 
-		amac.JoinCompleteEvent()
+		//amac.JoinCompleteEvent()
 		apibackclient.SendClusterSync(ip, "FinishSync")
 	} else if sync.Status == finishSync {
-		utils.RecoverDB()
+		//slave node notify primary to sync completed
+		//TODO: need all node completed
 		ama.SetClusterStatus(ama.FinishSync)
+		utils.RecoverDB()
 	} else {
 		code = "fail"
 		ret = "Unkown status."

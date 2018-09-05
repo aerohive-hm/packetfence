@@ -48,7 +48,7 @@ func UpdatePfServices() []Clis {
 	return ExecCmds(cmds)
 }
 
-func updateCurrentlyAt() {
+func UpdateCurrentlyAt() {
 	cmd := "cp -f " + A3Release + " " + A3CurrentlyAt
 	ExecShell(cmd)
 }
@@ -101,9 +101,9 @@ func InitStartService() error {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
-	ama.InitClusterStatus("primary")
+	//ama.InitClusterStatus("primary")
 
-	updateCurrentlyAt()
+	UpdateCurrentlyAt()
 	return nil
 }
 
@@ -123,12 +123,14 @@ func ForceNewCluster() {
 	ExecCmds(cmds)
 	waitProcStart("mysqld")
 
-	cmds = []string {
-		"systemctl restart packetfence-etcd",
+	updateEtcd()
+
+	cmds = []string{
+		pfservice + "pf restart &>/dev/null &",
 	}
 	ExecCmds(cmds)
-	
-	log.LoggerWContext(ctx).Error(fmt.Sprintln("ForceNewCluster done"))
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintln("ForceNewCluster tasks done"))
 
 	ama.SetClusterStatus(ama.Ready4Sync)
 }
@@ -137,6 +139,7 @@ func ForceNewCluster() {
 func StopService() {
 	cmds := []string{
 		`systemctl stop packetfence-mariadb`,
+		`systemctl stop packetfence-etcd`,
 	}
 	ExecCmds(cmds)
 }
@@ -163,7 +166,7 @@ func SyncFromPrimary(ip, user, pass string) {
 
 	ama.SetClusterStatus(ama.SyncDB)
 	cmds = []string{
-		pfcmd + "configreload",
+		pfcmd + "configreload hard",
 		pfservice + "haproxy-db restart",
 		pfservice + "httpd.webservices restart",
 		`systemctl set-default packetfence-cluster`,
@@ -179,7 +182,7 @@ func RecoverDB() {
 	killPorc("pf-mariadb")
 	cmds := []string{
 		`systemctl restart packetfence-mariadb`,
-		pfservice + "pf restart",
+		//pfservice + "pf restart",
 	}
 
 	ExecCmds(cmds)

@@ -15,6 +15,7 @@ const (
 	PrepareSync                      // notify cluster members to close db service
 	Ready4Sync
 	FinishSync
+	RecoveryDone
 )
 
 type ClusterJoinStatusType int
@@ -34,6 +35,7 @@ type ClusterStatusType struct {
 }
 
 var ClusterStatus = ClusterStatusType{}
+var ServiceStartPercentage = "0"
 
 func InitClusterStatus(primary string) {
 	ctx := context.Background()

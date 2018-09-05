@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"net"
 	"regexp"
 	"strconv"
 	"strings"
@@ -253,15 +254,45 @@ func NetmaskStr2Len(mask string) int {
 
 	for k := 0; k < l; k++ {
 		value, _ = strconv.Atoi(sections[k])
-		for value != 0 {
-			if (value & 1) != 0 {
-				num++
-			}
-			value = value >> 1
+		for (value & 128) != 0 {
+			num++
+			value = value << 1
 		}
 	}
 
 	return num
+}
+
+func IpBitwiseAndMask(ip, mask string) string {
+	n := NetmaskStr2Len(mask)
+	ipv4Addr := net.ParseIP(ip)
+	ipv4Mask := net.CIDRMask(n, 32)
+
+	str := fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask))
+	return str
+}
+func IsSameIpRange(ip1, ip2, mask string) bool {
+
+	str1 := IpBitwiseAndMask(ip1, mask)
+	str2 := IpBitwiseAndMask(ip2, mask)
+	if str1 == str2 {
+		return true
+	}
+	return false
+
+}
+
+// set gateway for interface
+func setInterfaceGateway(ifname, gateway string) error {
+	//cmd := fmt.Sprintf("sudo route add default gw %s %s", gateway, ifname)
+	cmd := fmt.Sprintf("sudo ip route replace to default via %s dev %s", gateway, ifname)
+	_, err := ExecShell(cmd)
+	if err != nil {
+		fmt.Println("%s:exec error", cmd)
+		return err
+	}
+
+	return nil
 }
 
 func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
@@ -302,25 +333,34 @@ func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
 }
 
 func UpdateEthIface(ifname string, ip, mask string) error {
-	//	var err error
-	//	iface, _ := GetIfaceList(ifname)
-	//	oldip := iface[0].IpAddr
-	//	oldmask := iface[0].NetMask
-	//	if oldip != ip || oldmask != mask {
-	//		err = DelIfaceIIpAddr(ifname, oldip)
-	//		if err != nil {
-	//			return err
-	//		}
+	// var err error
+	// gateway := GetA3DefaultGW()
+	// iface, _ := GetIfaceList(ifname)
+	// oldip := iface[0].IpAddr
+	// oldmask := iface[0].NetMask
+	// if oldip != ip || oldmask != mask {
+	// 	/*new ip must be the same net range with the old ip */
+	// 	if !IsSameIpRange(ip, oldip, mask) {
+	// 		msg := fmt.Sprintf("new ip(%s) is not same net range with oldip(%s)", ip, oldip)
+	// 		return errors.New(msg)
+	// 	}
+	// 	err = DelIfaceIIpAddr(ifname, oldip)
+	// 	if err != nil {
+	// 		return err
+	// 	}
 
-	//		err = SetIfaceIIpAddr(ifname, ip, mask)
-	//		if err != nil {
-	//			return err
-	//		}
-
-	//		err = SetIfaceUp(ifname)
-	//		if err != nil {
-	//			return err
-	//		}
-	//	}
+	// 	err = SetIfaceIIpAddr(ifname, ip, mask)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	err = setInterfaceGateway(ifname, gateway)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	err = SetIfaceUp(ifname)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
 	return nil
 }
