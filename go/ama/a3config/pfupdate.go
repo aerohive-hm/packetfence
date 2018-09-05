@@ -158,20 +158,20 @@ func DeletePrimaryClusterconf(i Item) error {
 	var sectionid string
 	isvlan := VlanInface(i.Name)
 	ifname := ChangeUiInterfacename(i.Name)
-
+	hostname := GetPfHostname()
 	if isvlan {
 		sectionid = fmt.Sprintf("CLUSTER interface %s", ifname)
 		A3Delete("CLUSTER", sectionid)
-		sectionid = fmt.Sprintf("%s interface %s", GetHostname(), ifname)
+		sectionid = fmt.Sprintf("%s interface %s", hostname, ifname)
 		return A3Delete("CLUSTER", sectionid)
 	} else {
 		sectionid = "CLUSTER"
 		A3Delete("CLUSTER", sectionid)
 		sectionid = fmt.Sprintf("CLUSTER interface %s", ifname)
 		A3Delete("CLUSTER", sectionid)
-		sectionid = GetHostname()
+		sectionid = hostname
 		A3Delete("CLUSTER", sectionid)
-		sectionid = fmt.Sprintf("%s interface %s", GetHostname(), ifname)
+		sectionid = fmt.Sprintf("%s interface %s", hostname, ifname)
 		return A3Delete("CLUSTER", sectionid)
 	}
 

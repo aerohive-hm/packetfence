@@ -17,7 +17,7 @@ type ClusterNetworksData struct {
 
 func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) ClusterNetworksData {
 	clusterNetworksData := ClusterNetworksData{}
-	clusterNetworksData.HostName = GetHostname()
+	clusterNetworksData.HostName = GetPfHostname()
 	Items := GetItemsValue(ctx)
 
 	for _, p := range primaryData.Items {

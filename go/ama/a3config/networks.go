@@ -83,7 +83,7 @@ func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
 	}
 
 	for _, item := range items {
-		err = UpdateJoinClusterconf(item, GetHostname())
+		err = UpdateJoinClusterconf(item, GetPfHostname())
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdateJoinClusterconf error:" + err.Error())
 			return err
@@ -105,7 +105,7 @@ func GetNetworksData(ctx context.Context) NetworksData {
 	}
 	networksData.Items = GetItemsValue(context)
 	networksData.ClusterEnable = true
-	networksData.HostName = GetHostname()
+	networksData.HostName = GetPfHostname()
 	return networksData
 }
 

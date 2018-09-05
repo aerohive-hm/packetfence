@@ -114,7 +114,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 }
 
 func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
-	onboardHeader.Hostname = a3config.GetHostname()
+	onboardHeader.Hostname = utils.GetHostname()
 	onboardHeader.SystemID = utils.GetA3SysId()
 	onboardHeader.ClusterID = utils.GetClusterId()
 

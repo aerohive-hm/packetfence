@@ -223,7 +223,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 
 //This API was used by nodes without GDC and RDC token.
 func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
-	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken?systemID=%s&hostname=%s", mem.IpAddr, utils.GetA3SysId(), a3config.GetHostname())
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken?systemID=%s&hostname=%s", mem.IpAddr, utils.GetA3SysId(), utils.GetHostname())
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
 
 	node := new(innerClient.Client)
@@ -345,7 +345,7 @@ func fillRdcTokenReqHeader() rdcTokenReqFromRdc {
 
 	rdcTokenReq.Header.SystemID = utils.GetA3SysId()
 	rdcTokenReq.Header.ClusterID = utils.GetClusterId()
-	rdcTokenReq.Header.Hostname = a3config.GetHostname()
+	rdcTokenReq.Header.Hostname = utils.GetHostname()
 	//Only SystemID, ClusterID and Hostname is necessary when request RDC token
 	/*
 		rdcTokenReq.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)

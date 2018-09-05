@@ -95,7 +95,7 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	getInfo.Head.Mode = getRunMode()
 	getInfo.Head.Region = amac.GetRdcRegin(getInfo.Head.RdcUrl)
 
-	self.Hostname = a3config.GetHostname()
+	self.Hostname = utils.GetHostname()
 	self.Status = amac.GetAMAConnStatus()
 	self.LastContactTime = fmt.Sprintf("%v", amac.ReadLastConTime())
 

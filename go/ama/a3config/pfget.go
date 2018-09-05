@@ -9,7 +9,7 @@ import (
 	//"github.com/inverse-inc/packetfence/go/log"
 )
 
-func GetHostname() string {
+func GetPfHostname() string {
 	section := A3Read("PF", "general")
 	if section == nil {
 		return ""

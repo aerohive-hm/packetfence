@@ -43,6 +43,11 @@ func SetHostname(hostname string) {
 	ExecCmds(cmds)
 }
 
+func GetHostname() string {
+	h, _ := ExecShell(`hostname`)
+	return strings.TrimRight(h, "\n")
+}
+
 func isProcAlive(proc string) bool {
 	_, err := ExecShell(`pgrep ` + proc)
 	if err == nil {
