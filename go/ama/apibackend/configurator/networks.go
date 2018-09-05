@@ -54,5 +54,7 @@ func handleUpdateNetwork(r *http.Request, d crud.HandlerData) []byte {
 		return crud.FormPostRely(code, ret)
 	}
 	code = "ok"
+
+	a3config.RecordSetupStep(a3config.StepLicensing, code)
 	return crud.FormPostRely(code, ret)
 }

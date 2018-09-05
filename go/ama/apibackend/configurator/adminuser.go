@@ -47,6 +47,7 @@ func hashPassword(password string) string {
 	return ""
 }
 
+
 /* replace is better than insert because it does not need to check if pid exsit or not */
 const (
 	sqlCmd = `replace into password(pid,password,valid_from,expiration,access_level)` +
@@ -137,5 +138,6 @@ END:
 	if err != nil {
 		ret = err.Error()
 	}
+	a3config.RecordSetupStep(a3config.StepNetworks, code)
 	return crud.FormPostRely(code, ret)
 }

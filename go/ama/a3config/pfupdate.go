@@ -32,7 +32,11 @@ func UpdateHostname(hostname string) error {
 }
 
 func UpdateInterface(i Item) error {
-	var err error
+	/*check mask is valid*/
+	err := CheckMaskValid(i.NetMask)
+	if err != nil {
+		return err
+	}
 
 	isvlan := VlanInface(i.Name)
 	if isvlan {
@@ -106,7 +110,7 @@ func UpdateNetconf(i Item) error {
 		return nil
 	}
 
-	keyname := IpBitwiseAndMask(i.IpAddr, i.NetMask) // ip & mask
+	keyname := utils.IpBitwiseAndMask(i.IpAddr, i.NetMask) // ip & mask
 	s := strings.Split(keyname, ".")
 	dhcpstart := fmt.Sprintf("%s.%s.%s.10", s[0], s[1], s[2])
 	dhcpend := fmt.Sprintf("%s.%s.%s.246", s[0], s[1], s[2])
