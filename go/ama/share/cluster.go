@@ -128,6 +128,7 @@ func ActiveSyncFromPrimary(ip, user, password string) {
 	utils.SyncFromPrimary(ip, user, password)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("notify to primary with FinishSync and start pf service"))
 	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
+	utils.ExecShell(`systemctl restart packetfence-api-frontend`)
 	apibackclient.SendClusterSync(ip, "FinishSync")
 
 	utils.UpdateCurrentlyAt()
