@@ -126,9 +126,9 @@ func SyncDataFromPrimary(ip, user, password string) {
 	ctx := context.Background()
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("start to sync from primary=%s and restart necessary service", ip))
 	utils.SyncFromPrimary(ip, user, password)
-	apibackclient.SendClusterSync(ip, "FinishSync")
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("notify to primary with FinishSync and start pf service"))
 	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
+	apibackclient.SendClusterSync(ip, "FinishSync")
 
 	utils.UpdateCurrentlyAt()
 

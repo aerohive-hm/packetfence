@@ -28,9 +28,10 @@ type Sync struct {
 }
 
 const (
-	stopService = "StopServices"
-	startSync   = "StartSync"
-	finishSync  = "FinishSync"
+	stopService      = "StopServices"
+	startSync        = "StartSync"
+	finishSync       = "FinishSync"
+	primaryRecovered = "PrimaryRecovered"
 )
 
 func ClusterSyncNew(ctx context.Context) crud.SectionCmd {
@@ -87,8 +88,8 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 	} else if sync.Status == finishSync {
 		//slave node notify primary to sync completed
 		//TODO: need all node completed
-		utils.RecoverDB()
 		ama.SetClusterStatus(ama.FinishSync)
+		utils.RecoverDB()
 	} else {
 		code = "fail"
 		ret = "Unkown status."
