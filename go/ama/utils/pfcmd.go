@@ -48,7 +48,7 @@ func UpdatePfServices() []Clis {
 	return ExecCmds(cmds)
 }
 
-func updateCurrentlyAt() {
+func UpdateCurrentlyAt() {
 	cmd := "cp -f " + A3Release + " " + A3CurrentlyAt
 	ExecShell(cmd)
 }
@@ -103,7 +103,7 @@ func InitStartService() error {
 
 	ama.InitClusterStatus("primary")
 
-	updateCurrentlyAt()
+	UpdateCurrentlyAt()
 	return nil
 }
 

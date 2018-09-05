@@ -130,6 +130,6 @@ func SyncDataFromPrimary(ip, user, password string) {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("notify to primary with FinishSync and start pf service"))
 	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
 
-	utils.updateCurrentlyAt()
+	utils.UpdateCurrentlyAt()
 
 }
