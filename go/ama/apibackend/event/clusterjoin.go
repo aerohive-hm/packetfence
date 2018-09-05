@@ -95,12 +95,12 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		goto END
 	}
-	/*
-		err = stopServiceByJoin()
-		if err != nil {
-			goto END
-		}
-	*/
+	
+	err = stopServiceByJoin()
+	if err != nil {
+		//goto END
+	}
+	
 	err, respdata = a3config.UpdateEventClusterJoinData(ctx, *clusterData)
 	if err != nil {
 		goto END

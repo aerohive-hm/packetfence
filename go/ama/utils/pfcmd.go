@@ -124,11 +124,11 @@ func ForceNewCluster() {
 	waitProcStart("mysqld")
 
 	cmds = []string {
-		"systemctl restart packetfence-etcd",
+		pfservice + "pf restart &>/dev/null &",
 	}
 	ExecCmds(cmds)
 	
-	log.LoggerWContext(ctx).Error(fmt.Sprintln("ForceNewCluster done"))
+	log.LoggerWContext(ctx).Info(fmt.Sprintln("ForceNewCluster tasks done"))
 
 	ama.SetClusterStatus(ama.Ready4Sync)
 }
@@ -179,7 +179,7 @@ func RecoverDB() {
 	killPorc("pf-mariadb")
 	cmds := []string{
 		`systemctl restart packetfence-mariadb`,
-		pfservice + "pf restart",
+		//pfservice + "pf restart",
 	}
 
 	ExecCmds(cmds)
