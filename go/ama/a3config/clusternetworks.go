@@ -98,8 +98,6 @@ func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworks
 		}
 	}
 
-	utils.ExecShell(`systemctl start packetfence-api-frontend`)
-
 	ama.InitClusterStatus("server")
 
 	return err
