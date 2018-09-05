@@ -335,10 +335,13 @@ sub readCert :Path('/readCert') :Args(0) {
     if ($c->request->method eq 'GET') {
         my $qualifier = $c->request->{qualifier};
         if ($qualifier eq "HTTPS") {
-            $c->stash->{CN} = pf::util::get_cert_subject_cn($server_cert);
+            $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($server_cert);
+            $c->stash->{Server_INFO} = `/usr/bin/openssl x509 -noout -text -in $server_cert`;
         } elsif ($qualifier eq "eap") {
             $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($radius_server_cert);
             $c->stash->{CN_CA} = pf::util::get_cert_subject_cn($radius_ca_cert);
+            $c->stash->{Server_INFO} = `/usr/bin/openssl x509 -noout -text -in $radius_server_cert`;
+            $c->stash->{CA_INFO} = `/usr/bin/openssl x509 -noout -text -in $radius_ca_cert`;
         }
     }
 }
