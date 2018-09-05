@@ -289,7 +289,7 @@ class aerohiveCloudCtl extends Component {
         });
 
         let createAnAerohiveCloudAccountHtml=  <div className="cloud-message-div-aerohiveCloudCtl"> 
-            <div className="cloud-message-item-div-aerohiveCloudCtl" style={{marginTop:"0px"}}> 
+            <div className="cloud-message-item-div-aerohiveCloudCtl" style={{marginTop:"24px"}}> 
                 {self.state.i18n.cloudMessage1}
             </div>
             <div className="cloud-message-item-div-aerohiveCloudCtl"> 
