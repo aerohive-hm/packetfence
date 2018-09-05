@@ -82,6 +82,7 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		ip := a3config.ReadClusterPrimary()
 		web := a3config.GetWebServices()["webservices"]
 		utils.SyncFromPrimary(ip, web["user"], web["pass"])
+		utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf restart")
 
 		//amac.JoinCompleteEvent()
 		apibackclient.SendClusterSync(ip, "FinishSync")

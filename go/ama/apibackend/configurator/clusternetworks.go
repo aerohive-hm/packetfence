@@ -48,7 +48,7 @@ func handleGetClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 }
 
 func activeJoinCluster(ip, user, pass string) {
-	a3share.SyncDataFromPrimary(ip, user, pass)
+	a3share.ActiveSyncFromPrimary(ip, user, pass)
 	amac.JoinCompleteEvent()
 }
 

@@ -117,7 +117,7 @@ func waitPrimarySync(ip string) error {
 	return nil
 }
 
-func SyncDataFromPrimary(ip, user, password string) {
+func ActiveSyncFromPrimary(ip, user, password string) {
 	//wait a moment?
 	err := waitPrimarySync(ip)
 	if err != nil {

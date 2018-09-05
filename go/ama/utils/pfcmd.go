@@ -166,7 +166,7 @@ func SyncFromPrimary(ip, user, pass string) {
 
 	ama.SetClusterStatus(ama.SyncDB)
 	cmds = []string{
-		pfcmd + "configreload",
+		pfcmd + "configreload hard",
 		pfservice + "haproxy-db restart",
 		pfservice + "httpd.webservices restart",
 		`systemctl set-default packetfence-cluster`,
