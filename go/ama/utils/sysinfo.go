@@ -87,3 +87,11 @@ func killPorc(proc string) {
 
 	waitProcStop(proc)
 }
+
+func updateEtcd() {
+	cmds := []string{
+		`systemctl stop packetfence-etcd`,
+		`rm -rf /usr/local/pf/var/etcd/`,
+	}
+	ExecCmds(cmds)
+}

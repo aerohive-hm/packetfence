@@ -298,7 +298,7 @@ func UpdateWebservices(user, password string) error {
 }
 
 func UpdateClusterFile() {
-	cmd := `echo -e "/usr/local/pf/conf/cloud.conf\n ` +
+	cmd := `echo -e "\n/usr/local/pf/conf/cloud.conf\n` +
 		`/usr/local/pf/conf/clusterid.conf" >> /usr/local/pf/conf/cluster-files.txt`
 	utils.ExecShell(cmd)
 }

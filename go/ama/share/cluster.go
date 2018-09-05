@@ -110,7 +110,7 @@ func waitPrimarySync(ip string) error {
 		if msg.Status == "StartSync" {
 			break
 		}
-		
+
 		time.Sleep(10 * time.Second)
 	}
 

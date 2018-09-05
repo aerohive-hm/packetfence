@@ -101,7 +101,7 @@ func InitStartService() error {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
-	ama.InitClusterStatus("primary")
+	//ama.InitClusterStatus("primary")
 
 	UpdateCurrentlyAt()
 	return nil
@@ -123,11 +123,13 @@ func ForceNewCluster() {
 	ExecCmds(cmds)
 	waitProcStart("mysqld")
 
-	cmds = []string {
+	updateEtcd()
+
+	cmds = []string{
 		pfservice + "pf restart &>/dev/null &",
 	}
 	ExecCmds(cmds)
-	
+
 	log.LoggerWContext(ctx).Info(fmt.Sprintln("ForceNewCluster tasks done"))
 
 	ama.SetClusterStatus(ama.Ready4Sync)
@@ -137,6 +139,7 @@ func ForceNewCluster() {
 func StopService() {
 	cmds := []string{
 		`systemctl stop packetfence-mariadb`,
+		`systemctl stop packetfence-etcd`,
 	}
 	ExecCmds(cmds)
 }

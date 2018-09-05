@@ -11,7 +11,7 @@ import (
 
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	"github.com/inverse-inc/packetfence/go/ama/amac"
+	//"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -74,7 +74,7 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive sync %s from %s", sync.Status, r.Host))
 	if sync.Status == stopService {
 		//primary tell slave node to stop service
-		//but POST from primary to slave node is not work 
+		//but POST from primary to slave node is not work
 		utils.StopService()
 	} else if sync.Status == startSync {
 		//primary tell slave node to start sync
@@ -82,7 +82,7 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		web := a3config.GetWebServices()["webservices"]
 		utils.SyncFromPrimary(ip, web["user"], web["pass"])
 
-		amac.JoinCompleteEvent()
+		//amac.JoinCompleteEvent()
 		apibackclient.SendClusterSync(ip, "FinishSync")
 	} else if sync.Status == finishSync {
 		//slave node notify primary to sync completed
