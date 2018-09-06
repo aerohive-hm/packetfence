@@ -1,7 +1,6 @@
 $(document).ready(function(){
 
-
-  document.getElementById("link-account").onclick = function (){
+  document.getElementById("link-account").onclick = function(){
     var url = document.getElementById("url").value;
     var user = document.getElementById("user").value;
     var pass = document.getElementById("pass").value;
@@ -10,6 +9,11 @@ $(document).ready(function(){
     // e.preventDefault();
     linkAerohiveAccount();
   }
+
+  document.getElementById().onclick = function(){
+
+  }
+
 });
 
 //function
