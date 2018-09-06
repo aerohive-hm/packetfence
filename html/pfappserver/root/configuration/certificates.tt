@@ -56,10 +56,11 @@
                     <span>A server key and server certificate is required. If a CA certificate exists, upload that as well.</span>
                     <span>Please restart the radiusd service after you upload the new certificates and key.</span>
                     <br><br>
-                    <input id="serverKey_path" name="serverKey_path" type="hidden" value="">
+                    <input id="eap_key_path" name="eap_key_path" type="hidden" value="">
                     <label><h6>Key (file type:  .key) <a id="view-more" style="padding-left: 10px;" href="#">View More</a></h6></label>
                     <input id="serverKey" name="serverKey_upload" class="serverKey btn btn-primary" type="file"/>
                     <br>
+                    <input id="eap_cert_path" name="eap_cert_path" type="hidden" value="">
                     <label><h6>Server Certificate (file type:  .pem) <a id="view-more" style="padding-left: 10px;" href="#">View More</a></h6></label>
                     <input id="serverCert" name="serverCert_upload" class="serverCert btn btn-primary" type="file">
                     <button class="btn btn-success" style="padding-top:9px; padding-bottom:9px;">Download</button>

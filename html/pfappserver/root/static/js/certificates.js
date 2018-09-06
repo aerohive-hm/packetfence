@@ -13,6 +13,8 @@ $(document).ready(function(){
 
   var https_path        = document.getElementById('https_key_path');
   var https_server_cert = document.getElementById('https_cert_path');
+  var eap_key_path        = document.getElementById('https_key_path');
+  var eap_server_path = document.getElementById('https_cert_path');
 
   document.getElementById("https-upload").onclick = function(e){
     e.preventDefault();
@@ -51,13 +53,6 @@ $(document).ready(function(){
   view_more_link.onclick = function(){
      //ppop up bubble with info
   }
- // uploadKey();
-
-  // readCert();
-  //
-  // uploadCACert();
-  //
-  // uploadServerCert();
 
   document.getElementById("serverKey").onchange = function(){
     // checkKey();

@@ -33,7 +33,7 @@
 
 <!--if user has a cluster and presses link account: -->
   [% IF is_cluster_enabled %]
-      <div class="cluster-cloud" style="display:none;">
+      <div class="linked cluster-cloud" style="display:none;">
         <h5>Linked with Aerohive Cloud Services at <a href="#">https://cloud.aerohive.com</a></h5>
         <table>
           <tbody>
@@ -75,7 +75,7 @@
   <!--if user has standalone and user presses link accounts:-->
 
     [% ELSE %]
-        <div class="standalone" style="display:none;">
+        <div class="linked standalone" style="display:none;">
           <h5>Linked with Aerohive Cloud Services at <a href="#">https://cloud.aerohive.com</a></h5>
           <table>
             <tbody>
@@ -105,12 +105,12 @@
   // $("#link-account").on("click", function(e) {
   //   e.preventDefault();
   //   $(".disconnected").hide();
-  //   $(".cluster-cloud").show();
+  //   $(".linked").show();
   // });
   //
   // $("#unlink-account2").on("click", function(e) {
   //   e.preventDefault();
-  //   $(".cluster-cloud").hide();
+  //   $(".linked").hide();
   //   $(".disconnected").show();
   // });
 </script>
