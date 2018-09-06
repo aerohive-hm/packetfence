@@ -11,7 +11,7 @@ import (
 
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	//"github.com/inverse-inc/packetfence/go/ama/amac"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -21,6 +21,7 @@ import (
 type SyncData struct {
 	Code   string `json:"code"`
 	Status string `json:"status"`
+	SendIp string `json:"ip"`
 }
 
 type Sync struct {
@@ -58,7 +59,7 @@ func handleGetSync(r *http.Request, d crud.HandlerData) []byte {
 	} else if t.Status == ama.FinishSync {
 		s = finishSync
 	}
-	return []byte(fmt.Sprintf(`{"code":"ok", "status":"%s"}`, s))
+	return []byte(fmt.Sprintf(`{"code":"ok", "status":"%s", "ip":"%s"}`, s, a3share.GetOwnMGTIp()))
 }
 
 func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
@@ -73,14 +74,15 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(err.Error())
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive sync %s from %s", sync.Status, r.Host))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive sync %s from %s", sync.Status, sync.SendIp))
 	if sync.Status == stopService {
 		//primary tell slave node to stop service
 		//but POST from primary to slave node is not work
 		utils.StopService()
 	} else if sync.Status == startSync {
 		//primary tell slave node to start sync
-		ip := a3config.ReadClusterPrimary()
+		//ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+		ip := sync.SendIp
 		web := a3config.GetWebServices()["webservices"]
 		utils.SyncFromPrimary(ip, web["user"], web["pass"])
 		utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf restart")
