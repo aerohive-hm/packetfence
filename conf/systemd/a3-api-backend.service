@@ -1,7 +1,7 @@
 [Unit]
-Description=A3 API backend Service
-Wants=packetfence-base.target packetfence-config.service packetfence-iptables.service
-After=packetfence-base.target packetfence-config.service packetfence-iptables.service
+Description=A3 API Backend Service
+Wants=packetfence-base.target packetfence-config.service
+After=packetfence-base.target packetfence-config.service
 Before=packetfence-httpd.portal.service
 
 [Service]
