@@ -347,7 +347,7 @@ sub readCert :Path('/readCert') :Args(0) {
     $logger->info("jma_debug inside readCert");
 
     if ($c->request->method eq 'GET') {
-        my $qualifier = $c->request->{qualifier};
+        my $qualifier = $c->request->{query_parameters}->{qualifier};
         if ($qualifier eq "HTTPS") {
             $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($server_cert);
             $c->stash->{Server_INFO} = `/usr/bin/openssl x509 -noout -text -in $server_cert`;
@@ -376,7 +376,7 @@ sub downloadCert :Path('/downloadCert') :Args(0) {
     $logger->info("jma_debug inside readCert");
 
     if ($c->request->method eq 'GET') {
-        my $qualifier = $c->request->{qualifier};
+        my $qualifier = $c->request->{query_parameters}->{qualifier};
         if ($qualifier eq 'https') {
             $cert_path = $server_cert;
         } elsif ($qualifier eq 'eap') {
