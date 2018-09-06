@@ -22,6 +22,7 @@ function submitClusterNode(){
       },
       error: function(data){
         alert("something went wrong");
+        alert(data.msg);
         var errMsg = data.status_msg;
         if (errMsg != null ) {
             document.getElementById('errorMessage').innerHTML = errMsg;
@@ -37,6 +38,10 @@ function submitClusterNode(){
 function removeClusterNode(){
    var base_url = window.location.origin;
    $.ajax({
-
+      type: 'POST',
+      url: base_url + '',
+      dataType: 'json',
+      processData: false,
+      contentType: false,
    });
 }

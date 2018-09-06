@@ -8,19 +8,19 @@
     cssFiles = [
         ]
 -%]
-[% MACRO list_entry(action,description) BLOCK %]
+<!-- [% MACRO list_entry(action,description) BLOCK %]
 
   <li[% IF section == action %] class="active"[% END %]>
     <a href="#[% action %]">[% l(description) %]</a>
   </li>
-[% END -%]
+[% END -%] -->
 <div class="card">
     <div class="card-block">
         <div class="documentation">
           <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
           <form>
               <label class="form-horizontal control-label" style="float:left; width: 130px;" for="sharedKey">Shared Key</label>
-              <input class="form-inline help-inline" type="text" name="sharedKey" id="sharedKey" placeholder="*********"><br>
+              <div class="input-append"><input class="form-inline help-inline pf-obfuscated-text" type="text" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
               <br/>
               <label class="form-horizontal control-label" style="float:left; width:130px;" for="virtual_router_id">Virtual Router IP</label>
               <input class="form-inline help-inline" type="text" name="virtual_router_id" id="other" placeholder="50"><br>
@@ -29,7 +29,7 @@
           <label style="float:left; width:130px;">  </label>
           <button class="btn btn-success submit" style="width: 220px;">Submit</button>
 
-          <hr/>
+          <br/>
           <h6>Cluster Node List</h6>
           <table id="items" class="table items" data-list-uri="https://10.16.139.168:1443/config/pfmon/list">
             <thead>

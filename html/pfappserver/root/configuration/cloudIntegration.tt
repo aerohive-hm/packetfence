@@ -7,7 +7,7 @@
     <div class="pages" style="height: 500px;">
       <div class="disconnected" style="width: 100%; display: flex;">
         <div id="form-messages"></div>
-        <div class="cloud-form" style="width: 350px;">
+        <div class="cloud-form" style="width: 400px;">
           <form enctype="multipart/form-data" method="post" id="cloudForm" name="cloudForm">
               <label class="form-horizontal control-label" style="float:left; width: 130px;" for="url">Cloud Host</label>
               <input class="cloud-host form-inline help-inline" type="text" name="url" id="url" placeholder="cloud.aerohive.com"><br>
@@ -16,10 +16,10 @@
               <input class="cloud-admin form-inline help-inline" type="text" name="user" id="user" placeholder="admin@example.com"><br>
               <br/>
               <label class="form-horizontal control-label" style="float:left; width:130px;" for="pass">Password</label>
-              <input class="cloud-pw form-inline help-inline" type="text" name="pass" id="pass" placeholder="*********"><br>
+              <div class="input-append"><input class="cloud-pw form-inline help-inline pf-obfuscated-text" type="text" name="pass" id="pass" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
               <br/>
               <label style="float:left; width:130px;">  </label>
-              <input class="btn btn-primary" id="link-account" style="float:right; width: 194px;" value="Link with Aerohive Account" />
+              <input class="btn btn-primary" id="link-account" style="float:right; width: 194px; margin-right: 50px;" value="Link with Aerohive Account" />
           </form>
         </div>
 
