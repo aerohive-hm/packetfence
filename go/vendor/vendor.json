@@ -1163,6 +1163,12 @@
 			"path": "layeh.com/radius/rfc2866",
 			"revision": "38e2cda15058f4ce69c39eaf2fbdab2b01e9cf55",
 			"revisionTime": "2018-01-23T16:43:51Z"
+		},
+		{
+			"checksumSHA1": "TmAGzklYHunmTchDYQWhFFFYEao=",
+			"path": "github.com/go-ini/ini",
+			"revision": "5cf292cae48347c2490ac1a58fe36735fb78df7e",
+			"revisionTime": "2018-08-18T11:46:59Z"
 		}
 	],
 	"rootPath": "github.com/inverse-inc/packetfence/go"

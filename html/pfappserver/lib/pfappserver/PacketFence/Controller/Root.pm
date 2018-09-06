@@ -76,7 +76,7 @@ sub index :Path :Args(0) {
         $c->response->redirect($admin_url);
     } else {
         # Redirect to the configurator
-        $c->response->redirect($c->uri_for($c->controller('Configurator')->action_for('index')));
+        $c->response->redirect($c->uri_for($c->controller('A3')->action_for('index'))."/configurator/index.html");
     }
     $c->detach();
 }

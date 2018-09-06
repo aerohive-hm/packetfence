@@ -1,0 +1,32 @@
+
+.title-screen-full-div-logo{
+    width:100%;
+    background: #283238;
+    height: 50px;
+}
+.title-screen-center-div-logo{
+    margin:0 auto;
+    width:1280px;
+    height: 50px;
+
+}
+
+.logo-div-logo{
+    float:left;
+    width:122px;
+    height:50px;
+}
+.logo-img-logo{
+    float:left;
+    width:122px;
+    height:50px;
+}
+
+.text-div-logo{
+    float:left;
+    height:50px;
+    line-height: 50px;
+    font-size: 16px;
+    color: #ffffff;
+    margin-left:30px;
+}

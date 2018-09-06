@@ -1,0 +1,442 @@
+
+.global-div-networksCtl{
+    float:left;
+    width:1240px;
+}
+
+.left-div-networksCtl{
+    float:left;
+    width:234px;
+    margin-left:20px;
+}
+.img-div-networksCtl{
+    float:left;
+    margin-top:90px;
+    width:234px;
+    height:215px;
+    
+}
+.img-img-networksCtl{
+    float:left;
+    width:234px;
+    height:215px;
+    
+}
+
+.right-div-networksCtl{
+    float:left;
+    margin-top:90px;
+    margin-left:86px;
+    width:900px;
+    height:300px;
+}
+
+.form-item-div-networksCtl{
+    float:left;
+    width:900px;
+    margin-top:10px;
+}
+.form-item-title-div-networksCtl{
+    float:left;
+    width:900px;
+    height:17px;
+    line-height: 17px;
+    color:#333333;
+    font-weight: bold;
+    font-size: 12px;
+}
+.form-item-input-div-networksCtl{
+    float:left;
+    width:270px;
+    height:32px;
+}
+.form-item-wrong-div-networksCtl{
+    float:left;
+    margin-left:20px;
+    width:610px;
+    height:32px;
+    line-height: 32px;
+    color:#f44336;
+    font-size: 12px;
+
+}
+
+
+.interfaces-div-networksCtl{
+    float:left;
+    width:900px;
+    margin-top:20px;
+    height:17px;
+    line-height: 17px;
+    color:#333333;
+    font-weight: bold;
+    font-size: 12px;
+}
+.enable-clustering-div-networksCtl{
+    float:left;
+    width:900px;
+    height:20px;
+    margin-top: 4px;
+}
+.enable-clustering-checkbox-div-networksCtl{
+    float:left;
+    width:16px;
+    height:20px;
+}
+.enable-clustering-text-div-networksCtl{
+    float:left;
+    height:20px;
+    color:#333333;
+    font-size: 12px;
+    line-height: 20px;
+    margin-left: 10px;
+}
+
+.table-div-networksCtl{
+    float:left;
+    width:900px;
+    margin-top:6px;
+}
+.table-single-row-div-networksCtl{
+    background: #ffffff;
+}
+.table-double-row-div-networksCtl{
+    background: #f4f6f9;
+}
+
+.name-etho-div-networksCtl{
+    float:left;
+    height: 28px;
+    line-height: 28px;
+}
+.name-vlan-div-networksCtl{
+    float:left;
+    height: 28px;
+}
+.name-vlan-blank-div-networksCtl{
+    float:left;
+    height: 28px;
+    width:20px;
+}
+.name-vlan-text-div-networksCtl{
+    float:left;
+    padding-right:4px;
+    height: 28px;
+    line-height: 28px;
+}
+
+
+.name-edit-div-networksCtl{
+    float:left;
+    height: 28px;
+    margin-left:4px;  
+}
+.name-edit-input-div-networksCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.name-edit-ok-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.name-edit-ok-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.name-edit-no-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.name-edit-no-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.name-text-div-networksCtl{
+    float:left;
+    height:28px;
+    line-height: 28px;
+    cursor: pointer;
+    color:#2c6aff;
+}
+
+
+
+
+
+.ipAddr-edit-input-div-networksCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.ipAddr-edit-ok-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.ipAddr-edit-ok-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.ipAddr-edit-no-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.ipAddr-edit-no-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.ipAddr-text-div-networksCtl{
+    cursor: pointer;
+    color:#2c6aff;
+}
+
+
+.netmask-edit-input-div-networksCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.netmask-edit-ok-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.netmask-edit-ok-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.netmask-edit-no-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.netmask-edit-no-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.netmask-text-div-networksCtl{
+    cursor: pointer;
+    color:#2c6aff;
+}
+
+
+
+
+
+.vip-edit-input-div-networksCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.vip-edit-ok-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.vip-edit-ok-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.vip-edit-no-div-networksCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.vip-edit-no-img-networksCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.vip-text-div-networksCtl{
+    cursor: pointer;
+    color:#2c6aff;
+}
+
+
+.vlan-add-div-networksCtl{
+    float:left;
+    height: 28px;
+    cursor: pointer;
+}
+.vlan-add-img-div-networksCtl{
+    float:left;
+    margin-top:4px;
+    height: 20px;
+    width:20px;
+
+}
+.vlan-add-img-img-networksCtl{
+    float:left;
+    height: 20px;
+    width:20px;
+}
+.vlan-add-text-div-networksCtl{
+    float:left;
+    margin-left: 6px;
+    height: 28px;
+    line-height: 28px;
+    color:#2c6aff;
+
+}
+
+.vlan-remove-div-networksCtl{
+    float:left;
+    height: 28px;
+    cursor: pointer;
+}
+.vlan-remove-img-div-networksCtl{
+    float:left;
+    margin-top:4px;
+    height: 20px;
+    width:20px;
+}
+.vlan-remove-img-img-networksCtl{
+    float:left;
+    height: 20px;
+    width:20px;
+}
+.vlan-remove-text-div-networksCtl{
+    float:left;
+    margin-left: 6px;
+    height: 28px;
+    line-height: 28px;
+    color:#2c6aff;
+}
+
+.form-button-div-networksCtl{
+    float:left;
+    width:900px;
+    margin-top:10px;
+}
+.form-button-cancel-div-networksCtl{
+    float:right;
+    margin-right:12px;
+    width:78px;
+    height:32px;
+}
+.form-button-next-div-networksCtl{
+    float:right;
+    width:70px;
+    height:32px;
+}
+.form-button-cancel-antd-button-networksCtl{
+    width:78px;
+    height:32px;
+}
+.form-button-next-antd-button-networksCtl{
+    width:70px;
+    height:32px;
+    background:#2c6aff;
+}
+
+
+
+
+.modal-div-networksCtl{
+    width:270px;
+}
+
+.modal-form-item-div-networksCtl{
+    float:left;
+    width:270px;
+}
+.modal-form-item-title-div-networksCtl{
+    float:left;
+    width:270px;
+    height:17px;
+    line-height: 17px;
+    color:#333333;
+    font-weight: bold;
+    font-size: 12px;
+}
+.modal-form-item-input-div-networksCtl{
+    float:left;
+    width:270px;
+    height:32px;
+}
+.modal-form-item-name-vlan-div-networksCtl{
+    float:left;
+    font-size: 12px;
+    width:40px;
+    height:32px;
+    line-height: 32px;
+}
+.modal-form-item-name-number-div-networksCtl{
+    float:left;
+    width:230px;
+    height:32px;
+}
+.modal-form-item-wrong-div-networksCtl{
+    float:left;
+    width:270px;
+    height:16px;
+    line-height: 16px;
+    color:#f44336;
+    font-size: 12px;
+}
+.modal-form-button-div-networksCtl{
+    float:left;
+    width:270px;
+}
+.modal-form-button-cancel-div-networksCtl{
+    float:right;
+    margin-right:16px;
+    width:78px;
+    height:32px;
+}
+.modal-form-button-next-div-networksCtl{
+    float:right;
+    width:78px;
+    height:32px;
+}
+.modal-form-button-cancel-antd-button-networksCtl{
+    width:78px;
+    height:32px;
+}
+.modal-form-button-next-antd-button-networksCtl{
+    width:78px;
+    height:32px;
+}

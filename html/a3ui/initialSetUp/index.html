@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>initialSetUp</title>
+</head>
+
+<body>
+    <div id="app"></div>
+</body>
+
+<script>
+    var thisHost=window.location.href;
+    var useHost=thisHost.slice(0,thisHost.length-10);
+
+    document.write('<lin'+'k href="'+useHost+'static/css/initialSetUp.css" rel="stylesheet" >');
+    document.write('<scrip'+'t src="'+useHost+'static/js/initialSetUp.js"></s'+'cript>');
+
+</script>
+
+</html>
