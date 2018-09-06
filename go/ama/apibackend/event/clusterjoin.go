@@ -48,7 +48,7 @@ func sendClusterSync(ip, Status string) error {
 
 	data.Status = Status
 	data.Code = "ok"
-	data.SendIp = a3share.GetOwnMGTIp()
+	data.SendIp = utils.GetOwnMGTIp()
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("post cluster event sync with: %s", url))
@@ -71,7 +71,7 @@ func sendClusterSync(ip, Status string) error {
 
 func stopServiceByJoin() error {
 	nodeList := a3share.FetchNodesInfo()
-	ownMgtIp := a3share.GetOwnMGTIp()
+	ownMgtIp := utils.GetOwnMGTIp()
 	
 	for _, node := range nodeList {
 		if node.IpAddr == ownMgtIp {
@@ -88,7 +88,7 @@ func stopServiceByJoin() error {
 func notifyClusterStartSync() error {
 	ctx := context.Background()
 	nodeList := a3share.FetchNodesInfo()
-	ownMgtIp := a3share.GetOwnMGTIp()
+	ownMgtIp := utils.GetOwnMGTIp()
 	
 	for _, node := range nodeList {
 		if node.IpAddr == ownMgtIp {

@@ -100,3 +100,12 @@ func updateEtcd() {
 	}
 	ExecCmds(cmds)
 }
+
+func GetOwnMGTIp() string {
+	ifaces, _ := GetIfaceList("eth0")
+	for _, iface := range ifaces {
+		return iface.IpAddr
+	}
+
+	return ""
+}

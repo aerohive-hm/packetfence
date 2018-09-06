@@ -33,7 +33,3 @@ func FetchNodesInfo() []NodeInfo {
 	}
 	return nodes
 }
-
-func GetOwnMGTIp() string {
-	return a3config.GetIfaceElementVlaue("eth0", "ip")
-}

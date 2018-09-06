@@ -11,7 +11,6 @@ import (
 
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -59,7 +58,7 @@ func handleGetSync(r *http.Request, d crud.HandlerData) []byte {
 	} else if t.Status == ama.FinishSync {
 		s = finishSync
 	}
-	return []byte(fmt.Sprintf(`{"code":"ok", "status":"%s", "ip":"%s"}`, s, a3share.GetOwnMGTIp()))
+	return []byte(fmt.Sprintf(`{"code":"ok", "status":"%s", "ip":"%s"}`, s, utils.GetOwnMGTIp()))
 }
 
 func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {

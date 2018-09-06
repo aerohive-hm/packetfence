@@ -102,7 +102,7 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	dataArray = append(dataArray, self)
 
 	nodeList := a3share.FetchNodesInfo()
-	ownMgtIp := a3share.GetOwnMGTIp()
+	ownMgtIp := utils.GetOwnMGTIp()
 	for _, node := range nodeList {
 		other := CloudGetData{}
 		if node.IpAddr == ownMgtIp {
@@ -168,7 +168,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		ret = "disable cloud integration successfully"
 
 		nodeList := a3share.FetchNodesInfo()
-		ownMgtIp := a3share.GetOwnMGTIp()
+		ownMgtIp := utils.GetOwnMGTIp()
 		for _, node := range nodeList {
 			if node.IpAddr == ownMgtIp {
 				continue

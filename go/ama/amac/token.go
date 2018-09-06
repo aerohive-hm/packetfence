@@ -80,22 +80,18 @@ func fetchNodeList() []MemberList {
 		return nil
 	}
 	nodes := []MemberList{}
-	headNode := []MemberList{}
-	ownMgtIP := a3config.GetIfaceElementVlaue("eth0", "ip")
+	ownMgtIP := utils.GetOwnMGTIp()
 	for secName, kvpair := range conf {
-		is_primary := (secName == "CLUSTER")
+	    if secName == "CLUSTER" {
+			continue
+	    }
 		for k, v := range kvpair {
 			if k == "management_ip" && v != ownMgtIP {
 				node := MemberList{IpAddr: v}
-				if is_primary {
-					headNode = append(headNode, node)
-				} else {
-					nodes = append(nodes, node)
-				}
+				nodes = append(nodes, node)
 			}
 		}
 	}
-	nodes = append(headNode, nodes...)
 	return nodes
 }
 
@@ -287,7 +283,7 @@ func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew
 		cloudInfo.RdcUrl = rdcUrl
 		cloudInfo.Switch = globalSwitch
 		cloudInfo.VhmID = VhmidStr
-		cloudInfo.PriNode = a3share.GetOwnMGTIp()
+		cloudInfo.PriNode = utils.GetOwnMGTIp()
 		cloudInfo.OrgID = OrgIdStr
 	}
 	jsonData, _ := json.Marshal(cloudInfo)
@@ -329,7 +325,7 @@ func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew
 */
 func TriggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
 	nodeList := a3share.FetchNodesInfo()
-	ownMgtIp := a3share.GetOwnMGTIp()
+	ownMgtIp := utils.GetOwnMGTIp()
 	for _, node := range nodeList {
 		if node.IpAddr == ownMgtIp {
 			continue
