@@ -37,7 +37,7 @@ func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 |-`pf-mariadb --force-new-cluster &`
 |-send event/cluster/sync start
 */
-func PrepareClusterNodeJoin() {
+func prepareClusterNodeJoin() {
 	utils.ForceNewCluster()
 	notifyClusterStartSync()
 }
@@ -60,7 +60,7 @@ func sendClusterSync(ip, Status string) error {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return err
 	}
-	
+
 	err = client.ClusterSend("POST", url, string(jsonData))
 
 	if err != nil {
@@ -72,7 +72,7 @@ func sendClusterSync(ip, Status string) error {
 func stopServiceByJoin() error {
 	nodeList := a3share.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
-	
+
 	for _, node := range nodeList {
 		if node.IpAddr == ownMgtIp {
 			continue
@@ -89,7 +89,7 @@ func notifyClusterStartSync() error {
 	ctx := context.Background()
 	nodeList := a3share.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
-	
+
 	for _, node := range nodeList {
 		if node.IpAddr == ownMgtIp {
 			continue
@@ -127,7 +127,7 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 
 	// Prepare for cluster node sync
 	ama.InitClusterStatus("primary")
-	go PrepareClusterNodeJoin()
+	go prepareClusterNodeJoin()
 
 END:
 	if err != nil {

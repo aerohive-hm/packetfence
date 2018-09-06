@@ -145,6 +145,7 @@ func StopService() {
 	cmds := []string{
 		`systemctl stop packetfence-mariadb`,
 		`systemctl stop packetfence-etcd`,
+		`rm -rf /usr/local/pf/var/etcd/`,
 	}
 	ExecCmds(cmds)
 }
