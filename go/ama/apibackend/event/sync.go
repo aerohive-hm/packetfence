@@ -69,6 +69,7 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 
 	err := json.Unmarshal(d.ReqData, sync)
 	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
 		return []byte(err.Error())
 	}
 

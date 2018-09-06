@@ -47,13 +47,20 @@ func sendClusterSync(ip, Status string) error {
 	data := new(SyncData)
 
 	data.Status = Status
+	data.Code = "ok"
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("post cluster event sync with: %s", url))
 
 	client := new(apibackclient.Client)
 	client.Host = ip
-	err := client.ClusterSend("POST", url, data.Status)
+	jsonData, err := json.Marshal(&data)
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return err
+	}
+	
+	err = client.ClusterSend("POST", url, string(jsonData))
 
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
@@ -63,8 +70,12 @@ func sendClusterSync(ip, Status string) error {
 
 func stopServiceByJoin() error {
 	nodeList := a3share.FetchNodesInfo()
-
+	ownMgtIp := a3share.GetOwnMGTIp()
+	
 	for _, node := range nodeList {
+		if node.IpAddr == ownMgtIp {
+			continue
+		}
 		err := sendClusterSync(node.IpAddr, "StopServices")
 		if err != nil {
 			return err
@@ -76,7 +87,12 @@ func stopServiceByJoin() error {
 func notifyClusterStartSync() error {
 	ctx := context.Background()
 	nodeList := a3share.FetchNodesInfo()
+	ownMgtIp := a3share.GetOwnMGTIp()
+	
 	for _, node := range nodeList {
+		if node.IpAddr == ownMgtIp {
+			continue
+		}
 		err := sendClusterSync(node.IpAddr, "StartSync")
 		if err != nil {
 			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
@@ -98,6 +114,7 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 
 	err = stopServiceByJoin()
 	if err != nil {
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("post event sync to stopService failed"))
 		//goto END
 	}
 

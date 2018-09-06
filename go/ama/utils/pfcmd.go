@@ -101,6 +101,11 @@ func InitStartService() error {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
+	//TODO: need to restart http server? abort web service?
+	//cmds := []string{
+	//	pfservice + "httpd.admin restart",
+	//}
+	//ExecCmds(cmds)
 	//ama.InitClusterStatus("primary")
 
 	UpdateCurrentlyAt()
@@ -125,10 +130,10 @@ func ForceNewCluster() {
 
 	updateEtcd()
 
-	cmds = []string{
-		pfservice + "pf restart &>/dev/null &",
-	}
-	ExecCmds(cmds)
+	//cmds = []string{
+	//	pfservice + "pf restart &>/dev/null &",
+	//}
+	//ExecCmds(cmds)
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintln("ForceNewCluster tasks done"))
 
@@ -182,7 +187,7 @@ func RecoverDB() {
 	killPorc("pf-mariadb")
 	cmds := []string{
 		`systemctl restart packetfence-mariadb`,
-		//pfservice + "pf restart",
+		pfservice + "pf restart",
 	}
 
 	ExecCmds(cmds)
