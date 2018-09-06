@@ -399,6 +399,41 @@ sub downloadCert :Path('/downloadCert') :Args(0) {
     }
 }
 
+=head2 removeCert
+
+removes the specified certs
+Usage: /removeCert
+
+=cut
+
+sub removeCert :Path('/removeCert') :Args(0) {
+    my ($self, $c) = @_;
+    my $logger = get_logger();
+
+    $logger->info("jma_debug inside removeCert");
+
+    if ($c->request->method eq 'POST') {
+        my $cert_path = $c->request->{query_parameters}->{file_path};
+        if (-e $cert_path) {
+            $logger->info("Removing $cert_path");
+            if(unlink($cert_path) != 1) {
+                $logger->warn("Failed to remove $cert_path $!");
+                $c->stash->{status_msg} = $c->loc("Unable to remove the certificate file!");
+                $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+                return;
+            }
+
+        } else {
+            $logger->warn("Unable to find $cert_path $!");
+            $c->stash->{status_msg} = $c->loc("Unable to remove the certificate file!");
+            $c->response->status($STATUS::BAD_REQUEST);
+            return;
+        }
+        $c->stash->{status_msg} = $c->loc("Removed the certificate file from the server!");
+        $c->response->status($STATUS::OK);
+    }
+}
+
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 
 =head1 AUTHOR
