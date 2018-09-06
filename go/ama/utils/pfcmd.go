@@ -130,10 +130,10 @@ func ForceNewCluster() {
 
 	updateEtcd()
 
-	//cmds = []string{
-	//	pfservice + "pf restart &>/dev/null &",
-	//}
-	//ExecCmds(cmds)
+	cmds = []string{
+		pfservice + "pf restart",
+	}
+	ExecCmds(cmds)
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintln("ForceNewCluster tasks done"))
 
@@ -187,7 +187,7 @@ func RecoverDB() {
 	killPorc("pf-mariadb")
 	cmds := []string{
 		`systemctl restart packetfence-mariadb`,
-		pfservice + "pf restart",
+		//pfservice + "pf restart",
 	}
 
 	ExecCmds(cmds)

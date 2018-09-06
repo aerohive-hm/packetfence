@@ -80,6 +80,7 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 type syncData struct {
 	Code   string `json:"code"`
 	Status string `json:"status"`
+	SendIp string `json:"ip"`
 }
 
 func waitPrimarySync(ip string) error {
@@ -105,7 +106,7 @@ func waitPrimarySync(ip string) error {
 			time.Sleep(10 * time.Second)
 			continue
 		}
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("read sync status=%s from primary", msg.Status))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("read sync status=%s from primary %s", msg.Status, msg.SendIp))
 
 		if msg.Status == "StartSync" {
 			break
