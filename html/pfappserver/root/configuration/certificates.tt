@@ -58,15 +58,16 @@
                     <br><br>
                     <input id="eap_key_path" name="eap_key_path" type="hidden" value="">
                     <label><h6>Key (file type:  .key) <a id="view-more" style="padding-left: 10px;" href="#">View More</a></h6></label>
-                    <input id="serverKey" name="serverKey_upload" class="serverKey btn btn-primary" type="file"/>
+                    <input id="serverKey_upload" name="serverKey_upload" class="serverKey_upload btn btn-primary" type="file"/>
                     <br>
                     <input id="eap_cert_path" name="eap_cert_path" type="hidden" value="">
                     <label><h6>Server Certificate (file type:  .pem) <a id="view-more" style="padding-left: 10px;" href="#">View More</a></h6></label>
-                    <input id="serverCert" name="serverCert_upload" class="serverCert btn btn-primary" type="file">
+                    <input id="serverCert_upload" name="serverCert_upload" class="serverCert_upload btn btn-primary" type="file">
                     <button class="btn btn-success" style="padding-top:9px; padding-bottom:9px;">Download</button>
                   </div>
                   <br>
                   <div class="caFile">
+                    <input id="eap_cacert_path" name="eap_cacert_path" type="hidden" value="">
                     <h6>CA Certificate Upload (file type:  .pem) <a id="view-more" style="padding-left: 10px;" href="#">View More</a></h6>
                     <input class="caCert_upload btn btn-primary" type="file">
                     <button class="btn btn-success" style="padding-top:9px; padding-bottom:9px;">Download</button>

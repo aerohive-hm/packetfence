@@ -1,7 +1,5 @@
 
 $(document).ready(function(){
-  // alert("js connected!");
-
   var https_key         = document.getElementById('https_serverKey_upload');
   var https_server_cert = document.getElementById('https_serverCert_upload');
   var eap_key           = document.getElementById('serverKey_upload');
@@ -13,8 +11,9 @@ $(document).ready(function(){
 
   var https_path        = document.getElementById('https_key_path');
   var https_server_cert = document.getElementById('https_cert_path');
-  var eap_key_path        = document.getElementById('https_key_path');
-  var eap_server_path = document.getElementById('https_cert_path');
+  var eap_key_path      = document.getElementById('eap_key_path');
+  var eap_server_path   = document.getElementById('eap_cert_path');
+  var eap_ca_path       = document.getElementById('eap_cacert_path');
 
   document.getElementById("https-upload").onclick = function(e){
     e.preventDefault();
@@ -23,23 +22,34 @@ $(document).ready(function(){
 
     //add promise, upload key then upload cert
     // then call verify files
-
     $.when(uploadCert(document.getElementById('https_serverCert_upload')),uploadKey(https_key)).done(function(https_path, https_server_cert){
         console.log(https_path[0].filePath); console.log(https_server_cert[0].filePath);
         var qualifier = "https";
         verifyCert(https_path[0].filePath,https_server_cert[0].filePath, qualifier);
     });
-
   }
 
   document.getElementById("eap-upload").onclick = function(e){
-    // console.log("https servercert" + https_server_cert.value);
-    // console.log("eap key" + eap_key.value);
-    // console.log("eap server" + eap_server_cert.value);
-    // console.log("eap ca " + eap_ca_cert.value);
     e.preventDefault();
-    console.log("https key" + https_key.value);
-    console.log("https cert" + document.getElementById('https_serverCert_upload').value);
+    console.log("eap key" + eap_key.value);
+    console.log("eap server" + document.getElementById('https_serverCert_upload').value);
+    console.log("eap ca " + document.getElementById('eap_serverCert_upload').value);
+    //if ca cert is not empty add ca cert to promise, if not then don't add.
+    //add promise, upload key then upload cert
+    // then call verify files
+    if (eap_ca_cert.value.length != 0){
+      $.when(uploadCert(document.getElementById('https_serverCert_upload')),uploadKey(https_key), uploadCACert(eap_ca_cert)).done(function(eap_path, eap_server_path, eap_ca_path){
+          console.log(eap_path[0].filePath); console.log(eap_server_path[0].filePath); console.log(eap_ca_path[0].filePath);
+          var qualifier = "https";
+          verifyCert(https_path[0].filePath,https_server_cert[0].filePath, qualifier);
+      });
+    } else {
+      $.when(uploadCert(document.getElementById('https_serverCert_upload')),uploadKey(https_key)).done(function(https_path, https_server_cert){
+          console.log(https_path[0].filePath); console.log(https_server_cert[0].filePath);
+          var qualifier = "https";
+          verifyCert(https_path[0].filePath,https_server_cert[0].filePath, qualifier);
+      });
+    }
   }
 
 
@@ -70,7 +80,7 @@ $(document).ready(function(){
 
 function uploadCert(input){
   alert("in upload cert");
-  console.log("cert input" + input.files[0]);
+  console.log("server cert input" + input.files[0]);
   var base_url = window.location.origin;
   var form = document.forms.namedItem('https_form');
   var fd = new FormData(form[0]);
@@ -96,6 +106,10 @@ function uploadCert(input){
         console.log(data);
       }
   });
+}
+
+function uploadCACert(){
+    alert("in upload cert");
 }
 
 function uploadKey(input){

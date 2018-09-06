@@ -16,20 +16,12 @@ $(document).ready(function(){
 
 });
 
-//function
-// function populateCloudTable(){
-//
-// }
-
 //function to submit form
 function linkAerohiveAccount(){
   console.log("inside link aerohive account");
   var base_url = window.location.origin;
   var form = document.forms.namedItem("cloudForm");
   var formData = new FormData(form);
-  // console.log("formelement: ");
-  // console.log(form);
-  // console.log("formData: ");
   var object = {};
   formData.forEach(function(value, key){
       object[key] = value;
