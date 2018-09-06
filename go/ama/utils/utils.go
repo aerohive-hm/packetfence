@@ -140,7 +140,7 @@ func UseDefaultClusterConf() error {
 	/*delete clusterid.conf at same time*/
 	path := "/usr/local/pf/conf/clusterid.conf"
 	if IsFileExist(path) {
-		cmd = "rm -f /usr/local/pf/conf/cluster.conf"
+		cmd = "rm -f /usr/local/pf/conf/clusterid.conf"
 		_, err = ExecShell(cmd)
 		if err != nil {
 			fmt.Println("%s:exec error", cmd)
