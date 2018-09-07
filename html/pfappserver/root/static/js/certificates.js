@@ -16,8 +16,9 @@ $(document).ready(function(){
 
   var https_path        = document.getElementById('https_key_path');
   var https_server_cert = document.getElementById('https_cert_path');
-  var eap_key_path      = document.getElementById('https_key_path');
-  var eap_server_path   = document.getElementById('https_cert_path');
+  var eap_key_path      = document.getElementById('eap_key_path');
+  var eap_server_path   = document.getElementById('eap_cert_path');
+  var eap_ca_path       = document.getElementById('eap_cacert_path');
 
   document.getElementById("https-upload").onclick = function(e){
     e.preventDefault();
@@ -26,13 +27,11 @@ $(document).ready(function(){
 
     //add promise, upload key then upload cert
     // then call verify files
-
     $.when(uploadCert(document.getElementById('https_serverCert_upload')),uploadKey(https_key)).done(function(https_path, https_server_cert){
         console.log(https_path[0].filePath); console.log(https_server_cert[0].filePath);
         var qualifier = "https";
         verifyCert(https_path[0].filePath,https_server_cert[0].filePath, qualifier);
     });
-
   }
 
   document.getElementById("eap-upload").onclick = function(e){
@@ -103,6 +102,10 @@ function uploadCert(input){
         console.log(data);
       }
   });
+}
+
+function uploadCACert(){
+    alert("in upload cert");
 }
 
 function uploadKey(input){

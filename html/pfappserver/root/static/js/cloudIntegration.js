@@ -89,8 +89,6 @@ function linkAerohiveAccount(){
   var base_url = window.location.origin;
   var form = document.forms.namedItem("cloudForm");
   var formData = new FormData(form);
-
-  //turn info into Json
   var object = {};
   formData.forEach(function(value, key){
       object[key] = value;
