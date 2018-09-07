@@ -2,10 +2,22 @@
 $(document).ready(function(){
   getNodeInfo();
 
-  document.getElementById("link-account").onclick = function(){
+  document.getElementById("link-account").onclick = function(e){
+    e.preventDefault();
+    var cloudurl  = document.getElementById('url').value;
+    var clouduser = document.getElementById('user').value;
+    var cloudpass = document.getElementById('pass').value;
+    if(cloudurl == "" || clouduser == "" || cloudpass == ""){
+      document.getElementById('errorMessage').innerHTML = "Fill in all fields.";
+      $("#error-alert").show();
+      setTimeout(function (){
+        $("#error-alert").slideUp(500);
+      }, 3000);
+    } else {
+      linkAerohiveAccount();
+    }
     console.log("clicked on link account");
     //add loader here
-    linkAerohiveAccount();
   }
 
   document.getElementById('unlink-account').onclick = function(){
