@@ -276,9 +276,15 @@ func keepaliveToRdc(ctx context.Context) {
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))
 
-		//Dispatch the data coming with keepalive reponses
-		dispathMsgFromRdc(ctx, []byte(body))
-		resp.Body.Close()
+		statusCode := resp.StatusCode
+		if statusCode == 200 {
+			//Dispatch the data coming with keepalive reponses
+			dispathMsgFromRdc(ctx, []byte(body))
+		} else {
+			timeoutCount++
+			resp.Body.Close()
+			continue
+		}
 	}
 }
 
