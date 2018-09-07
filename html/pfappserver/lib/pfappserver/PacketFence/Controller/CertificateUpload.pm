@@ -33,7 +33,7 @@ use pf::file_paths qw(
     $radius_ca_cert
 );
 
-BEGIN {extends 'Catalyst::Controller';}
+BEGIN {extends 'pfappserver::Base::Controller';}
 
 =head1 METHODS
 
@@ -56,7 +56,7 @@ Usage: /uploadKey
 
 =cut
 
-sub uploadKey :Path('/uploadKey') :Args(0) {
+sub uploadKey :Chained('/') :PathPart('uploadKey') :Args(0) :AdminRole('CERTIFICATE_UPDATE') {
     my ($self, $c) = @_;
 
     my $logger = get_logger();
@@ -120,6 +120,8 @@ sub uploadKey :Path('/uploadKey') :Args(0) {
 
         $c->stash->{filePath} = $tmp_filename;
         $logger->info("Saved certificate key at $tmp_filename");
+    } else {
+        $c->response->status($STATUS::METHOD_NOT_ALLOWED);
     }
 }
 
@@ -131,7 +133,7 @@ Usage: /uploadServerCert
 
 =cut
 
-sub uploadServerCert :Path('/uploadServerCert') :Args(0) {
+sub uploadServerCert :Chained('/') :PathPart('uploadServerCert') :Args(0) :AdminRole('CERTIFICATE_UPDATE') {
     my ($self, $c) = @_;
 
     my $logger = get_logger();
@@ -189,6 +191,8 @@ sub uploadServerCert :Path('/uploadServerCert') :Args(0) {
 
         $c->stash->{filePath} = $tmp_filename;
         $logger->info("Saved server certificate at $tmp_filename");
+    } else {
+        $c->response->status($STATUS::METHOD_NOT_ALLOWED);
     }
 
 }
@@ -201,7 +205,7 @@ Usage: /uploadCACert
 
 =cut
 
-sub uploadCACert :Path('/uploadCACert') :Args(0) {
+sub uploadCACert :Chained('/') :PathPart('uploadCACert') :Args(0) :AdminRole('CERTIFICATE_UPDATE') {
     my ($self, $c) = @_;
 
     my $logger = get_logger();
@@ -254,6 +258,8 @@ sub uploadCACert :Path('/uploadCACert') :Args(0) {
         $c->stash->{filePath} = $radius_ca_cert;
         $c->stash->{status_msg} = $c->loc("Successfully uploaded the CA-Cert!");
         $logger->info("Saved radius CA certificate at $radius_ca_cert");
+    } else {
+        $c->response->status($STATUS::METHOD_NOT_ALLOWED);
     }
 
 }
@@ -264,7 +270,7 @@ Usage: /verifyCert
 
 =cut
 
-sub verifyCert :Path('/verifyCert') :Args(0) {
+sub verifyCert :Chained('/') :PathPart('verifyCert') :Args(0) :AdminRole('CERTIFICATE_UPDATE') {
     my ($self, $c) = @_;
 
     my $logger = get_logger();
@@ -330,6 +336,8 @@ sub verifyCert :Path('/verifyCert') :Args(0) {
             $c->stash->{status_msg} = $c->loc("Unable to verify certificate. Try again.");
             return;
         }
+    } else {
+        $c->response->status($STATUS::METHOD_NOT_ALLOWED);
     }
 
 }
@@ -341,14 +349,14 @@ Usage: /readCert
 
 =cut
 
-sub readCert :Path('/readCert') :Args(0) {
+sub readCert :Chained('/') :PathPart('readCert') :Args(0) :AdminRole('CERTIFICATE_UPDATE') {
     my ($self, $c) = @_;
     my $logger = get_logger();
     $logger->info("jma_debug inside readCert");
 
     if ($c->request->method eq 'GET') {
         my $qualifier = $c->request->{query_parameters}->{qualifier};
-        if ($qualifier eq "HTTPS") {
+        if ($qualifier eq "https") {
             $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($server_cert);
             $c->stash->{Server_INFO} = `/usr/bin/openssl x509 -noout -text -in $server_cert`;
         } elsif ($qualifier eq "eap") {
@@ -357,6 +365,8 @@ sub readCert :Path('/readCert') :Args(0) {
             $c->stash->{Server_INFO} = `/usr/bin/openssl x509 -noout -text -in $radius_server_cert`;
             $c->stash->{CA_INFO} = `/usr/bin/openssl x509 -noout -text -in $radius_ca_cert`;
         }
+    } else {
+        $c->response->status($STATUS::METHOD_NOT_ALLOWED);
     }
 }
 
@@ -367,7 +377,7 @@ Usage: /downloadCert
 
 =cut
 
-sub downloadCert :Path('/downloadCert') :Args(0) {
+sub downloadCert :Chained('/') :PathPart('downloadCert') :Args(0) :AdminRole('CERTIFICATE_UPDATE') {
     my ($self, $c) = @_;
     my $logger = get_logger();
     my $cert_path;
@@ -381,6 +391,8 @@ sub downloadCert :Path('/downloadCert') :Args(0) {
             $cert_path = $server_cert;
         } elsif ($qualifier eq 'eap') {
             $cert_path = $radius_server_cert;
+        } elsif ($qualifier eq 'eap-ca') {
+            $cert_path = $radius_ca_cert;
         } else {
             $c->response->status($STATUS::BAD_REQUEST);
             $c->stash->{status_msg} = $c->loc("Unable to download the certificate");
@@ -396,6 +408,8 @@ sub downloadCert :Path('/downloadCert') :Args(0) {
         close($in);
 
         $c->stash->{Cert_Content} = $cert;
+    } else {
+        $c->response->status($STATUS::METHOD_NOT_ALLOWED);
     }
 }
 
@@ -406,7 +420,7 @@ Usage: /removeCert
 
 =cut
 
-sub removeCert :Path('/removeCert') :Args(0) {
+sub removeCert :Chained('/') :PathPart('removeCert') :Args(0) :AdminRole('CERTIFICATE_UPDATE') {
     my ($self, $c) = @_;
     my $logger = get_logger();
 
@@ -431,6 +445,8 @@ sub removeCert :Path('/removeCert') :Args(0) {
         }
         $c->stash->{status_msg} = $c->loc("Removed the certificate file from the server!");
         $c->response->status($STATUS::OK);
+    } else {
+        $c->response->status($STATUS::METHOD_NOT_ALLOWED);
     }
 }
 
