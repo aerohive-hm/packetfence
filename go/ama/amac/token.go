@@ -96,11 +96,11 @@ func fetchNodeList() []MemberList {
 }
 
 func readRdcToken(ctx context.Context) string {
-	tokenLock.Lock()
 	if len(rdcTokenStr) != 0 {
 		return rdcTokenStr
 	}
 
+	tokenLock.Lock()
 	file, error := os.OpenFile("/usr/local/pf/conf/token.txt", os.O_RDWR|os.O_CREATE, 0600)
 	if error != nil {
 		fmt.Println(error)
@@ -118,6 +118,7 @@ func UpdateRdcToken(ctx context.Context, s string, reOnboard bool) {
 	file, error := os.OpenFile("/usr/local/pf/conf/token.txt", os.O_RDWR|os.O_CREATE, 0600)
 	if error != nil {
 		log.LoggerWContext(ctx).Error(error.Error())
+		tokenLock.Unlock()
 		return
 	}
 	_, _ = io.WriteString(file, s) //write file(string)
