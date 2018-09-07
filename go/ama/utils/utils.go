@@ -31,6 +31,7 @@ var ctx = context.Background()
 func ExecShell(s string) (string, error) {
 	cmd := exec.Command("/bin/bash", "-c", s)
 
+	log.LoggerWContext(ctx).Info(fmt.Sprintln(s))
 	var out bytes.Buffer
 	cmd.Stdout = &out
 
@@ -42,7 +43,6 @@ func ExecCmds(cmds []string) []Clis {
 	var result = []Clis{}
 
 	for _, cmd := range cmds {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(cmd))
 		cli := Clis{cmd: cmd}
 		cli.out, cli.err = ExecShell(cmd)
 
