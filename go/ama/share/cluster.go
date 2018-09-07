@@ -48,9 +48,15 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 		log.LoggerWContext(ctx).Error(err.Error())
 		return err, RespData
 	}
+	/* check ip and vip is the same net range*/
+	err = a3config.CheckItemValid(ctx, true, clusterData.Items)
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return err, RespData
+	}
+	/* check ip and primary ip can not be same*/
 
-	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/join",
-		a3config.ReadClusterPrimary())
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/join", a3config.ReadClusterPrimary())
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("post cluster network data to primary with: %s", url))
 
 	client := new(apibackclient.Client)
