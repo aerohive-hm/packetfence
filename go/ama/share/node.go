@@ -6,6 +6,7 @@ import (
 
 type NodeInfo struct {
 	IpAddr string
+	Hostname string
 }
 
 type RespData struct {
@@ -26,7 +27,7 @@ func FetchNodesInfo() []NodeInfo {
 
 		for k, v := range kvpair {
 			if k == "management_ip" {
-				node := NodeInfo{IpAddr: v}
+				node := NodeInfo{IpAddr: v, Hostname: secName}
 				nodes = append(nodes, node)
 			}
 		}

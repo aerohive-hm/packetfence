@@ -194,6 +194,14 @@ func RecoverDB() {
 	ExecCmds(cmds)
 }
 
+func RestartKeepAlived() {
+	cmds := []string{
+		pfservice + "keepalived restart",
+	}
+
+	ExecCmds(cmds)
+}
+
 func ServiceStatus() string {
 	cmd := pfservice + "pf status"
 	ret, _ := ExecShell(cmd)
