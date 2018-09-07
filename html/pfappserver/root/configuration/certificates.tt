@@ -76,7 +76,7 @@
                   <div class="caFile">
                     <input id="eap_cacert_path" name="eap_cacert_path" type="hidden" value="">
                     <h6>CA Certificate Upload (file type:  .pem) <a id="view-more" style="padding-left: 10px;" href="#">View More</a></h6>
-                    <input class="caCert_upload btn btn-primary" type="file">
+                    <input id="caCert_upload" class="caCert_upload btn btn-primary" type="file">
                     <button class="btn btn-success" style="padding-top:9px; padding-bottom:9px;">Download</button>
                   </div>
                   <button id="eap-upload" class="btn btn-success" style="float:right;">Submit</button>
