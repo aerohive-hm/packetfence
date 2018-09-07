@@ -60,25 +60,8 @@ $(document).ready(function(){
   document.getElementById("view-more-server").onclick = function(){
     readCert();
   }
-//get value when user enters in file
-  // document.getElementById("serverKey").onchange = function(){
-  //   // checkKey();
-  //   var servKey = document.getElementById('serverKey');
-  //   console.log("upload key value: " + servKey.value);
-  // };
-  // document.getElementById('https_serverCert_upload').onchange = function(){
-  //   var cert = document.getElementById('https_serverCert_upload');
-  //   console.log("upload cert value: " + cert.value);
-  // };
-
-  // var servKey = document.getElementById('serverKey');
-  // var servKeyExists = document.getElementById('serverKey_path');
-  // var serverFile = document.getElementById('serverCert');
-  // var serverFileExists = document.getElementById('serverCert_path');
-  // console.log(servKey);
-  // console.log(serverFile);
 });
-//'https_form','eap_tls_form'
+
 //upload key
 function uploadKey(input, sentForm){
     console.log("in upload key");
@@ -113,7 +96,7 @@ function uploadKey(input, sentForm){
         }
     });
 }
-//'https_form','eap_tls_form'
+
 //upload server cert
 function uploadCert(input, sentForm){
   console.log("in upload cert");
@@ -213,133 +196,14 @@ function readCert(qualifier){
         type: 'GET',
         url: base_url + '/readCert/' + "?qualifier=" + qualifier,
         success: function(data){
-          console.log("readcert went through");
           console.log("readacert data: " );
           console.log(data);
           console.log("- - - - - - - - - - - - -");
+          //https_key_view_more,https_serv_view_more,eap_key_view_more,eap_serv_view_more,eap_ca_view_more
+          // set bubble inside
         },
         error: function(data){
           alert("readcert did not go through");
         }
     });
 }
-
-
-// function checkKey(){
-//   var key,valueOfKey;
-//   var keyFile, keyFileType, keyFileSize;
-//
-//   if (!window.FileReader){
-//     alert("The File API isn't supported on this browser please change to Google Chrome.");
-//     return;
-//   }
-//
-//   key = document.getElementById("serverKey_upload");
-//   if (!key) {
-//     alert("Couldn't find the file input element.");
-//   }
-//   else if (!key.files) {
-//     alert("This browser doesn't support the `files` property of file inputs.");
-//   }
-//   else if (!key.files[0]) {
-//
-//   } else {
-//     keyFile = key.files[0];
-//     keyFileType = key.type;
-//     keyFileSize = key.size/1024;
-//     if (keyTypeValidation(key)){
-//       if (keySizeValidation(key)){
-//         var keyFileName = '';
-//         fileName = key.files[0].name;
-//         document.getElementById("serverKey_upload").innerHTML = fileName;
-//         return true;
-//       } else {
-//           alert("Key is incorrect, upload again.");
-//       }
-//     } else {
-//     }
-//   }
-// }
-//
-// function checkCert(){
-//   var cert,valueOfCert;
-//   var certFile, certFileType, certFileSize;
-//
-//   if (!window.FileReader){
-//     alert("The File API isn't supported on this browser please change to Google Chrome.");
-//     return;
-//   }
-//
-//   cert = document.getElementById("serverCert_upload");
-//   if (!cert) {
-//     alert("Couldn't find the file input element.");
-//   }
-//   else if (!cert.files) {
-//     alert("This browser doesn't support the `files` property of file inputs.");
-//   }
-//   else if (!cert.files[0]) {
-//
-//   } else {
-//     certFile = cert.files[0];
-//     certFileType = cert.type;
-//     certFileSize = cert.size/1024;
-//     if (certTypeValidation(cert)){
-//       if (certSizeValidation(cert)){
-//         var certFileName = '';
-//         fileName = cert.files[0].name;
-//         document.getElementById("serverCert_upload").innerHTML = fileName;
-//         return true;
-//       } else {
-//           //text to change back to choose file
-//           alert("Certificate is incorrect, upload again.");
-//       }
-//     } else {
-//       alert("Certificate is incorrect, upload again.");
-//
-//     }
-//   }
-// }
-
-// function certTypeValidation(input){
-//     var certFilePath = input.value;
-//     var allowedExtensions = /(\.pem)$/i;
-//     if(!allowedExtensions.exec()){
-//         input.value = '';
-//         return false;
-//     } else {
-//         return true;
-//     }
-// }
-// function keyTypeValidation(input){
-//     alert ("in key type valid");
-//     var certFilePath = input.value;
-//     var allowedExtensions = /(\.key)$/i;
-//     if(!allowedExtensions.exec()){
-//         input.value = '';
-//         return false;
-//     } else {
-//         return true;
-//     }
-// }
-//
-// function certSizeValidation(input){
-//     alert ("in cert size valid");
-//     var fileSize = input.files[0].size/1024/1024;
-//     if (fileSize > 1){
-//        $(input).val('');
-//        return false;
-//     } else {
-//        return true;
-//     }
-// }
-
-// function keySizeValidation(input){
-//     alert ("in key size valid");
-//     var fileSize = input.files[0].size/1024/1024;
-//     if (fileSize > 0.08) {
-//       $(input).val('');
-//       return false;
-//     } else {
-//       return true;
-//     }
-// }

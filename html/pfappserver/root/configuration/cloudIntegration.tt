@@ -103,16 +103,3 @@
   </div>
 </div>
 <script type="text/javascript" src="[% c.uri_for('/static/js/cloudIntegration.js') %]"></script>
-<script>
-  // $("#link-account").on("click", function(e) {
-  //   e.preventDefault();
-  //   $(".disconnected").hide();
-  //   $(".linked").show();
-  // });
-  //
-  // $("#unlink-account2").on("click", function(e) {
-  //   e.preventDefault();
-  //   $(".linked").hide();
-  //   $(".disconnected").show();
-  // });
-</script>

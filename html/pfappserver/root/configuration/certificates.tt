@@ -39,12 +39,11 @@
                         <span>A server key and server certificate is required.</span>
                         <br><br>
                         <input id="https_key_path" name="https_key_path" type="hidden" value="">
-                        <label><h6>Key (file type:  .key) <a id="view-more" data-toggle="popover" style="padding-left: 10px;">View More</a></h6></label>
-
+                        <label><h6>Key (file type:  .key) <a id="https_key_view_more" data-toggle="popover" style="padding-left: 10px;">View More</a></h6></label>
                         <input class="https_serverKey_upload btn btn-primary" id="https_serverKey_upload" type="file">
                         <br>
                         <input id="https_cert_path" name="https_cert_path" type="hidden" value="">
-                        <label><h6>Server Certificate (file type:  .pem) <a id="view-more-server" data-toggle="popover" style="padding-left: 10px;">View More</a></h6></label>
+                        <label><h6>Server Certificate (file type:  .pem) <a id="https_serv_view_more" data-toggle="popover" style="padding-left: 10px;">View More</a></h6></label>
                         <input class="https_serverCert_upload btn btn-primary" id="https_serverCert_upload" type="file">
                         <button class="btn btn-success" style="padding-top:9px; padding-bottom:9px;">Download</button>
                       </div>
@@ -64,18 +63,18 @@
                     <span>Please restart the radiusd service after you upload the new certificates and key.</span>
                     <br><br>
                     <input id="eap_key_path" name="eap_key_path" type="hidden" value="">
-                    <label><h6>Key (file type:  .key) <a id="view-more" style="padding-left: 10px;" href="#">View More</a></h6></label>
+                    <label><h6>Key (file type:  .key) <a id="eap_key_view_more" style="padding-left: 10px;" href="#">View More</a></h6></label>
                     <input id="serverKey_upload" name="serverKey_upload" class="serverKey_upload btn btn-primary" type="file"/>
                     <br>
                     <input id="eap_cert_path" name="eap_cert_path" type="hidden" value="">
-                    <label><h6>Server Certificate (file type:  .pem) <a id="view-more" style="padding-left: 10px;" href="#">View More</a></h6></label>
+                    <label><h6>Server Certificate (file type:  .pem) <a id="eap_serv_view_more" style="padding-left: 10px;" href="#">View More</a></h6></label>
                     <input id="serverCert_upload" name="serverCert_upload" class="serverCert_upload btn btn-primary" type="file">
                     <button class="btn btn-success" style="padding-top:9px; padding-bottom:9px;">Download</button>
                   </div>
                   <br>
                   <div class="caFile">
                     <input id="eap_cacert_path" name="eap_cacert_path" type="hidden" value="">
-                    <h6>CA Certificate Upload (file type:  .pem) <a id="view-more" style="padding-left: 10px;" href="#">View More</a></h6>
+                    <h6>CA Certificate Upload (file type:  .pem) <a id="eap_ca_view_more" style="padding-left: 10px;" href="#">View More</a></h6>
                     <input id="caCert_upload" class="caCert_upload btn btn-primary" type="file">
                     <button class="btn btn-success" style="padding-top:9px; padding-bottom:9px;">Download</button>
                   </div>
