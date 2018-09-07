@@ -37,7 +37,7 @@ func UpdateInterface(i Item) error {
 	if err != nil {
 		return err
 	}
-	/*eth0 ip is not equal to primary ip*/
+
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		err = UpdateVlanInterface(i)
