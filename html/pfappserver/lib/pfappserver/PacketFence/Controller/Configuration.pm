@@ -285,9 +285,9 @@ sub networks :Local {
 
 sub clustering :Local {
     my ($self, $c) = @_;
-    # if ($pf::cluster::cluster_enabled){
+    if ($pf::cluster::cluster_enabled){
       $c->stash->{template} = "configuration/cluster.tt";
-    # }
+    }
 }
 
 =head2 certificates

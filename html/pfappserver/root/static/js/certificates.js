@@ -1,5 +1,6 @@
 
 $(document).ready(function(){
+     readCert();
     $('[data-toggle="popover"]').popover({
       container: 'body'
     });
@@ -177,10 +178,10 @@ function verifyCert(https_key_path, https_cert_path, qualifier){
 function readCert(){
     console.log("in read cert");
     var base_url = window.location.origin;
-
+    var qualifier = "https";
     return $.ajax({
         type: 'GET',
-        url: base_url + '/readCert',
+        url: base_url + '/readCert/' + "?qualifier=" + qualifier,
         success: function(data){
           console.log("readcert went through");
           console.log("readacert data: " );
