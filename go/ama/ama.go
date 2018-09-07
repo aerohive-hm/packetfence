@@ -22,7 +22,7 @@ type ClusterJoinStatusType int
 
 // status of node server during join
 const (
-	_ ClusterJoinStatusType = iota
+	Idle ClusterJoinStatusType = iota
 	Waitng2Sync
 	SyncFiles
 	SyncDB
@@ -30,12 +30,19 @@ const (
 )
 
 type ClusterStatusType struct {
-	IsPrimary bool // Primary or New join server ??
-	Status    interface{}
+	IsPrimary      bool // Primary or New join server ??
+	Status         interface{}
+	ServersExisted map[string]ClusterJoinStatusType
+	SyncCounter    int
 }
 
 var ClusterStatus = ClusterStatusType{}
 var ServiceStartPercentage = "0"
+
+func init() {
+	ClusterStatus.IsPrimary = false
+	ClusterStatus.Status = Idle
+}
 
 func InitClusterStatus(primary string) {
 	ctx := context.Background()
@@ -45,11 +52,44 @@ func InitClusterStatus(primary string) {
 	} else {
 		ClusterStatus.IsPrimary = false
 		ClusterStatus.Status = Waitng2Sync
+		ClusterStatus.ServersExisted = make(map[string]ClusterJoinStatusType)
+		ClusterStatus.SyncCounter = 0
 	}
 	log.LoggerWContext(ctx).Error(fmt.Sprintln("init: "))
 	log.LoggerWContext(ctx).Error(fmt.Sprintln(ClusterStatus))
 }
 
+func ClearClusterStatus() {
+	ClusterStatus.IsPrimary = false
+	ClusterStatus.Status = Idle
+	ClusterStatus.ServersExisted = map[string]ClusterJoinStatusType{}
+	ClusterStatus.SyncCounter = 0
+}
+
 func SetClusterStatus(status interface{}) {
 	ClusterStatus.Status = status
+}
+
+func IsClusterJoinMode() bool {
+	if ClusterStatus.IsPrimary {
+		return true
+	}
+
+	if ClusterStatus.Status != Idle {
+		return true
+	}
+	return false
+}
+
+func AddClusterNodeStatus(ip string, status ClusterJoinStatusType) {
+	ClusterStatus.ServersExisted[ip] = status
+
+	if status == SyncFinished {
+		ClusterStatus.SyncCounter++
+	}
+}
+
+func IsAllFinishSync() bool {
+	ClusterStatus.SyncCounter++
+	return ClusterStatus.SyncCounter-1 == len(ClusterStatus.ServersExisted)
 }

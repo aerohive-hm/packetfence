@@ -50,12 +50,15 @@ func handleGetSync(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	var s string
-	if t.Status == ama.PrepareSync {
+	switch {
+	case t.Status == ama.PrepareSync:
 		s = stopService
-	} else if t.Status == ama.Ready4Sync {
+	case t.Status == ama.Ready4Sync:
 		s = startSync
-	} else if t.Status == ama.FinishSync {
+	case t.Status == ama.FinishSync:
 		s = finishSync
+	default:
+		s = "unknown status"
 	}
 	return []byte(fmt.Sprintf(`{"code":"ok", "status":"%s", "ip":"%s"}`, s, utils.GetOwnMGTIp()))
 }
@@ -76,7 +79,12 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 	if sync.Status == stopService {
 		//primary tell slave node to stop service
 		//but POST from primary to slave node is not work
-		utils.StopService()
+		if ama.IsClusterJoinMode() {
+			code = "fail"
+			ret = "already in cluster join"
+		} else {
+			utils.StopService()
+		}
 	} else if sync.Status == startSync {
 		//primary tell slave node to start sync
 		//ip, _, _ := net.SplitHostPort(r.RemoteAddr)

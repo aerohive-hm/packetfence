@@ -6,6 +6,7 @@ package event
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -40,7 +41,7 @@ func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 */
 func prepareClusterNodeJoin() {
 	utils.ForceNewCluster()
-	notifyClusterStartSync()
+	notifyClusterStatus("StartSync")
 }
 
 func sendClusterSync(ip, Status string) error {
@@ -71,24 +72,7 @@ func sendClusterSync(ip, Status string) error {
 	return err
 }
 
-func stopServiceByJoin() error {
-	nodeList := a3share.FetchNodesInfo()
-	ownMgtIp := utils.GetOwnMGTIp()
-
-	for _, node := range nodeList {
-		if node.IpAddr == ownMgtIp {
-			continue
-		}
-		err := sendClusterSync(node.IpAddr, "StopServices")
-		if err != nil {
-			return err
-		}
-		
-	}
-	return nil
-}
-
-func notifyClusterStartSync() error {
+func notifyClusterStatus(status string) error {
 	ctx := context.Background()
 	nodeList := a3share.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
@@ -97,11 +81,14 @@ func notifyClusterStartSync() error {
 		if node.IpAddr == ownMgtIp {
 			continue
 		}
-		err := sendClusterSync(node.IpAddr, "StartSync")
+
+		ama.AddClusterNodeStatus(node.IpAddr, ama.Idle)
+		err := sendClusterSync(node.IpAddr, status)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
 		}
 	}
+
 	return nil
 }
 
@@ -116,10 +103,16 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	err = stopServiceByJoin()
+	if ama.IsClusterJoinMode() {
+		err = errors.New("another server is joining the cluster.")
+		goto END
+	}
+	ama.InitClusterStatus("primary")
+
+	err = notifyClusterStatus("StopServices")
 	if err != nil {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("post event sync to stopService failed"))
-		//goto END
+		goto END
 	}
 
 	err, respdata = a3config.UpdateEventClusterJoinData(ctx, *clusterData)
@@ -129,18 +122,15 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	resp, _ = json.Marshal(respdata)
 
 	// Prepare for cluster node sync
-	ama.InitClusterStatus("primary")
 	go prepareClusterNodeJoin()
 
 END:
 	if err != nil {
+		ama.ClearClusterStatus()
 		return []byte(fmt.Sprintf(`{"code":"fail","msg":"%s"}`, err.Error))
 	}
 	return resp
 }
-
-
-
 
 func waitPrimarySync(ip string) error {
 	ctx := context.Background()
@@ -194,6 +184,3 @@ func ActiveSyncFromPrimary(ip, user, password string) {
 	utils.UpdateCurrentlyAt()
 
 }
-
-
-
