@@ -1,6 +1,6 @@
 
 $(document).ready(function(){
-
+    applyKeyButton();
   $('.agreeToEula').click(function() {
       //changes checkbox to submit button
       $(".agree").slideUp();
@@ -66,7 +66,7 @@ function updateKeyTable(userKeyInput) {
 function checkKeyInput(userKeyInput){
     console.log("inside checkKeyInput");
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
-     // var applyKeyButton2 = $("#applyKey");
+     var applyKeyButton2 = $("#applyKey");
     //TRUE OR FALSE
     if (checkKeyRegex.test(userKeyInput)){
         $("#keyInput").css('border','1px solid #dfdfdf');

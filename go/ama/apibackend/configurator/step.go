@@ -1,15 +1,28 @@
-/*clusternetworks.go implements handling REST API:
- *	/a3/api/v1/configurator/step
- */
+//clusternetworks.go implements handling REST API:
+//	/a3/api/v1/configurator/step
+//  getStart
+//  adminUser
+//  networks
+//  licensing
+//  licensing,enterEntitlementKey
+//  licensing,endUserLicenseAgreement
+//  aerohiveCloud 
+//  startingManagement
+
+//  joinCluster
+//  clusterNetworking
+//  joining
+//  startingRegistration
+
 package configurator
 
 import (
 	"context"
 	"encoding/json"
-	//  "fmt"
 	"net/http"
-	//	"strconv"
+	"fmt"
 
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -25,12 +38,20 @@ func StepNew(ctx context.Context) crud.SectionCmd {
 	return step
 }
 
+
 func handleGetStep(r *http.Request, d crud.HandlerData) []byte {
 	var ctx = r.Context()
 
-	//Data for demo
+	//read history step
+	historyStep := a3config.ReadSetupStep()
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("last pending configurator step = %s", historyStep))
+
+	if historyStep == "" {
+		historyStep = "getStart"
+	}
+	
 	step := map[string]string{
-		"step": "getStart",
+		"step": historyStep,
 	}
 
 	jsonData, err := json.Marshal(step)

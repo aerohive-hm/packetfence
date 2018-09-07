@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/database"
@@ -144,6 +145,7 @@ func handlePostLicenseConf(r *http.Request, d crud.HandlerData) []byte {
 		if err == nil {
 			code = "ok"
 		}
+		a3config.RecordSetupStep(a3config.StepAerohiveCloud, code)
 		goto END
 	}
 
@@ -160,7 +162,7 @@ func handlePostLicenseConf(r *http.Request, d crud.HandlerData) []byte {
 			log.LoggerWContext(ctx).Info(fmt.Sprintln(resp))
 
 		}
-
+		a3config.RecordSetupStep(a3config.StepAerohiveCloud, code)
 		goto END
 	}
 
@@ -178,6 +180,7 @@ func handlePostLicenseConf(r *http.Request, d crud.HandlerData) []byte {
 	err = create(license.Key, eva)
 	if err == nil {
 		code = "ok"
+		a3config.RecordSetupStep(a3config.StepAgreement, code)
 	}
 
 END:
@@ -185,5 +188,6 @@ END:
 	if err != nil {
 		ret = err.Error()
 	}
+
 	return crud.FormPostRely(code, ret)
 }

@@ -10,9 +10,10 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/share"
-	//"github.com/inverse-inc/packetfence/go/ama/client"
+	"github.com/inverse-inc/packetfence/go/ama/apibackend/event"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -46,6 +47,11 @@ func handleGetClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
+func activeJoinCluster(ip, user, pass string) {
+	event.ActiveSyncFromPrimary(ip, user, pass)
+	amac.JoinCompleteEvent()
+}
+
 func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 
 	ctx := r.Context()
@@ -73,11 +79,13 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 		return crud.FormPostRely(code, ret)
 	}
 
+	a3config.UpdateClusterFile()
+
 	web := clusterRespData.Items[0]
-	go a3share.SyncDataFromPrimary(a3config.ReadClusterPrimary(),
+	go activeJoinCluster(a3config.ReadClusterPrimary(),
 		web.User, web.Password)
 
 	code = "ok"
-
+	a3config.RecordSetupStep(a3config.StepJoining, code)
 	return crud.FormPostRely(code, ret)
 }

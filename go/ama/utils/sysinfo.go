@@ -36,18 +36,24 @@ func GetA3SysId() string {
 func SetHostname(hostname string) {
 	cmds := []string{
 		fmt.Sprintf(`hostnamectl set-hostname "%s" --static`, hostname),
-		`sed -i -r "s/HOSTNAME=[-_A-Za-z0-9]+/HOSTNAME=` +
+		`sed -i -r "s/HOSTNAME=[-_\.A-Za-z0-9]+/HOSTNAME=` +
 			hostname + `/" /etc/sysconfig/network`,
+		fmt.Sprintf(`echo 127.0.0.1 %s >> /etc/hosts`, hostname),
 	}
 	ExecCmds(cmds)
+}
+
+func GetHostname() string {
+	h, _ := ExecShell(`hostname`)
+	return strings.TrimRight(h, "\n")
 }
 
 func isProcAlive(proc string) bool {
 	_, err := ExecShell(`pgrep ` + proc)
 	if err == nil {
-		return false
+		return true
 	}
-	return true
+	return false
 }
 
 func waitProcStop(proc string) {
@@ -85,4 +91,21 @@ func killPorc(proc string) {
 	}
 
 	waitProcStop(proc)
+}
+
+func updateEtcd() {
+	cmds := []string{
+		`systemctl stop packetfence-etcd`,
+		`rm -rf /usr/local/pf/var/etcd/`,
+	}
+	ExecCmds(cmds)
+}
+
+func GetOwnMGTIp() string {
+	ifaces, _ := GetIfaceList("eth0")
+	for _, iface := range ifaces {
+		return iface.IpAddr
+	}
+
+	return ""
 }

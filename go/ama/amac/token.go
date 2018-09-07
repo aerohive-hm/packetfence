@@ -80,31 +80,27 @@ func fetchNodeList() []MemberList {
 		return nil
 	}
 	nodes := []MemberList{}
-	headNode := []MemberList{}
-	ownMgtIP := a3config.GetIfaceElementVlaue("eth0", "ip")
+	ownMgtIP := utils.GetOwnMGTIp()
 	for secName, kvpair := range conf {
-		is_primary := (secName == "CLUSTER")
+	    if secName == "CLUSTER" {
+			continue
+	    }
 		for k, v := range kvpair {
 			if k == "management_ip" && v != ownMgtIP {
 				node := MemberList{IpAddr: v}
-				if is_primary {
-					headNode = append(headNode, node)
-				} else {
-					nodes = append(nodes, node)
-				}
+				nodes = append(nodes, node)
 			}
 		}
 	}
-	nodes = append(headNode, nodes...)
 	return nodes
 }
 
 func readRdcToken(ctx context.Context) string {
-	tokenLock.Lock()
 	if len(rdcTokenStr) != 0 {
 		return rdcTokenStr
 	}
 
+	tokenLock.Lock()
 	file, error := os.OpenFile("/usr/local/pf/conf/token.txt", os.O_RDWR|os.O_CREATE, 0600)
 	if error != nil {
 		fmt.Println(error)
@@ -122,6 +118,7 @@ func UpdateRdcToken(ctx context.Context, s string, reOnboard bool) {
 	file, error := os.OpenFile("/usr/local/pf/conf/token.txt", os.O_RDWR|os.O_CREATE, 0600)
 	if error != nil {
 		log.LoggerWContext(ctx).Error(error.Error())
+		tokenLock.Unlock()
 		return
 	}
 	_, _ = io.WriteString(file, s) //write file(string)
@@ -175,7 +172,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 	res := ""
 	tokenRes := A3TokenResFromRdc{}
 
-	nodeInfo := fillRdcTokenReqHeader()
+	nodeInfo := fillRdcTokenReqHeader(&node)
 
 	data, _ := json.Marshal(nodeInfo)
 	reader := bytes.NewReader(data)
@@ -223,7 +220,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 
 //This API was used by nodes without GDC and RDC token.
 func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
-	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken?systemID=%s&hostname=%s", mem.IpAddr, utils.GetA3SysId(), a3config.GetHostname())
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken?systemID=%s&hostname=%s", mem.IpAddr, utils.GetA3SysId(), utils.GetHostname())
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
 
 	node := new(innerClient.Client)
@@ -287,7 +284,7 @@ func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew
 		cloudInfo.RdcUrl = rdcUrl
 		cloudInfo.Switch = globalSwitch
 		cloudInfo.VhmID = VhmidStr
-		cloudInfo.PriNode = a3share.GetOwnMGTIp()
+		cloudInfo.PriNode = utils.GetOwnMGTIp()
 		cloudInfo.OrgID = OrgIdStr
 	}
 	jsonData, _ := json.Marshal(cloudInfo)
@@ -329,7 +326,7 @@ func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew
 */
 func TriggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
 	nodeList := a3share.FetchNodesInfo()
-	ownMgtIp := a3share.GetOwnMGTIp()
+	ownMgtIp := utils.GetOwnMGTIp()
 	for _, node := range nodeList {
 		if node.IpAddr == ownMgtIp {
 			continue
@@ -340,12 +337,18 @@ func TriggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
 	return
 }
 
-func fillRdcTokenReqHeader() rdcTokenReqFromRdc {
+func fillRdcTokenReqHeader(node *NodeInfo) rdcTokenReqFromRdc {
 	rdcTokenReq := rdcTokenReqFromRdc{}
 
-	rdcTokenReq.Header.SystemID = utils.GetA3SysId()
+	if node == nil {
+		rdcTokenReq.Header.SystemID = utils.GetA3SysId()
+		rdcTokenReq.Header.Hostname = utils.GetHostname()
+	} else {
+		rdcTokenReq.Header.SystemID = node.SystemID
+		rdcTokenReq.Header.Hostname = node.Hostname
+	}
 	rdcTokenReq.Header.ClusterID = utils.GetClusterId()
-	rdcTokenReq.Header.Hostname = a3config.GetHostname()
+	rdcTokenReq.Header.Hostname = utils.GetHostname()
 	//Only SystemID, ClusterID and Hostname is necessary when request RDC token
 	/*
 		rdcTokenReq.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)
@@ -367,7 +370,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 		return "", UrlIsNull
 	}
 
-	node_info := fillRdcTokenReqHeader()
+	node_info := fillRdcTokenReqHeader(nil)
 	data, _ := json.Marshal(node_info)
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to fetch RDC token from %s", fetchRdcTokenUrl))

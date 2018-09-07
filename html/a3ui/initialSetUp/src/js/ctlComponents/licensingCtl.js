@@ -37,6 +37,7 @@ class licensingCtl extends Component {
             enterEntitlementKeyVisible:false,
             endUserLicenseAgreementVisible:false,
             enableEndUserLicenseAgreement:false,
+            enableEnterEntitlementKey:false,
             loading:false,
         };
 
@@ -272,15 +273,29 @@ class licensingCtl extends Component {
         wrongMessageCopy.keyWrongMessage="";
         self.setState({ 
             enterEntitlementKeyVisible:true,
+            enableEnterEntitlementKey:false,
         });
+    }
+
+    onChangeKey=(e) =>{
+        let self=this;
+        if(e.target.value.toString().trim()===""){   
+            self.setState({ 
+                enableEnterEntitlementKey : false, 
+            });
+        }else{
+            self.setState({ 
+                enableEnterEntitlementKey : true, 
+            });
+        }
+
+
     }
 
 
 
-
-
     render() {
-        const {wrongMessage,enterEntitlementKeyVisible,endUserLicenseAgreementVisible,enableEndUserLicenseAgreement,loading} = this.state;
+        const {wrongMessage,enterEntitlementKeyVisible,endUserLicenseAgreementVisible,enableEndUserLicenseAgreement,loading,enableEnterEntitlementKey} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
@@ -353,7 +368,7 @@ class licensingCtl extends Component {
                     width={513}
                     footer={null}
                     onCancel={self.onCancelEnterEntitlementKey.bind(self)}
-                    closable={false}
+                    closable={true}
                     maskClosable={false}
                 >
          
@@ -371,6 +386,7 @@ class licensingCtl extends Component {
                                     <Input 
                                     style={{height:"32px"}}
                                     onBlur={self.onBlurCheckKey.bind(self)}
+                                    onChange={self.onChangeKey.bind(self)}
                                     />
                                 )}
                             </div>
@@ -384,6 +400,7 @@ class licensingCtl extends Component {
                         <div className="modal-form-button-div-licensingCtl">
                             <div className="modal-form-button-next-div-licensingCtl">
                                 <Button 
+                                    disabled={enableEnterEntitlementKey===true?false:true}
                                     type="primary" 
                                     className="modal-form-button-next-antd-button-licensingCtl" 
                                     htmlType="submit" 

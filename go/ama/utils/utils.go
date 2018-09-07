@@ -31,6 +31,7 @@ var ctx = context.Background()
 func ExecShell(s string) (string, error) {
 	cmd := exec.Command("/bin/bash", "-c", s)
 
+	log.LoggerWContext(ctx).Info(fmt.Sprintln(s))
 	var out bytes.Buffer
 	cmd.Stdout = &out
 
@@ -42,7 +43,6 @@ func ExecCmds(cmds []string) []Clis {
 	var result = []Clis{}
 
 	for _, cmd := range cmds {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(cmd))
 		cli := Clis{cmd: cmd}
 		cli.out, cli.err = ExecShell(cmd)
 
@@ -111,7 +111,7 @@ func CreateClusterId() error {
 	clusterid := GenClusterID()
 
 	fmt.Println(len(clusterid), clusterid)
-	cmd := fmt.Sprintf("echo -n \"%s\" > %s", clusterid, path)
+	cmd := fmt.Sprintf(`echo -n "%s" > %s`, clusterid, path)
 	_, err = ExecShell(cmd)
 	if err != nil {
 		fmt.Println("%s:exec error", cmd)
@@ -137,5 +137,50 @@ func UseDefaultClusterConf() error {
 		fmt.Println("%s:exec error", cmd)
 		return err
 	}
+	/*delete clusterid.conf at same time*/
+	path := "/usr/local/pf/conf/clusterid.conf"
+	if IsFileExist(path) {
+		cmd = "rm -f /usr/local/pf/conf/clusterid.conf"
+		_, err = ExecShell(cmd)
+		if err != nil {
+			fmt.Println("%s:exec error", cmd)
+			return err
+		}
+	}
+
 	return nil
+}
+
+func ClearFileContent(path string) error {
+
+	if IsFileExist(path) {
+		cmd := "> " + path
+		_, err := ExecShell(cmd)
+		if err != nil {
+			fmt.Println("%s:exec error", cmd)
+			return err
+		}
+	}
+	return nil
+}
+
+func GetDnsServer() (string, string) {
+	dns1 := ""
+	dns2 := ""
+	cmd := "cat /etc/resolv.conf | awk '{print $2}'"
+	out, err := ExecShell(cmd)
+	if err != nil {
+		fmt.Println("%s:exec error", cmd)
+		return "", ""
+	}
+	s := strings.Split(out, "\n")
+	l := len(s)
+
+	if l > 2 {
+		dns1 = s[1]
+		if l > 3 {
+			dns2 = s[2]
+		}
+	}
+	return dns1, dns2
 }

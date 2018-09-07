@@ -6,8 +6,6 @@ import (
 	"strings"
 )
 
-
-
 // Get A3 default gateway
 func GetA3DefaultGW() string {
 	cmd := "LANG=C sudo ip route show to 0/0"
@@ -24,7 +22,7 @@ func GetA3DefaultGW() string {
 	if len(vals) > 3 {
 		return vals[2]
 	}
-	
+
 	return ""
 }
 

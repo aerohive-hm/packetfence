@@ -6,11 +6,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
+
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/client"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -77,50 +76,4 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 	return err, RespData
 }
 
-type syncData struct {
-	Status string `json:"status"`
-}
 
-func waitPrimarySync(ip string) error {
-	ctx := context.Background()
-	var msg syncData
-	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
-
-	client := new(apibackclient.Client)
-	client.Host = ip
-
-	for {
-		err := client.ClusterSend("GET", url, "")
-		if err != nil {
-			log.LoggerWContext(ctx).Error(err.Error())
-			return err
-		}
-
-		err = json.Unmarshal(client.RespData, &msg)
-		if err != nil {
-			log.LoggerWContext(ctx).Error("Unmarshal error:" + err.Error())
-			time.Sleep(10 * time.Second)
-			continue
-		}
-
-		if msg.Status == "" {
-			break
-		}
-
-		time.Sleep(10 * time.Second)
-	}
-
-	return nil
-}
-
-func SyncDataFromPrimary(ip, user, password string) {
-	//wait a moment?
-	err := waitPrimarySync(ip)
-	if err != nil {
-		return
-	}
-	utils.SyncFromPrimary(ip, user, password)
-	apibackclient.SendClusterSync(ip, "FinishSync")
-	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
-
-}

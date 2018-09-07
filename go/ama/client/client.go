@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -17,7 +18,9 @@ import (
 	"github.com/inverse-inc/packetfence/go/sharedutils"
 )
 
-var httpClient http.Client
+var httpClient = http.Client{
+	Timeout: time.Duration(15 * time.Second),
+}
 
 type Client struct {
 	Method   string //  post,get
