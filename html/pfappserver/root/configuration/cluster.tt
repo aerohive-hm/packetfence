@@ -17,17 +17,20 @@
 <div class="card">
     <div class="card-block">
         <div class="documentation">
+          <div id="success-alert"><div id="errorMessage"></div></div>
           <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
-          <form>
-              <label class="form-horizontal control-label" style="float:left; width: 130px;" for="sharedKey">Shared Key</label>
-              <div class="input-append"><input class="form-inline help-inline pf-obfuscated-text" type="text" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
+          <form name="newClusterInfo" id="newClusterInfo">
+              <label style="display:none;" for="id"></label>
+              <input style="display:none;" id="id" name="id" value="active_active" type="text"/>
+              <label class="form-horizontal control-label" style="float:left; width: 130px;" for="password">Shared Key</label>
+              <div class="input-append"><input class="password form-inline help-inline pf-obfuscated-text" type="text" name="password" id="password" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
               <br/>
-              <label class="form-horizontal control-label" style="float:left; width:130px;" for="virtual_router_id">Virtual Router IP</label>
-              <input class="form-inline help-inline" type="text" name="virtual_router_id" id="other" placeholder="50"><br>
+              <label class="form-horizontal control-label" style="float:left; width:130px;" for="virtual_router_id">Virtual Router Id</label>
+              <input class="virtual_router_id form-inline help-inline" type="text" name="virtual_router_id" id="virtual_router_id" placeholder="50"><br>
           </form>
           <br>
           <label style="float:left; width:130px;">  </label>
-          <button class="btn btn-success submit" style="width: 220px;">Submit</button>
+          <button class="btn btn-success submit" id="submitNewClusterInfo" style="width: 220px;">Submit</button>
 
           <br/>
           <h6>Cluster Node List</h6>
@@ -64,3 +67,4 @@
         </div>
     </div>
 </div>
+<script type="text/javascript" src="[% c.uri_for('/static/js/cluster.js') %]"></script>
