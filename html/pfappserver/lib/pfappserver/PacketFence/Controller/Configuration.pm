@@ -21,7 +21,7 @@ use POSIX;
 use URI::Escape::XS;
 use pf::log;
 use Tie::IxHash;
-
+use pf::cluster;
 use pf::util qw(load_oui download_oui);
 # imported only for the $TIME_MODIFIER_RE regex. Ideally shouldn't be
 # imported but it's better than duplicating regex all over the place.
@@ -51,7 +51,6 @@ our %ALLOWED_SECTIONS = (
     database_advanced => undef,
     fencing           => undef,
     general           => undef,
-    https_certificate => undef,
     # inline            => undef,
     metadefender      => undef,
     mse_tab           => undef,
@@ -286,8 +285,9 @@ sub networks :Local {
 
 sub clustering :Local {
     my ($self, $c) = @_;
-
-    $c->stash->{template} = "configuration/cluster.tt";
+    if ($pf::cluster::cluster_enabled){
+      $c->stash->{template} = "configuration/cluster.tt";
+    }
 }
 
 =head2 certificates
@@ -472,12 +472,6 @@ sub all_subsections : Private {
                 maintenance => {
                     controller => 'Controller::Config::Pfmon',
                     name => 'Maintenance',
-                },
-                https_certificate => {
-                    controller => 'Controller::Configuration',
-                    action => 'section',
-                    action_args => ['https_certificate'],
-                    name => 'HTTPs Certificate',
                 }
                 # services => {
                 #     controller => 'Controller::Configuration',

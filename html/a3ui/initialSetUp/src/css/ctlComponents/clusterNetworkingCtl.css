@@ -1,0 +1,224 @@
+
+.global-div-clusterNetworkingCtl{
+    float:left;
+    width:1240px;
+}
+
+.left-div-clusterNetworkingCtl{
+    float:left;
+    width:234px;
+    margin-left:20px;
+}
+.img-div-clusterNetworkingCtl{
+    float:left;
+    margin-top:90px;
+    width:234px;
+    height:215px;
+    
+}
+.img-img-clusterNetworkingCtl{
+    float:left;
+    width:234px;
+    height:215px;
+    
+}
+
+.right-div-clusterNetworkingCtl{
+    float:left;
+    margin-top:90px;
+    margin-left:86px;
+    width:900px;
+    height:300px;
+}
+
+.form-item-div-clusterNetworkingCtl{
+    float:left;
+    width:900px;
+    margin-top:10px;
+}
+.form-item-title-div-clusterNetworkingCtl{
+    float:left;
+    width:900px;
+    height:17px;
+    line-height: 17px;
+    color:#333333;
+    font-weight: bold;
+    font-size: 12px;
+}
+.form-item-input-div-clusterNetworkingCtl{
+    float:left;
+    width:270px;
+    height:32px;
+}
+.form-item-wrong-div-clusterNetworkingCtl{
+    float:left;
+    margin-left:20px;
+    width:610px;
+    height:32px;
+    line-height: 32px;
+    color:#f44336;
+    font-size: 12px;
+
+}
+
+
+.interfaces-div-clusterNetworkingCtl{
+    float:left;
+    width:900px;
+    margin-top:20px;
+    height:17px;
+    line-height: 17px;
+    color:#333333;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+
+.table-div-clusterNetworkingCtl{
+    float:left;
+    width:900px;
+    margin-top:6px;
+}
+
+.table-single-row-div-clusterNetworkingCtl{
+    background: #ffffff;
+}
+.table-double-row-div-clusterNetworkingCtl{
+    background: #f4f6f9;
+}
+
+
+.name-etho-div-clusterNetworkingCtl{
+    float:left;
+    height: 28px;
+    line-height: 28px;
+}
+.name-vlan-div-clusterNetworkingCtl{
+    float:left;
+    height: 28px;
+}
+.name-vlan-blank-div-clusterNetworkingCtl{
+    float:left;
+    height: 28px;
+    width:20px;
+}
+.name-vlan-text-div-clusterNetworkingCtl{
+    float:left;
+    height: 28px;
+    line-height: 28px;
+    padding-right:4px;
+}
+
+.name-text-div-clusterNetworkingCtl{
+    float:left;
+    height:28px;
+    line-height: 28px;
+}
+
+
+
+
+
+.ipAddr-edit-input-div-clusterNetworkingCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.ipAddr-edit-ok-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.ipAddr-edit-ok-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.ipAddr-edit-no-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.ipAddr-edit-no-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.ipAddr-text-div-clusterNetworkingCtl{
+    cursor: pointer;
+    color:#2c6aff;
+}
+
+
+.netmask-edit-input-div-clusterNetworkingCtl{
+    float:left;
+    width:100px;
+    height: 28px;
+}
+.netmask-edit-ok-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.netmask-edit-ok-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.netmask-edit-no-div-clusterNetworkingCtl{
+    float:left;
+    margin-top: 3px;
+    margin-left:4px;
+    width:22px;
+    height: 22px;
+}
+.netmask-edit-no-img-clusterNetworkingCtl{
+    float:left;
+    width:22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.netmask-text-div-clusterNetworkingCtl{
+    cursor: pointer;
+    color:#2c6aff;
+}
+
+
+
+.form-button-div-clusterNetworkingCtl{
+    float:left;
+    width:900px;
+    margin-top:10px;
+}
+.form-button-cancel-div-clusterNetworkingCtl{
+    float:right;
+    margin-right:16px;
+    width:78px;
+    height:32px;
+}
+.form-button-next-div-clusterNetworkingCtl{
+    float:right;
+    width:78px;
+    height:32px;
+}
+.form-button-cancel-antd-button-clusterNetworkingCtl{
+    width:78px;
+    height:32px;
+}
+.form-button-next-antd-button-clusterNetworkingCtl{
+    width:78px;
+    height:32px;
+}

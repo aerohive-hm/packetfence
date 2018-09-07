@@ -1,0 +1,24 @@
+
+.guidance-div-guidance{
+    float:left;
+    width:234px;
+    margin-top:90px;
+}
+.guidance-title-div-guidance{
+    float:left;
+    width:234px;
+    height:24px;
+    line-height: 24px;
+    font-size: 18px;
+    color:#333333;
+    font-weight: bold;
+}
+.guidance-content-div-guidance{
+    float:left;
+    margin-top:18px;
+    width:234px;
+    line-height: 16px;
+    font-size: 14px;
+    color:#333333;
+
+}

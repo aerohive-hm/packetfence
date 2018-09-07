@@ -175,19 +175,6 @@ sub uploadServerCert :Chained('/') :PathPart('uploadServerCert') :Args(0) :Admin
             $c->stash->{status_msg} = $c->loc("Unable to install certificate key. Try again.");
             return;
         }
-        #
-        # if ( ! rename($tmp_filename, $target) ) {
-        #     $logger->warn("Failed to move certificate file $filename into place at $target: $!");
-        #     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
-        #     $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
-        #     return;
-        # }
-
-        # if ( pf::cluster::add_file_to_cluster_sync($target) ) {
-        #     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
-        #     $c->stash->{status_msg} = $c->loc("Unable to save certificate to cluster. Try again.");
-        #     return;
-        # }
 
         $c->stash->{filePath} = $tmp_filename;
         $logger->info("Saved server certificate at $tmp_filename");
@@ -406,7 +393,6 @@ sub downloadCert :Chained('/') :PathPart('downloadCert') :Args(0) :AdminRole('CE
         #read the cert
         read $in, $cert, -s $in;
         close($in);
-
         $c->stash->{Cert_Content} = $cert;
     } else {
         $c->response->status($STATUS::METHOD_NOT_ALLOWED);

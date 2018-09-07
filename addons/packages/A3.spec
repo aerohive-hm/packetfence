@@ -484,6 +484,7 @@ done
 %{__install} -D -m0644 conf/systemd/packetfence-pfstats.service $RPM_BUILD_ROOT/usr/lib/systemd/system/packetfence-pfstats.service
 %{__install} -D -m0644 conf/systemd/a3-update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-update.service
 %{__install} -D -m0644 conf/systemd/a3-httpd.update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-httpd.update.service
+%{__install} -D -m0644 conf/systemd/a3-api-backend.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-api-backend.service
 
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons/AD
@@ -856,6 +857,7 @@ rm -rf /usr/local/pf/var/cache/
 /bin/systemctl enable packetfence-routes
 /bin/systemctl isolate packetfence-base
 /bin/systemctl enable packetfence-httpd.admin
+/bin/systemctl enable a3-api-backend
 
 /usr/local/pf/bin/pfcmd configreload
 # Don't launch it during image building stage, otherwise all image has same DB root password
@@ -1329,6 +1331,8 @@ fi
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Service.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/User.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Violation.pm
+%dir                    /usr/local/pf/html/a3ui
+                        /usr/local/pf/html/a3ui/*
                         /usr/local/pf/lib
 %exclude                /usr/local/pf/lib/pfconfig*
 %config(noreplace)      /usr/local/pf/lib/pf/floatingdevice/custom.pm

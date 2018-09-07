@@ -1,0 +1,15 @@
+[Unit]
+Description=A3 API Backend Service
+Wants=packetfence-base.target packetfence-config.service
+After=packetfence-base.target packetfence-config.service
+Before=packetfence-httpd.portal.service
+
+[Service]
+Type=notify
+LimitNOFILE=infinity
+ExecStart=/usr/local/pf/bin/pfhttpd -conf /usr/local/pf/conf/caddy-services/a3-api-backend.conf -log-name a3-api-backend
+Restart=on-failure
+Slice=packetfence.slice
+
+[Install]
+WantedBy=packetfence.target

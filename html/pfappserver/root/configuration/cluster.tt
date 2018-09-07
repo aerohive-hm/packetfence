@@ -8,33 +8,34 @@
     cssFiles = [
         ]
 -%]
-[% MACRO list_entry(action,description) BLOCK %]
+<!-- [% MACRO list_entry(action,description) BLOCK %]
 
   <li[% IF section == action %] class="active"[% END %]>
     <a href="#[% action %]">[% l(description) %]</a>
   </li>
-[% END -%]
+[% END -%] -->
 <div class="card">
     <div class="card-block">
+        <div id="success-alert"><div id="errorMessage"></div></div>
         <div class="documentation">
           <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
-          <form>
+          <form name="newClusterInfo" id="newClusterInfo">
               <label class="form-horizontal control-label" style="float:left; width: 130px;" for="sharedKey">Shared Key</label>
-              <input class="form-inline help-inline" type="text" name="sharedKey" id="male" value="*****"><br>
+              <div class="input-append"><input class="sharedKey form-inline help-inline pf-obfuscated-text" type="text" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
               <br/>
-              <label class="form-horizontal control-label" style="float:left; width:130px;" for="virtual_router_id">Virtual Router IP</label>
-              <input class="form-inline help-inline" type="text" name="virtual_router_id" id="other" value="50"><br>
+              <label class="form-horizontal control-label" style="float:left; width:130px;" for="vrid">Virtual Router Id</label>
+              <input class="vrid form-inline help-inline" type="text" name="vrid" id="vrid" placeholder="50"><br>
           </form>
           <br>
           <label style="float:left; width:130px;">  </label>
-          <button class="btn btn-success submit" style="width: 220px;">Submit</button>
+          <button class="btn btn-success submit" id="submitNewClusterInfo" style="width: 220px;">Submit</button>
 
-          <hr/>
+          <br/>
           <h6>Cluster Node List</h6>
           <table id="items" class="table items" data-list-uri="https://10.16.139.168:1443/config/pfmon/list">
             <thead>
               <tr>
-                <th><a style="padding-left:1px;" href="#"><i class="icon-trash-o"></i></a></th>
+                <th><a id="remove" style="padding-left:1px;" href="#"><i class="icon-trash-o"></i></a></th>
                 <th>Host Name</th>
                 <th>IP Address</th>
                 <th>Type</th>
@@ -43,24 +44,17 @@
             </thead>
             <tbody>
 
-              <tr>
+              <!-- <tr>
                 <td><input type="checkbox" /></td>
                 <td class="item"><a href="https://10.16.139.168:1443/config/pfmon/acct_maintenance/read">a1.example.com</a></td>
                 <td>10.0.123.1</td>
                 <td>Master</td>
                 <td>Active</td>
-              </tr>
-
-              <tr>
-                <td><input type="checkbox" /></td>
-                <td class="item"><a href="https://10.16.139.168:1443/config/pfmon/auth_log_cleanup/read">a2.example.com</a></td>
-                <td>10.0.123.1</td>
-                <td>Member</td>
-                <td>Active</td>
-              </tr>
+              </tr> -->
 
             </tbody>
           </table>
         </div>
     </div>
 </div>
+<script type="text/javascript" src="[% c.uri_for('/static/js/cluster.js') %]"></script>
