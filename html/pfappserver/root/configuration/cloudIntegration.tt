@@ -1,6 +1,7 @@
 <div class="card">
   <div class="card-block">
-    <div id="success-alert" style="background-color: #c3c3c3;"><div style="padding: 10px;" id="errorMessage"></div></div>
+    <div id="success-alert" style="display:none; background-color: #28a745; color: white;"><div style="padding: 10px;" id="successMessage"></div></div>
+    <div id="error-alert" style="display:none; background-color: #dc3545; color: white;"><div style="padding: 10px;" id="errorMessage"></div></div>
     <h2>[% l('Cloud Integration') %]</h2>
     <br/>
 <!--initial page disconnected-->
@@ -20,7 +21,7 @@
               <div class="input-append"><input class="cloud-pw form-inline help-inline pf-obfuscated-text" type="text" name="pass" id="pass" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
               <br/>
               <label style="float:left; width:130px;">  </label>
-              <input class="btn btn-primary" id="link-account" style="float:right; width: 194px; margin-right: 50px;" value="Link with Aerohive Account" />
+              <button class="btn btn-primary" id="link-account" style="float:right; width: 220px; margin-right: 50px;">Link with Aerohive Account</button>
           </form>
         </div>
 

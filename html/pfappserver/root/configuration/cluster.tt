@@ -35,7 +35,7 @@
           <table id="items" class="table items" data-list-uri="https://10.16.139.168:1443/config/pfmon/list">
             <thead>
               <tr>
-                <th><a style="padding-left:1px;" href="#"><i class="icon-trash-o"></i></a></th>
+                <th><a id="remove" style="padding-left:1px;" href="#"><i class="icon-trash-o"></i></a></th>
                 <th>Host Name</th>
                 <th>IP Address</th>
                 <th>Type</th>

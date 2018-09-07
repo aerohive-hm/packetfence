@@ -5,7 +5,7 @@ $(document).ready(function(){
       submitClusterInfo();
     }
     //button press on trashcan, array, removeClusterNode();
-    document.getElementById('').onclick = function(){
+    document.getElementById('remove').onclick = function(){
 
     }
 });
