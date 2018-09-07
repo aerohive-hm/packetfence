@@ -1,6 +1,6 @@
 export let i18n ={
 	"hostNameIsRequired": "Host Name is required.",
-	"invalidHostName": "invalid Host Name.",
+	"invalidHostName": "Invalid Host Name.",
 	"nameIsRequired": "Name is required.",
 	"nameMustBeBetween": "Name must be between 2 and 4094.",
 	"iPAddressIsRequired": "IP address is required.",

@@ -273,6 +273,7 @@ class licensingCtl extends Component {
         wrongMessageCopy.keyWrongMessage="";
         self.setState({ 
             enterEntitlementKeyVisible:true,
+            enableEnterEntitlementKey:false,
         });
     }
 
