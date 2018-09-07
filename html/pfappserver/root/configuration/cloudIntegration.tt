@@ -1,6 +1,6 @@
 <div class="card">
   <div class="card-block">
-    <div id="errorMessage"></div>
+    <div id="success-alert" style="background-color: #c3c3c3;"><div style="padding: 10px;" id="errorMessage"></div></div>
     <h2>[% l('Cloud Integration') %]</h2>
     <br/>
 <!--initial page disconnected-->

@@ -16,8 +16,8 @@
 [% END -%] -->
 <div class="card">
     <div class="card-block">
+        <div id="success-alert"><div id="errorMessage"></div></div>
         <div class="documentation">
-          <div id="success-alert"><div id="errorMessage"></div></div>
           <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
           <form name="newClusterInfo" id="newClusterInfo">
               <label style="display:none;" for="id"></label>
@@ -46,21 +46,13 @@
             </thead>
             <tbody>
 
-              <tr>
+              <!-- <tr>
                 <td><input type="checkbox" /></td>
                 <td class="item"><a href="https://10.16.139.168:1443/config/pfmon/acct_maintenance/read">a1.example.com</a></td>
                 <td>10.0.123.1</td>
                 <td>Master</td>
                 <td>Active</td>
-              </tr>
-
-              <tr>
-                <td><input type="checkbox" /></td>
-                <td class="item"><a href="https://10.16.139.168:1443/config/pfmon/auth_log_cleanup/read">a2.example.com</a></td>
-                <td>10.0.123.1</td>
-                <td>Member</td>
-                <td>Active</td>
-              </tr>
+              </tr> -->
 
             </tbody>
           </table>

@@ -9,8 +9,14 @@
 -%]
 <head>
   <!-- <link href="[% c.uri_for('/static/admin/config/certificates.css') %]" rel="stylesheet"> -->
+  <style>
+  .popover{
+      max-width: none;
+  }
+  </style>
 </head>
 <div class="card">
+  <div id="success-alert" style="background-color: #c3c3c3;"><div style="padding: 10px;" id="errorMessage"></div></div>
     <div class="card-block">
         <h2>[% l('Certificates') %]</h2>
           <ul class="nav nav-tabs">

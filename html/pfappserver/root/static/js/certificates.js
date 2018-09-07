@@ -1,6 +1,5 @@
 
 $(document).ready(function(){
-    readCert();
     $('[data-toggle="popover"]').popover({
       container: 'body'
     });
@@ -46,23 +45,19 @@ $(document).ready(function(){
         verifyCert(https_path[0].filePath,https_server_cert[0].filePath, qualifier);
     });
   }
-
-
-  //view more link
-  // view_more_link.onclick = function(){
-  //    //ppop up bubble with info
-  // }
-
+  document.getElementById("view-more-server").onclick = function(){
+    readCert();
+  }
 //get value when user enters in file
-  document.getElementById("serverKey").onchange = function(){
-    // checkKey();
-    var servKey = document.getElementById('serverKey');
-    console.log("upload key value: " + servKey.value);
-  };
-  document.getElementById('https_serverCert_upload').onchange = function(){
-    var cert = document.getElementById('https_serverCert_upload');
-    console.log("upload cert value: " + cert.value);
-  };
+  // document.getElementById("serverKey").onchange = function(){
+  //   // checkKey();
+  //   var servKey = document.getElementById('serverKey');
+  //   console.log("upload key value: " + servKey.value);
+  // };
+  // document.getElementById('https_serverCert_upload').onchange = function(){
+  //   var cert = document.getElementById('https_serverCert_upload');
+  //   console.log("upload cert value: " + cert.value);
+  // };
 
   var servKey = document.getElementById('serverKey');
   var servKeyExists = document.getElementById('serverKey_path');
@@ -92,7 +87,7 @@ function uploadCert(input){
       processData: false,
       contentType: false,
       success: function(data){
-        alert("post went through");
+        console.log("post went through");
         console.log("data: ");
         console.log(data);
         document.getElementById("https_cert_path").value = data.filePath;
@@ -100,6 +95,11 @@ function uploadCert(input){
       },
       error: function(data){
         console.log(data);
+        document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
+        $("#success-alert").show();
+        setTimeout(function(){
+          $("#success-alert").slideUp(500);
+        }, 3000);
       }
   });
 }
@@ -133,6 +133,11 @@ function uploadKey(input){
         error: function(data){
           // alert("did not go through");
           console.log(data.responseJSON.status_msg);
+          document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
+          $("#success-alert").show();
+          setTimeout(function(){
+            $("#success-alert").slideUp(500);
+          }, 3000);
         }
     });
 }
@@ -149,11 +154,21 @@ function verifyCert(https_key_path, https_cert_path, qualifier){
       console.log(data);
       console.log("- - - - - - - - - - -");
       $("#view-more-server").attr('data-content', data.CN_Server);
+      document.getElementById('errorMessage').innerHTML = "Successfully Updated.";
+      $("#success-alert").show();
+      setTimeout(function(){
+        $("#success-alert").slideUp(500);
+      }, 3000);
       return data.CN_server;
     },
     error: function(data){
-      alert("not successful");
+      console.log(" verify cert not successful");
       console.log(data);
+      document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
+      $("#success-alert").show();
+      setTimeout(function(){
+        $("#success-alert").slideUp(500);
+      }, 3000);
     }
   });
 }
@@ -191,7 +206,7 @@ function uploadCACert(){
         url: base_url + '/uploadCACert',
         dataType: 'json',
         success: function(data){
-          alert("post went through");
+          console.log("post went through");
         },
         error: function(data){
           alert("did not go through");
