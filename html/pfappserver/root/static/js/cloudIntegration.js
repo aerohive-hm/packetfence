@@ -12,6 +12,7 @@ $(document).ready(function(){
     console.log("clicked on unlink account");
     unlinkAerohiveAccount();
   }
+
 });
 
 function getNodeInfo(){
