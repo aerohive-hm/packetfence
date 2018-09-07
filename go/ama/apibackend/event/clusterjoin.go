@@ -82,7 +82,7 @@ func notifyClusterStatus(status string) error {
 			continue
 		}
 
-		ama.AddClusterNodeStatus(node.IpAddr, ama.Idle)
+		ama.UpdateClusterNodeStatus(node.IpAddr, ama.Idle)
 		err := sendClusterSync(node.IpAddr, status)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))

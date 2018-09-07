@@ -98,9 +98,10 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		sendClusterSync(ip, "FinishSync")
 	} else if sync.Status == finishSync {
 		//slave node notify primary to sync completed
-		//TODO: need all node completed
-		ama.SetClusterStatus(ama.FinishSync)
-		utils.RecoverDB()
+		ama.UpdateClusterNodeStatus(sync.SendIp, ama.SyncFinished)
+		if ama.IsAllNodeStatus(ama.SyncFinished) {
+			utils.RecoverDB()
+		}
 	} else {
 		code = "fail"
 		ret = "Unkown status."

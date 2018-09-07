@@ -81,7 +81,7 @@ func IsClusterJoinMode() bool {
 	return false
 }
 
-func AddClusterNodeStatus(ip string, status ClusterJoinStatusType) {
+func UpdateClusterNodeStatus(ip string, status ClusterJoinStatusType) {
 	ClusterStatus.ServersExisted[ip] = status
 
 	if status == SyncFinished {
@@ -89,7 +89,11 @@ func AddClusterNodeStatus(ip string, status ClusterJoinStatusType) {
 	}
 }
 
-func IsAllFinishSync() bool {
-	ClusterStatus.SyncCounter++
-	return ClusterStatus.SyncCounter-1 == len(ClusterStatus.ServersExisted)
+func IsAllNodeStatus(status ClusterJoinStatusType) bool {
+	for _, s := range ClusterStatus.ServersExisted {
+		if s != status {
+			return false
+		}
+	}
+	return true
 }
