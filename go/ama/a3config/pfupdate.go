@@ -4,7 +4,7 @@ package a3config
 import (
 	//"context"
 	"context"
-
+	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -37,7 +37,7 @@ func UpdateInterface(i Item) error {
 	if err != nil {
 		return err
 	}
-
+	/*eth0 ip is not equal to primary ip*/
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		err = UpdateVlanInterface(i)
@@ -48,6 +48,11 @@ func UpdateInterface(i Item) error {
 }
 
 func UpdateEthInterface(i Item) error {
+	/*check eth0 ip should be equal to primary ip*/
+	if i.IpAddr == ReadClusterPrimary() {
+		msg := fmt.Sprintf("eth0 ip(%s) is equal to primary ip (%s) ", i.IpAddr, ReadClusterPrimary())
+		return errors.New(msg)
+	}
 	err := utils.UpdateEthIface(i.Name, i.IpAddr, i.NetMask)
 	if err != nil {
 		return err
