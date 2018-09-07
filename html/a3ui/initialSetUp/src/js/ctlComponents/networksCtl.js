@@ -413,6 +413,11 @@ class networksCtl extends Component {
     handleSubmit = (e) => {
         let self=this;
         e.preventDefault();
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 console.log(values);

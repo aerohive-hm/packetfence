@@ -201,8 +201,8 @@ class joinClusterCtl extends Component {
                 let url= "/a3/api/v1/configurator/cluster/join";
                 
                 let param={
-                    "primary_server":values.primary_server,
-                    "admin":values.admin,
+                    "primary_server":values.primary_server.toString().trim(),
+                    "admin":values.admin.toString().trim(),
                     "passwd":values.passwd,
 
                 }

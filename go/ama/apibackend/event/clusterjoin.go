@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
@@ -37,7 +38,7 @@ func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 |-`pf-mariadb --force-new-cluster &`
 |-send event/cluster/sync start
 */
-func PrepareClusterNodeJoin() {
+func prepareClusterNodeJoin() {
 	utils.ForceNewCluster()
 	notifyClusterStartSync()
 }
@@ -47,28 +48,42 @@ func sendClusterSync(ip, Status string) error {
 	data := new(SyncData)
 
 	data.Status = Status
+	data.Code = "ok"
+	data.SendIp = utils.GetOwnMGTIp()
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("post cluster event sync with: %s", url))
 
 	client := new(apibackclient.Client)
-	client.Host = a3config.ReadClusterPrimary()
-	err := client.ClusterSend("POST", url, data.Status)
+	client.Host = ip
+	jsonData, err := json.Marshal(&data)
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return err
+	}
+
+	err = client.ClusterSend("POST", url, string(jsonData))
 
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 	}
+
 	return err
 }
 
 func stopServiceByJoin() error {
 	nodeList := a3share.FetchNodesInfo()
+	ownMgtIp := utils.GetOwnMGTIp()
 
 	for _, node := range nodeList {
+		if node.IpAddr == ownMgtIp {
+			continue
+		}
 		err := sendClusterSync(node.IpAddr, "StopServices")
 		if err != nil {
 			return err
 		}
+		
 	}
 	return nil
 }
@@ -76,7 +91,12 @@ func stopServiceByJoin() error {
 func notifyClusterStartSync() error {
 	ctx := context.Background()
 	nodeList := a3share.FetchNodesInfo()
+	ownMgtIp := utils.GetOwnMGTIp()
+
 	for _, node := range nodeList {
+		if node.IpAddr == ownMgtIp {
+			continue
+		}
 		err := sendClusterSync(node.IpAddr, "StartSync")
 		if err != nil {
 			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
@@ -95,12 +115,13 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		goto END
 	}
-	/*
-		err = stopServiceByJoin()
-		if err != nil {
-			goto END
-		}
-	*/
+
+	err = stopServiceByJoin()
+	if err != nil {
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("post event sync to stopService failed"))
+		//goto END
+	}
+
 	err, respdata = a3config.UpdateEventClusterJoinData(ctx, *clusterData)
 	if err != nil {
 		goto END
@@ -109,7 +130,7 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 
 	// Prepare for cluster node sync
 	ama.InitClusterStatus("primary")
-	go PrepareClusterNodeJoin()
+	go prepareClusterNodeJoin()
 
 END:
 	if err != nil {
@@ -117,3 +138,62 @@ END:
 	}
 	return resp
 }
+
+
+
+
+func waitPrimarySync(ip string) error {
+	ctx := context.Background()
+	var msg SyncData
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
+
+	client := new(apibackclient.Client)
+	client.Host = ip
+
+	for {
+		err := client.ClusterSend("GET", url, "")
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			client.Token = "" //clear the token
+			time.Sleep(10 * time.Second)
+			continue
+		}
+
+		err = json.Unmarshal(client.RespData, &msg)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Unmarshal error:" + err.Error())
+			time.Sleep(10 * time.Second)
+			continue
+		}
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("read sync status=%s from primary %s", msg.Status, msg.SendIp))
+
+		if msg.Status == "StartSync" {
+			break
+		}
+
+		time.Sleep(10 * time.Second)
+	}
+
+	return nil
+}
+
+func ActiveSyncFromPrimary(ip, user, password string) {
+	//wait a moment?
+	err := waitPrimarySync(ip)
+	if err != nil {
+		return
+	}
+	ctx := context.Background()
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("start to sync from primary=%s and restart necessary service", ip))
+	utils.SyncFromPrimary(ip, user, password)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("notify to primary with FinishSync and start pf service"))
+	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
+	utils.ExecShell(`systemctl restart packetfence-api-frontend`)
+	sendClusterSync(ip, "FinishSync")
+
+	utils.UpdateCurrentlyAt()
+
+}
+
+
+

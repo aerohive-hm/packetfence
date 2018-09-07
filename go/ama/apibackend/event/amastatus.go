@@ -6,14 +6,14 @@ package event
 
 import (
 	"context"
-	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
-	"github.com/inverse-inc/packetfence/go/ama/amac"
-	"github.com/inverse-inc/packetfence/go/log"
-	"net/http"
 	"encoding/json"
 	"fmt"
+	"net/http"
+
+	"github.com/inverse-inc/packetfence/go/ama/amac"
+	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 type AMAStatus struct {
@@ -38,7 +38,7 @@ func handleGetAMAStatus(r *http.Request, d crud.HandlerData) []byte {
 	var ctx = r.Context()
 	amaStatus := AMAStatus{}
 
-	amaStatus.Hostname = a3config.GetHostname()
+	amaStatus.Hostname = utils.GetHostname()
 	amaStatus.SystemID = utils.GetA3SysId()
 	amaStatus.Status = amac.GetAMAConnStatus()
 	amaStatus.LastConnTime = fmt.Sprintf("%v", amac.ReadLastConTime())

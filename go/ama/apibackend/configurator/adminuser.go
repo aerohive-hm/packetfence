@@ -6,7 +6,7 @@ package configurator
 import (
 	"context"
 	"encoding/json"
-	//"fmt"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -47,10 +47,11 @@ func hashPassword(password string) string {
 	return ""
 }
 
+
 /* replace is better than insert because it does not need to check if pid exsit or not */
 const (
 	sqlCmd = `replace into password(pid,password,valid_from,expiration,access_level)` +
-		`values(?,?,?,?,?)`
+		`values('%s','%s','%s','%s','%s')`
 	apiUserSql = `replace into api_user(username,password,valid_from,expiration,` +
 		`access_level)values(?,?,?,?,?)`
 )
@@ -71,16 +72,11 @@ func writeAdminToDb(user, password string) error {
 
 	hpassword := hashPassword(password)
 	bpassword := `{bcrypt}` + hpassword
+	values := fmt.Sprintf(sqlCmd, tmpUser, bpassword, timeStart,
+		expiration, "ALL")
 	sql := []amadb.SqlCmd{
 		{
-			sqlCmd,
-			[]interface{}{
-				tmpUser,
-				bpassword,
-				timeStart,
-				expiration,
-				"ALL",
-			},
+			Sql: values,
 		},
 		{
 			"replace into person(pid,email)values(?,?)",
@@ -142,5 +138,6 @@ END:
 	if err != nil {
 		ret = err.Error()
 	}
+	a3config.RecordSetupStep(a3config.StepNetworks, code)
 	return crud.FormPostRely(code, ret)
 }

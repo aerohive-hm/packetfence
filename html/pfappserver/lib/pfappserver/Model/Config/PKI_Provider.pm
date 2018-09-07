@@ -18,6 +18,7 @@ use namespace::autoclean;
 use pf::ConfigStore::PKI_Provider;
 use pf::ConfigStore::Provisioning;
 use pf::log;
+use pf::cluster;
 use File::Basename;
 
 extends 'pfappserver::Base::Model::Config';
@@ -74,6 +75,12 @@ sub remove {
             if(unlink($obj->{ca_cert_path}) != 1) {
                 $logger->warn("Failed to remove ca cert for [_1] at [_2] $!",$id, $obj->{ca_cert_path});
             }
+            if(pf::cluster::remove_file_from_cluster_sync($obj->{server_cert_path})) {
+                $logger->warn("Failed to remove server cert $obj->{server_cert_path} from the cluster file");
+            }
+            if(pf::cluster::remove_file_from_cluster_sync($obj->{ca_cert_path})) {
+                $logger->warn("Failed to remove ca cert $obj->{ca_cert_path} from the cluster file");
+            }
         }
         return ($status, $status_msg);
     }
@@ -120,6 +127,11 @@ sub create {
         if (is_error($status)) {
             return ($status, $status_msg);
         }
+        if ( pf::cluster::add_file_to_cluster_sync($server_filename) ) {
+            $status = $STATUS::INTERNAL_SERVER_ERROR;
+            $status_msg = "Unable to save cloned certificates to cluster Try again.";
+            return ($status, $status_msg);
+        }
         $assignments->{server_cert_path} = $server_filename;
     }
 
@@ -127,6 +139,11 @@ sub create {
         ($status, $status_msg) = copy_cert($assignments->{ca_cert_path}, $ca_filename);
         if (is_error($status)) {
             unlink($server_filename);
+            return ($status, $status_msg);
+        }
+        if ( pf::cluster::add_file_to_cluster_sync($ca_filename) ) {
+            $status = $STATUS::INTERNAL_SERVER_ERROR;
+            $status_msg = "Unable to save cloned certificates to cluster Try again.";
             return ($status, $status_msg);
         }
         $assignments->{ca_cert_path} = $ca_filename;

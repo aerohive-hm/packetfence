@@ -21,6 +21,11 @@ export let i18n ={
 	"createAnAerohiveCloudAccount": "CREATE AN AEROHIVE CLOUD ACCOUNT",
 	"continueWithoutAnAerohiveCloudAccount": "Continue without an Aerohive Cloud Account",
 	"emailFormatIsIncorrect": "Email format is incorrect.",
+
+	"cloudMessage1": "You're about to go to this URL:",
+	"cloudMessage2": "https://www.aerohive.com/cloud-networking",
+	"cloudMessage3": "Please fill out the information required. You will receive a confirmation email with your new Aerohive Cloud credentials.",
+	"cloudMessage4": "When you receive this info, come back to this page to finish creating your account.",
 	
 	
 }

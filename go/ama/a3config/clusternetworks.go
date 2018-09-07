@@ -17,7 +17,7 @@ type ClusterNetworksData struct {
 
 func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) ClusterNetworksData {
 	clusterNetworksData := ClusterNetworksData{}
-	clusterNetworksData.HostName = GetHostname()
+	clusterNetworksData.HostName = GetPfHostname()
 	Items := GetItemsValue(ctx)
 
 	for _, p := range primaryData.Items {
@@ -97,8 +97,6 @@ func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworks
 			return err
 		}
 	}
-
-	utils.ExecShell(`systemctl start packetfence-api-frontend`)
 
 	ama.InitClusterStatus("server")
 

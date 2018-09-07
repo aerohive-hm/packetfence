@@ -120,6 +120,7 @@
 }
 .name-vlan-text-div-networksCtl{
     float:left;
+    padding-right:4px;
     height: 28px;
     line-height: 28px;
 }

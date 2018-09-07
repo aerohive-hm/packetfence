@@ -1,6 +1,6 @@
 export let i18n ={
 	"hostNameIsRequired": "Host Name is required.",
-	"invalidHostName": "invalid Host Name.",
+	"invalidHostName": "Invalid Host Name.",
 	"nameIsRequired": "Name is required.",
 	"nameMustBeBetween": "Name must be between 2 and 4094.",
 	"iPAddressIsRequired": "IP address is required.",
@@ -33,7 +33,7 @@ export let i18n ={
 	"instructionsMessage2": "Don't worry, you can always come back to this step if you change your mind.",
 	"instructionsMessage3": "Enable all the physical interfaces you want to use for A3. If you use VLAN enforcement, specify which VLAN is dedicated to your registration, isolation, and management subnets. You must always have at least one management subnet.",
 	"hostName": "Host Name",
-	"interfaces": "interfaces",
+	"interfaces": "Interfaces",
 	"enableClustering": "Enable clustering",
 	"next": "NEXT",
 	"cancel": "CANCEL",
@@ -43,7 +43,7 @@ export let i18n ={
 	"modalType": "Type",
 	"modalServices": "Services",
 	"save": "SAVE",
-	
+	"pleaseFinishTheEditFirst": "Please finish the edit first.",
 	
 }
 

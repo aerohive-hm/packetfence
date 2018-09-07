@@ -32,18 +32,26 @@ func UpdateHostname(hostname string) error {
 }
 
 func UpdateInterface(i Item) error {
-	var err error
+	/*check mask is valid*/
+	err := CheckMaskValid(i.NetMask)
+	if err != nil {
+		return err
+	}
 
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		err = UpdateVlanInterface(i)
 	} else {
-		err = UpdateManageInterface(i)
+		err = UpdateEthInterface(i)
 	}
 	return err
 }
 
-func UpdateManageInterface(i Item) error {
+func UpdateEthInterface(i Item) error {
+	err := utils.UpdateEthIface(i.Name, i.IpAddr, i.NetMask)
+	if err != nil {
+		return err
+	}
 	keyname := fmt.Sprintf("interface %s", i.Name)
 
 	var Type string
@@ -102,7 +110,7 @@ func UpdateNetconf(i Item) error {
 		return nil
 	}
 
-	keyname := IpBitwiseAndMask(i.IpAddr, i.NetMask) // ip & mask
+	keyname := utils.IpBitwiseAndMask(i.IpAddr, i.NetMask) // ip & mask
 	s := strings.Split(keyname, ".")
 	dhcpstart := fmt.Sprintf("%s.%s.%s.10", s[0], s[1], s[2])
 	dhcpend := fmt.Sprintf("%s.%s.%s.246", s[0], s[1], s[2])
@@ -150,20 +158,20 @@ func DeletePrimaryClusterconf(i Item) error {
 	var sectionid string
 	isvlan := VlanInface(i.Name)
 	ifname := ChangeUiInterfacename(i.Name)
-
+	hostname := GetPfHostname()
 	if isvlan {
 		sectionid = fmt.Sprintf("CLUSTER interface %s", ifname)
 		A3Delete("CLUSTER", sectionid)
-		sectionid = fmt.Sprintf("%s interface %s", GetHostname(), ifname)
+		sectionid = fmt.Sprintf("%s interface %s", hostname, ifname)
 		return A3Delete("CLUSTER", sectionid)
 	} else {
 		sectionid = "CLUSTER"
 		A3Delete("CLUSTER", sectionid)
 		sectionid = fmt.Sprintf("CLUSTER interface %s", ifname)
 		A3Delete("CLUSTER", sectionid)
-		sectionid = GetHostname()
+		sectionid = hostname
 		A3Delete("CLUSTER", sectionid)
-		sectionid = fmt.Sprintf("%s interface %s", GetHostname(), ifname)
+		sectionid = fmt.Sprintf("%s interface %s", hostname, ifname)
 		return A3Delete("CLUSTER", sectionid)
 	}
 
@@ -253,12 +261,12 @@ func UpdateWebservicesAcct() error {
 
 func UpdateGaleraUser() error {
 
-	rsection := A3ReadFull("PF", "database")
+	rsection := A3ReadFull("A3DB", "DEFAULT")["DEFAULT"]
 
 	wsection := Section{
 		"active_active": {
-			"galera_replication_username": rsection["database"]["user"],
-			"galera_replication_password": rsection["database"]["pass"],
+			"galera_replication_username": rsection["dbroot_user"],
+			"galera_replication_password": rsection["dbroot_pass"],
 		},
 	}
 
@@ -291,4 +299,10 @@ func UpdateWebservices(user, password string) error {
 	}
 	return A3Commit("PF", section)
 
+}
+
+func UpdateClusterFile() {
+	cmd := `echo -e "\n/usr/local/pf/conf/cloud.conf\n` +
+		`/usr/local/pf/conf/clusterid.conf" >> /usr/local/pf/conf/cluster-files.txt`
+	utils.ExecShell(cmd)
 }
