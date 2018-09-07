@@ -1,6 +1,8 @@
 
 $(document).ready(function(){
   getNodeInfo();
+
+
   document.getElementById("link-account").onclick = function(){
     console.log("clicked on link account");
     linkAerohiveAccount();
@@ -36,6 +38,19 @@ function getNodeInfo(){
       $('#ownerId').html(data.header.ownerId);
       $('#lastContactTime').html(data.data.lastContactTime);
       $('#vhmId').html(data.header.vhmId);
+
+      //determin which page to show if linked or unlinked
+      //linked
+      if (data.msgtype == "nodesInfo"){
+        $(".disconnected").hide();
+        $(".linked").show();
+        //unlinked
+      } else if (data.msgtype == "cloudConf"){
+        $(".linked").hide();
+        $(".disconnected").show();
+      } else {
+        $(".disconnected").show();
+      }
     },
     error: function(data){
       document.getElementById('errorMessage').innerHTML = "Could not retrieve data.";

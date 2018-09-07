@@ -20,13 +20,11 @@
         <div class="documentation">
           <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
           <form name="newClusterInfo" id="newClusterInfo">
-              <label style="display:none;" for="id"></label>
-              <input style="display:none;" id="id" name="id" value="active_active" type="text"/>
-              <label class="form-horizontal control-label" style="float:left; width: 130px;" for="password">Shared Key</label>
-              <div class="input-append"><input class="password form-inline help-inline pf-obfuscated-text" type="text" name="password" id="password" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
+              <label class="form-horizontal control-label" style="float:left; width: 130px;" for="sharedKey">Shared Key</label>
+              <div class="input-append"><input class="sharedKey form-inline help-inline pf-obfuscated-text" type="text" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
               <br/>
-              <label class="form-horizontal control-label" style="float:left; width:130px;" for="virtual_router_id">Virtual Router Id</label>
-              <input class="virtual_router_id form-inline help-inline" type="text" name="virtual_router_id" id="virtual_router_id" placeholder="50"><br>
+              <label class="form-horizontal control-label" style="float:left; width:130px;" for="vrid">Virtual Router Id</label>
+              <input class="vrid form-inline help-inline" type="text" name="vrid" id="vrid" placeholder="50"><br>
           </form>
           <br>
           <label style="float:left; width:130px;">  </label>
