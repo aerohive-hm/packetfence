@@ -70,7 +70,15 @@ func ReadClusterPrimary() string {
 	return section["Cluster Primary"]["ip"]
 
 }
+func GetPrimaryHostname() string {
 
+	section := A3Read("PF", "Cluster Primary")
+	if section == nil {
+		return ""
+	}
+	return section["Cluster Primary"]["hostname"]
+
+}
 func CheckClusterEnable() bool {
 	section := A3Read("CLUSTER", "CLUSTER")
 	if section == nil {

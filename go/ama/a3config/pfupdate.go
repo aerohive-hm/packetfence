@@ -293,7 +293,16 @@ func WriteUserPassToPF(host, username, passw string) error {
 	return A3Commit("PF", section)
 
 }
+func UpdatePrimaryHostnameToClusterPF(hostname string) error {
 
+	section := Section{
+		"Cluster Primary": {
+			"hostname": hostname,
+		},
+	}
+	return A3Commit("PF", section)
+
+}
 func UpdateWebservices(user, password string) error {
 
 	section := Section{

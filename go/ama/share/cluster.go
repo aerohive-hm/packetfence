@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/log"
@@ -15,8 +14,7 @@ import (
 
 func GetPrimaryNetworksData(ctx context.Context) (error, a3config.NetworksData) {
 
-	url := fmt.Sprintf("https://%s:9999/a3/api/v1/configurator/networks",
-		a3config.ReadClusterPrimary())
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/configurator/networks", a3config.ReadClusterPrimary())
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("read cluster network data from %s", url))
 	networkData := a3config.NetworksData{}
 	client := new(apibackclient.Client)
@@ -46,6 +44,11 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return err, RespData
+	}
+	/*check cluset hostname is not same with primary hostname*/
+	if a3config.GetPrimaryHostname() == clusterData.HostName {
+		msg := fmt.Sprintf("hostename(%s) can not be the same with Primary hostname(%s).", clusterData.HostName, a3config.GetPrimaryHostname())
+		return errors.New(msg), RespData
 	}
 	/* check ip and vip is the same net range*/
 	err = a3config.CheckItemValid(ctx, true, clusterData.Items)
@@ -81,5 +84,3 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 
 	return err, RespData
 }
-
-

@@ -55,6 +55,8 @@ func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) Clust
 		}
 		clusterNetworksData.Items = append(clusterNetworksData.Items, p)
 	}
+	/*write primary host to pf for  next step check*/
+	UpdatePrimaryHostnameToClusterPF(primaryData.HostName)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", clusterNetworksData))
 	return clusterNetworksData
 
