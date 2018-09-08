@@ -87,15 +87,12 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		}
 	} else if sync.Status == startSync {
 		//primary tell slave node to start sync
-		//ip, _, _ := net.SplitHostPort(r.RemoteAddr)
 		ip := sync.SendIp
 		web := a3config.GetWebServices()["webservices"]
 		utils.SyncFromPrimary(ip, web["user"], web["pass"])
 		utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf restart")
 
-		//amac.JoinCompleteEvent()
-		//apibackclient.SendClusterSync(ip, "FinishSync")
-		sendClusterSync(ip, "FinishSync")
+		sendClusterSync(ip, finishSync)
 	} else if sync.Status == finishSync {
 		//slave node notify primary to sync completed
 		ama.UpdateClusterNodeStatus(sync.SendIp, ama.SyncFinished)

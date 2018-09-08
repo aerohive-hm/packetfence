@@ -49,10 +49,10 @@ func InitClusterStatus(primary string) {
 	if primary == "primary" {
 		ClusterStatus.IsPrimary = true
 		ClusterStatus.Status = PrepareSync
+		ClusterStatus.ServersExisted = make(map[string]ClusterJoinStatusType)
 	} else {
 		ClusterStatus.IsPrimary = false
 		ClusterStatus.Status = Waitng2Sync
-		ClusterStatus.ServersExisted = make(map[string]ClusterJoinStatusType)
 		ClusterStatus.SyncCounter = 0
 	}
 	log.LoggerWContext(ctx).Error(fmt.Sprintln("init: "))

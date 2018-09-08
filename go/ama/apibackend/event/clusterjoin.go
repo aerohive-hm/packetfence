@@ -127,7 +127,7 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 END:
 	if err != nil {
 		ama.ClearClusterStatus()
-		return []byte(fmt.Sprintf(`{"code":"fail","msg":"%s"}`, err.Error))
+		return []byte(fmt.Sprintf(`{"code":"fail","msg":"%s"}`, err.Error()))
 	}
 	return resp
 }
@@ -179,7 +179,7 @@ func ActiveSyncFromPrimary(ip, user, password string) {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("notify to primary with FinishSync and start pf service"))
 	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
 	utils.ExecShell(`systemctl restart packetfence-api-frontend`)
-	sendClusterSync(ip, "FinishSync")
+	sendClusterSync(ip, finishSync)
 
 	utils.UpdateCurrentlyAt()
 

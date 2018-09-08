@@ -106,7 +106,6 @@ func InitStartService() error {
 	//	pfservice + "httpd.admin restart",
 	//}
 	//ExecCmds(cmds)
-	//ama.InitClusterStatus("primary")
 
 	UpdateCurrentlyAt()
 	return nil
