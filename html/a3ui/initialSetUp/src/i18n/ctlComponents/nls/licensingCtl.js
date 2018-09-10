@@ -3,7 +3,7 @@ export let i18n ={
 	"entitlementKeyFormatIsIncorrect": "Entitlement key format is incorrect.",
 	"licensing": "Licensing",
 	"licensingMessage1": "You may run your A3 instance for 30 days and up to 100 devices before it expires automatically. At which time you may contact your Aerohive Sales representative to increase the evaluation period.",
-	"licensingMessage2":"Or you may enter an Entitlement Key to license your A3 instance. If you have received multiple Entitlement Keys, you may one now and enter the rest within A3 at a later time.",
+	"licensingMessage2":"Or you may enter an Entitlement Key to license your A3 instance. If you have received multiple Entitlement Keys, you may enter one now and enter the rest within A3 at a later time.",
 	"thirtyDay": "30-DAY",
 	"trial": "TRIAL",
 	"startAThirtyDayTrialPeriod": "START A 30-DAY TRIAL PERIOD",
