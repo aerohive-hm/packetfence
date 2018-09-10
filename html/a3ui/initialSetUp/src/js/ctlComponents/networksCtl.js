@@ -520,6 +520,7 @@ class networksCtl extends Component {
         let param
         if(column==="type"){
             param={
+                "original":dataCopy[index].original,
                 "name":dataCopy[index].name,
                 "ip_addr":dataCopy[index].ip_addr,
                 "netmask":dataCopy[index].netmask,
@@ -529,6 +530,7 @@ class networksCtl extends Component {
             }
         }else{
             param={
+                "original":dataCopy[index].original,
                 "name":dataCopy[index].name,
                 "ip_addr":dataCopy[index].ip_addr,
                 "netmask":dataCopy[index].netmask,
@@ -589,6 +591,7 @@ class networksCtl extends Component {
         let dataCopy=self.state.dataTable;
         
         let param={
+            "original":dataCopy[index].original,
             "name":dataCopy[index].name,
             "ip_addr":dataCopy[index].ip_addr,
             "netmask":dataCopy[index].netmask,
@@ -702,6 +705,7 @@ class networksCtl extends Component {
                 let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
+                    "original":dataCopy[index].original,
                     "name":"VLAN"+values.name.toString().trim(),
                     "ip_addr":values.ip_addr,
                     "netmask":values.netmask,
@@ -768,6 +772,7 @@ class networksCtl extends Component {
                 let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
+                    "original":dataCopy[index].original,
                     "name":dataCopy[index].name,
                     "ip_addr":dataCopy[index].ip_addr,
                     "netmask":dataCopy[index].netmask,
