@@ -157,7 +157,7 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 	}
 
 	/*eth0 ip and vlan ip should not be the same net range*/
-	for _, item := range items {
+	for k1, item := range items {
 		if !VlanInface(item.Name) {
 			continue
 		}
@@ -165,6 +165,22 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 		if utils.IsSameIpRange(item.IpAddr, eth0ip, item.NetMask) {
 			msg = fmt.Sprintf("eth0 ip(%s) and vlan (%s) should not be the same net range", eth0ip, item.IpAddr)
 			return errors.New(msg)
+		}
+		/* vlan ip should not be the same*/
+		for k2, i := range items {
+			if !VlanInface(item.Name) || k1 == k2 {
+				continue
+			}
+
+			if item.IpAddr == i.IpAddr {
+				msg = fmt.Sprintf("ip(%s) is more than one in form", item.IpAddr)
+				return errors.New(msg)
+			}
+			/* vlan name should not be the same*/
+			if item.Name == i.Name {
+				msg = fmt.Sprintf("vlan name(%s) is more than one in form", item.Name)
+				return errors.New(msg)
+			}
 		}
 	}
 	return nil
