@@ -491,7 +491,7 @@ class networksCtl extends Component {
             message.error(self.state.i18n.pleaseFinishTheEditFirst);
             return;
         }
-        
+
         let dataCopy=self.state.dataTable;
         dataCopy[index].clicked=column;
         self.setState({
@@ -847,6 +847,7 @@ class networksCtl extends Component {
             title:self.state.i18n.name,
             dataIndex: 'name',
             key: 'name',
+            width:'193px',
             render: (text, record, index) => {
                 let numberHtml;
                 if(dataTable[index].clicked==="name"){
@@ -897,12 +898,13 @@ class networksCtl extends Component {
             title: self.state.i18n.iPAddress,
             dataIndex: 'ip_addr',
             key: 'ip_addr',
+            width:'123px',
             render: (text, record, index) => {
                 return (
                     <div>
                         {
                             dataTable[index].clicked==="ip_addr"?
-                            <div className=""  >
+                            <div className="ipAddr-edit-div-networksCtl"  >
                                 <div className="ipAddr-edit-input-div-networksCtl">
                                     <Input
                                         value={text}
@@ -931,12 +933,13 @@ class networksCtl extends Component {
             title:self.state.i18n.netmask,
             dataIndex: 'netmask',
             key: 'netmask',
+            width:'123px',
             render: (text, record, index) => {
                 return (
                     <div>
                         {
                             dataTable[index].clicked==="netmask"?
-                            <div className=""  >
+                            <div className="netmask-edit-div-networksCtl"  >
                                 <div className="netmask-edit-input-div-networksCtl">
                                     <Input
                                         value={text}
@@ -967,12 +970,13 @@ class networksCtl extends Component {
                 title:self.state.i18n.vip,
                 dataIndex: 'vip',
                 key: 'vip',
+                width:'123px',
                 render: (text, record, index) => {
                     return (
                         <div>
                             {
                                 dataTable[index].clicked==="vip"?
-                                <div className=""  >
+                                <div className="vip-edit-div-networksCtl"  >
                                     <div className="vip-edit-input-div-networksCtl">
                                         <Input
                                             value={text}
@@ -1003,6 +1007,7 @@ class networksCtl extends Component {
             title:self.state.i18n.type,
             dataIndex: 'type',
             key: 'type',
+            width:'116px',
             render: (text, record, index) => {
                 return (
                     <div>
@@ -1027,13 +1032,14 @@ class networksCtl extends Component {
             title: self.state.i18n.services,
             dataIndex: 'services',
             key: 'services',
+            width:'106px',
             render: (text, record, index) => {
                 return (
                     <div>
                         <Select 
                             value={text} 
                             onChange={self.onChangeSelect.bind(self,index,"services")}
-                            style={{ width: 110 }} 
+                            style={{ width: 100 }} 
                             mode="multiple"
                         >
                             <Option value="PORTAL">{self.state.i18n.portal}</Option>
@@ -1048,6 +1054,7 @@ class networksCtl extends Component {
             title: self.state.i18n.vlan,
             dataIndex: 'vlan',
             key: 'vlan',
+            width:'116px',
             render: (text, record, index) => {
                 return (
                     text.indexOf("VLAN")===-1?
