@@ -1,3 +1,7 @@
+//TO-DO
+//add check for empty key or empty server or both empty
+//if file went in and second fail, then remove, put before Verify file
+//
 
 $(document).ready(function(){
    readCert("https");
@@ -57,9 +61,13 @@ $(document).ready(function(){
     }
   }
 
-  document.getElementById("view-more-server").onclick = function(){
-    readCert();
+
+  document.getElementById("download_https_serv").onclick = function(e){
+    console.log("pressing downloading");
+    e.preventDefault();
+    downloadCert("https");
   }
+
 });
 
 //upload key
@@ -169,21 +177,25 @@ function verifyCert(https_key_path, https_cert_path, qualifier){
       console.log("verifycert data: " );
       console.log(data);
       console.log("- - - - - - - - - - -");
-      $("#view-more-server").attr('data-content', data.CN_Server);
-      document.getElementById('errorMessage').innerHTML = "Successfully Updated.";
+      $("#https_serv_view_more").attr('data-content', data.CN_Server);
+      document.getElementById('successMessage').innerHTML = "Successfully Updated.";
       $("#success-alert").show();
       setTimeout(function(){
         $("#success-alert").slideUp(500);
       }, 3000);
-      return data.CN_server;
+      if (qualifier == "https"){
+        readCert("https");
+      } else {
+        readCert("eap");
+      }
     },
     error: function(data){
       console.log(" verify cert not successful");
       console.log(data);
       document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
-      $("#success-alert").show();
+      $("#error-alert").show();
       setTimeout(function(){
-        $("#success-alert").slideUp(500);
+        $("#error-alert").slideUp(500);
       }, 3000);
     }
   });
@@ -199,11 +211,50 @@ function readCert(qualifier){
           console.log("readacert data: " );
           console.log(data);
           console.log("- - - - - - - - - - - - -");
-          //https_key_view_more,https_serv_view_more,eap_key_view_more,eap_serv_view_more,eap_ca_view_more
-          // set bubble inside
+          //https_key_view_more || https_serv_view_more,
+          //eap_key_view_more || eap_serv_view_more || eap_ca_view_more
+          if (qualifier == "https"){
+            $("#https_serv_view_more").attr('data-original-title', data.CN_Server);
+            $("#https_serv_view_more").attr('data-content', data.Server_INFO);
+          } else {
+            $("#eap_serv_view_more").attr('data-original-title', data.CN_Server);
+            $("#eap_serv_view_more").attr('data-content', data.Server_INFO);
+            $("#eap_ca_view_more").attr('data-original-title', data.CN_CA);
+            $("#eap_ca_view_more").attr('data-content', data.CA_INFO);
+          }
         },
         error: function(data){
-          alert("readcert did not go through");
+          document.getElementById('errorMessage').innerHTML = "Failed to receive info about certificates/key.";
+          $("#success-alert").show();
+          setTimeout(function(){
+            $("#success-alert").slideUp(500);
+          }, 3000);
         }
     });
+}
+
+function removeCert(path){
+    var filePath = path;
+
+}
+
+//eap, https, eap-ca option
+function downloadCert(qualifier){
+  var base_url = window.location.origin;
+  var qualifier = "https";
+  var path =
+  $.ajax({
+      type: 'GET',
+      url: base_url + '/downloadCert/' + "?qualifier=" + qualifier,
+      success: function(data){
+        console.log("download cert pass");
+        console.log(data);
+      },
+      error: function(data){
+        console.log("download cert fail");
+        console.log(data);
+        console.log("- - - - - - - - - - - - ");
+      }
+    });
+
 }

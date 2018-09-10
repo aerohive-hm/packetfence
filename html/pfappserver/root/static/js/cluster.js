@@ -10,6 +10,8 @@ $(document).ready(function(){
     }
 });
 
+//remove the checkbox on the master node ( first one ); cluster tab only show up when in master node
+
 function submitClusterInfo(){
   console.log("inside submit cluster info");
   var base_url = window.location.origin;
