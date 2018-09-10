@@ -566,6 +566,7 @@ class clusterNetworkingCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckHostname.bind(self)}
+                                maxLength={64}
                                 />
                             )}
                         </div>

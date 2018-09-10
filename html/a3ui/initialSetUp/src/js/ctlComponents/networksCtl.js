@@ -712,7 +712,7 @@ class networksCtl extends Component {
                 self.setState({
                     loading : true,
                 })
-                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                new RequestApi('put',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
                         self.setState({ 
                             addVlanVisible:false,
@@ -1077,7 +1077,7 @@ class networksCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckHostname.bind(self)}
-                                maxLength={254}
+                                maxLength={64}
                                 />
                             )}
                         </div>
