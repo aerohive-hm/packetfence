@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/inverse-inc/packetfence/go/ama"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -77,8 +76,6 @@ func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworks
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
 		return err
 	}
-
-	utils.SetHostname(networksData.HostName)
 
 	for _, item := range networksData.Items {
 		err = UpdateInterface(item)
