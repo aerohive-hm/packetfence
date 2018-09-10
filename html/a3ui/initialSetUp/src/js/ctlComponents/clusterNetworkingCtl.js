@@ -320,6 +320,8 @@ class clusterNetworkingCtl extends Component {
         let self=this;
         
         if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
             return;
         }
         let dataCopy=self.state.dataTable;
@@ -360,6 +362,7 @@ class clusterNetworkingCtl extends Component {
         let dataCopy=self.state.dataTable;
         
         let param={
+            "original":dataCopy[index].original,
             "name":dataCopy[index].name,
             "ip_addr":dataCopy[index].ip_addr,
             "netmask":dataCopy[index].netmask,

@@ -159,6 +159,11 @@ class networksCtl extends Component {
 
     onChangeCheckbox=(e)=>{
         let self=this;
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         this.setState({
             enableClustering: e.target.checked,
         });
@@ -482,8 +487,11 @@ class networksCtl extends Component {
         let self=this;
         
         if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
             return;
         }
+        
         let dataCopy=self.state.dataTable;
         dataCopy[index].clicked=column;
         self.setState({
@@ -510,8 +518,11 @@ class networksCtl extends Component {
 
     onChangeSelect=(index,column,value) =>{
         let self=this;
-
-
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         let xCsrfToken="";
         let url= "/a3/api/v1/configurator/interface";
 
@@ -643,6 +654,11 @@ class networksCtl extends Component {
 
     onClickAddVlan= (index) => {
         let self=this;
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         self.props.form.setFieldsValue({
             name:"",
             ip_addr:"",
@@ -761,6 +777,11 @@ class networksCtl extends Component {
 
     onClickRemoveVlan= (index) => {
         let self=this;
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         Modal.confirm({
             content: self.state.i18n.areYouSureYouWantToDoThis,
             okText: self.state.i18n.yes,
