@@ -39,11 +39,12 @@ var (
 	VhmidStr                  string
 	OwnerIdStr                string
 	OrgIdStr                  string
-	connMsgUrl                string
+	synMsgUrl                 string
+	asynMsgUrl                string
+	onboardingUrl             string
 	fetchRdcTokenUrl          string
 	fetchRdcTokenUrlForOthers string
 	keepAliveUrl              string
-	updateMsgUrl              string
 	synGdcTokenUrl            string
 )
 
@@ -97,15 +98,16 @@ func installRdcUrl(ctx context.Context, rdcUrl string) {
 	a2 := strings.Split(a1, "/")[0]
 	domain := "https://" + a2
 
-	connMsgUrl = domain + "/amac/rest/v1/report/syn/" + systemId
+	synMsgUrl = domain + "/amac/rest/v1/report/syn/" + systemId
+	asynMsgUrl = domain + "/amac/rest/v1/report/" + systemId
+	onboardingUrl = domain + "/amac/rest/v1/onboarding/" + systemId
 	fetchRdcTokenUrl = domain + "/amac/rest/token/apply/" + systemId
 	fetchRdcTokenUrlForOthers = domain + "/amac/rest/v1/token/" + systemId
 	keepAliveUrl = domain + "/amac/rest/v1/poll/" + systemId
-	updateMsgUrl = domain + "/amac/rest/v1/report/" + systemId
 	synGdcTokenUrl = fmt.Sprintf("%shm-webapp/security/csrftoken", rdcUrl)
 
 	if ctx != nil {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("connMsgUrl:%s,fetchRdcTokenUrl:%s, keepAliveUrl:%s, synGdcTokenUrl:%s", connMsgUrl, fetchRdcTokenUrl, keepAliveUrl, synGdcTokenUrl))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("synMsgUrl:%s,fetchRdcTokenUrl:%s, keepAliveUrl:%s, synGdcTokenUrl:%s,onboardingUrl:%s ", synMsgUrl, fetchRdcTokenUrl, keepAliveUrl, synGdcTokenUrl, onboardingUrl))
 	}
 }
 
@@ -115,7 +117,7 @@ func installRdcUrl(ctx context.Context, rdcUrl string) {
 func onbordingToRdc(ctx context.Context) (int, string) {
 	connRes := connectResponse{}
 
-	if connMsgUrl == "" {
+	if onboardingUrl == "" {
 		log.LoggerWContext(ctx).Error("RDC URL is NULL")
 		return -1, UrlIsNull
 	}
@@ -123,11 +125,11 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 		node_info := a3share.GetOnboardingInfo(ctx)
 		data, _ := json.Marshal(node_info)
 
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to send onboarding request to RDC, connMsgUrl=%s", connMsgUrl))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to send onboarding request to RDC, onboardingUrl=%s", onboardingUrl))
 		log.LoggerWContext(ctx).Info(string(data))
 		reader := bytes.NewReader(data)
 
-		request, err := http.NewRequest("POST", connMsgUrl, reader)
+		request, err := http.NewRequest("POST", onboardingUrl, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1, OtherError
