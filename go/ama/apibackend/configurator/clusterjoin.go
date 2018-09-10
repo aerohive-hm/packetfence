@@ -48,6 +48,7 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 		join.PrimaryServer, join.Admin))
 
 	//write to pf.conf in order to use API client.ClusterAuth()
+	a3config.WriteUserPassToPF(join.PrimaryServer, join.Admin, join.Passwd)
 	//use administrative user to do authentication
 	client := new(apibackclient.Client)
 	client.Host = join.PrimaryServer
@@ -58,7 +59,6 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 		ret := fmt.Sprintf("It can't connect to cluster primary [%s] with adminuser [%s]", join.PrimaryServer, join.Admin)
 		return crud.FormPostRely(code, ret)
 	}
-	a3config.WriteUserPassToPF(join.PrimaryServer, join.Admin, join.Passwd)
 	code = "ok"
 	a3config.RecordSetupStep(a3config.StepClusterNetworking, code)
 	return crud.FormPostRely(code, ret)
