@@ -705,7 +705,7 @@ class networksCtl extends Component {
                 let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
-                    "original":dataCopy[index].original,
+                    "original":"",
                     "name":"VLAN"+values.name.toString().trim(),
                     "ip_addr":values.ip_addr,
                     "netmask":values.netmask,
