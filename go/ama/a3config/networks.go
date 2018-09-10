@@ -13,7 +13,8 @@ import (
 )
 
 type Item struct {
-	Name     string `json:"name"`
+	Original string `json:"original"`
+	Name     string `json:" "`
 	IpAddr   string `json:"ip_addr"`
 	NetMask  string `json:"netmask"`
 	Vip      string `json:"vip"`
@@ -44,6 +45,7 @@ func GetItemsValue(ctx context.Context) []Item {
 		} else {
 			item.Name = iname[0]
 		}
+		item.Original = item.Name
 		value, _ := strconv.Atoi(iface.NetMask)
 		item.IpAddr = iface.IpAddr
 		item.NetMask = utils.NetmaskLen2Str(value)
@@ -53,7 +55,6 @@ func GetItemsValue(ctx context.Context) []Item {
 		items = append(items, *item)
 	}
 	return items
-
 }
 
 func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
