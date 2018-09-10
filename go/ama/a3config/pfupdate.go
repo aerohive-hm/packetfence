@@ -23,6 +23,10 @@ func UpdateEmail(email string) error {
 }
 
 func UpdateHostname(hostname string) error {
+	err := utils.SetHostname(hostname)
+	if err != nil {
+		return err
+	}
 	section := Section{
 		"general": {
 			"hostname": hostname,

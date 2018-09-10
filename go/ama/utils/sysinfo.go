@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
-	//	"strconv"
 	"strings"
 	"time"
 )
@@ -33,14 +33,20 @@ func GetA3SysId() string {
 	return out
 }
 
-func SetHostname(hostname string) {
+func SetHostname(hostname string) error {
+	cmd := fmt.Sprintf(`hostnamectl set-hostname "%s" --static`, hostname)
+	_, err := ExecShell(cmd)
+	if err != nil {
+		msg := fmt.Sprintf("set hostname (%s) failed, please check if it is valid", hostname)
+		return errors.New(msg)
+	}
 	cmds := []string{
-		fmt.Sprintf(`hostnamectl set-hostname "%s" --static`, hostname),
 		`sed -i -r "s/HOSTNAME=[-_\.A-Za-z0-9]+/HOSTNAME=` +
 			hostname + `/" /etc/sysconfig/network`,
 		fmt.Sprintf(`echo 127.0.0.1 %s >> /etc/hosts`, hostname),
 	}
 	ExecCmds(cmds)
+	return nil
 }
 
 func GetHostname() string {
