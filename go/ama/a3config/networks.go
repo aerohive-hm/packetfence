@@ -13,7 +13,8 @@ import (
 )
 
 type Item struct {
-	Name     string `json:"name"`
+	Original string `json:"original"`
+	Name     string `json:" "`
 	IpAddr   string `json:"ip_addr"`
 	NetMask  string `json:"netmask"`
 	Vip      string `json:"vip"`
@@ -44,6 +45,7 @@ func GetItemsValue(ctx context.Context) []Item {
 		} else {
 			item.Name = iname[0]
 		}
+		item.Original = item.Name
 		value, _ := strconv.Atoi(iface.NetMask)
 		item.IpAddr = iface.IpAddr
 		item.NetMask = utils.NetmaskLen2Str(value)
@@ -53,7 +55,6 @@ func GetItemsValue(ctx context.Context) []Item {
 		items = append(items, *item)
 	}
 	return items
-
 }
 
 func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
@@ -104,7 +105,7 @@ func GetNetworksData(ctx context.Context) NetworksData {
 		context = ctx
 	}
 	networksData.Items = GetItemsValue(context)
-	networksData.ClusterEnable = true
+	networksData.ClusterEnable = CheckClusterEnable()
 	networksData.HostName = GetPfHostname()
 	return networksData
 }
@@ -197,6 +198,18 @@ func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	return errors.New(msg)
 }
 
+func CheckItemServiceValid(ctx context.Context, items []Item) error {
+	msg := ""
+	for _, item := range items {
+		if strings.Contains(item.Type, "PORTAL") {
+			if item.Services == "" {
+				msg = fmt.Sprintf("%s type is Portal, service portal is mandatory", item.Name)
+				return errors.New(msg)
+			}
+		}
+	}
+	return nil
+}
 func CheckMaskValid(mask string) error {
 
 	var i, value int = 0, 0
@@ -234,6 +247,10 @@ func CheckItemValid(ctx context.Context, enable bool, items []Item) error {
 		return err
 	}
 	err = CheckItemTypeValid(ctx, items)
+	if err != nil {
+		return err
+	}
+	err = CheckItemServiceValid(ctx, items)
 	if err != nil {
 		return err
 	}

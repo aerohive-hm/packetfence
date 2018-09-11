@@ -56,29 +56,7 @@ func VlanInface(infacename string) bool {
 	return false
 }
 
-func UpdateSystemInterface(ctx context.Context, i Item) error {
-	var err error
-
-	err = UpdateInterface(i)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("Update Interface error:" + err.Error())
-		return err
-	}
-	err = UpdateNetconf(i)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
-		return err
-	}
-	err = UpdatePrimaryClusterconf(true, i)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
-		return err
-	}
-	return err
-}
-
-func CreateSystemInterface(ctx context.Context, i Item) error {
-	var err error
+func CheckCreateIfValid(i Item) error {
 	msg := ""
 	/*check new inteface if exsit*/
 	ifname := ChangeUiInterfacename(i.Name)
@@ -98,7 +76,46 @@ func CreateSystemInterface(ctx context.Context, i Item) error {
 			return errors.New(msg)
 		}
 	}
-	err = UpdateSystemInterface(ctx, i)
+	return nil
+}
+func UpdateSystemInterface(ctx context.Context, i Item) error {
+	var err error
+	/*delete original interface*/
+	items := GetItemsValue(ctx)
+	for _, item := range items {
+		if i.Original == item.Original {
+			err = DelSystemInterface(ctx, item)
+			if err != nil {
+				return err
+			}
+			break
+		}
+	}
+	err = CreateSystemInterface(ctx, i)
+	return err
+}
+
+func CreateSystemInterface(ctx context.Context, i Item) error {
+	err := CheckCreateIfValid(i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("CheckCreateIfValid:" + err.Error())
+		return err
+	}
+	err = UpdateInterface(i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Update Interface error:" + err.Error())
+		return err
+	}
+	err = UpdateNetconf(i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
+		return err
+	}
+	err = UpdatePrimaryClusterconf(true, i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
+		return err
+	}
 	return err
 }
 
