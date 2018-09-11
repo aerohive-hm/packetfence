@@ -1,3 +1,20 @@
-export let i18nfr ={
-	"getStart": "getStart",
+export let i18n ={
+	"emailIsRequired": "Un courriel est requis.",
+	"emailFormatIsIncorrect": "Le format de courriel est incorrect.",
+	"passwordIsRequired": "Mot de passe requis.",
+	"confirmPasswordIsRequired": "Confirmer le mot de passe est requis.",
+	"passwordDoNotMatch": "Les mots de passe ne correspondent pas.",
+	"veryWeak": "Très faible",
+	"weak": "Faible",
+	"average": "Moyenne",
+	"strong": "Fort",
+	"veryStrong": "Très fort",
+	"welcomeToA3": "Bienvenue à	A3!",
+	"welcomeToA3Message": "Completez les données de connexion de votre administrateur principal ici et sélectionnez un mot de passe fort. Il est conseillé d'utilsez un alias de courriel si une équipe des personnes va administrer ce système.",
+	"adminEmail": "Courriel d'administrateur",
+	"password": "Mot de passe",
+	"confirmPassword": "Confirmer le mot de passe",
+	"next": "SUIVANT",
+	"cancel": "ANNULER",
+	
 }
