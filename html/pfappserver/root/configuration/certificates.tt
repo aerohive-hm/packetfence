@@ -41,7 +41,7 @@
         <h2>[% l('Certificates') %]</h2>
           <ul class="nav nav-tabs">
             <li class="active">
-              <a data-toggle="tab" href="#https">HTTPs</a>
+              <a data-toggle="tab" href="#https">HTTPS</a>
             </li>
             <li>
               <a data-toggle="tab" href="#eap_tls">EAP-TLS</a>
@@ -53,7 +53,7 @@
             <div id="https" class="tab-pane fade in active">
                <div style="padding-left: 50px;">
                    <form class="https_form" name="https_form" id="https_form">
-                      <label style="cursor:;"><h4>HTTPs</h4></label>
+                      <label style="cursor:;"><h4>HTTPS</h4></label>
                       <div class="server">
                         <h6>Server Certificate and Key Upload</h6>
                         <span>A server key and server certificate are required.
