@@ -194,11 +194,7 @@ func RecoverDB() {
 }
 
 func RestartKeepAlived() {
-	cmds := []string{
-		pfservice + "keepalived restart",
-	}
-
-	ExecCmds(cmds)
+	ExecShell(pfservice + "keepalived restart")
 }
 
 func ServiceStatus() string {

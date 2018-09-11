@@ -1,27 +1,22 @@
 //cluster.go implements handling REST API:
 //  /a3/api/v1/configuration/cluster
 
-
 package configuration
 
 import (
 	"context"
-	"net/http"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
-	
-	"github.com/inverse-inc/packetfence/go/log"
-	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
-	"github.com/inverse-inc/packetfence/go/ama/share"
+	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/database"
-
+	"github.com/inverse-inc/packetfence/go/ama/share"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/log"
 )
-
-type ClusterInfo struct {
-}
 
 type Cluster struct {
 	crud.Crud
@@ -39,7 +34,7 @@ func handleGetClusterInfo(r *http.Request, d crud.HandlerData) []byte {
 
 	ctx := r.Context()
 
-	clusterInfoData := a3config.ClusterInfoData{}
+	clusterInfoData := new(a3config.ClusterInfoData)
 
 	GetClusterInfoData(ctx, clusterInfoData)
 
@@ -54,7 +49,7 @@ func handleGetClusterInfo(r *http.Request, d crud.HandlerData) []byte {
 
 func handlePostClusterInfo(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	infoData := a3config.ClusterInfoData{}
+	infoData := new(a3config.ClusterInfoData)
 	code := "fail"
 	retMsg := ""
 
@@ -66,21 +61,18 @@ func handlePostClusterInfo(r *http.Request, d crud.HandlerData) []byte {
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", infoData))
 
-	
 	// save configuration
 	UpdateClusterInfoData(ctx, infoData)
-
 
 	//restart keepalived service
 	utils.RestartKeepAlived()
 	//notify other node sync configuration and restart keepalived
 
-	
 	code = "ok"
 	return crud.FormPostRely(code, retMsg)
 }
 
-func GetClusterInfoData(ctx context.Context, clusterdata a3config.ClusterInfoData)  {
+func GetClusterInfoData(ctx context.Context, clusterdata *a3config.ClusterInfoData) {
 
 	// Get shared key and virtual router ID
 
@@ -89,8 +81,7 @@ func GetClusterInfoData(ctx context.Context, clusterdata a3config.ClusterInfoDat
 	clusterdata.RouterId = aaCfg["virtual_router_id"]
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("read from configuration sharedKey=%s, routeID=%s", clusterdata.SharedKey, clusterdata.RouterId))
-	
-	
+
 	// Get cluster node Information
 	nodeList := a3share.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
@@ -110,31 +101,28 @@ func GetClusterInfoData(ctx context.Context, clusterdata a3config.ClusterInfoDat
 		if strings.Contains(dbClusterList, node.IpAddr) {
 			clusterNode.Status = "active" //get from DB
 		} else {
-			clusterNode.Status = "inactive";
+			clusterNode.Status = "inactive"
 		}
-		
+
 		clusterdata.Items = append(clusterdata.Items, *clusterNode)
 	}
 
-	return 
+	return
 }
 
+func UpdateClusterInfoData(ctx context.Context, clusterInfo *a3config.ClusterInfoData) []byte {
 
-func UpdateClusterInfoData(ctx context.Context, clusterInfo a3config.ClusterInfoData) []byte {
+	// what will we need to do when cluster/shared key change
 
-	// what will we need to do when cluster/shared key change 
-	
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("ClusterInfoData %v", clusterInfo))
 
 	section := a3config.Section{
 		"active_active": {
-			"password": clusterInfo.SharedKey,
+			"password":          clusterInfo.SharedKey,
 			"virtual_router_id": clusterInfo.RouterId,
 		},
 	}
 	err := a3config.A3Commit("PF", section)
 
-	
 	return []byte(err.Error())
 }
-

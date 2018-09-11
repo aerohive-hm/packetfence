@@ -79,9 +79,8 @@ func UpdateSystemInterface(ctx context.Context, i Item) error {
 
 func DelSystemInterface(ctx context.Context, i Item) error {
 	var err error
-	var sectionId string
 	ifname := ChangeUiInterfacename(i.Name)
-	sectionId = fmt.Sprintf("interface %s", ifname)
+	sectionId := []string{fmt.Sprintf("interface %s", ifname)}
 	if VlanInface(i.Name) {
 		utils.DelVlanIface(ifname)
 	}

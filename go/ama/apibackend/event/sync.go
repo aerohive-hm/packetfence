@@ -12,26 +12,14 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
-type SyncData struct {
-	Code   string `json:"code"`
-	Status string `json:"status"`
-	SendIp string `json:"ip"`
-}
-
 type Sync struct {
 	crud.Crud
 }
-
-const (
-	stopService      = "StopServices"
-	startSync        = "StartSync"
-	finishSync       = "FinishSync"
-	primaryRecovered = "PrimaryRecovered"
-)
 
 func ClusterSyncNew(ctx context.Context) crud.SectionCmd {
 	sync := new(Sync)
@@ -52,11 +40,11 @@ func handleGetSync(r *http.Request, d crud.HandlerData) []byte {
 	var s string
 	switch {
 	case t.Status == ama.PrepareSync:
-		s = stopService
+		s = a3share.StopService
 	case t.Status == ama.Ready4Sync:
-		s = startSync
+		s = a3share.StartSync
 	case t.Status == ama.FinishSync:
-		s = finishSync
+		s = a3share.FinishSync
 	default:
 		s = "unknown status"
 	}
@@ -65,7 +53,7 @@ func handleGetSync(r *http.Request, d crud.HandlerData) []byte {
 
 func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 	var ctx = context.Background()
-	sync := new(SyncData)
+	sync := new(a3share.SyncData)
 	code := "ok"
 	ret := ""
 
@@ -76,7 +64,8 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive sync %s from %s", sync.Status, sync.SendIp))
-	if sync.Status == stopService {
+	switch {
+	case sync.Status == a3share.StopService:
 		//primary tell slave node to stop service
 		//but POST from primary to slave node is not work
 		if ama.IsClusterJoinMode() {
@@ -85,21 +74,23 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		} else {
 			utils.StopService()
 		}
-	} else if sync.Status == startSync {
+	case sync.Status == a3share.StartSync:
 		//primary tell slave node to start sync
 		ip := sync.SendIp
 		web := a3config.GetWebServices()["webservices"]
 		utils.SyncFromPrimary(ip, web["user"], web["pass"])
 		utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf restart")
 
-		sendClusterSync(ip, finishSync)
-	} else if sync.Status == finishSync {
+		a3share.SendClusterSync(ip, a3share.FinishSync)
+	case sync.Status == a3share.FinishSync:
 		//slave node notify primary to sync completed
 		ama.UpdateClusterNodeStatus(sync.SendIp, ama.SyncFinished)
 		if ama.IsAllNodeStatus(ama.SyncFinished) {
 			utils.RecoverDB()
 		}
-	} else {
+	case sync.Status == a3share.ServerRemoved:
+		a3share.RemoveFromCluster()
+	default:
 		code = "fail"
 		ret = "Unkown status."
 	}
