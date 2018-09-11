@@ -47,9 +47,9 @@ $(document).ready(function(){
     }, function(error){
         console.log("error on uploadCert");
     }).then(function(https_key_path){
-        console.log("https_key_path: ");  console.log(https_key_path + " " +  https_server_path.filePath);
+        console.log("https_key_path: ");  console.log(https_key_path );
         var qualifier = "https";
-        var verifyCertFile = verifyCert(https_key_path.filePath,https_server_path.filePath, qualifier);
+        var verifyCertFile = verifyCert(https_server_path.filePath, https_key_path.filePath, qualifier);
         return verifyCertFile;
     }, function(error){
         console.log("error on uploadKey");
@@ -193,12 +193,12 @@ function uploadCACert(input, sentForm){
 }
 
 
-function verifyCert(https_key_path, https_cert_path, qualifier){
+function verifyCert(https_cert_path, https_key_path, qualifier){
   console.log(https_key_path + " " + https_cert_path + " " + qualifier );
   var base_url = window.location.origin;
   return $.ajax({
     type: 'POST',
-    url: base_url + '/verifyCert/' + "?key_path=" + https_cert_path + "&cert_path=" + https_key_path + "&qualifier=" + qualifier,
+    url: base_url + '/verifyCert/' + "?cert_path=" + https_cert_path + "&key_path=" + https_key_path + "&qualifier=" + qualifier,
     dataType: 'json',
     success: function(data){
       // console.log("verifycert data: " );
