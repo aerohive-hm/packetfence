@@ -97,21 +97,9 @@ sub uploadKey :Chained('/') :PathPart('uploadKey') :Args(0) :AdminRole('CERTIFIC
             $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
             return;
         }
-        #
-        # if ( ! rename($tmp_filename, $target) ) {
-        #     $logger->warn("Failed to move certificate file $filename into place at $target: $!");
-        #     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
-        #     $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
-        #     return;
-        # }
-
-        # if ( pf::cluster::add_file_to_cluster_sync($target) ) {
-        #     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
-        #     $c->stash->{status_msg} = $c->loc("Unable to save certificate to cluster. Try again.");
-        #     return;
-        # }
 
         $c->stash->{filePath} = $tmp_filename;
+        $c->response->status($STATUS::OK);
         $logger->info("Saved certificate key at $tmp_filename");
     } else {
         $c->response->status($STATUS::METHOD_NOT_ALLOWED);
@@ -168,6 +156,7 @@ sub uploadServerCert :Chained('/') :PathPart('uploadServerCert') :Args(0) :Admin
         }
 
         $c->stash->{filePath} = $tmp_filename;
+        $c->response->status($STATUS::OK);
         $logger->info("Saved server certificate at $tmp_filename");
     } else {
         $c->response->status($STATUS::METHOD_NOT_ALLOWED);
@@ -233,6 +222,7 @@ sub uploadCACert :Chained('/') :PathPart('uploadCACert') :Args(0) :AdminRole('CE
 
         $c->stash->{filePath} = $radius_ca_cert;
         $c->stash->{status_msg} = $c->loc("Successfully uploaded the CA-Cert!");
+        $c->response->status($STATUS::OK);
         $logger->info("Saved radius CA certificate at $radius_ca_cert");
     } else {
         $c->response->status($STATUS::METHOD_NOT_ALLOWED);
@@ -277,7 +267,8 @@ sub verifyCert :Chained('/') :PathPart('verifyCert') :Args(0) :AdminRole('CERTIF
                     $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
                     return;
                 }
-
+                $c->stash->{status_msg} = $c->loc("Successfully verified and saved the uploaded certificate and the private key.");
+                $c->response->status($STATUS::OK);
                 $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($radius_server_cert);
             } elsif ($qualifier eq "https") {
                 #https certs will be put in conf/ssl
@@ -297,6 +288,8 @@ sub verifyCert :Chained('/') :PathPart('verifyCert') :Args(0) :AdminRole('CERTIF
                 $cn_server = pf::util::get_cert_subject_cn($server_cert);
                 system("cat $server_cert $server_key > $server_pem");
                 $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($server_cert);
+                $c->stash->{status_msg} = $c->loc("Successfully verified and saved the uploaded certificate and the private key.");
+                $c->response->status($STATUS::OK);
             }
         } else {
             $logger->warn("Failed to verify certificate file $key_path against $cert_path");
@@ -332,11 +325,13 @@ sub readCert :Chained('/') :PathPart('readCert') :Args(0) :AdminRole('CERTIFICAT
         if ($qualifier eq "https") {
             $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($server_cert);
             $c->stash->{Server_INFO} = `/usr/bin/openssl x509 -noout -text -in $server_cert`;
+            $c->response->status($STATUS::OK);
         } elsif ($qualifier eq "eap") {
             $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($radius_server_cert);
             $c->stash->{CN_CA} = pf::util::get_cert_subject_cn($radius_ca_cert);
             $c->stash->{Server_INFO} = `/usr/bin/openssl x509 -noout -text -in $radius_server_cert`;
             $c->stash->{CA_INFO} = `/usr/bin/openssl x509 -noout -text -in $radius_ca_cert`;
+            $c->response->status($STATUS::OK);
         }
     } else {
         $c->response->status($STATUS::METHOD_NOT_ALLOWED);
@@ -379,6 +374,7 @@ sub downloadCert :Chained('/') :PathPart('downloadCert') :Args(0) :AdminRole('CE
         read $in, $cert, -s $in;
         close($in);
         $c->stash->{Cert_Content} = $cert;
+        $c->response->status($STATUS::OK);
     } else {
         $c->response->status($STATUS::METHOD_NOT_ALLOWED);
     }
@@ -394,18 +390,25 @@ Usage: /removeCert
 sub removeCert :Chained('/') :PathPart('removeCert') :Args(0) :AdminRole('CERTIFICATE_UPDATE') {
     my ($self, $c) = @_;
     my $logger = get_logger();
+    my $template_cert_path = '/usr/local/pf/conf/ssl/tmp_certs/cert-';
 
     if ($c->request->method eq 'POST') {
         my $cert_path = $c->request->{query_parameters}->{file_path};
         if (-e $cert_path) {
-            $logger->info("Removing $cert_path");
-            if(unlink($cert_path) != 1) {
-                $logger->warn("Failed to remove $cert_path $!");
-                $c->stash->{status_msg} = $c->loc("Unable to remove the certificate file!");
-                $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
-                return;
-            }
+            if (substr($cert_path, 0, length($template_cert_path)) eq $template_cert_path) {
 
+                $logger->info("Removing $cert_path");
+                if (unlink($cert_path) != 1) {
+                    $logger->warn("Failed to remove $cert_path $!");
+                    $c->stash->{status_msg} = $c->loc("Unable to remove the certificate file!");
+                    $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+                    return;
+                }
+            } else {
+                $logger->warn("Attempting to remove a non temp certificate file!");
+                $c->stash->{status_msg} = $c->loc("Unable to remove the certificate file!");
+                $c->response->status($STATUS::BAD_REQUEST);
+            }
         } else {
             $logger->warn("Unable to find $cert_path $!");
             $c->stash->{status_msg} = $c->loc("Unable to remove the certificate file!");
