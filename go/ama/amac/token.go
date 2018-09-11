@@ -340,6 +340,7 @@ func TriggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
 func fillRdcTokenReqHeader(node *NodeInfo) rdcTokenReqFromRdc {
 	rdcTokenReq := rdcTokenReqFromRdc{}
 
+	//Only SystemID, ClusterID and Hostname is necessary when request RDC token
 	if node == nil {
 		rdcTokenReq.Header.SystemID = utils.GetA3SysId()
 		rdcTokenReq.Header.Hostname = utils.GetHostname()
@@ -348,13 +349,7 @@ func fillRdcTokenReqHeader(node *NodeInfo) rdcTokenReqFromRdc {
 		rdcTokenReq.Header.Hostname = node.Hostname
 	}
 	rdcTokenReq.Header.ClusterID = utils.GetClusterId()
-	rdcTokenReq.Header.Hostname = utils.GetHostname()
-	//Only SystemID, ClusterID and Hostname is necessary when request RDC token
-	/*
-		rdcTokenReq.Header.OwnerId, _ = strconv.ParseInt(OwnerIdStr, 10, 64)
-		rdcTokenReq.Header.VhmId = VhmidStr
-		rdcTokenReq.Header.OrgId =
-	*/
+
 	return rdcTokenReq
 }
 
