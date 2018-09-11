@@ -158,9 +158,9 @@ function uploadCert(input, sentForm){
         console.log("upload cert failed");
         // console.log(data);
         document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
-        $("#success-alert").show();
+        $("#error-alert").show();
         setTimeout(function(){
-          $("#success-alert").slideUp(500);
+          $("#error-alert").slideUp(500);
         }, 3000);
       }
   });
@@ -201,9 +201,9 @@ function verifyCert(https_key_path, https_cert_path, qualifier){
     url: base_url + '/verifyCert/' + "?key_path=" + https_cert_path + "&cert_path=" + https_key_path + "&qualifier=" + qualifier,
     dataType: 'json',
     success: function(data){
-      console.log("verifycert data: " );
-      console.log(data);
-      console.log("- - - - - - - - - - -");
+      // console.log("verifycert data: " );
+      // console.log(data);
+      // console.log("- - - - - - - - - - -");
       $("#https_serv_view_more").attr('data-content', data.CN_Server);
       document.getElementById('successMessage').innerHTML = "Successfully Updated.";
       $("#success-alert").show();
@@ -235,9 +235,9 @@ function readCert(qualifier){
         type: 'GET',
         url: base_url + '/readCert/' + "?qualifier=" + qualifier,
         success: function(data){
-          console.log("readacert data: " );
-          console.log(data);
-          console.log("- - - - - - - - - - - - -");
+          // console.log("readacert data: " );
+          // console.log(data);
+          // console.log("- - - - - - - - - - - - -");
           //https_key_view_more || https_serv_view_more,
           //eap_key_view_more || eap_serv_view_more || eap_ca_view_more
           if (qualifier == "https"){
@@ -261,20 +261,27 @@ function readCert(qualifier){
 }
 
 function removeCert(path){
-    // var filePath = path;
-    // var base_url = window.location.origin;
-    // $.ajax({
-    //     type: 'POST',
-    //     url: base_url + '/removeCert/' + "?filePath=" + filePath,
-    //     data: filePath,
-    //     dataType: 'json',
-    //     success:
-    // })
+    var filePath = path;
+    var base_url = window.location.origin;
+    $.ajax({
+        type: 'POST',
+        url: base_url + '/removeCert/' + "?filePath=" + filePath,
+        data: filePath,
+        dataType: 'json',
+        success: function(data){
+          console.log("removed files");
+        },
+        error: function(data){
+          console.log("couldn't remove files");
+
+        }
+    })
 }
 
 //eap, https, eap-ca option
 function downloadCert(qualifier){
   var base_url = window.location.origin;
+  var fileName = "server.pem";
   var qualifier = "https";
   $.ajax({
       type: 'GET',
@@ -282,12 +289,23 @@ function downloadCert(qualifier){
       success: function(data){
         console.log("download cert pass");
         console.log(data);
+        // var a = document.createElement("a");
+        var file = new Blob([data], {type: contentType});
+        $('#download_button').href = URL.createObjectURL(file);
+        $('#download_button').download = fileName;
+        $('#download_button').click();
       },
       error: function(data){
         console.log("download cert fail");
         console.log(data);
         console.log("- - - - - - - - - - - - ");
+        document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
+        $("#error-alert").show();
+        setTimeout(function(){
+          $("#error-alert").slideUp(500);
+        }, 3000);
       }
     });
+
 
 }

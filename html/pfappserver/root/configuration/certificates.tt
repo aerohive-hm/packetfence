@@ -53,21 +53,20 @@
             <div id="https" class="tab-pane fade in active">
                <div style="padding-left: 50px;">
                    <form class="https_form" name="https_form" id="https_form">
-                      <label><h4>HTTPs</h4></label>
+                      <label style="cursor:;"><h4>HTTPs</h4></label>
                       <div class="server">
                         <h6>Server Certificate and Key Upload</h6>
                         <span>A server key and server certificate are required.
-                          <br>
                           Uploading cert files requires a restart of all httpd services. </span>
                         <br><br>
                         <input id="https_key_path" name="https_key_path" type="hidden" value="">
-                        <label><h6>Key (file type:  .key) <a id="https_key_view_more" data-toggle="popover" title="" data-toggle="popover" style="padding-left: 10px;">View More</a></h6></label>
+                        <label><h5>Key (file type:  .key)</h5></label>
                         <input class="https_serverKey_upload btn btn-primary" id="https_serverKey_upload" type="file">
                         <br>
                         <input id="https_cert_path" name="https_cert_path" type="hidden" value="">
-                        <label><h6>Server Certificate (file type:  .pem/.crt/.cer) <a id="https_serv_view_more" data-toggle="popover" title="" style="padding-left: 10px;">View More</a></h6></label>
+                        <label><h5>Server Certificate (file type:  .pem/.crt/.cer) <a id="https_serv_view_more" data-toggle="popover" title="" style="padding-left: 10px;">View More</a></h5></label>
                         <input class="https_serverCert_upload btn btn-primary" id="https_serverCert_upload" type="file">
-                        <button class="btn btn-success" id="download_https_serv" style="padding-top:9px; padding-bottom:9px;" >Download</button>
+                        <a id="download_button"><button class="btn btn-success" id="download_https_serv" style="padding-top:9px; padding-bottom:9px;" >Download</button></a>
                       </div>
                       <button id="https-upload" class="btn btn-success" style="float:right;">Submit</button>
                    </form>
@@ -82,11 +81,10 @@
                   <div class="server">
                     <h6>Server Certificate and Key Upload</h6>
                     <span>A server key and server certificate are required. Uploading a CA certificate is optional.</span>
-                    <br>
                     <span>Uploading cert files requires a restart of radiusd service.</span>
                     <br><br>
                     <input id="eap_key_path" name="eap_key_path" type="hidden" value="">
-                    <label><h6>Key (file type:  .key) <a id="eap_key_view_more" style="padding-left: 10px;" data-toggle="popover" title="">View More</a></h6></label>
+                    <label><h6>Key (file type:  .key)</h6></label>
                     <input id="serverKey_upload" name="serverKey_upload" class="serverKey_upload btn btn-primary" type="file"/>
                     <br>
                     <input id="eap_cert_path" name="eap_cert_path" type="hidden" value="">
