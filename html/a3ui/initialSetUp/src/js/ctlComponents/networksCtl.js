@@ -159,6 +159,11 @@ class networksCtl extends Component {
 
     onChangeCheckbox=(e)=>{
         let self=this;
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         this.setState({
             enableClustering: e.target.checked,
         });
@@ -482,8 +487,11 @@ class networksCtl extends Component {
         let self=this;
         
         if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
             return;
         }
+
         let dataCopy=self.state.dataTable;
         dataCopy[index].clicked=column;
         self.setState({
@@ -510,8 +518,11 @@ class networksCtl extends Component {
 
     onChangeSelect=(index,column,value) =>{
         let self=this;
-
-
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         let xCsrfToken="";
         let url= "/a3/api/v1/configurator/interface";
 
@@ -520,6 +531,7 @@ class networksCtl extends Component {
         let param
         if(column==="type"){
             param={
+                "original":dataCopy[index].original,
                 "name":dataCopy[index].name,
                 "ip_addr":dataCopy[index].ip_addr,
                 "netmask":dataCopy[index].netmask,
@@ -529,6 +541,7 @@ class networksCtl extends Component {
             }
         }else{
             param={
+                "original":dataCopy[index].original,
                 "name":dataCopy[index].name,
                 "ip_addr":dataCopy[index].ip_addr,
                 "netmask":dataCopy[index].netmask,
@@ -589,6 +602,7 @@ class networksCtl extends Component {
         let dataCopy=self.state.dataTable;
         
         let param={
+            "original":dataCopy[index].original,
             "name":dataCopy[index].name,
             "ip_addr":dataCopy[index].ip_addr,
             "netmask":dataCopy[index].netmask,
@@ -640,6 +654,11 @@ class networksCtl extends Component {
 
     onClickAddVlan= (index) => {
         let self=this;
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         self.props.form.setFieldsValue({
             name:"",
             ip_addr:"",
@@ -702,6 +721,7 @@ class networksCtl extends Component {
                 let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
+                    "original":"",
                     "name":"VLAN"+values.name.toString().trim(),
                     "ip_addr":values.ip_addr,
                     "netmask":values.netmask,
@@ -712,7 +732,7 @@ class networksCtl extends Component {
                 self.setState({
                     loading : true,
                 })
-                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                new RequestApi('put',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
                         self.setState({ 
                             addVlanVisible:false,
@@ -757,6 +777,11 @@ class networksCtl extends Component {
 
     onClickRemoveVlan= (index) => {
         let self=this;
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         Modal.confirm({
             content: self.state.i18n.areYouSureYouWantToDoThis,
             okText: self.state.i18n.yes,
@@ -768,6 +793,7 @@ class networksCtl extends Component {
                 let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
+                    "original":dataCopy[index].original,
                     "name":dataCopy[index].name,
                     "ip_addr":dataCopy[index].ip_addr,
                     "netmask":dataCopy[index].netmask,
@@ -821,6 +847,7 @@ class networksCtl extends Component {
             title:self.state.i18n.name,
             dataIndex: 'name',
             key: 'name',
+            width:'157px',
             render: (text, record, index) => {
                 let numberHtml;
                 if(dataTable[index].clicked==="name"){
@@ -871,12 +898,13 @@ class networksCtl extends Component {
             title: self.state.i18n.iPAddress,
             dataIndex: 'ip_addr',
             key: 'ip_addr',
+            width:'129px',
             render: (text, record, index) => {
                 return (
                     <div>
                         {
                             dataTable[index].clicked==="ip_addr"?
-                            <div className=""  >
+                            <div className="ipAddr-edit-div-networksCtl"  >
                                 <div className="ipAddr-edit-input-div-networksCtl">
                                     <Input
                                         value={text}
@@ -905,12 +933,13 @@ class networksCtl extends Component {
             title:self.state.i18n.netmask,
             dataIndex: 'netmask',
             key: 'netmask',
+            width:'129px',
             render: (text, record, index) => {
                 return (
                     <div>
                         {
                             dataTable[index].clicked==="netmask"?
-                            <div className=""  >
+                            <div className="netmask-edit-div-networksCtl"  >
                                 <div className="netmask-edit-input-div-networksCtl">
                                     <Input
                                         value={text}
@@ -941,12 +970,13 @@ class networksCtl extends Component {
                 title:self.state.i18n.vip,
                 dataIndex: 'vip',
                 key: 'vip',
+                width:'129px',
                 render: (text, record, index) => {
                     return (
                         <div>
                             {
                                 dataTable[index].clicked==="vip"?
-                                <div className=""  >
+                                <div className="vip-edit-div-networksCtl"  >
                                     <div className="vip-edit-input-div-networksCtl">
                                         <Input
                                             value={text}
@@ -977,6 +1007,7 @@ class networksCtl extends Component {
             title:self.state.i18n.type,
             dataIndex: 'type',
             key: 'type',
+            width:'122px',
             render: (text, record, index) => {
                 return (
                     <div>
@@ -1001,13 +1032,14 @@ class networksCtl extends Component {
             title: self.state.i18n.services,
             dataIndex: 'services',
             key: 'services',
+            width:'112px',
             render: (text, record, index) => {
                 return (
                     <div>
                         <Select 
                             value={text} 
                             onChange={self.onChangeSelect.bind(self,index,"services")}
-                            style={{ width: 110 }} 
+                            style={{ width: 100 }} 
                             mode="multiple"
                         >
                             <Option value="PORTAL">{self.state.i18n.portal}</Option>
@@ -1022,6 +1054,7 @@ class networksCtl extends Component {
             title: self.state.i18n.vlan,
             dataIndex: 'vlan',
             key: 'vlan',
+            width:'122px',
             render: (text, record, index) => {
                 return (
                     text.indexOf("VLAN")===-1?
@@ -1077,7 +1110,7 @@ class networksCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckHostname.bind(self)}
-                                maxLength={254}
+                                maxLength={64}
                                 />
                             )}
                         </div>
