@@ -135,10 +135,8 @@ func IfaceExists(ifname string) bool {
 func CheckIpExists(ip string) error {
 	cmd := fmt.Sprintf("sudo ping -c 2 -i 0.3 %s", ip)
 	msg := fmt.Sprintf("%s is exsit in net", ip)
-	out, err := ExecShell(cmd)
-	if err != nil {
-		return err
-	}
+	out, _ := ExecShell(cmd)
+
 	if strings.Contains(out, "time=") {
 		return errors.New(msg)
 	}
@@ -378,31 +376,35 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 		/*check ip if is exsit*/
 		err = CheckIpExists(ip)
 		if err != nil {
+			fmt.Println("goto here 1")
 			return err
 		}
 		err = DelIfaceIIpAddr(ifname, oldip)
 		if err != nil {
+			fmt.Println("goto here 2")
 			return err
 		}
 		log.LoggerWContext(context.Background()).Info("DelIfaceIIpAddr OK:")
 		err = SetIfaceIIpAddr(ifname, ip, mask)
 		if err != nil {
+			fmt.Println("goto here 3")
 			return err
 		}
 		log.LoggerWContext(context.Background()).Info("SetIfaceIIpAddr OK:")
 		err = setInterfaceGateway(ifname, gateway)
 		if err != nil {
-
+			fmt.Println("goto here 4")
 			return err
 		}
 		log.LoggerWContext(context.Background()).Info("setInterfaceGateway OK:")
 		if !isIfaceActive(ifname) {
 			err = SetIfaceUp(ifname)
 			if err != nil {
+				fmt.Println("goto here 5")
 				return err
 			}
 		}
-
 	}
+	fmt.Println("goto here 6")
 	return nil
 }
