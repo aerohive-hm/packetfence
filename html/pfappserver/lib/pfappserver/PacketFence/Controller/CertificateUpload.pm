@@ -220,7 +220,7 @@ sub uploadCACert :Chained('/') :PathPart('uploadCACert') :Args(0) :AdminRole('CE
             return;
         }
 
-        $c->stash->{filePath} = $radius_ca_cert;
+        $c->stash->{CN_CA} = pf::util::get_cert_subject_cn($radius_ca_cert);
         $c->stash->{status_msg} = $c->loc("Successfully uploaded the CA-Cert!");
         $c->response->status($STATUS::OK);
         $logger->info("Saved radius CA certificate at $radius_ca_cert");
