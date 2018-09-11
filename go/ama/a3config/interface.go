@@ -58,6 +58,10 @@ func VlanInface(infacename string) bool {
 
 func CheckCreateIfValid(i Item) error {
 	msg := ""
+	isvlan := VlanInface(i.Name)
+	if !isvlan {
+		return nil
+	}
 	/*check new inteface if exsit*/
 	ifname := ChangeUiInterfacename(i.Name)
 	if utils.IfaceExists(ifname) {
