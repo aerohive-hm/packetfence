@@ -48,9 +48,9 @@ class aerohiveCloudCtl extends Component {
 
     getRightI18n= () => {
         let self=this;
-        let localeForLicenseInfo=window.localStorage.getItem('getStart');
+        let navigatorLanguage = self.props.navigatorLanguage; 
         let rightI18n;
-        if(localeForLicenseInfo==="fr"){
+        if(navigatorLanguage==="fr"){
             rightI18n=i18nfr;
         }else{
             rightI18n=i18n;
@@ -346,6 +346,7 @@ class aerohiveCloudCtl extends Component {
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckUrl.bind(self)}
                                 maxLength={254}
+                                placeholder="https://cloud.aerohive.com"
                                 
                                 />
                             )}
@@ -370,6 +371,7 @@ class aerohiveCloudCtl extends Component {
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckUser.bind(self)}
                                 maxLength={1000}
+                                placeholder="admin@example.com"
                                 />
                             )}
                         </div>

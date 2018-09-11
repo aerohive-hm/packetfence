@@ -2,11 +2,11 @@ package a3config
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"strings"
-
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
+	"strings"
 )
 
 func GetIfaceElementVlaue(ifname, element string) string {
@@ -56,9 +56,55 @@ func VlanInface(infacename string) bool {
 	return false
 }
 
+func CheckCreateIfValid(i Item) error {
+	msg := ""
+	isvlan := VlanInface(i.Name)
+	if !isvlan {
+		return nil
+	}
+	/*check new inteface if exsit*/
+	ifname := ChangeUiInterfacename(i.Name)
+	if utils.IfaceExists(ifname) {
+		msg = fmt.Sprintf("%s is exsit in system", i.Name)
+		return errors.New(msg)
+	}
+	/*check ip if exsit*/
+	ifaces, errint := utils.GetIfaceList("all")
+	if errint < 0 {
+		msg = fmt.Sprintf("Get interfaces infomation failed.")
+		return errors.New(msg)
+	}
+	for _, iface := range ifaces {
+		if i.IpAddr == iface.IpAddr {
+			msg = fmt.Sprintf("the ip address (%s) is exsit in system.", i.IpAddr)
+			return errors.New(msg)
+		}
+	}
+	return nil
+}
 func UpdateSystemInterface(ctx context.Context, i Item) error {
 	var err error
+	/*delete original interface*/
+	items := GetItemsValue(ctx)
+	for _, item := range items {
+		if i.Original == item.Original {
+			err = DelSystemInterface(ctx, item)
+			if err != nil {
+				return err
+			}
+			break
+		}
+	}
+	err = CreateSystemInterface(ctx, i)
+	return err
+}
 
+func CreateSystemInterface(ctx context.Context, i Item) error {
+	err := CheckCreateIfValid(i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("CheckCreateIfValid:" + err.Error())
+		return err
+	}
 	err = UpdateInterface(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update Interface error:" + err.Error())

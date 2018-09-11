@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"net/http"
 
 	"errors"
@@ -191,8 +192,20 @@ func startService() {
 	utils.InitStartService()
 	amac.JoinCompleteEvent()
 }
+
+func forceUrlStartWithHttps(s string) string {
+        if s[0:5] == "https" {
+                return s
+        } else if s[0:4] == "http" {
+                s1 := strings.Replace(s, "http", "https", 1)
+                return s1
+        } else {
+                s2 := strings.Join([]string{"https://", s}, "")
+                return s2
+        }
+}
 func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
-	var ret string
+	var ret,s string
 	var reason string
 	var result int
 
@@ -231,7 +244,8 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	err = a3config.UpdateCloudConf(a3config.GDCUrl, postInfo.Url)
+	s = forceUrlStartWithHttps(postInfo.Url)
+	err = a3config.UpdateCloudConf(a3config.GDCUrl, s)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update cloud GDC URL error: " + err.Error())
 		goto END

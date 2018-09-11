@@ -66,6 +66,7 @@ func buildA3apiHandler(ctx context.Context) (A3apiHandler, error) {
 
 	router := httprouter.New()
 	router.POST("/api/v1/*filepath", apibackend.Handle)
+	router.PUT("/api/v1/*filepath", apibackend.Handle)
 	router.GET("/api/v1/*filepath", apibackend.Handle)
 	router.DELETE("/api/v1/*filepath", apibackend.Handle)
 
