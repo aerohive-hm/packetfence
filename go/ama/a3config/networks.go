@@ -105,7 +105,7 @@ func GetNetworksData(ctx context.Context) NetworksData {
 		context = ctx
 	}
 	networksData.Items = GetItemsValue(context)
-	networksData.ClusterEnable = true
+	networksData.ClusterEnable = CheckClusterEnable()
 	networksData.HostName = GetPfHostname()
 	return networksData
 }
@@ -198,6 +198,18 @@ func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	return errors.New(msg)
 }
 
+func CheckItemServiceValid(ctx context.Context, items []Item) error {
+	msg := ""
+	for _, item := range items {
+		if strings.Contains(item.Type, "PORTAL") {
+			if item.Services == "" {
+				msg = fmt.Sprintf("%s type is Portal, service portal is mandatory", item.Name)
+				return errors.New(msg)
+			}
+		}
+	}
+	return nil
+}
 func CheckMaskValid(mask string) error {
 
 	var i, value int = 0, 0
@@ -235,6 +247,10 @@ func CheckItemValid(ctx context.Context, enable bool, items []Item) error {
 		return err
 	}
 	err = CheckItemTypeValid(ctx, items)
+	if err != nil {
+		return err
+	}
+	err = CheckItemServiceValid(ctx, items)
 	if err != nil {
 		return err
 	}
