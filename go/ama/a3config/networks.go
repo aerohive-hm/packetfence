@@ -14,7 +14,7 @@ import (
 
 type Item struct {
 	Original string `json:"original"`
-	Name     string `json:" "`
+	Name     string `json:"name"`
 	IpAddr   string `json:"ip_addr"`
 	NetMask  string `json:"netmask"`
 	Vip      string `json:"vip"`
