@@ -71,9 +71,9 @@ class licensingCtl extends Component {
 
     getRightI18n= () => {
         let self=this;
-        let localeForLicenseInfo=window.localStorage.getItem('getStart');
+        let navigatorLanguage = self.props.navigatorLanguage; 
         let rightI18n;
-        if(localeForLicenseInfo==="fr"){
+        if(navigatorLanguage==="fr"){
             rightI18n=i18nfr;
         }else{
             rightI18n=i18n;
