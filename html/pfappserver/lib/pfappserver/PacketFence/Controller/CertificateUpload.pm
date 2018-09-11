@@ -252,9 +252,9 @@ sub verifyCert :Chained('/') :PathPart('verifyCert') :Args(0) :AdminRole('CERTIF
         my $cert_md5 = `openssl x509 -noout -modulus -in $cert_path| openssl md5`;
 
         if ($key_md5 eq $cert_md5) {
+            $logger->info("Verified $key_path against $cert_path");
             #eap-tls certs will be put in raddb/certs
             if ($qualifier eq "eap") {
-                $logger->info("Verified $key_path against $cert_path");
                 if ( ! rename($key_path, $radius_server_key) ) {
                     $logger->warn("Failed to move certificate file $key_path into place at $radius_server_key: $!");
                     $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
