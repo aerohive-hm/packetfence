@@ -47,9 +47,24 @@ type CloudGetData struct {
 	LastContactTime string `json:"lastContactTime"`
 }
 
-type CloudGetInfo struct {
+type NodesInfo struct {
 	Head CloudGetHeader `json:"header"`
 	Data []CloudGetData `json:"data"`
+}
+
+type CloudConf struct {
+	GdcUrl string `json:"gdcurl"`
+	User   string `json:"user"`
+}
+
+type GetNodesInfo struct {
+	MsgType string    `json:"msgtype"`
+	Body    NodesInfo `json:"body"`
+}
+
+type GetCloudConf struct {
+	MsgType string    `json:"msgtype"`
+	Body    CloudConf `json:"body"`
 }
 
 type CloudPostInfo struct {
@@ -81,25 +96,26 @@ func getRunMode() string {
 	return ""
 }
 
-func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
-	var getInfo CloudGetInfo
-	var dataArray []CloudGetData
+type CloudGetHandler interface {
+		getValue(context.Context)
+		convertToJson(ctx context.Context) []byte
+}
+
+func (nodes *GetNodesInfo) getValue(ctx context.Context) {
 	var self CloudGetData
 
-	var ctx = r.Context()
-	log.LoggerWContext(ctx).Info("into handleGetCloudInfo")
+	nodes.MsgType = "nodesInfo"
 
-	getInfo.Head.RdcUrl = a3config.ReadCloudConf(a3config.RDCUrl)
-	getInfo.Head.OwnerId = a3config.ReadCloudConf(a3config.OwnerId)
-	getInfo.Head.VhmId = a3config.ReadCloudConf(a3config.Vhm)
-	getInfo.Head.Mode = getRunMode()
-	getInfo.Head.Region = amac.GetRdcRegin(getInfo.Head.RdcUrl)
+	nodes.Body.Head.RdcUrl = a3config.ReadCloudConf(a3config.RDCUrl)
+	nodes.Body.Head.OwnerId = a3config.ReadCloudConf(a3config.OwnerId)
+	nodes.Body.Head.VhmId = a3config.ReadCloudConf(a3config.Vhm)
+	nodes.Body.Head.Mode = getRunMode()
+	nodes.Body.Head.Region = amac.GetRdcRegin(nodes.Body.Head.RdcUrl)
 
 	self.Hostname = utils.GetHostname()
 	self.Status = amac.GetAMAConnStatus()
 	self.LastContactTime = fmt.Sprintf("%v", amac.ReadLastConTime())
-
-	dataArray = append(dataArray, self)
+	nodes.Body.Data = append(nodes.Body.Data, self)
 
 	nodeList := a3share.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
@@ -116,16 +132,52 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		other.Hostname = amaStatus.Hostname
 		other.Status = amaStatus.Status
 		other.LastContactTime = amaStatus.LastConnTime
-		dataArray = append(dataArray, other)
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("Fetch node %s info: %s,%s,%s", node.IpAddr, other.Hostname, other.Status, other.LastContactTime))
+		nodes.Body.Data = append(nodes.Body.Data, other)
 	}
-	getInfo.Data = dataArray
+}
 
-	jsonData, err := json.Marshal(getInfo)
+func (conf *GetCloudConf) getValue(ctx context.Context) {
+	conf.MsgType = "cloudConf"
+	conf.Body.GdcUrl = a3config.ReadCloudConf(a3config.GDCUrl)
+	conf.Body.User = a3config.ReadCloudConf(a3config.User)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Fetch cloud conf info: %s,%s", conf.Body.GdcUrl, conf.Body.User))
+}
+
+func (nodesInfo *GetNodesInfo) convertToJson(ctx context.Context) []byte {
+	jsonData, err := json.Marshal(nodesInfo) 
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		return []byte(err.Error())
 	}
 	return jsonData
+}
+
+func (cloudConf *GetCloudConf) convertToJson(ctx context.Context) []byte {
+	jsonData, err := json.Marshal(cloudConf) 
+	if err != nil {
+		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
+		return []byte(err.Error())
+	}
+	return jsonData
+}
+
+func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
+	var handler CloudGetHandler
+	ctx := r.Context()
+	switchConf := a3config.ReadCloudConf(a3config.Switch)
+
+	if switchConf == "enable" {
+		nodesInfo := new(GetNodesInfo)
+		nodesInfo.getValue(ctx)
+		handler = nodesInfo
+	} else {
+		cloudConf := new(GetCloudConf)
+		cloudConf.getValue(ctx)
+		handler = cloudConf
+	}
+	
+	return handler.convertToJson(ctx)
 }
 
 func startService() {

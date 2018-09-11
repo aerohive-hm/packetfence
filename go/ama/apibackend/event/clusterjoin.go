@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
@@ -66,6 +67,7 @@ func sendClusterSync(ip, Status string) error {
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 	}
+
 	return err
 }
 
@@ -81,6 +83,7 @@ func stopServiceByJoin() error {
 		if err != nil {
 			return err
 		}
+		
 	}
 	return nil
 }
@@ -135,3 +138,62 @@ END:
 	}
 	return resp
 }
+
+
+
+
+func waitPrimarySync(ip string) error {
+	ctx := context.Background()
+	var msg SyncData
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
+
+	client := new(apibackclient.Client)
+	client.Host = ip
+
+	for {
+		err := client.ClusterSend("GET", url, "")
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			client.Token = "" //clear the token
+			time.Sleep(10 * time.Second)
+			continue
+		}
+
+		err = json.Unmarshal(client.RespData, &msg)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Unmarshal error:" + err.Error())
+			time.Sleep(10 * time.Second)
+			continue
+		}
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("read sync status=%s from primary %s", msg.Status, msg.SendIp))
+
+		if msg.Status == "StartSync" {
+			break
+		}
+
+		time.Sleep(10 * time.Second)
+	}
+
+	return nil
+}
+
+func ActiveSyncFromPrimary(ip, user, password string) {
+	//wait a moment?
+	err := waitPrimarySync(ip)
+	if err != nil {
+		return
+	}
+	ctx := context.Background()
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("start to sync from primary=%s and restart necessary service", ip))
+	utils.SyncFromPrimary(ip, user, password)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("notify to primary with FinishSync and start pf service"))
+	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
+	utils.ExecShell(`systemctl restart packetfence-api-frontend`)
+	sendClusterSync(ip, "FinishSync")
+
+	utils.UpdateCurrentlyAt()
+
+}
+
+
+

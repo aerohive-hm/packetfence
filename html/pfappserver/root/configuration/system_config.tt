@@ -10,5 +10,6 @@
     <dt>[% l('Authentication Methods:') %]</dt> <dd>[% l('EAP methods provided by A3 can be changed from this module.') %]</dd>
     <dt>[% l('Node Import') %]</dt> <dd>[% l('The default parameters to be used when importing nodes') %]</dd>
     <dt>[% l('Admin Access:') %]</dt> <dd>[% l('Different access level can be defined for the A3 administrative interface from this module.') %]</dd>
+    <dt>[% l('Cloud Integration:') %]</dt> <dd>[% l('TO-DO.') %]</dd>
   </dl>
 </div>

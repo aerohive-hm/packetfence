@@ -241,7 +241,7 @@ sub apply_new_node_info {
 
     my $node_view = node_view($self->current_mac);
 
-    # When device is pending, we take the role+unregdate from the computed node info. 
+    # When device is pending, we take the role+unregdate from the computed node info.
     # This way, if the role wasn't set during the portal process (like in provisioning agent re-install), then it will pick the role it had before
     if($self->node_info->{status} eq $pf::node::STATUS_PENDING) {
         unless($self->username){
@@ -374,4 +374,3 @@ Copyright (C) 2005-2018 Inverse inc.
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 
 1;
-

@@ -12,7 +12,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -87,7 +86,8 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf restart")
 
 		//amac.JoinCompleteEvent()
-		apibackclient.SendClusterSync(ip, "FinishSync")
+		//apibackclient.SendClusterSync(ip, "FinishSync")
+		sendClusterSync(ip, "FinishSync")
 	} else if sync.Status == finishSync {
 		//slave node notify primary to sync completed
 		//TODO: need all node completed
