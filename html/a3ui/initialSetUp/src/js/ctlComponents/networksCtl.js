@@ -847,7 +847,7 @@ class networksCtl extends Component {
             title:self.state.i18n.name,
             dataIndex: 'name',
             key: 'name',
-            width:'193px',
+            width:'157px',
             render: (text, record, index) => {
                 let numberHtml;
                 if(dataTable[index].clicked==="name"){
@@ -898,7 +898,7 @@ class networksCtl extends Component {
             title: self.state.i18n.iPAddress,
             dataIndex: 'ip_addr',
             key: 'ip_addr',
-            width:'123px',
+            width:'129px',
             render: (text, record, index) => {
                 return (
                     <div>
@@ -933,7 +933,7 @@ class networksCtl extends Component {
             title:self.state.i18n.netmask,
             dataIndex: 'netmask',
             key: 'netmask',
-            width:'123px',
+            width:'129px',
             render: (text, record, index) => {
                 return (
                     <div>
@@ -970,7 +970,7 @@ class networksCtl extends Component {
                 title:self.state.i18n.vip,
                 dataIndex: 'vip',
                 key: 'vip',
-                width:'123px',
+                width:'129px',
                 render: (text, record, index) => {
                     return (
                         <div>
@@ -1007,7 +1007,7 @@ class networksCtl extends Component {
             title:self.state.i18n.type,
             dataIndex: 'type',
             key: 'type',
-            width:'116px',
+            width:'122px',
             render: (text, record, index) => {
                 return (
                     <div>
@@ -1032,7 +1032,7 @@ class networksCtl extends Component {
             title: self.state.i18n.services,
             dataIndex: 'services',
             key: 'services',
-            width:'106px',
+            width:'112px',
             render: (text, record, index) => {
                 return (
                     <div>
@@ -1054,7 +1054,7 @@ class networksCtl extends Component {
             title: self.state.i18n.vlan,
             dataIndex: 'vlan',
             key: 'vlan',
-            width:'116px',
+            width:'122px',
             render: (text, record, index) => {
                 return (
                     text.indexOf("VLAN")===-1?

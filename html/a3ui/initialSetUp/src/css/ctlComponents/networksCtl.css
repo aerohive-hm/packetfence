@@ -106,14 +106,14 @@
 
 .name-etho-div-networksCtl{
     float:left;
-    width:187px;
+    width:145px;
     height: 28px;
     line-height: 28px;
 }
 .name-vlan-div-networksCtl{
     float:left;
     height: 28px;
-    width:187px;
+    width:145px;
 }
 .name-vlan-blank-div-networksCtl{
     float:left;
@@ -131,11 +131,11 @@
 .name-edit-div-networksCtl{
     float:left;
     height: 28px;
-    width:143px;
+    width:101px;
 }
 .name-edit-input-div-networksCtl{
     float:left;
-    width:91px;
+    width:49px;
     height: 28px;
 }
 .name-edit-ok-div-networksCtl{
@@ -170,7 +170,7 @@
     float:left;
     height:28px;
     line-height: 28px;
-    width:143px;
+    width:101px;
     cursor: pointer;
     color:#2c6aff;
 }
