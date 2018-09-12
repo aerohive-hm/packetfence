@@ -493,6 +493,7 @@ done
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/conf/radiusd
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/conf/ssl
 %{__install} -d -m0755 $RPM_BUILD_ROOT/usr/local/pf/conf/ssl/tls_certs
+%{__install} -d -m0755 $RPM_BUILD_ROOT/usr/local/pf/conf/ssl/tmp_certs
 %{__install} -d -m2775 $RPM_BUILD_ROOT%logdir
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/raddb/sites-enabled
 %{__install} -d -m2775 $RPM_BUILD_ROOT/usr/local/pf/var
@@ -706,6 +707,13 @@ if [ ! -f /usr/local/pf/raddb/certs/dh ]; then
 else
   echo "DH already exists, won't touch it!"
 fi
+
+for cert_file in server.key server.crt ca.pem
+do
+if [ -e /usr/local/pf/raddb/certs/$cert_file ]; then
+  chown pf.pf /usr/local/pf/raddb/certs/$cert_file
+fi
+done
 
 if [ ! -f /usr/local/pf/conf/pf.conf ]; then
   echo "Touch pf.conf because it doesnt exist"
@@ -1148,6 +1156,7 @@ fi
                         /usr/local/pf/conf/scan.conf.example
 %dir                    /usr/local/pf/conf/ssl
 %dir                    /usr/local/pf/conf/ssl/tls_certs
+%dir                    /usr/local/pf/conf/ssl/tmp_certs
 %dir                    /usr/local/pf/conf/systemd
 %config                 /usr/local/pf/conf/systemd/*
 %config(noreplace)      /usr/local/pf/conf/switches.conf

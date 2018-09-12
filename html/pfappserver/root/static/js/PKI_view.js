@@ -11,6 +11,7 @@ $(document).ready(function(){
       servNewlabel.innerHTML = "Choose File...";
     $("#server_cert_path_upload").after(servNewlabel);
 
+
     document.getElementById("ca_cert_path_upload").onchange = function(){
       showCaCertFileInfo();
     };
@@ -33,7 +34,7 @@ $(document).ready(function(){
 
     caSubjNewlabel.innerHTML = caSubjectVal;
     servSubjNewlabel.innerHTML = servSubjectVal;
-    document.getElementById('ca_cert_label_upload').after(caSubjNewlabel); //add after upload button
+    document.getElementById('ca_cert_label_upload').after(caSubjNewlabel);
     document.getElementById('server_cert_label_upload').after(servSubjNewlabel);
 
     var caLength = $("#caSubjNewlabel").width();
@@ -53,7 +54,8 @@ $(document).ready(function(){
       servSubjNewlabel.setAttribute("data-placement", "top");
       servSubjNewlabel.setAttribute("title", servSubjectVal);
     }
-  //*****************save button press pki********************//
+
+//*****************save button press pki********************//
     document.getElementById("savePKI").onclick = function(e){
         console.log("clicked on save");
         e.preventDefault();
@@ -162,8 +164,22 @@ $(document).ready(function(){
             }, 3000);
         }
     }; //end of save click button
-});
 
+    //
+    // var downloadBtn = document.createElement("BUTTON");
+    // var text = document.createTextNode("DOWNLOAD");
+    // downloadBtn.appendChild(text);
+    // downloadBtn.setAttribute("id", "download_button_ca");
+    // downloadBtn.setAttribute("class", "btn btn-primary");
+    // $('#caSubjNewlabel').after(downloadBtn);
+    //
+    // var downloadBtn = document.createElement("BUTTON");
+    // var text = document.createTextNode("DOWNLOAD");
+    // downloadBtn.appendChild(text);
+    // downloadBtn.setAttribute("id", "download_button_server");
+    // downloadBtn.setAttribute("class", "btn btn-primary");
+    // $('#servSubjNewlabel').after(downloadBtn);
+});
 
 
 function showServerFileInfo(){
@@ -302,4 +318,8 @@ function processFiles(input, pki_provider_name, qualifier){
           }
         }
     }); //end of ajax
+}
+
+function processFilesFinal(){
+
 }

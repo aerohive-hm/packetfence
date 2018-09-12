@@ -19,6 +19,7 @@ use pf::ConfigStore::PKI_Provider;
 use pf::ConfigStore::Provisioning;
 use pf::log;
 use pf::cluster;
+use pf::util;
 use File::Basename;
 
 extends 'pfappserver::Base::Model::Config';
@@ -37,11 +38,11 @@ sub read {
     my ($status, $result) = $self->SUPER::read($id);
 
     if ($result->{ca_cert_path}) {
-        $result->{ca_cert_subject} = get_cert_subject($result->{ca_cert_path});
+        $result->{ca_cert_subject} = pf::util::get_cert_subject_cn($result->{ca_cert_path});
     }
 
     if ($result->{server_cert_path}) {
-        $result->{server_cert_subject} = get_cert_subject($result->{server_cert_path});
+        $result->{server_cert_subject} = pf::util::get_cert_subject_cn($result->{server_cert_path});
     }
 
     return ($status, $result);
@@ -149,31 +150,6 @@ sub create {
         $assignments->{ca_cert_path} = $ca_filename;
     }
     return $self->SUPER::create($id, $assignments);
-}
-
-sub get_cert_subject {
-    return _get_cert_info(shift, '^\s*Subject:\s+(.*)$');
-}
-
-sub get_cert_subject_cn {
-    return _get_cert_info(shift, '^\s*Subject:.*\s(CN=[^,]+)$');
-}
-
-sub _get_cert_info {
-    my ($certfile, $pattern) = @_;
-
-    my @cert = `/usr/bin/openssl x509 -noout -text -in $certfile`;
-
-    if ($? == 0) {
-        foreach my $line (@cert) {
-            chomp $line;
-            if ($line =~ $pattern) {
-                return $1;
-            }
-        }
-    }
-
-    return undef;
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};

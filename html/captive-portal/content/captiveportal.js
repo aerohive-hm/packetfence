@@ -110,7 +110,7 @@ $(function() {
       checkAccept();
     }
   }
-  
+
   function initForm() {
     var fieldsForm = false;
     $('form input, form select').each(function(f) {
@@ -199,7 +199,7 @@ $(function() {
 
     if ($(dots[activeIndex]).hasClass('dot--disabled'))
       return;
-    
+
     for (index = 0; index < cards.length; index++) {
       $card = $(cards[index]);
       $dot = $(dots[index]);

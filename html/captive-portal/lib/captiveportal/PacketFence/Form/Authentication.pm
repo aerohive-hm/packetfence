@@ -141,7 +141,7 @@ sub check_telephone {
 
 =head2 get_field
 
-Get a field following the standard field[$name] by its name 
+Get a field following the standard field[$name] by its name
 
 =cut
 
