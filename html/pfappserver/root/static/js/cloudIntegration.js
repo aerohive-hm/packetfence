@@ -56,14 +56,11 @@ function getNodeInfo(){
 
         $(".disconnected").hide();
         $(".linked").show();
-
         $.each(data.body.data, function(i, items){
-          console.log("in each statement");
-          // console.log(data.body.data);
           console.log(items);
-            $("#cloud-cluster-table-tbody").append("<tr><td>" + items.status + "</td><td>" + items.hostname + "</td><td>" +  items.lastContactTime + "</td></tr>");
-            // $("tbody").append("<tr><td>" + items.hostname + "</td><td>" + items.status + "</td><td>" +  items.lastContactTime + "</td></tr>");
+          $("#cloud-cluster-table-tbody").append("<tr><td>" + items.status + "</td><td>" + items.hostname + "</td><td>" +  items.lastContactTime + "</td></tr>");
         });
+
         //unlinked
       } else if (data.msgtype == "cloudConf"){
         $('#rdcUrl').html(data.body.header.rdcUrl);
