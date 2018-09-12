@@ -68,44 +68,10 @@ func CheckCreateIfValid(i Item) error {
 		msg = fmt.Sprintf("%s is exsit in system", i.Name)
 		return errors.New(msg)
 	}
-	/*check ip if exsit*/
-	ifaces, errint := utils.GetIfaceList("all")
-	if errint < 0 {
-		msg = fmt.Sprintf("Get interfaces infomation failed.")
-		return errors.New(msg)
-	}
-	for _, iface := range ifaces {
-		if i.IpAddr == iface.IpAddr {
-			msg = fmt.Sprintf("the ip address (%s) is exsit in system.", i.IpAddr)
-			return errors.New(msg)
-		}
-	}
 	return nil
 }
-func UpdateSystemInterface(ctx context.Context, i Item) error {
-	var err error
-	/*delete original interface*/
-	items := GetItemsValue(ctx)
-	for _, item := range items {
-		if i.Original == item.Original {
-			err = DelSystemInterface(ctx, item)
-			if err != nil {
-				return err
-			}
-			break
-		}
-	}
-	err = CreateSystemInterface(ctx, i)
-	return err
-}
-
-func CreateSystemInterface(ctx context.Context, i Item) error {
-	err := CheckCreateIfValid(i)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("CheckCreateIfValid:" + err.Error())
-		return err
-	}
-	err = UpdateInterface(i)
+func UpdateInterfaceInfo(ctx context.Context, i Item) error {
+	err := UpdateInterface(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update Interface error:" + err.Error())
 		return err
@@ -118,6 +84,43 @@ func CreateSystemInterface(ctx context.Context, i Item) error {
 	err = UpdatePrimaryClusterconf(true, i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
+		return err
+	}
+	return err
+}
+func UpdateSystemInterface(ctx context.Context, i Item) error {
+	var err error
+	/*delete original interface*/
+	items := GetItemsValue(ctx)
+	for _, item := range items {
+		if i.Original == item.Original {
+			if i.Name != item.Name {
+				err = DelSystemInterface(ctx, item)
+				if err != nil {
+					return err
+				}
+				err = CreateSystemInterface(ctx, i)
+				return err
+			}
+		}
+	}
+	err = UpdateInterfaceInfo(ctx, i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdateInterfaceInfo:" + err.Error())
+		return err
+	}
+	return err
+}
+
+func CreateSystemInterface(ctx context.Context, i Item) error {
+	err := CheckCreateIfValid(i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("CheckCreateIfValid:" + err.Error())
+		return err
+	}
+	err = UpdateInterfaceInfo(ctx, i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdateInterfaceInfo:" + err.Error())
 		return err
 	}
 	return err
