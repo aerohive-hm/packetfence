@@ -17,6 +17,7 @@ func init() {
 		"rdctoken":      event.RdcTokenNew,
 		"clusterremove": event.RemoveNodeNew,
 		"amastatus":     event.AMAStatusNew,
+		"amaaction":     event.AMAActionNew,
 		"report":        event.ReportNew,
 	}
 	Register("event", sections)

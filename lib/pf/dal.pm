@@ -511,8 +511,14 @@ sub _insert_data {
        ($self->table eq 'ip4log')) {
        
         my $sendtable = $self->table;
-        pf::api::unifiedapiclient->default_client->call("POST", "/a3/api/v1/event/report", {tablename => ${sendtable}, data => \%data,});
-    }
+        eval {
+            my $sendtable = $self->table;
+            pf::api::unifiedapiclient->default_client->call("POST", "/a3/api/v1/event/report", {tablename => ${sendtable}, data => \%data,});
+        };
+        if ($@) {
+            $self->logger->error("Error send DB update data to AMA : $@");
+        }
+        
 
 
     return $STATUS::OK, \%data;
