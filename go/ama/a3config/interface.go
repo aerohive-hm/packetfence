@@ -84,6 +84,11 @@ func CheckCreateIfValid(i Item) error {
 		msg = fmt.Sprintf("%s is exsit in system", i.Name)
 		return errors.New(msg)
 	}
+	/*check ip vip the same net range*/
+	if utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
+		msg = fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
+		return errors.New(msg)
+	}
 	return nil
 }
 func UpdateInterfaceInfo(ctx context.Context, i Item) error {

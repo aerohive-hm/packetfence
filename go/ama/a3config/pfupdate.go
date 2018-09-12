@@ -42,7 +42,11 @@ func UpdateInterface(i Item) error {
 	if err != nil {
 		return err
 	}
-
+	/*check ip vip the same net range*/
+	if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
+		msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
+		return errors.New(msg)
+	}
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		err = UpdateVlanInterface(i)
