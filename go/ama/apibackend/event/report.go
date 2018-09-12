@@ -6,7 +6,7 @@ package event
 import (
 	"context"
 	//"encoding/json"
-	//"fmt"
+	"fmt"
 	"net/http"
 
 	//"github.com/inverse-inc/packetfence/go/ama/amac"
@@ -14,6 +14,14 @@ import (
 	//"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/log"
 )
+
+type ReportDBCounter struct {
+	recvCounter  int64
+	recvCounterNode int64
+	recvCounterLoationlog int64
+}
+
+var Counter ReportDBCounter
 
 type Report struct {
 	crud.Crud
@@ -30,7 +38,9 @@ func handlePostReport(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	//cloudInfo := amac.CloudInfo{}
 
-	log.LoggerWContext(ctx).Info("into handlePostReport info")
+	Counter.recvCounter++
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive DB report event data count: %d", Counter.recvCounter))
 
 	log.LoggerWContext(ctx).Info(string(d.ReqData))
 
