@@ -41,15 +41,15 @@
           <tbody>
             <tr>
               <td class="td-title" style="width: 100px;"><h6>VHM Name</h6></td>
-              <td id="vhmId"><b>[% vhmId %][% ownerId %]</b></td>
+              <td><span id="vhmId"></span> (<span id="ownerId"> </span>)</td>
             </tr>
             <tr>
               <td class="td-title" style="width: 100px;"><h6>Data Center</h6></td>
-              <td id="region">[% region %]</td>
+              <td id="region"></td>
             </tr>
             <tr>
               <td class="td-title" style="width: 100px;"><h6>Last Contact</h6></td>
-              <td id="lastContactTime">[% lastContactTime %]</td>
+              <td id="lastContactTime"></td>
             </tr>
           </tbody>
         </table>
@@ -79,11 +79,11 @@
             <tbody>
               <tr>
                 <td class="td-title" style="width: 100px;"><h6>VHM Name</h6></td>
-                <b><td><span id="vhmId">VHM-ABCD1234</span> (<span id="ownerId">102</span>)</td></b>
+                <b><td><span id="vhmId"></span> (<span id="ownerId"></span>)</td></b>
               </tr>
               <tr>
                 <td class="td-title" style="width: 100px;"><h6>Data Center</h6></td>
-                <td id="region">U.S. East (cloud-va.aerohive.com)</td>
+                <td id="region"></td>
               </tr>
               <tr>
                 <td class="td-title" style="width: 100px;"><h6>Last Contact</h6></td>
