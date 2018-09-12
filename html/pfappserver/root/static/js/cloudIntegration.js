@@ -34,7 +34,7 @@ function getNodeInfo(){
       lastContactTime   = document.getElementById('lastContactTime'),
       vhmId             = document.getElementById('vhmId');
   var base_url = window.location.origin;
-
+  $("#cloud-cluster-table-tbody tr").remove();
   $.ajax({
     type: 'GET',
     url: base_url + '/a3/api/v1/configuration/cloud',
@@ -71,7 +71,7 @@ function getNodeInfo(){
               $(this).html('<i class="icon-circle icon" style="color:#28a745; font-size:15px; margin: 0 auto;"></i>');
           } else if ($(this).text() == "connecting") {
               $(this).html('<i class="icon-circle icon" style="color:#ffc107; font-size:15px; margin: 0 auto;"></i>');
-          } else if ($(this).text() == "disconnected") {
+          } else if ($(this).text() == "disconnect") {
               $(this).html('<i class="icon-circle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
           } else {
               $(this).html('<i class="icon-exclamation-triangle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
