@@ -47,6 +47,15 @@ func UpdateInterface(i Item) error {
 		msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
 		return errors.New(msg)
 	}
+	/*check vip if exsit*/
+	ifname := ChangeUiInterfacename(i.Name)
+	vip := GetPrimaryClusterVip(ifname)
+	if vip != i.Vip {
+		if utils.IsIpExists(i.Vip) {
+			msg := fmt.Sprintf("%s is exsit in net", i.Vip)
+			return errors.New(msg)
+		}
+	}
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		err = UpdateVlanInterface(i)
