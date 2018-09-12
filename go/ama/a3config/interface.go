@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
-	"strings"
 )
 
 func GetIfaceElementVlaue(ifname, element string) string {
@@ -17,35 +18,50 @@ func GetIfaceElementVlaue(ifname, element string) string {
 }
 
 func GetIfaceType(ifname string) string {
-	iftype := strings.Split(strings.ToUpper(GetIfaceElementVlaue(ifname, "type")), ",")
+
 	if strings.Contains(ifname, ".") {
 		netsection := A3Read("NETWORKS", "all")
 		for k, _ := range netsection {
 			if netsection[k]["gateway"] == GetIfaceElementVlaue(ifname, "ip") {
-				iftype = strings.Split(strings.ToUpper(netsection[k]["type"]), ",")
+				if netsection[k]["type"] == "" {
+					return ""
+				}
+				s := strings.Split(strings.ToUpper(netsection[k]["type"]), ",")
 				/*need to delete vlan- for type*/
-				Type := []rune(iftype[0])
-				return string(Type[5:])
+				if strings.Contains(s[0], "VLAN-") {
+					Type := []rune(s[0])
+					return string(Type[5:])
+				}
+				return s[0]
 			}
 		}
+	} else {
+		iftype := GetIfaceElementVlaue(ifname, "type")
+		if iftype == "" {
+			return ""
+		}
+		s := strings.Split(strings.ToUpper(iftype), ",")
+		return s[0]
 	}
-	return iftype[0]
+	return ""
 }
 
 func GetIfaceServices(ifname string) []string {
 	services := []string{}
-	iftype := strings.ToUpper(GetIfaceElementVlaue(ifname, "type"))
+	iftype := GetIfaceElementVlaue(ifname, "type")
 	if iftype == "" {
 		return services
 	}
-	s := strings.Split(iftype, ",")
-	l := len(s)
-	if strings.Contains(iftype, "HIGH-AVAILABILITY") {
-		services = s[1 : l-1]
-	} else {
-		services = s[1:]
-	}
 
+	s := strings.Split(strings.ToUpper(iftype), ",")
+	l := len(s)
+	if l > 1 {
+		if strings.Contains(iftype, "HIGH-AVAILABILITY") {
+			services = s[1 : l-1]
+		} else {
+			services = s[1:]
+		}
+	}
 	return services
 }
 

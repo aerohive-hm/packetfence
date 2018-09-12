@@ -340,12 +340,12 @@ func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
 		}
 
 	} else {
-		CreateVlanIface("eth0", vlan)
 		/*check ip if is exsit*/
 		if IsIpExists(ip) {
 			msg := fmt.Sprintf("%s is exsit in net", ip)
 			return errors.New(msg)
 		}
+		CreateVlanIface("eth0", vlan)
 		err = SetIfaceIIpAddr(ifname, ip, mask)
 		if err != nil {
 			return err
