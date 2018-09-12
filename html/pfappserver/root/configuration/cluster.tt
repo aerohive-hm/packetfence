@@ -32,7 +32,7 @@
 
           <br/>
           <h6>Cluster Node List</h6>
-          <table id="items" class="table items" data-list-uri="https://10.16.139.168:1443/config/pfmon/list">
+          <table id="items cluster-management-table" class="table items">
             <thead>
               <tr>
                 <th><a id="remove" style="padding-left:1px;" href="#"><i class="icon-trash-o"></i></a></th>
@@ -42,16 +42,7 @@
                 <th>Status</th>
               </tr>
             </thead>
-            <tbody>
-
-              <!-- <tr>
-                <td><input type="checkbox" /></td>
-                <td class="item"><a href="https://10.16.139.168:1443/config/pfmon/acct_maintenance/read">a1.example.com</a></td>
-                <td>10.0.123.1</td>
-                <td>Master</td>
-                <td>Active</td>
-              </tr> -->
-
+            <tbody id="cluster-management-table-tbody">
             </tbody>
           </table>
         </div>

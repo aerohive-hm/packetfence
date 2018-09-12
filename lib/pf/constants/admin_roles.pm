@@ -185,6 +185,8 @@ our @ADMIN_ACTIONS = qw(
     SYSLOG_READ
     SYSLOG_UPDATE
 
+    CERTIFICATE_UPDATE
+
 );
 
 # Actions not allowed in readonly mode

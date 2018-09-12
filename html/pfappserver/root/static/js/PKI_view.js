@@ -11,6 +11,7 @@ $(document).ready(function(){
       servNewlabel.innerHTML = "Choose File...";
     $("#server_cert_path_upload").after(servNewlabel);
 
+
     document.getElementById("ca_cert_path_upload").onchange = function(){
       showCaCertFileInfo();
     };
@@ -163,6 +164,21 @@ $(document).ready(function(){
             }, 3000);
         }
     }; //end of save click button
+
+    //
+    // var downloadBtn = document.createElement("BUTTON");
+    // var text = document.createTextNode("DOWNLOAD");
+    // downloadBtn.appendChild(text);
+    // downloadBtn.setAttribute("id", "download_button_ca");
+    // downloadBtn.setAttribute("class", "btn btn-primary");
+    // $('#caSubjNewlabel').after(downloadBtn);
+    //
+    // var downloadBtn = document.createElement("BUTTON");
+    // var text = document.createTextNode("DOWNLOAD");
+    // downloadBtn.appendChild(text);
+    // downloadBtn.setAttribute("id", "download_button_server");
+    // downloadBtn.setAttribute("class", "btn btn-primary");
+    // $('#servSubjNewlabel').after(downloadBtn);
 });
 
 
