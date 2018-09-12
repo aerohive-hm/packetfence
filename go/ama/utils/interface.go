@@ -315,18 +315,15 @@ func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
 
 		oldmasklen, _ := strconv.Atoi(iface[0].NetMask)
 		if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
-			//info := fmt.Sprintf("UpdateEthIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
-			//log.LoggerWContext(context.Background()).Info(info)
-			err = DelIfaceIIpAddr(ifname, oldip)
-			if err != nil {
-				return err
-			}
 			/*check ip if is exsit*/
 			if IsIpExists(ip) {
 				msg := fmt.Sprintf("%s is exsit in net", ip)
 				return errors.New(msg)
 			}
-
+			err = DelIfaceIIpAddr(ifname, oldip)
+			if err != nil {
+				return err
+			}
 			err = SetIfaceIIpAddr(ifname, ip, mask)
 			if err != nil {
 				return err
@@ -340,12 +337,12 @@ func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
 		}
 
 	} else {
-		CreateVlanIface("eth0", vlan)
 		/*check ip if is exsit*/
 		if IsIpExists(ip) {
 			msg := fmt.Sprintf("%s is exsit in net", ip)
 			return errors.New(msg)
 		}
+		CreateVlanIface("eth0", vlan)
 		err = SetIfaceIIpAddr(ifname, ip, mask)
 		if err != nil {
 			return err
