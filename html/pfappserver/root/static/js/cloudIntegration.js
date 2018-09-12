@@ -77,6 +77,10 @@ function getNodeInfo(){
               $(this).html('<i class="icon-exclamation-triangle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
           }
         });
+        $('#cloud-cluster-table-tbody tr:nth-child(even) td').each(function(){
+            $(this).css('background-color', '#f4f6f9');
+        });
+
         //unlinked
       } else if (data.msgtype == "cloudConf"){
         $('#rdcUrl').html(data.body.header.rdcUrl);

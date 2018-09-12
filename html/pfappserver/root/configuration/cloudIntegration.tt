@@ -1,3 +1,4 @@
+
 <div class="card">
   <div class="card-block">
     <div id="success-alert" style="display:none; background-color: #28a745; color: white;"><div style="padding: 10px;" id="successMessage"></div></div>
@@ -36,7 +37,7 @@
 <!--if user has a cluster and presses link account: -->
   [% IF is_cluster_enabled %]
       <div class="linked cluster-cloud" style="display:none;">
-        <h5>Linked with Aerohive Cloud Services at <a id="rdcUrl" href="#"></a></h5>
+        <h5>Linked with Aerohive Cloud Services at <a id="rdcUrl" href="#" target="_blank"></a></h5>
         <table id="cloud-info-table">
           <tbody>
             <tr>
@@ -55,7 +56,7 @@
         <h6>Cluster Link Status</h6>
         <table id="items cloud-cluster-table" class="table items">
           <thead>
-            <tr>
+            <tr style="background-color: #f4f6f9">
               <th>Link Status</th>
               <th>Cluster Member</th>
               <th>Last Contact</th>
