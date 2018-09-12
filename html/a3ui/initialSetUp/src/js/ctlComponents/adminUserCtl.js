@@ -194,7 +194,7 @@ class adminUserCtl extends Component {
                 let url= "/a3/api/v1/configurator/admin_user";
                 
                 let param={
-                    user:values.user,
+                    user:values.user.trim(),
                     pass:values.pass,
                 }
                 self.setState({

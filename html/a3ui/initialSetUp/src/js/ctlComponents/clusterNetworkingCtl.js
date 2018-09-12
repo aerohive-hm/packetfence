@@ -276,7 +276,7 @@ class clusterNetworkingCtl extends Component {
                 let url= "/a3/api/v1/configurator/cluster/networks";
                 
                 let param={
-                    hostname:values.hostname,
+                    hostname:values.hostname.trim(),
                     items:self.getItems(),
                 }
                 self.setState({
@@ -363,10 +363,10 @@ class clusterNetworkingCtl extends Component {
         
         let param={
             "original":dataCopy[index].original,
-            "name":dataCopy[index].name,
-            "ip_addr":dataCopy[index].ip_addr,
-            "netmask":dataCopy[index].netmask,
-            "vip":dataCopy[index].vip,
+            "name":dataCopy[index].name.trim(),
+            "ip_addr":dataCopy[index].ip_addr.trim(),
+            "netmask":dataCopy[index].netmask.trim(),
+            "vip":dataCopy[index].vip.trim(),
             "type":dataCopy[index].type,
             "services":dataCopy[index].services.join(","),
         }
