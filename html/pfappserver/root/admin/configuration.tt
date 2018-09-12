@@ -210,18 +210,22 @@
             <ul class="nav nav-list">
               [%- IF can_access("CONFIGURATION_MAIN_READ") %]
               [%- IF can_access("PFMON_READ") %]
-              
-              [% pf_section_entry( 'main', 'Main Configuration', subsections.main) | none %]
+
+                [% pf_section_entry( 'main', 'Main Configuration', subsections.main) | none %]
               <!-- [% FOREACH subsection_tab IN pf_section_entry( 'main', 'Main Configuration', subsections.main) %] -->
               <!-- <span>[% subsection_tab.main %]</span> -->
               <!-- [% END %] -->
               [%- END %]
-              [% pf_section_entry( 'active_active', 'Cluster') | none %]
+              [% IF is_cluster_enabled and is_master_node %]
+              <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('clustering'),clustering) %]">Cluster</a></li>
+              [% END %]
               [% pf_section_entry( 'radius_authentication_methods', 'Authentication Methods') | none %]
+              <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('certificates'),certificates) %]">Certificates</a></li>
               [% pf_section_entry( 'node_import', 'Node Import') | none %]
               [%- END %]
               [%- IF can_access("ADMIN_ROLES_READ") %]
               [% list_entry('Config::AdminRoles', 'index', 'Admin Access') | none %]
+              <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('cloudIntegration'),cloudIntegration) %]">Cloud Integration</a></li>
               [%- END %]
             </ul>
           </div><!--/span-->

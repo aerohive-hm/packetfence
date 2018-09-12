@@ -17,7 +17,7 @@ use pf::log;
 
 use Moose;
 
-BEGIN {extends 'Catalyst::Controller'; }
+BEGIN {extends 'pfappserver::Base::Controller'; }
 
 =head1 METHODS
 
@@ -40,7 +40,7 @@ Usage: /eula
 
 =cut
 
-sub eula :Path('/eula') :Args(0) {
+sub eula :Chained('/') :PathPart('eula') :Args(0) :AdminRole('SYSTEM_READ'){
     my ( $self, $c ) = @_;
     my $logger = get_logger();
 

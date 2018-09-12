@@ -1,0 +1,127 @@
+
+[%  jsFiles = [
+        'js/vendor/raphael.min',
+        'admin/config/items',
+        'js/node',
+        'js/user',
+        'js/certificates'
+        ]
+-%]
+<head>
+  <!-- <link href="[% c.uri_for('/static/admin/config/certificates.css') %]" rel="stylesheet"> -->
+  <style>
+  .popover{
+    max-width: 700px;
+  }
+  .popover-content{
+    height: 75px;
+    overflow-y: auto;
+  }
+  #success-alert, #error-alert{
+    display: none;
+    color: white;
+    z-index:5;
+    position: absolute;
+    right: 35%;
+  }
+
+  #success-alert{
+    background-color: #28a745;
+  }
+
+  #error-alert{
+    background-color: #dc3545;
+  }
+  #https_serv_view_more, #eap_ca_view_more, #eap_serv_view_more{
+    height:100px;
+    width: 300px;
+    overflow-y: auto;
+    border: 1px solid gray;
+  }
+</style>
+</head>
+<div id="success-alert"><div style="padding: 10px;" id="successMessage"></div></div>
+<div id="error-alert"><div style="padding: 10px;" id="errorMessage"></div></div>
+<div class="card">
+    <div class="card-block">
+        <h2>[% l('Certificates') %]</h2>
+          <ul class="nav nav-tabs">
+            <li class="active">
+              <a data-toggle="tab" href="#https">HTTPS</a>
+            </li>
+            <li>
+              <a data-toggle="tab" href="#eap_tls">EAP-TLS</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+
+            <!--https-->
+            <div id="https" class="tab-pane fade in active">
+               <div style="padding-left: 50px;">
+                   <form class="https_form" name="https_form" id="https_form">
+                      <label style="cursor:;"><h4>HTTPS</h4></label>
+                      <div class="server">
+                        <h6>Server Certificate and Key Upload</h6>
+                        <span>A server key and server certificate are required.
+                          Uploading cert files requires a restart of all httpd services. </span>
+                        <br><br>
+                        <h5>Current Server Certificate <a id="download_button" style="padding-left: 10px;">Download</a></h5>
+                        <div id="https_serv_view_more"></div>
+                        <br>
+                        <input id="https_key_path" name="https_key_path" type="hidden" value="">
+                        <label><h5>Key (file type:  .key)</h5></label>
+                        <input class="https_serverKey_upload btn btn-primary" id="https_serverKey_upload" type="file">
+                        <br>
+                        <input id="https_cert_path" name="https_cert_path" type="hidden" value="">
+                        <label><h5>Server Certificate (file type:  .pem/.crt/.cer)</h5></label>
+                        <input class="https_serverCert_upload btn btn-primary" id="https_serverCert_upload" type="file">
+                      </div>
+                      <button id="https-upload" class="btn btn-success" style="float:right;">Submit</button>
+                   </form>
+               </div>
+            </div>
+
+            <!--eap-tls-->
+            <div id="eap_tls" class="tab-pane fade">
+              <div style="padding-left: 50px;">
+                <form class="eap_tls_form" name="eap_tls_form" id="eap_tls_form">
+                  <label><h4>EAP-TLS</h4></label>
+                  <div class="server">
+                    <h6>Server Certificate and Key Upload</h6>
+                    <span>A server key and server certificate are required. Uploading a CA certificate is optional.</span>
+                    <span>Uploading cert files requires a restart of radiusd service.</span>
+                    <br><br>
+                    <div class="certificate-info">
+                      <h5>Current Server Certificate <a id="download_button" style="padding-left: 10px;">Download</a></h5>
+                      <div id="eap_serv_view_more"></div>
+                      <h5>Current CA Certificate <a id="download_button" style="padding-left: 10px;">Download</a></h5>
+                      <div id="eap_ca_view_more"></div>
+                    </div>
+                    <br>
+                    <input id="eap_key_path" name="eap_key_path" type="hidden" value="">
+                    <label><h6>Key (file type:  .key)</h6></label>
+                    <input id="serverKey_upload" name="serverKey_upload" class="serverKey_upload btn btn-primary" type="file"/>
+                    <br>
+                    <input id="eap_cert_path" name="eap_cert_path" type="hidden" value="">
+                    <label><h6>Server Certificate (file type:  .pem/.crt/.cer)</h6></label>
+                    <input id="serverCert_upload" name="serverCert_upload" class="serverCert_upload btn btn-primary" type="file"/>
+                    <br>
+                    <input id="eap_cacert_path" name="eap_cacert_path" type="hidden" value="">
+                    <label><h6>CA Certificate Upload (file type:  .pem/.crt/.cer)</h6></label>
+                    <input id="caCert_upload" name="caCert_upload" class="caCert_upload btn btn-primary" type="file"/>
+                  </div>
+                  <!-- <br>
+                  <div class="caFile">
+                    <input id="eap_cacert_path" name="eap_cacert_path" type="hidden" value="">
+                    <h6>CA Certificate Upload (file type:  .pem/.crt/.cer)</h6>
+                    <input id="caCert_upload" class="caCert_upload btn btn-primary" type="file">
+                  </div> -->
+                  <button id="eap-upload" class="btn btn-success" style="float:right;">Submit</button>
+                </form>
+              </div>
+            </div>
+          </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="[% c.uri_for('/static/js/certificates.js') %]"></script>

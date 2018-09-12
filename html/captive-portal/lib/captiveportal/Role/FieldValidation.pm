@@ -24,7 +24,7 @@ around 'execute_child' => sub {
 
     if($self->app->request->method eq "POST" && $self->app->request->path eq "signup"){
         if($self->handle_posted_fields()){
-            return $self->$orig(@_);  
+            return $self->$orig(@_);
         }
         else {
             return;
@@ -68,7 +68,7 @@ sub validate_form {
     if($form->has_errors){
         my @messages;
         for my $field ($form->error_fields) {
-            push @messages, map{ $field->label . ": " . $_ } @{$field->errors}; 
+            push @messages, map{ $field->label . ": " . $_ } @{$field->errors};
         }
         $self->app->flash->{error} = [ "The following errors prevented the request to be fulfilled : %s", join(', ', @messages) ];
         return 0;
@@ -103,5 +103,3 @@ Copyright (C) 2005-2018 Inverse inc.
 =cut
 
 1;
-
-

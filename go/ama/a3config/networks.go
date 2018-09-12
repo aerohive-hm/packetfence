@@ -14,7 +14,7 @@ import (
 
 type Item struct {
 	Original string `json:"original"`
-	Name     string `json:" "`
+	Name     string `json:"name"`
 	IpAddr   string `json:"ip_addr"`
 	NetMask  string `json:"netmask"`
 	Vip      string `json:"vip"`
@@ -29,6 +29,7 @@ type NetworksData struct {
 }
 
 var contextNetworks = log.LoggerNewContext(context.Background())
+var clusterEnableDefault = true
 
 func GetItemsValue(ctx context.Context) []Item {
 	var items []Item
@@ -105,7 +106,7 @@ func GetNetworksData(ctx context.Context) NetworksData {
 		context = ctx
 	}
 	networksData.Items = GetItemsValue(context)
-	networksData.ClusterEnable = CheckClusterEnable()
+	networksData.ClusterEnable = clusterEnableDefault
 	networksData.HostName = GetPfHostname()
 	return networksData
 }
@@ -118,7 +119,7 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	} else {
 		context = ctx
 	}
-
+	clusterEnableDefault = networksData.ClusterEnable
 	err := CheckItemValid(ctx, networksData.ClusterEnable, networksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("CheckItemValid error:" + err.Error())

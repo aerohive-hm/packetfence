@@ -21,7 +21,7 @@ use POSIX;
 use URI::Escape::XS;
 use pf::log;
 use Tie::IxHash;
-
+use pf::cluster;
 use pf::util qw(load_oui download_oui);
 # imported only for the $TIME_MODIFIER_RE regex. Ideally shouldn't be
 # imported but it's better than duplicating regex all over the place.
@@ -43,7 +43,7 @@ BEGIN {extends 'pfappserver::Base::Controller'; }
 =cut
 
 our %ALLOWED_SECTIONS = (
-    active_active     => undef,
+    # active_active     => undef,
     advanced          => undef,
     alerting          => undef,
     captive_portal    => undef,
@@ -71,7 +71,9 @@ our %ALLOWED_SECTIONS = (
 
 =cut
 
-sub index :Path :Args(0) { }
+sub index :Path :Args(0) {
+  my ( $self, $c ) = @_;
+}
 
 
 =head2 section
@@ -276,6 +278,38 @@ sub networks :Local {
 
     $c->forward('_handle_tab_view');
 }
+
+=head2 clustering
+
+=cut
+
+sub clustering :Local {
+    my ($self, $c) = @_;
+    if ($pf::cluster::cluster_enabled){
+      $c->stash->{template} = "configuration/cluster.tt";
+    }
+}
+
+=head2 certificates
+
+=cut
+
+sub certificates :Local {
+    my ($self, $c) = @_;
+
+    $c->stash->{template} = "configuration/certificates.tt";
+}
+
+=head2 cloudIntegration
+
+=cut
+
+sub cloudIntegration :Local {
+    my ($self, $c) = @_;
+
+    $c->stash->{template} = "configuration/cloudIntegration.tt";
+}
+
 
 =head2 network_conf
 
