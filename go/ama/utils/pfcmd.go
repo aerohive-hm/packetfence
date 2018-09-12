@@ -80,16 +80,14 @@ func initStandAloneDb() {
 }
 
 // only Start Services during initial setup
-func InitStartService() error {
-	UpdatePfServices()
-
+func InitStartService(isCluster bool) error {
 	out, err := restartPfconfig()
 	if err != nil {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
 	waitProcStart("pfconfig")
-	if IsFileExist(A3Root + "conf/cluster.conf") {
+	if isCluster {
 		go initClusterDB()
 	} else {
 		initStandAloneDb()
@@ -195,6 +193,16 @@ func RecoverDB() {
 
 func RestartKeepAlived() {
 	ExecShell(pfservice + "keepalived restart")
+}
+
+func RemoveFromCluster() {
+	cmds := []string{
+		"rm -f" + A3Root + "/conf/cluster.pf",
+		`systemctl stop packetfence-etcd`,
+		`rm -rf /usr/local/pf/var/etcd/`,
+	}
+
+	ExecCmds(cmds)
 }
 
 func ServiceStatus() string {

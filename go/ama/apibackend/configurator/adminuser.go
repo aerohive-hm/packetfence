@@ -47,7 +47,6 @@ func hashPassword(password string) string {
 	return ""
 }
 
-
 /* replace is better than insert because it does not need to check if pid exsit or not */
 const (
 	sqlCmd = `replace into password(pid,password,valid_from,expiration,access_level)` +
@@ -76,14 +75,15 @@ func writeAdminToDb(user, password string) error {
 		expiration, "ALL")
 	sql := []amadb.SqlCmd{
 		{
-			Sql: values,
-		},
-		{
 			"replace into person(pid,email)values(?,?)",
 			[]interface{}{
 				tmpUser,
 				user,
 			},
+		},
+		// replace table person before password, there is a trigger in DB
+		{
+			Sql: values,
 		},
 		{
 			apiUserSql,
