@@ -83,7 +83,7 @@ function getClusterStatusInfo(){
           if (members.type == "matser"){
             $("#cluster-management-table-tbody").append("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
           } else {
-            $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' />" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
+            $("#cluster-management-table-tbody").append("<tr><td>" + "<a id='remove' style='padding-left:1px;' href=''><i class='icon-trash-o'></i></a>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
           }
         });
       },

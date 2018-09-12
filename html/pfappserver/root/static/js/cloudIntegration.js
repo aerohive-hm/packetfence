@@ -24,7 +24,6 @@ $(document).ready(function(){
     document.getElementById("link-account").disabled = false;
     unlinkAerohiveAccount();
   }
-
 });
 
 function getNodeInfo(){
@@ -51,16 +50,33 @@ function getNodeInfo(){
           $('#region').html(data.body.header.region);
         }
         $('#ownerId').html(data.body.header.ownerId);
-        $('#lastContactTime').html("unknown");
+        if (data.body.header.lastContactTime == ""){
+          $('#lastContactTime').html("unknown");
+        } else {
+          $('#lastContactTime').html(data.body.header.lastContactTime);
+        }
         $('#vhmId').html(data.body.header.vhmId);
 
         $(".disconnected").hide();
         $(".linked").show();
         $.each(data.body.data, function(i, items){
           console.log(items);
-          $("#cloud-cluster-table-tbody").append("<tr><td>" + items.status + "</td><td>" + items.hostname + "</td><td>" +  items.lastContactTime + "</td></tr>");
+          //convert time stamp here
+          $("#cloud-cluster-table-tbody").append("<tr><td id='connectedIcon'>" + items.status + "</td><td>" + items.hostname + "</td><td>" +  items.lastContactTime + "</td></tr>");
         });
-
+        $('#cloud-cluster-table-tbody td:nth-child(1)').each(function() {
+          console.log($(this));
+          console.log("hi");
+          if ($(this).text() == "connected"){
+              $(this).html('<i class="icon-circle icon" style="color:#28a745; font-size:15px; margin: 0 auto;"></i>');
+          } else if ($(this).text() == "connecting") {
+              $(this).html('<i class="icon-circle icon" style="color:#ffc107; font-size:15px; margin: 0 auto;"></i>');
+          } else if ($(this).text() == "disconnected") {
+              $(this).html('<i class="icon-circle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
+          } else {
+              $(this).html('<i class="icon-exclamation-triangle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
+          }
+        });
         //unlinked
       } else if (data.msgtype == "cloudConf"){
         $('#rdcUrl').html(data.body.header.rdcUrl);

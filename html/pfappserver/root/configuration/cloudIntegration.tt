@@ -6,7 +6,7 @@
     <br/>
 <!--initial page disconnected-->
 <!--need to change -->
-    <div class="pages" style="height: 500px;">
+    <div class="pages" style="height: auto;">
       <div class="disconnected" style="width: 100%; display: flex;">
         <div id="form-messages"></div>
         <div class="cloud-form" style="width: 400px;">
@@ -47,13 +47,11 @@
               <td class="td-title" style="width: 100px;"><h6>Data Center</h6></td>
               <td id="region"></td>
             </tr>
-            <tr>
-              <td class="td-title" style="width: 100px;"><h6>Last Contact</h6></td>
-              <td id="lastContactTime"></td>
-            </tr>
           </tbody>
         </table>
         <br/>
+        <button class="btn btn-danger" id="unlink-account">Unlink from Aerohive Cloud Account</button>
+        <br/><br/>
         <h6>Cluster Link Status</h6>
         <table id="items cloud-cluster-table" class="table items">
           <thead>
@@ -68,7 +66,6 @@
           </tbody>
         </table>
         <br/>
-        <button class="btn btn-danger" id="unlink-account">Unlink from Aerohive Cloud Account</button>
       </div>
   <!--if user has standalone and user presses link accounts:-->
 
