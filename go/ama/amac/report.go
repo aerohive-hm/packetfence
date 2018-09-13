@@ -12,7 +12,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
 	"net/http"
-	//"time"
 )
 
 type ReportHeader struct {
@@ -23,12 +22,12 @@ type ReportHeader struct {
 }
 
 type ReportTable struct {
-	TableName string          `json:"tablename"`
-	Data      json.RawMessage `json:"data"`
+	Data json.RawMessage `json:"data"`
 }
+
 type ReportData struct {
 	MsgType string        `json:"msgType"`
-	Tables  []ReportTable `json:"tables"`
+	Tables  []interface{} `json:"tables"`
 }
 
 type ReportMessage struct {
@@ -44,6 +43,7 @@ func fillReportHeader(header *ReportHeader) {
 
 //This function will be called by restAPI, it is public
 func SendReport(ctx context.Context, data []byte) {
+	//var tableItem interface{}
 	reportMsg := ReportMessage{}
 	table := ReportTable{}
 
@@ -52,19 +52,18 @@ func SendReport(ctx context.Context, data []byte) {
 	   To do, pop redis queue instead of inputing data
 	*/
 
-	err := json.Unmarshal(data, &table)
+	err := json.Unmarshal(data, &table.Data)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return
 	}
-	log.LoggerWContext(ctx).Info("print table")
+	log.LoggerWContext(ctx).Info("print table.Data")
 	log.LoggerWContext(ctx).Info(string(table.Data))
 
 	fillReportHeader(&reportMsg.Header)
 	reportMsg.Data.MsgType = "a3reportingDB"
-	//reportMsg.Data.Timestamp = time.Now().UnixNano() / int64(time.Millisecond)
 
-	reportMsg.Data.Tables = append(reportMsg.Data.Tables, table)
+	reportMsg.Data.Tables = append(reportMsg.Data.Tables, table.Data)
 	message, _ := json.Marshal(reportMsg)
 	log.LoggerWContext(ctx).Info(string(message))
 

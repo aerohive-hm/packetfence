@@ -200,7 +200,7 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 		connectToRdcWithoutPara(ctx)
 
 	case RemoveNodeFromCluster:
-		UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
+		//UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
 
 	case JoinClusterComplete:
 		//Read the conf file and install RDC URL
