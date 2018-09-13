@@ -513,11 +513,15 @@ sub _insert_data {
         my $sendtable = $self->table;
         eval {
             my $sendtable = $self->table;
-            pf::api::unifiedapiclient->default_client->call("POST", "/a3/api/v1/event/report", {tablename => ${sendtable}, data => \%data,});
+            my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
+            my $timestamp = $seconds * 1000 * 1000 + $microseconds;
+            pf::api::unifiedapiclient->default_client->call("POST", "/a3/api/v1/event/report", 
+                {tablename => ${sendtable}, timestamp => $timestamp, data => \%data,});
         };
         if ($@) {
             $self->logger->error("Error send DB update data to AMA : $@");
         }
+    }
         
 
 
