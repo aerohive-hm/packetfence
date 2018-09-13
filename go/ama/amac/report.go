@@ -12,7 +12,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
 	"net/http"
-	//"time"
+	"time"
 )
 
 type ReportHeader struct {
@@ -23,12 +23,12 @@ type ReportHeader struct {
 }
 
 type ReportTable struct {
-	TableName string          `json:"tablename"`
-	Data      json.RawMessage `json:"data"`
+	Data json.RawMessage `json:"data"`
 }
+
 type ReportData struct {
 	MsgType string        `json:"msgType"`
-	Tables  []ReportTable `json:"tables"`
+	Tables  []interface{} `json:"tables"`
 }
 
 type ReportMessage struct {
@@ -43,28 +43,32 @@ func fillReportHeader(header *ReportHeader) {
 }
 
 //This function will be called by restAPI, it is public
-func SendReport(ctx context.Context, data []byte) {
+func SendReport(ctx context.Context, data []byte) int {
 	reportMsg := ReportMessage{}
 	table := ReportTable{}
 
 	log.LoggerWContext(ctx).Info("Into SendReport")
+
+	if asynMsgUrl == "" {
+		log.LoggerWContext(ctx).Error("RDC URL is NULL")
+		return -1
+	}
 	/*
 	   To do, pop redis queue instead of inputing data
 	*/
 
-	err := json.Unmarshal(data, &table)
+	err := json.Unmarshal(data, &table.Data)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
-		return
+		return -1
 	}
-	log.LoggerWContext(ctx).Info("print table")
+	log.LoggerWContext(ctx).Info("print table.Data")
 	log.LoggerWContext(ctx).Info(string(table.Data))
 
 	fillReportHeader(&reportMsg.Header)
 	reportMsg.Data.MsgType = "a3reportingDB"
-	//reportMsg.Data.Timestamp = time.Now().UnixNano() / int64(time.Millisecond)
 
-	reportMsg.Data.Tables = append(reportMsg.Data.Tables, table)
+	reportMsg.Data.Tables = append(reportMsg.Data.Tables, table.Data)
 	message, _ := json.Marshal(reportMsg)
 	log.LoggerWContext(ctx).Info(string(message))
 
@@ -73,7 +77,7 @@ func SendReport(ctx context.Context, data []byte) {
 		request, err := http.NewRequest("POST", asynMsgUrl, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
-			return
+			return -1
 		}
 
 		//Add header option, the tokenStr is from RDC now
@@ -81,9 +85,9 @@ func SendReport(ctx context.Context, data []byte) {
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
-			log.LoggerWContext(ctx).Info("Sending report to RDC fail")
+			log.LoggerWContext(ctx).Info("Sending report to cloud fail")
 			log.LoggerWContext(ctx).Info(err.Error())
-			return
+			return -1
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
@@ -103,13 +107,48 @@ func SendReport(ctx context.Context, data []byte) {
 			} else {
 				//not get the token, return and wait for the event from UI or other nodes
 				log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message faile, server(RDC) respons the code %d", statusCode))
-				return
+				return -1
 			}
 		} else if statusCode == 200 {
-			return
+			return 0
 		} else {
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message faile, server(RDC) respons the code %d", statusCode))
-			return
+			return 0
 		}
 	}
+}
+
+func reportRoutine(ctx context.Context) {
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", reportInterval))
+	if reportInterval == 0 {
+		reportInterval = 30
+	}
+	// create a ticker for report
+	ticker := time.NewTicker(time.Duration(reportInterval) * time.Second)
+	failCount := 0
+
+	for _ = range ticker.C {
+		/*
+			check if allow to the connect to cloud, if not,
+			not send the report
+		*/
+		if globalSwitch != "enable" {
+			failCount = 0
+			continue
+		}
+		//Check the connect status, if not connected, do nothing
+		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
+			failCount = 0
+			continue
+		}
+
+		res := SendReport(ctx, []byte("justfortest"))
+		if res != 0 {
+			failCount++
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
+		} else {
+			failCount = 0
+		}
+	}
+
 }

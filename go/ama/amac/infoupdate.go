@@ -22,7 +22,7 @@ import (
 	This function is used to send update message if network/license changes
 	be aware: asynchronous mode
 */
-func updateMsgToRdcAsyn(ctx context.Context, msgType int) int {
+func UpdateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 	var nodeInfo interface{}
 
 	if asynMsgUrl == "" {
@@ -96,7 +96,7 @@ func updateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 	be aware: synchronous mode, should be called by rest APIs and return the
 	result
 */
-func UpdateMsgToRdcSyn(ctx context.Context, msgType int) (int, string) {
+func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, string) {
 	var nodeInfo interface{}
 
 	if synMsgUrl == "" {
@@ -106,7 +106,10 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int) (int, string) {
 
 	switch msgType {
 	case RemoveNodeFromCluster:
-		nodeInfo = a3share.GetRemoveNodeInfo(ctx)
+		//systemIdArray := in.([]string)
+		//nodeInfo = a3share.GetRemoveNodeInfo(ctx, systemIdArray)
+		nodeInfo = a3share.FillRemoveNodeInfo(ctx)
+
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")
 	}

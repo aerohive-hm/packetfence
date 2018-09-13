@@ -54,7 +54,7 @@ func GetLicenseUpdateInfo(ctx context.Context) []LicenseUpdateInfo {
 	return infoArray
 }
 
-func GetRemoveNodeInfo(ctx context.Context) removeNodeFromCluster {
+func FillRemoveNodeInfo(ctx context.Context) removeNodeFromCluster {
 	rmNodeInfo := removeNodeFromCluster{}
 
 	rmNodeInfo.Header.GetValue(ctx)
