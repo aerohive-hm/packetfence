@@ -60,8 +60,7 @@ function getCheckedNodes(inputTbody){
   var getInputFields = inputTbody.getElementsByTagName('input');
   var numberOfInputs = getInputFields.length;
   console.log("number selected: " + numberOfInputs);
-
-  // traverse the inpfields elements, and adds the value of selected (checked) checkbox in selchbox
+  
   for(var i = 0; i < numberOfInputs; i++) {
     if(getInputFields[i].type == 'checkbox' && getInputFields[i].checked == true){
       nodeArray.push(getInputFields[i].value);
