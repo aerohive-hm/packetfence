@@ -111,21 +111,11 @@ func (c *Client) Call(method, url string, body string) error {
 	c.Status = resp.StatusCode
 	log.LoggerWContext(ctx).Info(fmt.Sprintln("Response Code:", c.Status))
 
-	/*
-		// Lower than 400 is a success
-		if resp.StatusCode < 400 {
-			return err
-		}
-		errRep := ErrorReply{}
-		dec := json.NewDecoder(resp.Body)
-		err = dec.Decode(&errRep)
-		if err != nil {
-			return errors.New("Error body doesn't follow the Unified " +
-				"API standard, couldn't extract the error message from it.")
-		}
-		return errors.New(errRep.Message)
-	*/
-	return err
+	// Lower than 400 is a success
+	if resp.StatusCode < 400 {
+		return err
+	}
+	return errors.New(fmt.Sprintf("status code is %d", resp.StatusCode))
 }
 
 func genBasicToken(user string, pass string) string {

@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"regexp"
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -43,19 +42,23 @@ func UpdateInterface(i Item) error {
 		return err
 	}
 	/*check ip vip the same net range*/
-	if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
-		msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
-		return errors.New(msg)
-	}
-	/*check vip if exsit*/
-	ifname := ChangeUiInterfacename(i.Name)
-	vip := GetPrimaryClusterVip(ifname)
-	if vip != i.Vip {
-		if utils.IsIpExists(i.Vip) {
-			msg := fmt.Sprintf("%s is exsit in net", i.Vip)
+	if clusterEnableDefault {
+		/*check ip vip the same net range*/
+		if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
+			msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
 			return errors.New(msg)
 		}
+		/*check vip if exsit*/
+		ifname := ChangeUiInterfacename(i.Name)
+		vip := GetPrimaryClusterVip(ifname)
+		if vip != i.Vip {
+			if utils.IsIpExists(i.Vip) {
+				msg := fmt.Sprintf("%s is exsit in net", i.Vip)
+				return errors.New(msg)
+			}
+		}
 	}
+
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		err = UpdateVlanInterface(i)
@@ -199,14 +202,22 @@ func DeletePrimaryClusterconf(i Item) error {
 
 }
 
+func matchHost(sectionId string, hostname []string) bool {
+	for _, host := range hostname {
+		l := len(host)
+		if sectionId[:l] == host {
+			return true
+		}
+	}
+	return false
+}
+
 // remove a server from cluster.conf
-func RemoveClusterServer(hostname string) {
+func RemoveClusterServer(hostname []string) {
 	sections := A3Read("CLUSTER", "all")
 	var ids []string
 	for key, _ := range sections {
-		re := regexp.MustCompile(hostname + `.*`)
-		ret := re.FindStringSubmatch(key)
-		if ret != nil {
+		if matchHost(key, hostname) {
 			ids = append(ids, key)
 		}
 	}

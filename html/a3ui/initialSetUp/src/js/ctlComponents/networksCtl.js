@@ -164,9 +164,39 @@ class networksCtl extends Component {
             message.error(self.state.i18n.pleaseFinishTheEditFirst);
             return;
         }
-        this.setState({
-            enableClustering: e.target.checked,
-        });
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/networks";
+        
+        let param={
+            cluster_enable:e.target.checked,
+        }
+
+        self.setState({
+            loading : true,
+        })
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                self.setState({
+                    loading : false,
+                    enableClustering: e.target.checked,
+                })
+                
+            }else{
+                self.setState({
+                    loading : false,
+                })
+                message.destroy();
+                message.error(data.msg);
+            }
+
+        },()=>{
+            self.setState({
+                loading : false,
+            })
+
+        }) 
     }
 
     onBlurCheckHostname(e){
@@ -440,7 +470,7 @@ class networksCtl extends Component {
                 
                 let param={
                     cluster_enable:self.state.enableClustering,
-                    hostname:values.hostname,
+                    hostname:values.hostname.trim(),
                     items:self.getItems(),
                 }
 
@@ -532,20 +562,20 @@ class networksCtl extends Component {
         if(column==="type"){
             param={
                 "original":dataCopy[index].original,
-                "name":dataCopy[index].name,
-                "ip_addr":dataCopy[index].ip_addr,
-                "netmask":dataCopy[index].netmask,
-                "vip":dataCopy[index].vip,
+                "name":dataCopy[index].name.trim(),
+                "ip_addr":dataCopy[index].ip_addr.trim(),
+                "netmask":dataCopy[index].netmask.trim(),
+                "vip":dataCopy[index].vip.trim(),
                 "type":value,
                 "services":dataCopy[index].services.join(","),
             }
         }else{
             param={
                 "original":dataCopy[index].original,
-                "name":dataCopy[index].name,
-                "ip_addr":dataCopy[index].ip_addr,
-                "netmask":dataCopy[index].netmask,
-                "vip":dataCopy[index].vip,
+                "name":dataCopy[index].name.trim(),
+                "ip_addr":dataCopy[index].ip_addr.trim(),
+                "netmask":dataCopy[index].netmask.trim(),
+                "vip":dataCopy[index].vip.trim(),
                 "type":dataCopy[index].type,
                 "services":value.join(","),
             } 
@@ -603,10 +633,10 @@ class networksCtl extends Component {
         
         let param={
             "original":dataCopy[index].original,
-            "name":dataCopy[index].name,
-            "ip_addr":dataCopy[index].ip_addr,
-            "netmask":dataCopy[index].netmask,
-            "vip":dataCopy[index].vip,
+            "name":dataCopy[index].name.trim(),
+            "ip_addr":dataCopy[index].ip_addr.trim(),
+            "netmask":dataCopy[index].netmask.trim(),
+            "vip":dataCopy[index].vip.trim(),
             "type":dataCopy[index].type,
             "services":dataCopy[index].services.join(","),
         }
@@ -723,9 +753,9 @@ class networksCtl extends Component {
                 let param={
                     "original":"",
                     "name":"VLAN"+values.name.toString().trim(),
-                    "ip_addr":values.ip_addr,
-                    "netmask":values.netmask,
-                    "vip":values.vip,
+                    "ip_addr":values.ip_addr.trim(),
+                    "netmask":values.netmask.trim(),
+                    "vip":values.vip.trim(),
                     "type":values.type,
                     "services":values.services.join(","),
                 }
@@ -794,10 +824,10 @@ class networksCtl extends Component {
                 
                 let param={
                     "original":dataCopy[index].original,
-                    "name":dataCopy[index].name,
-                    "ip_addr":dataCopy[index].ip_addr,
-                    "netmask":dataCopy[index].netmask,
-                    "vip":dataCopy[index].vip,
+                    "name":dataCopy[index].name.trim(),
+                    "ip_addr":dataCopy[index].ip_addr.trim(),
+                    "netmask":dataCopy[index].netmask.trim(),
+                    "vip":dataCopy[index].vip.trim(),
                     "type":dataCopy[index].type,
                     "services":dataCopy[index].services.join(","),
                 }
@@ -1020,8 +1050,8 @@ class networksCtl extends Component {
                             <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                             <Option value="ISOLATION">{self.state.i18n.isolation}</Option>
                             <Option value="PORTAL">{self.state.i18n.portal}</Option>
-                            <Option value="NONE">{self.state.i18n.none}</Option>
-                            <Option value="OTHER">{self.state.i18n.other}</Option>
+                            {/*<Option value="NONE">{self.state.i18n.none}</Option>
+                            <Option value="OTHER">{self.state.i18n.other}</Option>*/}
                         </Select>
                     </div>
                 );
@@ -1298,8 +1328,8 @@ class networksCtl extends Component {
                                         <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                                         <Option value="ISOLATION" >{self.state.i18n.isolation}</Option>
                                         <Option value="PORTAL">{self.state.i18n.portal}</Option>
-                                        <Option value="NONE" >{self.state.i18n.none}</Option>
-                                        <Option value="OTHER" >{self.state.i18n.other}</Option>
+                                        {/*<Option value="NONE" >{self.state.i18n.none}</Option>
+                                        <Option value="OTHER" >{self.state.i18n.other}</Option>*/}
                                     </Select>
 
                                 )}

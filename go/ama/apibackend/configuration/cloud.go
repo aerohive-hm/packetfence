@@ -9,8 +9,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"net/http"
+	"strings"
 
 	"errors"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
@@ -98,8 +98,8 @@ func getRunMode() string {
 }
 
 type CloudGetHandler interface {
-		getValue(context.Context)
-		convertToJson(ctx context.Context) []byte
+	getValue(context.Context)
+	convertToJson(ctx context.Context) []byte
 }
 
 func (nodes *GetNodesInfo) getValue(ctx context.Context) {
@@ -146,7 +146,7 @@ func (conf *GetCloudConf) getValue(ctx context.Context) {
 }
 
 func (nodesInfo *GetNodesInfo) convertToJson(ctx context.Context) []byte {
-	jsonData, err := json.Marshal(nodesInfo) 
+	jsonData, err := json.Marshal(nodesInfo)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		return []byte(err.Error())
@@ -155,7 +155,7 @@ func (nodesInfo *GetNodesInfo) convertToJson(ctx context.Context) []byte {
 }
 
 func (cloudConf *GetCloudConf) convertToJson(ctx context.Context) []byte {
-	jsonData, err := json.Marshal(cloudConf) 
+	jsonData, err := json.Marshal(cloudConf)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		return []byte(err.Error())
@@ -177,7 +177,7 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		cloudConf.getValue(ctx)
 		handler = cloudConf
 	}
-	
+
 	return handler.convertToJson(ctx)
 }
 
@@ -186,26 +186,31 @@ func startService() {
 		return
 	}
 
-	a3config.UpdateGaleraUser()
-	a3config.UpdateWebservicesAcct()
-	a3config.UpdateClusterFile()
-	utils.InitStartService()
+	clusterEnable := a3config.CheckClusterEnable()
+
+	if clusterEnable {
+		a3config.UpdateGaleraUser()
+		a3config.UpdateWebservicesAcct()
+		a3config.UpdateClusterFile()
+	}
+
+	utils.InitStartService(clusterEnable)
 	amac.JoinCompleteEvent()
 }
 
 func forceUrlStartWithHttps(s string) string {
-        if s[0:5] == "https" {
-                return s
-        } else if s[0:4] == "http" {
-                s1 := strings.Replace(s, "http", "https", 1)
-                return s1
-        } else {
-                s2 := strings.Join([]string{"https://", s}, "")
-                return s2
-        }
+	if s[0:5] == "https" {
+		return s
+	} else if s[0:4] == "http" {
+		s1 := strings.Replace(s, "http", "https", 1)
+		return s1
+	} else {
+		s2 := strings.Join([]string{"https://", s}, "")
+		return s2
+	}
 }
 func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
-	var ret,s string
+	var ret, s string
 	var reason string
 	var result int
 

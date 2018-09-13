@@ -89,7 +89,7 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 			utils.RecoverDB()
 		}
 	case sync.Status == a3share.ServerRemoved:
-		a3share.RemoveFromCluster()
+		utils.RemoveFromCluster()
 	default:
 		code = "fail"
 		ret = "Unkown status."
