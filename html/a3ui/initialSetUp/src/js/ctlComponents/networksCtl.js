@@ -535,7 +535,7 @@ class networksCtl extends Component {
         let self=this;
         let dataCopy=self.state.dataTable;
         if(column==="name"){
-            dataCopy[index][column]="VLAN"+e.target.value;
+            dataCopy[index][column]="VLAN"+e.target.value.toString().trim();
         }else{
             dataCopy[index][column]=e.target.value;
         }
