@@ -3,9 +3,17 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
+
+type SysHealth struct {
+	CpuRate  float64
+	MemTotal float64
+	MemUsed  float64
+}
 
 func GetA3Version() string {
 	cmd := "pfcmd version"
@@ -114,4 +122,52 @@ func GetOwnMGTIp() string {
 	}
 
 	return ""
+}
+
+func getCpuRate(buf string) float64 {
+	r := regexp.MustCompile(`%Cpu\(s\):.*?([\d\.]+)\s+id`)
+	ret := r.FindStringSubmatch(buf)
+	if len(ret) < 2 {
+		return -1
+	}
+
+	f, err := strconv.ParseFloat(ret[1], 64)
+	if err != nil {
+		return -1
+	}
+
+	return 100.0 - f
+}
+
+func getMemInfo(buf string) (memTotal, memUsed float64) {
+	r := regexp.MustCompile(`[KM]iB Mem.*?([\d\.]+)\s+total.*?([\d\.]+)\s+used`)
+	ret := r.FindStringSubmatch(buf)
+	if len(ret) < 3 {
+		return -1, -1
+	}
+
+	total, err := strconv.ParseFloat(ret[1], 64)
+	if err != nil {
+		return -1, -1
+	}
+
+	used, err := strconv.ParseFloat(ret[2], 64)
+	if err != nil {
+		return total, -1
+	}
+
+	return total, used
+}
+
+func GetCpuMem() SysHealth {
+	var info SysHealth
+	out, err := ExecShell(`top -b -n 1 | head -n 5`)
+	if err != nil {
+		return SysHealth{}
+	}
+
+	info.CpuRate = getCpuRate(out)
+	info.MemTotal, info.MemUsed = getMemInfo(out)
+
+	return info
 }
