@@ -403,3 +403,25 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 	}
 	return nil
 }
+
+func IsManagement(mip string) bool {
+	out, err := ExecShell("sudo ip -4 -o addr show")
+	if err != nil {
+		return false
+	}
+
+	r := regexp.MustCompile(`\binet (([^\/]+)\/\d+)`)
+	ret := r.FindAllStringSubmatch(out, -1)
+
+	if len(ret) < 2 {
+		return false
+	}
+
+	for _, item := range ret {
+		net := strings.Split(item[1], "/")
+		if net[1] == "32" && net[0] == mip {
+			return true
+		}
+	}
+	return false
+}

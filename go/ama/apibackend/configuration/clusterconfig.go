@@ -13,7 +13,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/database"
-	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -80,11 +79,14 @@ func GetClusterInfoData(ctx context.Context, clusterdata *a3config.ClusterInfoDa
 	clusterdata.SharedKey = aaCfg["password"]
 	clusterdata.RouterId = aaCfg["virtual_router_id"]
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read from configuration sharedKey=%s, routeID=%s", clusterdata.SharedKey, clusterdata.RouterId))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read from configuration sharedKey=%s, routeID=%s",
+		clusterdata.SharedKey, clusterdata.RouterId))
 
 	// Get cluster node Information
-	nodeList := a3share.FetchNodesInfo()
+	nodeList := a3config.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
+
+	clusterdata.Ifaces = a3config.ClusterNew().GetClusterVips()
 
 	dbClusterList := amadb.QueryDBClusterIpSet()
 
@@ -104,7 +106,7 @@ func GetClusterInfoData(ctx context.Context, clusterdata *a3config.ClusterInfoDa
 			clusterNode.Status = "inactive"
 		}
 
-		clusterdata.Items = append(clusterdata.Items, *clusterNode)
+		clusterdata.Nodes = append(clusterdata.Nodes, *clusterNode)
 	}
 
 	return

@@ -15,7 +15,6 @@ import (
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	innerClient "github.com/inverse-inc/packetfence/go/ama/client"
-	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io"
@@ -82,9 +81,9 @@ func fetchNodeList() []MemberList {
 	nodes := []MemberList{}
 	ownMgtIP := utils.GetOwnMGTIp()
 	for secName, kvpair := range conf {
-	    if secName == "CLUSTER" {
+		if secName == "CLUSTER" {
 			continue
-	    }
+		}
 		for k, v := range kvpair {
 			if k == "management_ip" && v != ownMgtIP {
 				node := MemberList{IpAddr: v}
@@ -276,7 +275,7 @@ func FetchSysIDForNode(node MemberList) string {
 	return ""
 }
 
-func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew bool) {
+func distributeToSingleNode(ctx context.Context, mem a3config.NodeInfo, selfRenew bool) {
 	cloudInfo := CloudInfo{}
 	if selfRenew == false {
 		cloudInfo.Token = ReqTokenForOtherNode(ctx, NodeInfo{})
@@ -325,7 +324,7 @@ func distributeToSingleNode(ctx context.Context, mem a3share.NodeInfo, selfRenew
 	3) If selfRenew is true, will notice every node to renew RDC token by itself.
 */
 func TriggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
-	nodeList := a3share.FetchNodesInfo()
+	nodeList := a3config.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 	for _, node := range nodeList {
 		if node.IpAddr == ownMgtIp {
