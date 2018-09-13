@@ -45,7 +45,6 @@ sub get_nodes_info {
 
 sub health_check {
   #health check before update
-  print "here is @all_nodes_ip";
   for my $node_ip (@all_nodes_ip) {
     $ret = pf::a3_cluster_update::remote_api_call_post($node_ip, 'a3/health_check', {});
     if ($ret != 0) {
