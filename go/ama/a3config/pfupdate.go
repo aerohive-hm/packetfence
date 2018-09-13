@@ -49,7 +49,7 @@ func UpdateInterface(i Item) error {
 		}
 		/*check vip if exsit*/
 		ifname := ChangeUiInterfacename(i.Name)
-		vip := GetPrimaryClusterVip(ifname)
+		vip := ClusterNew().GetPrimaryClusterVip(ifname)
 		if vip != i.Vip {
 			if utils.IsIpExists(i.Vip) {
 				msg := fmt.Sprintf("%s is exsit in net", i.Vip)

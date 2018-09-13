@@ -86,6 +86,8 @@ func GetClusterInfoData(ctx context.Context, clusterdata *a3config.ClusterInfoDa
 	nodeList := a3config.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 
+	clusterdata.Ifaces = a3config.ClusterNew().GetClusterVips()
+
 	dbClusterList := amadb.QueryDBClusterIpSet()
 
 	for _, node := range nodeList {

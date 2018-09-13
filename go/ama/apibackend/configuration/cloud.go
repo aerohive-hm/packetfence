@@ -88,7 +88,7 @@ func CloudNew(ctx context.Context) crud.SectionCmd {
 
 func getRunMode() string {
 
-	if a3config.CheckClusterEnable() {
+	if a3config.ClusterNew().CheckClusterEnable() {
 		return "cluster"
 	} else {
 		return "standalone"
@@ -186,7 +186,7 @@ func startService() {
 		return
 	}
 
-	clusterEnable := a3config.CheckClusterEnable()
+	clusterEnable := a3config.ClusterNew().CheckClusterEnable()
 
 	if clusterEnable {
 		a3config.UpdateGaleraUser()

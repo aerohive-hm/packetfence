@@ -41,7 +41,11 @@ type ClusterRemoveData struct {
 	Hostname []string `json:"hostname"`
 }
 
-func GetPrimaryClusterVip(ifname string) string {
+func ClusterNew() Section {
+	return A3Read("CLUSTER", "all")
+}
+
+func (sections Section) GetPrimaryClusterVip(ifname string) string {
 	var keyname, vip string
 
 	keyname = fmt.Sprintf("CLUSTER interface %s", ifname)
@@ -58,18 +62,21 @@ func GetPrimaryClusterVip(ifname string) string {
 
 }
 
-func CheckClusterEnable() bool {
-	section := A3Read("CLUSTER", "CLUSTER")
-	if section == nil {
+func (sections Section) CheckClusterEnable() bool {
+	if sections == nil {
 		return false
 	}
-	if section["CLUSTER"]["management_ip"] != "" {
+	if sections["CLUSTER"]["management_ip"] != "" {
 		return true
 	}
 	return false
 }
 
-func GetClusterVips(sections Section) map[string]string {
+func (sections Section) GetClusterVips() map[string]string {
+	if sections == nil {
+		return map[string]string{}
+	}
+
 	vips := make(map[string]string)
 	r := regexp.MustCompile(`CLUSTER\s*interface\s*([\w\.]+)`)
 	for k, v := range sections {
@@ -195,7 +202,7 @@ func UpdatePrimaryClusterconf(enable bool, i Item) error {
 func UpdateJoinClusterconf(i Item, hostname string) error {
 	var keyname string
 
-	if !CheckClusterEnable() {
+	if !ClusterNew().CheckClusterEnable() {
 		log.LoggerWContext(context.Background()).Info(fmt.Sprintf(" Cluster Disenabled"))
 		return nil
 	}
