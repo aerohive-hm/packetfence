@@ -1,15 +1,5 @@
 package report
 
-import (
-	//"context"
-	"database/sql"
-	"fmt"
-	"time"
-
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/inverse-inc/packetfence/go/ama/database"
-	//"github.com/inverse-inc/packetfence/go/log"
-)
 
 /*
 MariaDB [A3]> show columns from node;
@@ -48,42 +38,52 @@ MariaDB [A3]> show columns from node;
 | bypass_role_id    | int(11)          | YES  |     | NULL                |       |
 | last_seen         | datetime         | NO   | MUL | 0000-00-00 00:00:00 |       |
 +-------------------+------------------+------+-----+---------------------+-------+
+31 rows in set (0.00 sec)
 */
 
-type NodeStru struct {
-	TenantId         int    `json:"tenantId"`
+type NodeParseStruct struct {
+	TableName        string `json:"ah_tablename"`
+	TimeStamp        string `json:"ah_timestamp"`
+	TenantId         string `json:"tenant_id"`
 	Mac              string `json:"mac"`
 	Pid              string `json:"pid"`
-	CategoryId       int64  `json:"categoryId"`
-	DetectDate       int64  `json:"detectDate"`
-	RegDate          int64  `json:"regDate"`
-	UnregDate        int64  `json:"unregDate"`
-	Lastskip         int64  `json:"lastskip"`
-	TimeBalance      int64  `json:"timeBalance"`
-	BandwidthBalance int64  `json:"bandwidthBalance"`
+	CategoryId       string `json:"category_id"`
+	DetectDate       string `json:"detect_date"`
+	RegDate          string `json:"regdate"`
+	UnregDate        string `json:"unregdate"`
+	Lastskip         string `json:"lastskip"`
+	TimeBalance      string `json:"time_balance"`
+	BandwidthBalance string `json:"bandwidth_balance"`
 	Status           string `json:"status"`
-	UserAgent        string `json:"userAgent"`
-	ComputerName     string `json:"computerName"`
+	UserAgent        string `json:"user_agent"`
+	ComputerName     string `json:"computername"`
 	Notes            string `json:"notes"`
-	LastArp          int64  `json:"lastArp"`
-	LastDhcp         int64  `json:"lastDhcp"`
-	DhcpFingerprint  string `json:"dhcpFingerprint"`
-	Dhcp6Fingerprint string `json:"dhcp6Fingerprint"`
-	DhcpVendor       string `json:"dhcpVendor"`
-	Dhcp6Enterprise  string `json:"dhcp6Enterprise"`
-	DeviceType       string `json:"deviceType"`
-	DeviceClass      string `json:"deviceClass"`
-	DeviceVersion    string `json:"deviceVersion"`
-	DeviceScore      string `json:"deviceScore"`
-	BypassVlan       string `json:"bypassVlan"`
-	VoIp             string `json:"voIp"`
-	AutoReg          string `json:"autoReg"`
-	SessionId        string `json:"sessionId"`
-	MachineAccount   string `json:"machineAccount"`
-	BypassRoleId     int64  `json:"bypassRoleId"`
-	LastSeen         int64  `json:"lastSeen"`
+	LastArp          string `json:"last_arp"`
+	LastDhcp         string `json:"last_dhcp"`
+	DhcpFingerprint  string `json:"dhcp_fingerprint"`
+	Dhcp6Fingerprint string `json:"dhcp6_fingerprint"`
+	DhcpVendor       string `json:"dhcp_vendor"`
+	Dhcp6Enterprise  string `json:"dhcp6_enterprise"`
+	DeviceType       string `json:"device_type"`
+	DeviceClass      string `json:"device_class"`
+	DeviceVersion    string `json:"device_version"`
+	DeviceScore      string `json:"device_score"`
+	BypassVlan       string `json:"bypass_vlan"`
+	VoIp             string `json:"voip"`
+	AutoReg          string `json:"autoreg"`
+	SessionId        string `json:"sessionid"`
+	MachineAccount   string `json:"machine_account"`
+	BypassRoleId     string `json:"bypass_role_id"`
+	LastSeen         string `json:"last_seen"`
 }
 
+type NodeReportData struct {
+       TableName string `json:"tablename"`
+       TimeStamp string `json:"timestamp"`
+       Data NodeParseStruct  `json:"data"`
+}
+
+/*
 type SqlNullFields struct {
 	CategoryId       sql.NullInt64
 	TimeBalance      sql.NullInt64
@@ -169,3 +169,5 @@ func getNodeTableItem(ctx context.Context) {
 		}
 	}
 }
+
+*/

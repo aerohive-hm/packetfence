@@ -1,4 +1,4 @@
-export let i18n ={
+export let i18nfr ={
 	"hostNameIsRequired": "Nom d'hôte est requis.",
 	"iPAddressIsRequired": "L'adresse IP est requise.",
 	"iPAddressFormatIsIncorrect": "Le format de l'adresse IP est incorrect.",

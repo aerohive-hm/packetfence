@@ -1,4 +1,4 @@
-export let i18n ={
+export let i18nfr ={
 	"cloudUrlIsRequired": "URL Cloud est requis.",
 	"cloudUrlMustStartWith": 'URL Cloud doit commencer par "https://".',
 	"cloudAdminUserIsRequired": "Compte d'administration Cloud est requis.",

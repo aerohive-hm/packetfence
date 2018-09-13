@@ -1,4 +1,4 @@
-export let i18n ={
+export let i18nfr ={
 	"clusterPrimaryIsRequired": "Grappe primaire est requise.",
 	"clusterPrimaryMustStartWith": 'La grappe primaire doit commencer par "https://".',
 	"clusterAdminIsRequired": "Administrateur de grappe est requise.",

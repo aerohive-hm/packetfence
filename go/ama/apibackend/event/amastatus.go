@@ -41,7 +41,7 @@ func handleGetAMAStatus(r *http.Request, d crud.HandlerData) []byte {
 	amaStatus.Hostname = utils.GetHostname()
 	amaStatus.SystemID = utils.GetA3SysId()
 	amaStatus.Status = amac.GetAMAConnStatus()
-	amaStatus.LastConnTime = fmt.Sprintf("%v", amac.ReadLastConTime())
+	amaStatus.LastConnTime = fmt.Sprintf("%v", amac.ReadLastConTime().Format("2006-01-02 15:04:05 MST"))
 
 	jsonData, err := json.Marshal(amaStatus)
 	if err != nil {

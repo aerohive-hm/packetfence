@@ -1,4 +1,4 @@
-export let i18n ={
+export let i18nfr ={
 	"entitlementKeyIsRequired": "La clé d'autorisation est requise.",
 	"entitlementKeyFormatIsIncorrect": "Le format de la clé d'autorisation est incorrect.",
 	"licensing": "License",
