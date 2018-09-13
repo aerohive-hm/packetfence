@@ -202,15 +202,7 @@ func connectToRdcWithoutPara(ctx context.Context) int {
 			return result
 		}
 	}
-	/*
-		{
-			var sysIdArray []string
 
-			make
-
-	    	UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster, )
-	    }
-	*/
 	log.LoggerWContext(ctx).Info("connectToRdcWithoutPara: begin to send onboarding request to RDC server")
 	res, _ := onbordingToRdc(ctx)
 	if res != 0 {
