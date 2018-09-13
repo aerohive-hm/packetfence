@@ -24,8 +24,8 @@ type Item struct {
 
 type NetworksData struct {
 	ClusterEnable bool   `json:"cluster_enable"`
-	HostName      string `json:"hostname"`
-	Items         []Item `json:"items"`
+	HostName      string `json:"hostname,omitempty"`
+	Items         []Item `json:"items,omitempty"`
 }
 
 var contextNetworks = log.LoggerNewContext(context.Background())
@@ -120,6 +120,10 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 		context = ctx
 	}
 	clusterEnableDefault = networksData.ClusterEnable
+	if len(networksData.Items) == 0 {
+		/*only update cluster enable*/
+		return nil
+	}
 	err := CheckItemValid(ctx, networksData.ClusterEnable, networksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("CheckItemValid error:" + err.Error())
