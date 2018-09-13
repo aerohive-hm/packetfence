@@ -53,7 +53,7 @@ type A3Time struct {
 
 func updateLastConTime() {
 	LastConnectTime.mu.Lock()
-	LastConnectTime.time = time.Now().UTC()
+	LastConnectTime.time = time.Now()
 	LastConnectTime.mu.Unlock()
 }
 

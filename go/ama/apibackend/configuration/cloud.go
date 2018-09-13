@@ -115,7 +115,7 @@ func (nodes *GetNodesInfo) getValue(ctx context.Context) {
 
 	self.Hostname = utils.GetHostname()
 	self.Status = amac.GetAMAConnStatus()
-	self.LastContactTime = fmt.Sprintf("%v", amac.ReadLastConTime())
+	self.LastContactTime = fmt.Sprintf("%v", amac.ReadLastConTime().Format("2006-01-02 15:04:05 MST"))
 	nodes.Body.Data = append(nodes.Body.Data, self)
 
 	nodeList := a3share.FetchNodesInfo()
