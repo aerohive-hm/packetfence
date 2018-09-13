@@ -1,30 +1,75 @@
 package report
 
-type Radacct struct {
-	RadacctID       int64  `json:"radacctID"`
-	TenantID        int32  `json:"tenantID"`
-	AcctSessionID   string `json:"acctSessionID"`
-	AcctUniqueID    string `json:"acctUniqueID"`
-	UserName        string `json:"userName"`
-	GroupName       string `json:"groupName"`
-	Realm           string `json:"realm"`
-	NasIpAddress    string `json:"nasIpAddress"`
-	NasPortID       string `json:"nasPortID"`
-	NasPortType     string `json:"nasPortType"`
-	AcctStartTime   int64  `json:"acctStartRime"`
-	AcctUpdateTime  int64  `json:"acctUpdateTime"`
-	AcctStopTime    int64  `json:"acctStopTime"`
-	AcctInterval    int32  `json:"acctInterval"`
-	AcctSessionTime uint32 `json:"acctSessionTime"`
-	AcctAuthentic   string `json:"acctAuthentic"`
-	ConnInfoStart   string `json:"connectInfoStart"`
-	ConnInfoStop    string `json:"connectInfoStop"`
-	AcctInputOcts   int64  `json:"acctInputOctets"`
-	AcctOutputOcts  int64  `json:"acctOutputOctets"`
-	CalledStaID     string `json:"calledStationID"`
-	CallingStaID    string `json:"callingStationID"`
-	AcctTermCause   string `json:"acctTerminateCause"`
-	ServiceType     string `json:"serviceType"`
-	FramedProtocol  string `json:"framedProtocol"`
-	FramedIpAddr    string `json:"framedIpAddress"`
+/*
+MariaDB [A3]> desc radacct;
++--------------------+------------------+------+-----+---------+----------------+
+| Field              | Type             | Null | Key | Default | Extra          |
++--------------------+------------------+------+-----+---------+----------------+
+| radacctid          | bigint(21)       | NO   | PRI | NULL    | auto_increment |
+| tenant_id          | int(11)          | NO   |     | 1       |                |
+| acctsessionid      | varchar(64)      | NO   | MUL |         |                |
+| acctuniqueid       | varchar(32)      | NO   | MUL |         |                |
+| username           | varchar(64)      | NO   | MUL |         |                |
+| groupname          | varchar(64)      | NO   |     |         |                |
+| realm              | varchar(64)      | YES  |     |         |                |
+| nasipaddress       | varchar(15)      | NO   | MUL |         |                |
+| nasportid          | varchar(32)      | YES  |     | NULL    |                |
+| nasporttype        | varchar(32)      | YES  |     | NULL    |                |
+| acctstarttime      | datetime         | YES  | MUL | NULL    |                |
+| acctupdatetime     | datetime         | YES  |     | NULL    |                |
+| acctstoptime       | datetime         | YES  | MUL | NULL    |                |
+| acctinterval       | int(12)          | YES  | MUL | NULL    |                |
+| acctsessiontime    | int(12) unsigned | YES  | MUL | NULL    |                |
+| acctauthentic      | varchar(32)      | YES  |     | NULL    |                |
+| connectinfo_start  | varchar(50)      | YES  |     | NULL    |                |
+| connectinfo_stop   | varchar(50)      | YES  |     | NULL    |                |
+| acctinputoctets    | bigint(20)       | YES  |     | NULL    |                |
+| acctoutputoctets   | bigint(20)       | YES  |     | NULL    |                |
+| calledstationid    | varchar(50)      | NO   |     |         |                |
+| callingstationid   | varchar(50)      | NO   | MUL |         |                |
+| acctterminatecause | varchar(32)      | NO   |     |         |                |
+| servicetype        | varchar(32)      | YES  |     | NULL    |                |
+| framedprotocol     | varchar(32)      | YES  |     | NULL    |                |
+| framedipaddress    | varchar(15)      | NO   | MUL |         |                |
++--------------------+------------------+------+-----+---------+----------------+
+26 rows in set (0.00 sec)
+*/
+
+type RadacctParseStruct struct {
+	TableName       string `json:"ah_tablename"`
+	TimeStamp       string `json:"ah_timestamp"`
+	RadacctID       string  `json:"radacctid"`
+	TenantID        string  `json:"tenant_id"`
+	AcctSessionID   string  `json:"acctsessionid"`
+	AcctUniqueID    string  `json:"acctuniqueid"`
+	UserName        string  `json:"username"`
+	GroupName       string  `json:"groupname"`
+	Realm           string  `json:"realm"`
+	NasIpAddress    string  `json:"nasipaddress"`
+	NasPortID       string  `json:"nasportid"`
+	NasPortType     string  `json:"nasporttype"`
+	AcctStartTime   string  `json:"acctstarttime"`
+	AcctUpdateTime  string  `json:"acctupdatetime"`
+	AcctStopTime    string  `json:"acctstoptime"`
+	AcctInterval    string  `json:"acctinterval"`
+	AcctSessionTime string  `json:"acctsessiontime"`
+	AcctAuthentic   string  `json:"acctauthentic"`
+	ConnInfoStart   string  `json:"connectinfo_start"`
+	ConnInfoStop    string  `json:"connectinfo_stop"`
+	AcctInputOcts   string  `json:"acctinputoctets"`
+	AcctOutputOcts  string  `json:"acctoutputoctets"`
+	CalledStaID     string  `json:"calledstationid"`
+	CallingStaID    string  `json:"callingstationid"`
+	AcctTermCause   string  `json:"acctterminatecause"`
+	ServiceType     string  `json:"servicetype"`
+	FramedProtocol  string  `json:"framedprotocol"`
+	FramedIpAddr    string  `json:"framedipaddress"`
 }
+
+type RadacctReportData struct {
+       TableName string `json:"tablename"`
+       TimeStamp string `json:"timestamp"`
+       Data RadacctParseStruct  `json:"data"`
+}
+
+
