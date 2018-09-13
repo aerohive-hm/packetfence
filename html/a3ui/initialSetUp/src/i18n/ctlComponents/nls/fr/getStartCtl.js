@@ -1,4 +1,4 @@
-export let i18n ={
+export let i18nfr ={
 	"new": "NOUVEAU",
 	"deployment": "DÉPLOIEMENT",
 	"setUpANewClusterOrStandalone": "Configurer une nouvelle grappe ou autonome",

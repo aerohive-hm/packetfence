@@ -139,7 +139,7 @@ class licensingCtl extends Component {
                 
                 let param={
                     trial:"0",
-                    key:values.key,
+                    key:values.key.trim(),
                 }
                 self.setState({
                     loading : true,
@@ -193,7 +193,7 @@ class licensingCtl extends Component {
         let param={
             trial:"0",
             eula_accept:true,
-            key:self.state.key,
+            key:self.state.key.trim(),
         }
         self.setState({
             loading : true,
