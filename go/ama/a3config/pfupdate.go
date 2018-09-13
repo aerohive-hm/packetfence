@@ -49,7 +49,7 @@ func UpdateInterface(i Item) error {
 			return errors.New(msg)
 		}
 		/*check vip if exsit*/
-		ifname := ChangeUiInterfacename(i.Name)
+		ifname := ChangeUiInterfacename(i.Name, strings.ToLower(i.Prefix))
 		vip := GetPrimaryClusterVip(ifname)
 		if vip != i.Vip {
 			if utils.IsIpExists(i.Vip) {
@@ -71,7 +71,7 @@ func UpdateInterface(i Item) error {
 func UpdateEthInterface(i Item) error {
 	/*check eth0 ip should be equal to primary ip*/
 	if i.IpAddr == ReadClusterPrimary() {
-		msg := fmt.Sprintf("eth0 ip(%s) is equal to primary ip (%s) ", i.IpAddr, ReadClusterPrimary())
+		msg := fmt.Sprintf("%s ip(%s) is equal to primary ip (%s) ", i.Prefix, i.IpAddr, ReadClusterPrimary())
 		return errors.New(msg)
 	}
 	err := utils.UpdateEthIface(i.Name, i.IpAddr, i.NetMask)
@@ -104,9 +104,10 @@ func UpdateEthInterface(i Item) error {
 func UpdateVlanInterface(i Item) error {
 	s := []rune(i.Name)
 	vlan := string(s[4:]) /*need to delete vlan for name*/
-	ifname := fmt.Sprintf("eth0.%s", vlan)
+	prefix := strings.ToLower(i.Prefix)
+	ifname := fmt.Sprintf("%s.%s", prefix, vlan)
 
-	err := utils.UpdateVlanIface(ifname, vlan, i.IpAddr, i.NetMask)
+	err := utils.UpdateVlanIface(ifname, prefix, vlan, i.IpAddr, i.NetMask)
 	if err != nil {
 		return err
 	}
@@ -182,7 +183,7 @@ func DeleteNetconf(i Item) error {
 
 func DeletePrimaryClusterconf(i Item) error {
 	isvlan := VlanInface(i.Name)
-	ifname := ChangeUiInterfacename(i.Name)
+	ifname := ChangeUiInterfacename(i.Name, strings.ToLower(i.Prefix))
 	hostname := GetPfHostname()
 	if isvlan {
 		sectionid := []string{
@@ -243,7 +244,7 @@ func UpdatePrimaryClusterconf(enable bool, i Item) error {
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		name := []rune(i.Name) /*need to delete vlan for name*/
-		keyname = fmt.Sprintf("CLUSTER interface eth0.%s", string(name[4:]))
+		keyname = fmt.Sprintf("CLUSTER interface %s.%s", strings.ToLower(i.Prefix), string(name[4:]))
 		section := Section{
 			keyname: {
 				"ip": i.Vip,
@@ -252,11 +253,12 @@ func UpdatePrimaryClusterconf(enable bool, i Item) error {
 		return A3Commit("CLUSTER", section)
 
 	} else {
+		sectionid := fmt.Sprintf("CLUSTER interface %s", strings.ToLower(i.Prefix))
 		section := Section{
 			"CLUSTER": {
 				"management_ip": i.Vip,
 			},
-			"CLUSTER interface eth0": {
+			sectionid: {
 				"ip": i.Vip,
 			},
 		}
@@ -274,7 +276,7 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		name := []rune(i.Name) /*need to delete vlan for name*/
-		keyname = fmt.Sprintf("%s interface eth0.%s", hostname, string(name[4:]))
+		keyname = fmt.Sprintf("%s interface %s.%s", hostname, strings.ToLower(i.Prefix), string(name[4:]))
 
 		section := Section{
 			keyname: {
