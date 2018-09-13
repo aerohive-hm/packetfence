@@ -34,14 +34,18 @@ func handleGetClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	return nil
 }
 
-func removeClusterServer(ctx context.Context, hostname []string) {
+// remove Cluster server on local
+func removeServerOnLocal(hostname []string) {
 	ama.InitClusterStatus("primary")
 
 	ip := utils.GetOwnMGTIp()
 	a3share.SendClusterSync(ip, a3share.ServerRemoved)
 	//remove node configuration from cluster.conf
 	a3config.RemoveClusterServer(hostname)
+}
 
+// sync cluster remove to members
+func syncRemove2Other(ctx context.Context) {
 	//remove other nodes
 	//notify other nodes to stopService
 	err := a3share.NotifyClusterStatus(a3share.StopService)
@@ -96,8 +100,8 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Try to remove cluster node = %s", removeData.Hostname))
-
-	go removeClusterServer(ctx, removeData.Hostname)
+	removeServerOnLocal(removeData.Hostname)
+	go syncRemove2Other(ctx)
 	code = "ok"
 END:
 	return crud.FormPostRely(code, retMsg)
