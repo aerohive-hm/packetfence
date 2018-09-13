@@ -38,9 +38,9 @@ type ReportDbTableMessage struct {
 
 type ReportSysInfoData struct {
 	MsgType     string `json:"msgType"`
-	CpuUsage    uint8  `json:"cpuUsage"`
-	MemoryTotal uint32 `json:"memoryTotal"`
-	MemoryUsed  uint32 `json:"memoryUsed"`
+	CpuUsage    int    `json:"cpuUsage"`
+	MemoryTotal int    `json:"memoryTotal"`
+	MemoryUsed  int    `json:"memoryUsed"`
 }
 
 type ReportSysInfoMessage struct {
@@ -99,7 +99,7 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 			return 0
 		} else {
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message faile, server(RDC) respons the code %d", statusCode))
-			return 0
+			return -1
 		}
 	}
 }
@@ -124,8 +124,8 @@ func ReportDbTable(ctx context.Context, data []byte) int {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return -1
 	}
-	log.LoggerWContext(ctx).Info("print table.Data")
-	log.LoggerWContext(ctx).Info(string(table.Data))
+	//log.LoggerWContext(ctx).Info("print table.Data")
+	//log.LoggerWContext(ctx).Info(string(table.Data))
 
 	fillReportHeader(&reportMsg.Header)
 	reportMsg.Data.MsgType = "a3reportingDB"
@@ -141,9 +141,11 @@ func reportSysInfo(ctx context.Context) int {
 
 	fillReportHeader(&reportMsg.Header)
 	reportMsg.Data.MsgType = "a3reportingsysteminfo"
-	//reportMsg.Data.CpuUsage =
-	//reportMsg.Data.MemoryTotal =
-	//reportMsg.Data.MemoryUsed =
+
+	system := utils.GetCpuMem()
+	reportMsg.Data.CpuUsage = int(system.CpuRate)
+	reportMsg.Data.MemoryTotal = int(system.MemTotal)
+	reportMsg.Data.MemoryUsed = int(system.MemUsed)
 
 	res := sendReport2Cloud(ctx, &reportMsg)
 	return res
