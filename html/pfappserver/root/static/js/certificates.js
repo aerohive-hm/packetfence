@@ -75,7 +75,7 @@ $(document).ready(function(){
     console.log("inside add eventlistener click");
     e.preventDefault();
     var downloadFileInfo = downloadCert("eap-ca", document.getElementById('eap_ca_path').value);
-    downloadFile("server.crt", downloadFileInfo);
+    downloadFile("ca.crt", downloadFileInfo);
   }, false);
 
 });
