@@ -7,7 +7,7 @@ $(document).ready(function(){
     var clouduser = document.getElementById('user').value;
     var cloudpass = document.getElementById('pass').value;
     if(cloudurl == "" || clouduser == "" || cloudpass == ""){
-      document.getElementById('errorMessage').innerHTML = "Fill in all fields.";
+      document.getElementById('errorMessage').innerHTML = "Enter all the fields below to link with aerohive account.";
       $("#error-alert").show();
       setTimeout(function (){
         $("#error-alert").slideUp(500);

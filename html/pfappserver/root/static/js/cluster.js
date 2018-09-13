@@ -42,16 +42,23 @@ $(document).ready(function(){
         $("#cluster-management-table-tbody").append("<tr><td>" + "<input type='checkbox' class='remove-cluster-node' name='remove-cluster-node' id='remove-cluster-node' value=" + members.hostname + ">" + "</td><td>" +  members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
       }
     });
+
+
     //button press on trashcan, array, removeClusterNode();
     document.getElementById('remove-node').onclick = function(){
-        // $("input:checkbox[name=type]:checked").each(function(){
-        //     nodeArray.push($(this).val());
-        // });
         var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         console.log("get List of nodes: "); console.log(getListOfNodes);
-        // $("#removeConfirmation").css("display","block");
-        // $("#listOfSelectedNodes").text(getListOfNodes);
-        removeClusterNode(getListOfNodes);
+
+        $('.removeModal').show();
+        $("#listOfSelectedNodes").text(getListOfNodes);
+
+        $('#close-modal').on('click', function() {
+            $('#openModal').hide();
+        });
+        $('#removing-modal').on('click', function() {
+            removeClusterNode(getListOfNodes);
+            $('#openModal').hide();
+        });
     }
 });
 
@@ -60,7 +67,7 @@ function getCheckedNodes(inputTbody){
   var getInputFields = inputTbody.getElementsByTagName('input');
   var numberOfInputs = getInputFields.length;
   console.log("number selected: " + numberOfInputs);
-  
+
   for(var i = 0; i < numberOfInputs; i++) {
     if(getInputFields[i].type == 'checkbox' && getInputFields[i].checked == true){
       nodeArray.push(getInputFields[i].value);
@@ -122,6 +129,10 @@ function removeClusterNode(nodeArray){
       success: function(data){
         console.log("successful");
         console.log(data);
+        getClusterStatusInfo();
+        $("#cluster-management-table").load("#cluster-management-table-tbody");
+
+        //let user know 7 - 15 minutes restarting services
       },
       error: function(data){
         console.log("error");
@@ -129,12 +140,6 @@ function removeClusterNode(nodeArray){
       }
    });
 }
-//    remove add later  //add checked row
-      //slect one
-      //grab host name and add to api ca_file_uploadand send it
-      //success : remove entire row
-      //call getClusterStatusInfo
-
 
 //function to get cluster table data
 function getClusterStatusInfo(){

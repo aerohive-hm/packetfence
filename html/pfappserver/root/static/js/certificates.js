@@ -25,8 +25,6 @@ $(document).ready(function(){
 
   document.getElementById("https-upload").onclick = function(e){
     e.preventDefault();
-    // console.log("https key" + https_key.value);
-    // console.log("https cert" + document.getElementById('https_serverCert_upload').value);
 
     if(https_key.files.length != 0 && https_server_cert.files.length != 0){
       uploadCertAndKey(https_server_cert, https_key, "https_form", "https", eap_ca_cert);
@@ -41,9 +39,6 @@ $(document).ready(function(){
 
   document.getElementById("eap-upload").onclick = function(e){
     e.preventDefault();
-    console.log("eap key" + eap_key.value);
-    console.log("eap server" + eap_server_cert.value);
-    console.log("eap ca " + eap_ca_cert.value);
     if (eap_ca_cert.value == ""){
       console.log("ca is empty");
       if(eap_key.files.length != 0 && eap_server_cert.files.length != 0){
@@ -58,18 +53,31 @@ $(document).ready(function(){
     } else {
       console.log("ca is not empty");
         uploadCertAndKey(eap_server_cert, eap_key, "eap_tls_form", "eap", document.getElementById('caCert_upload'));
-      // $.when(uploadKey(eap_key, "eap_tls_form"), uploadCert(document.getElementById('serverCert_upload'), "eap_tls_form"), uploadCACert(document.getElementById('caCert_upload'), "eap_tls_form")).done(function(eap_path, eap_server_cert_path, eap_ca_cert_path){
-      //     console.log(eap_path[0].filePath); console.log(eap_server_cert_path[0].filePath); console.log(eap_ca_cert_path[0].filePath);
-      //     var qualifier = "eap";
-      //     verifyCert(eap_path[0].filePath,eap_server_cert_path[0].filePath, qualifier);
-      // });
     }
   }
-  document.getElementById("download_button").onclick = function(e){
-    console.log("pressing downloading");
+
+  //DOWNLOAD
+  document.getElementById("download_button_https").addEventListener("click", function(e){
+    console.log("inside add eventlistener click");
     e.preventDefault();
-    downloadCert("https", document.getElementById('https_cert_path').value);
-  }
+    var downloadFileInfo = downloadCert("https", document.getElementById('https_cert_path').value);
+    downloadFile("server.crt", downloadFileInfo);
+  }, false);
+
+  document.getElementById("download_button_eap_serv").addEventListener("click", function(e){
+    console.log("inside add eventlistener click");
+    e.preventDefault();
+    var downloadFileInfo = downloadCert("eap", document.getElementById('eap_server_path').value);
+    downloadFile("server.crt", downloadFileInfo);
+  }, false);
+
+  document.getElementById("download_button_eap_ca").addEventListener("click", function(e){
+    console.log("inside add eventlistener click");
+    e.preventDefault();
+    var downloadFileInfo = downloadCert("eap-ca", document.getElementById('eap_ca_path').value);
+    downloadFile("server.crt", downloadFileInfo);
+  }, false);
+
 });
 
 function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_file_upload){
@@ -207,28 +215,6 @@ function uploadCACert(input, sentForm){
     var xhr = new XMLHttpRequest;
     xhr.open('POST', base_url + '/uploadCACert' , true);
     xhr.send(fd);
-
-    // $.ajax({
-    //     type: 'POST',
-    //     url: base_url + '/uploadCACert',
-    //     dataType: 'json',
-    //     processData: false,
-    //     contentType: false,
-    //     success: function(data){
-    //       console.log("upload ca success");
-    //       // document.getElementById("eap_ca_path").value = data.filePath;
-    //       // var filePath = data.filePath;
-    //     },
-    //     error: function(data){
-    //       console.log(data);
-    //       document.getElementById('errorMessage').innerHTML = "File is incorrect";
-    //       $("#error-alert").show();
-    //       setTimeout(function(){
-    //         $("#error-alert").slideUp(500);
-    //       }, 3000);
-    //
-    //     }
-    // });
 }
 
 
@@ -277,14 +263,13 @@ function readCert(qualifier){
           //https_key_view_more || https_serv_view_more,
           //eap_key_view_more || eap_serv_view_more || eap_ca_view_more
           if (qualifier == "https"){
-            console.log("it is https");
-            $("#https_serv_view_more").text(data.CN_Server);
-            $("#https_serv_view_more").text(data.Server_INFO);
+            var Server_INFO = data.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
+            document.getElementById('https_serv_view_more').innerHTML = data.CN_Server + '<br><br>' + Server_INFO;
           } else {
-            $("#eap_serv_view_more").text(data.CN_Server);
-            $("#eap_serv_view_more").text(data.Server_INFO);
-            $("#eap_ca_view_more").text(data.CN_CA);
-            $("#eap_ca_view_more").text(data.CA_INFO);
+            var Server_INFO = data.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
+            var CA_INFO = data.CA_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
+            document.getElementById('eap_serv_view_more').innerHTML = data.CN_Server + '<br><br>' + Server_INFO;
+            document.getElementById('eap_ca_view_more').innerHTML = data.CN_CA + '<br><br>' + CA_INFO;
           }
         },
         error: function(data){
@@ -316,12 +301,24 @@ function removeCert(path){
     })
 }
 
+function downloadFile (fileName, data){
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
+  element.setAttribute('download', fileName);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+
+  document.body.removeChild(element);
+}
+
 //eap, https, eap-ca option
 function downloadCert(qualifier, path){
   console.log("in download cert");
   // console.log("path exists: " + path);
   var base_url    = window.location.origin;
-  // var filename = path.replace(/^.*[\\\/]/, '');
+  var fileName    = path.replace(/^.*[\\\/]/, '');
   var qualifier   = "https";
   var contentType = "text/plain";
   $.ajax({
@@ -330,12 +327,8 @@ function downloadCert(qualifier, path){
       success: function(data){
         console.log("download cert pass");
         console.log(data);
-        // var cert_content = JSON.stringify(data);
-        var file = new Blob([path], {type: contentType});
-        $('#download_button').href = URL.createObjectURL(file);
-        $('#download_button').download = fileName;
-        console.log("file: " + file);
-        $('#download_button').click();
+        var cert_content = JSON.stringify(data);
+        return cert_content;
       },
       error: function(data){
         console.log("download cert fail");
@@ -348,6 +341,4 @@ function downloadCert(qualifier, path){
         }, 3000);
       }
     });
-
-
 }

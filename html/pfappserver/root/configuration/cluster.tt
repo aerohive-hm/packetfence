@@ -15,17 +15,35 @@
   </li>
 [% END -%] -->
 
-<div class="modal fade hide in" id="removeConfirmation" aria-hidden="false" style="display:none;">
-  <div class="modal-header">
-    <!-- <a class="close" data-dismiss="modal">X</a> -->
+<!-- <div class="removeModal fade hide in" id="removeConfirmation" aria-hidden="false" style="display:none;">
     <h3><i>Remove Selected Cluster Nodes?</i> <span></span></h3>
   </div>
   <div class="modal-body">
     <p><span id="listOfSelectedNodes"><span> will be removed from the cluster.</p>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
-    <button type="button" class="btn btn-success">Remove</button><!--called removeClusterNode()-->
+    <button type="button" class="btn btn-warning" id="close-modal" data-dismiss="removeModal">Close</button>
+    <button type="button" class="btn btn-success" id="removing-node">Remove</button>
+  </div>
+</div> -->
+
+<div class="modal" id="removeModal" tabindex="-1" role="dialog" aria-hidden="true" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i>Remove Selected Cluster Nodes?</i> <span></span></h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><span id="listOfSelectedNodes"><span> will be removed from the cluster.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="removing-node">Remove</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -40,9 +58,6 @@
               <br/>
               <label class="form-horizontal control-label" style="float:left; width:130px;" for="vrid">Virtual Router Id</label>
               <input class="vrid form-inline help-inline" type="text" name="vrid" id="vrid" placeholder="50"><br>
-              <br/>
-              <label class="form-horizontal control-label" style="float:left; width:130px;" for="vip">Virtual IP</label>
-              <input class="vip form-inline help-inline" type="text" name="vip" id="vip" placeholder="x.x.x.x"><br>
           </form>
           <br>
           <label style="float:left; width:130px;">  </label>
@@ -53,7 +68,7 @@
           <table id="items cluster-management-table" class="table items">
             <thead>
               <tr>
-                <th><a id="remove-node" style="padding-left:1px;"><i class="icon-trash-o"></i></a></th>
+                <th><a id="remove-node" data-toggle="modal" data-target="#removeModal" style="padding-left:1px;"><i class="icon-trash-o"></i></a></th>
                 <th>Host Name</th>
                 <th>IP Address</th>
                 <th>Type</th>
