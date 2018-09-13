@@ -164,9 +164,39 @@ class networksCtl extends Component {
             message.error(self.state.i18n.pleaseFinishTheEditFirst);
             return;
         }
-        this.setState({
-            enableClustering: e.target.checked,
-        });
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/networks";
+        
+        let param={
+            cluster_enable:e.target.checked,
+        }
+
+        self.setState({
+            loading : true,
+        })
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                self.setState({
+                    loading : false,
+                    enableClustering: e.target.checked,
+                })
+                
+            }else{
+                self.setState({
+                    loading : false,
+                })
+                message.destroy();
+                message.error(data.msg);
+            }
+
+        },()=>{
+            self.setState({
+                loading : false,
+            })
+
+        }) 
     }
 
     onBlurCheckHostname(e){
