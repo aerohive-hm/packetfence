@@ -91,7 +91,7 @@ func GetClusterInfoData(ctx context.Context, clusterdata *a3config.ClusterInfoDa
 	for _, node := range nodeList {
 		clusterNode := new(a3config.ClusterNodeItem)
 		if node.IpAddr == ownMgtIp {
-			clusterNode.NodeType = "matser"
+			clusterNode.NodeType = "master"
 		} else {
 			clusterNode.NodeType = "slave"
 		}

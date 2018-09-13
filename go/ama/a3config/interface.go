@@ -54,15 +54,13 @@ func GetIfaceServices(ifname string) []string {
 	}
 
 	s := strings.Split(strings.ToUpper(iftype), ",")
-	l := len(s)
-	if l > 1 {
-		if strings.Contains(iftype, "HIGH-AVAILABILITY") {
-			services = s[1 : l-1]
-		} else {
-			services = s[1:]
+	for _, value := range s {
+		if value == "HIGH-AVAILABILITY" {
+			continue
 		}
+		services = append(services, value)
 	}
-	return services
+	return services[1:]
 }
 
 func VlanInface(infacename string) bool {
@@ -82,11 +80,6 @@ func CheckCreateIfValid(i Item) error {
 	ifname := ChangeUiInterfacename(i.Name)
 	if utils.IfaceExists(ifname) {
 		msg = fmt.Sprintf("%s is exsit in system", i.Name)
-		return errors.New(msg)
-	}
-	/*check ip vip the same net range*/
-	if utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
-		msg = fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
 		return errors.New(msg)
 	}
 	return nil
