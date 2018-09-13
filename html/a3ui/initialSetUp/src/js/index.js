@@ -32,7 +32,7 @@ class App extends Component {
         this.state = {
             i18n:{},
             loading : false,
-            show:"getStart",
+            show:"",
             // getStart
             // adminUser
             // networks
@@ -51,7 +51,7 @@ class App extends Component {
     componentDidMount() {
         let self=this;
         self.getRightI18n();
-        self.getStep();
+        
     }
 
     getRightI18n= () => {
@@ -59,7 +59,7 @@ class App extends Component {
 
         let navigatorLanguage = navigator.language||navigator.userLanguage;
         navigatorLanguage = navigatorLanguage.substr(0, 2);
-        console.log("navigator.language:"+navigatorLanguage);
+        console.log("navigatorLanguage:"+navigatorLanguage);
         let rightI18n;
         if(navigatorLanguage==="fr"){
             rightI18n=fr_FR;
@@ -69,6 +69,8 @@ class App extends Component {
         self.setState({
             i18n : rightI18n,
             navigatorLanguage:navigatorLanguage,
+        },function(){
+            self.getStep();
         })
 
     }
