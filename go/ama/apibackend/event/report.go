@@ -9,15 +9,14 @@ import (
 	"fmt"
 	"net/http"
 
-	//"github.com/inverse-inc/packetfence/go/ama/amac"
+	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	//"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
 type ReportDBCounter struct {
-	recvCounter  int64
-	recvCounterNode int64
+	recvCounter           int64
+	recvCounterNode       int64
 	recvCounterLoationlog int64
 }
 
@@ -36,13 +35,15 @@ func ReportNew(ctx context.Context) crud.SectionCmd {
 
 func handlePostReport(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	//cloudInfo := amac.CloudInfo{}
 
 	Counter.recvCounter++
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive DB report event data count: %d", Counter.recvCounter))
-
 	log.LoggerWContext(ctx).Info(string(d.ReqData))
+
+	//To do, save the data to queue, check if up the limit, if yes
+	//Call this API to send data to cloud
+	amac.SendReport(ctx, d.ReqData)
 
 	return []byte(crud.PostOK)
 }

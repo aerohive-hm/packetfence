@@ -34,7 +34,7 @@ func handleGetClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	return nil
 }
 
-func removeClusterServer(ctx context.Context, hostname string) {
+func removeClusterServer(ctx context.Context, hostname []string) {
 	ama.InitClusterStatus("primary")
 
 	ip := utils.GetOwnMGTIp()
@@ -68,6 +68,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	removeData := new(a3config.ClusterRemoveData)
 	code := "fail"
 	retMsg := ""
+	var hostname string
 
 	err := json.Unmarshal(d.ReqData, removeData)
 	if err != nil {
@@ -81,15 +82,20 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Try to remove cluster node = %s", removeData.Hostname))
-
 	//If the removing node is myself, POST remove event to other node to do for me
-	if removeData.Hostname == utils.GetHostname() {
+	hostname = utils.GetHostname()
+	for _, h := range removeData.Hostname {
+		if h != hostname {
+			continue
+		}
+
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("Try to remove myself, " +
 			"logon another server to do remove."))
 		retMsg = "Try to remove self, logon another server to do remove."
 		goto END
 	}
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Try to remove cluster node = %s", removeData.Hostname))
 
 	go removeClusterServer(ctx, removeData.Hostname)
 	code = "ok"

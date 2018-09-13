@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"regexp"
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -203,14 +202,22 @@ func DeletePrimaryClusterconf(i Item) error {
 
 }
 
+func matchHost(sectionId string, hostname []string) bool {
+	for _, host := range hostname {
+		l := len(host)
+		if sectionId[:l] == host {
+			return true
+		}
+	}
+	return false
+}
+
 // remove a server from cluster.conf
-func RemoveClusterServer(hostname string) {
+func RemoveClusterServer(hostname []string) {
 	sections := A3Read("CLUSTER", "all")
 	var ids []string
 	for key, _ := range sections {
-		re := regexp.MustCompile(hostname + `.*`)
-		ret := re.FindStringSubmatch(key)
-		if ret != nil {
+		if matchHost(key, hostname) {
 			ids = append(ids, key)
 		}
 	}

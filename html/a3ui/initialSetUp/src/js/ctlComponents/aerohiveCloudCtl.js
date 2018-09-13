@@ -204,8 +204,8 @@ class aerohiveCloudCtl extends Component {
                 let url= "/a3/api/v1/configurator/cloud";
                 
                 let param={
-                    url:values.url,
-                    user:values.user,
+                    url:values.url.trim(),
+                    user:values.user.trim(),
                     pass:values.pass,
                 }
                 self.setState({

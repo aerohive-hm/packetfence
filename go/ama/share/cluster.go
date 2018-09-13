@@ -149,6 +149,9 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 	return err, RespData
 }
 
-func RemoveFromCluster() {
-	utils.ExecShell("rm -f" + utils.A3Root + "/conf/cluster.pf")
+/*
+func IsPrimaryCluster() {
+	ClusterIp := a3config.ReadClusterPrimary()
+
 }
+*/

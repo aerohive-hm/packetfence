@@ -1,4 +1,4 @@
-export let i18n ={
+export let i18nfr ={
 	"emailIsRequired": "Un courriel est requis.",
 	"emailFormatIsIncorrect": "Le format de courriel est incorrect.",
 	"passwordIsRequired": "Mot de passe requis.",
