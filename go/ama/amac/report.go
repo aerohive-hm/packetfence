@@ -26,14 +26,26 @@ type ReportTable struct {
 	Data json.RawMessage `json:"data"`
 }
 
-type ReportData struct {
+type ReportDbTableData struct {
 	MsgType string        `json:"msgType"`
 	Tables  []interface{} `json:"tables"`
 }
 
-type ReportMessage struct {
-	Header ReportHeader `json:"header"`
-	Data   ReportData   `json:"data"`
+type ReportDbTableMessage struct {
+	Header ReportHeader      `json:"header"`
+	Data   ReportDbTableData `json:"data"`
+}
+
+type ReportSysInfoData struct {
+	MsgType     string `json:"msgType"`
+	CpuUsage    uint8  `json:"cpuUsage"`
+	MemoryTotal uint32 `json:"memoryTotal"`
+	MemoryUsed  uint32 `json:"memoryUsed"`
+}
+
+type ReportSysInfoMessage struct {
+	Header ReportHeader      `json:"header"`
+	Data   ReportSysInfoData `json:"data"`
 }
 
 func fillReportHeader(header *ReportHeader) {
@@ -42,33 +54,7 @@ func fillReportHeader(header *ReportHeader) {
 	header.ClusterID = utils.GetClusterId()
 }
 
-//This function will be called by restAPI, it is public
-func SendReport(ctx context.Context, data []byte) int {
-	reportMsg := ReportMessage{}
-	table := ReportTable{}
-
-	log.LoggerWContext(ctx).Info("Into SendReport")
-
-	if asynMsgUrl == "" {
-		log.LoggerWContext(ctx).Error("RDC URL is NULL")
-		return -1
-	}
-	/*
-	   To do, pop redis queue instead of inputing data
-	*/
-
-	err := json.Unmarshal(data, &table.Data)
-	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
-		return -1
-	}
-	log.LoggerWContext(ctx).Info("print table.Data")
-	log.LoggerWContext(ctx).Info(string(table.Data))
-
-	fillReportHeader(&reportMsg.Header)
-	reportMsg.Data.MsgType = "a3reportingDB"
-
-	reportMsg.Data.Tables = append(reportMsg.Data.Tables, table.Data)
+func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 	message, _ := json.Marshal(reportMsg)
 	log.LoggerWContext(ctx).Info(string(message))
 
@@ -118,6 +104,50 @@ func SendReport(ctx context.Context, data []byte) int {
 	}
 }
 
+//This function will be called by restAPI, it is public
+func ReportDbTable(ctx context.Context, data []byte) int {
+	reportMsg := ReportDbTableMessage{}
+	table := ReportTable{}
+
+	log.LoggerWContext(ctx).Info("Into SendReport")
+
+	if asynMsgUrl == "" {
+		log.LoggerWContext(ctx).Error("RDC URL is NULL")
+		return -1
+	}
+	/*
+	   To do, pop redis queue instead of inputing data
+	*/
+
+	err := json.Unmarshal(data, &table.Data)
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return -1
+	}
+	log.LoggerWContext(ctx).Info("print table.Data")
+	log.LoggerWContext(ctx).Info(string(table.Data))
+
+	fillReportHeader(&reportMsg.Header)
+	reportMsg.Data.MsgType = "a3reportingDB"
+
+	reportMsg.Data.Tables = append(reportMsg.Data.Tables, table.Data)
+
+	res := sendReport2Cloud(ctx, &reportMsg)
+	return res
+}
+
+func reportSysInfo(ctx context.Context) int {
+	reportMsg := ReportSysInfoMessage{}
+
+	fillReportHeader(&reportMsg.Header)
+	reportMsg.Data.MsgType = "a3reportingsysteminfo"
+	//reportMsg.Data.CpuUsage =
+	//reportMsg.Data.MemoryTotal =
+	//reportMsg.Data.MemoryUsed =
+
+	res := sendReport2Cloud(ctx, &reportMsg)
+	return res
+}
 func reportRoutine(ctx context.Context) {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", reportInterval))
 	if reportInterval == 0 {
@@ -142,7 +172,15 @@ func reportRoutine(ctx context.Context) {
 			continue
 		}
 
-		res := SendReport(ctx, []byte("justfortest"))
+		res := ReportDbTable(ctx, []byte(""))
+		if res != 0 {
+			failCount++
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
+		} else {
+			failCount = 0
+		}
+
+		res = reportSysInfo(ctx)
 		if res != 0 {
 			failCount++
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))

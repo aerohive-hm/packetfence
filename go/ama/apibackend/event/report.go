@@ -43,7 +43,7 @@ func handlePostReport(r *http.Request, d crud.HandlerData) []byte {
 
 	//To do, save the data to queue, check if up the limit, if yes
 	//Call this API to send data to cloud
-	amac.SendReport(ctx, d.ReqData)
+	amac.ReportDbTable(ctx, d.ReqData)
 
 	return []byte(crud.PostOK)
 }
