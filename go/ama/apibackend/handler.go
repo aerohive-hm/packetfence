@@ -31,6 +31,7 @@ import (
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/julienschmidt/httprouter"
 )
@@ -83,4 +84,21 @@ func Handle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		cmd.Processor(w, r, d)
 		return
 	}()
+}
+
+// Redirect to admin page after initial setup done
+func HandleRedirect(w http.ResponseWriter, r *http.Request) string {
+	ctx := r.Context()
+
+	//redirect to admin page when initial setup done
+    if utils.IsFileExist(utils.A3CurrentlyAt) {
+               newURL := "https://" + r.Host + "/"
+               w.Header().Set("Location", newURL)
+               w.WriteHeader(http.StatusFound)
+               http.Redirect(w, r, newURL, http.StatusFound)
+               log.LoggerWContext(ctx).Error(fmt.Sprintf("initial setup already done, redirect to %s", newURL))
+               return "redirect"
+	}
+
+	return ""
 }
