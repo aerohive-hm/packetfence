@@ -60,7 +60,6 @@ function system_call(cmd, opts) {
          });
         proc.stdout.on('end', function(data){
 	   audit_log('[--end executing spawn-- ]');
-	   //resolve('Sucess');
          });
 	proc.stderr.on('error', function(data){
 	  reject(data);
@@ -95,7 +94,7 @@ function verify_credential(username, passwd, res) {
 function simple_promise_chain_call(cmd, opts, res) {
     system_call(cmd, opts).then(function(resolve){
             audit_log(resolve);
-            res.json({'msg': 'Sucess'});
+            res.json({'msg': 'Success'});
         }).catch(function(rej){
             audit_log(rej);
             res.status(501);
@@ -155,7 +154,7 @@ app.post("/a3/update_a3_app", function(req, res){
             return system_call(perl, opts);
         }).then(function(resolve){
 	    audit_log(resolve);
-            res.json({'msg': 'Sucess'});
+            res.json({'msg': 'Success'});
         }).catch(function(rej){
             audit_log(rej);
             res.status(501);
@@ -214,7 +213,7 @@ app.post("/a3/sync_files", function(req, res){
 	    return system_call(pfcmd, ['configreload', 'hard']);
         }).then(function(resolve){
             audit_log(resolve);
-            res.json({'msg': 'Sucess'});
+            res.json({'msg': 'Success'});
         }).catch(function(rej){
             audit_log(rej);
             res.status(501);
@@ -293,7 +292,7 @@ app.post("/a3/db", function(req, res){
 	if (opts[0] == 'stop') {
             system_call(systemctl, ['stop', 'packetfence-mariadb']).then(function(resolve){
         	audit_log(resolve);
-        	res.json({'msg': 'Sucess'})}).catch(function(rej){
+        	res.json({'msg': 'Success'})}).catch(function(rej){
         	    audit_log(rej);
         	    res.status(501);
         	    res.json({'msg':rej});
@@ -302,7 +301,7 @@ app.post("/a3/db", function(req, res){
 	else if (opts[0] == 'restart') {
             system_call(systemctl, ['restart', 'packetfence-mariadb']).then(function(resolve){
         	audit_log(resolve);
-        	res.json({'msg': 'Sucess'})}).catch(function(rej){
+        	res.json({'msg': 'Success'})}).catch(function(rej){
         	    audit_log(rej);
         	    res.status(501);
         	    res.json({'msg':rej});
@@ -314,7 +313,7 @@ app.post("/a3/db", function(req, res){
 	    }).then(function(resolve){
 		spawn(pf_mariadb, ['--force-new-cluster']);
 	    }).then(function(resolve){
-	        res.json({'msg': 'Sucess'});	
+	        res.json({'msg': 'Success'});	
             }).catch(function(rej){
                 audit_log(rej);
                 res.status(501);
@@ -324,7 +323,7 @@ app.post("/a3/db", function(req, res){
 	else if (opts[0] == 'start') {
             system_call(systemctl, ['start', 'packetfence-mariadb']).then(function(resolve){
         	audit_log(resolve);
-        	res.json({'msg': 'Sucess'})
+        	res.json({'msg': 'Success'})
 	    }).catch(function(rej){
                 audit_log(rej);
         	res.status(501);
@@ -338,7 +337,7 @@ app.post("/a3/db", function(req, res){
 	    }).then(function(resolve){	
 		return system_call(systemctl, ['start', 'packetfence-mariadb']);
             }).then(function(resolve){
-                res.json({'msg': 'Sucess'});
+                res.json({'msg': 'Success'});
             }).catch(function(rej){
         	audit_log(rej);
         	res.status(501);
@@ -346,7 +345,7 @@ app.post("/a3/db", function(req, res){
 	    })
 	}
         else {
-            res.json({'msg': 'Sucess'});
+            res.json({'msg': 'Success'});
        }
     }
 });
