@@ -37,6 +37,7 @@ Readonly::Scalar my $A3_BIN_DIR                   => "$A3_BASE_DIR/bin";
 Readonly::Scalar my $A3_CONF_DIR                  => "$A3_BASE_DIR/conf";
 Readonly::Scalar my $A3_VAR_CONF_DIR              => "$A3_BASE_DIR/var/conf";
 Readonly::Scalar my $PF_MON_CONF                  => "$A3_CONF_DIR/pfmon.conf";
+Readonly::Scalar my $PF_CONF_FILE		  => "$A3_CONF_DIR/pf.conf";
 Readonly::Scalar my $PF_CLUSTER_CONF              => "$A3_CONF_DIR/cluster.conf";
 Readonly::Scalar my $A3_DBINFO_FILE               => "$A3_CONF_DIR/dbinfo.A3";
 Readonly::Scalar my $A3_LOG_DIR                   => "$A3_BASE_DIR/logs";
@@ -451,6 +452,20 @@ sub post_update {
 }
 
 
+=head2 get_api_call_credential
+
+get api call credentials
+
+=cut
+
+sub get_api_call_credential {
+  my ($username, $passwd);
+  $username = $Config{webservices}->{user};
+  $passwd = $Config{webservices}->{pass};
+  return ($username, $passwd);
+}
+
+
 =head2 remote_api_call_get
 
 remote api call with get method
@@ -479,12 +494,16 @@ remoate api call with post method
 
 sub remote_api_call_post {
   my ($IP, $URI, $data) = @_;
+  my ($api_user, $api_passwd) = get_api_call_credential();
   my $url = "http://$IP:$node_port/".$URI;
   my $client = REST::Client->new({timeout=>3600});
 
   $client->addHeader('Content-Type', 'application/json');
   $client->addHeader('charset', 'UTF-8');
   $client->addHeader('Accept', 'application/json'); 
+
+  $data->{username} = $api_user;
+  $data->{passwd} = $api_passwd;
 
   my $json_data = encode_json($data);
   $client->POST($url, $json_data);

@@ -16,6 +16,7 @@
     "ip": "^1.1.5",
     "lodash": "^4.17.4",
     "requestretry": "^1.12.2",
-    "systeminformation": "^3.26.1"
+    "systeminformation": "^3.26.1",
+    "ini": "^1.3.5"
   }
 }

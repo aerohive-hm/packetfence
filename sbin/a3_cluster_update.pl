@@ -45,8 +45,9 @@ sub get_nodes_info {
 
 sub health_check {
   #health check before update
+  print "here is @all_nodes_ip";
   for my $node_ip (@all_nodes_ip) {
-    $ret = rest_module_call($node_ip, 'health_check');
+    $ret = pf::a3_cluster_update::remote_api_call_post($node_ip, 'a3/health_check', {});
     if ($ret != 0) {
       commit_cluster_update_log("Health check failed on node $node_ip, please check detail log on peer node");
       exit 1;
@@ -57,7 +58,7 @@ sub health_check {
 #backup db and app
 sub data_backup {
   for my $node_ip (@all_nodes_ip) {
-    rest_module_call($node_ip, 'dump_app_db');
+    my $ret = pf::a3_cluster_update::remote_api_call_post($node_ip, 'a3/data_backup', {});
     if ($ret != 0) {
       commit_cluster_update_log("Unable to backup on node $node_ip");
       exit 1;
@@ -69,50 +70,17 @@ sub data_backup {
 sub disable_cluster_check {
   pf::a3_cluster_update::disable_cluster_check();
   for my $node_ip (@all_nodes_ip) {
-    rest_sys_call($node_ip, '/usr/local/pf/bin/pfcmd', 'service', 'pfmon', 'restart');
+    pf::a3_cluster_update::remote_api_call_post($node_ip, 'a3/disable_cluster_check', {});
   }
 }
-
-sub rest_module_call {
-  my ($ip, $action) = @_;
-  my $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'node/syscall', {'cmd'=>'/bin/perl', 'opts'=>['-I/usr/local/pf/lib', '-Mpf::a3_cluster_update', '-e', "pf::a3_cluster_update::".$action."()"]});
-  return $ret;
-}
-
-sub rest_sys_call {
-  my ($ip, $cmd, @params) = @_;
-  my $ref_opt = [];
-  for my $param (@params) {
-    push ($ref_opt, $param);
-  }
-  my $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'node/syscall', {'cmd'=>"$cmd", 'opts'=>$ref_opt});
-
-  commit_cluster_update_log("The cmd is $cmd and the opts is @$ref_opt");
-  return $ret;
-}
-
-sub rest_sys_call_async {
-  my ($ip, $cmd, @params) = @_;
-  my $ref_opt = [];
-  for my $param (@params) {
-    push ($ref_opt, $param);
-  }
-  my $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'node/syscall', {'cmd'=>"$cmd", 'opts'=>$ref_opt, 'method'=>'async'});
-
-  commit_cluster_update_log("The cmd is $cmd and the opts is @$ref_opt");
-  return $ret;
-
-}
-
 
 #update A3 rpm on node
 sub a3_app_update {
   my $ip = shift @_;
-  rest_sys_call($ip, '/usr/local/pf/bin/pfcmd', 'service', 'pf', 'stop');
-  $ret = rest_module_call($ip, "update_system_app");
+  $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'a3/update_a3_app', {});
   if ($ret != 0) {
-    rest_module_call($ip, 'roll_back_app');
-    rest_sys_call($ip, '/usr/local/pf/bin/pfcmd', 'service', 'pf', 'start');
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/rollback_app', {});
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['pf', 'start']});
     exit 1;
   }
 }
@@ -120,21 +88,21 @@ sub a3_app_update {
 
 #apply db migration schema 
 sub apply_db_schema {
-  my $ret = rest_module_call($first_node_ip_to_update, 'apply_db_update_schema');
+  my $ret = pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/apply_db_schema', {});
   if ($ret != 0) {
     commit_cluster_update_log("start rollback for app and db on node $first_node_ip_to_update");
-    rest_module_call($first_node_ip_to_update, 'roll_back_app');
-    rest_module_call($first_node_ip_to_update, 'roll_back_db');
+    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/rollback_app', {});
+    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/rollback_db', {});
     #rejoin the cluster
     for my $ip (@remains_nodes_ip_to_update) {
-      rest_sys_call($ip, '/usr/local/pf/bin/cluster/node', $first_node_hostname, 'enable');
-      rest_sys_call($ip, '/usr/local/pf/bin/pfcmd', 'service', 'haproxy-db', 'restart');
-      rest_sys_call($ip, '/usr/local/pf/bin/pfcmd', 'service', 'keepalived', 'restart');
+      pf::a3_cluster_update::remote_api_call_post($ip, 'a3/node', {'opts'=>["$first_node_hostname", 'enable']});
+      pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['haproxy-db', 'restart']});
+      pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['keepalived', 'restart']});
     }
     for my $hostname (@remains_nodes_hostname) {
-      rest_sys_call($first_node_ip_to_update, '/usr/local/pf/bin/cluster/node', $hostname, 'enable');
+      pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/node', {'opts'=>["$hostname", 'enable']});
     }
-    rest_sys_call($first_node_ip_to_update, '/usr/bin/systemctl', 'restart', 'packetfence-mariadb');
+    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/db', {'opts'=>['restart']});
     commit_cluster_update_log("end rollback for app and db on node $first_node_ip_to_update");
     exit 1;
   }
@@ -142,43 +110,30 @@ sub apply_db_schema {
 
 sub sync_files_from_master {
   for my $ip (@remains_nodes_ip_to_update) {
-    rest_sys_call($ip, '/usr/bin/systemctl', 'restart', 'packetfence-config');
-    rest_sys_call($ip, '/usr/local/pf/bin/cluster/sync', "--from=$first_node_ip_to_update", "--api-user=packet", "--api-password=fence");
-    rest_sys_call($ip, '/usr/local/pf/bin/pfcmd', 'configreload', 'hard');
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/sync_files', {'opts'=>["$first_node_ip_to_update"]});
   }
 }
 
 sub galera_db_sync {
-  rest_sys_call($first_node_ip_to_update, '/usr/bin/systemctl', 'stop', 'packetfence-mariadb');
-  rest_sys_call($first_node_ip_to_update, '/usr/local/pf/bin/pfcmd', 'generatemariadbconfig');
-  rest_sys_call_async($first_node_ip_to_update, '/usr/local/pf/sbin/pf-mariadb', '--force-new-cluster');
-
-  #join db Galera cluster from remainging nodes
-  for my $ip (@remains_nodes_ip_to_update) {
-    rest_sys_call($ip, '/usr/bin/systemctl', 'stop', 'packetfence-mariadb');
-  }
+   pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/db', {'opts'=>['new_cluster']});
 
   for my $ip (@remains_nodes_ip_to_update) {
-    pf::a3_cluster_update::remote_api_call_post($ip, 'node/syscall', {'cmd'=>'/bin/perl', 'opts'=>['-I/usr/local/pf/lib', '-Mpf::a3_cluster_update', '-e', 'pf::a3_cluster_update::delete_mysql_db_files()']});
-  }
-
-  for my $ip (@remains_nodes_ip_to_update) {
-    pf::a3_cluster_update::remote_api_call_post($ip, 'node/syscall', {'cmd'=>'/usr/bin/systemctl', 'opts'=>['start', 'packetfence-mariadb']});
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/db', {'opts'=>['join']});
   }
 
   #kill force cluster process
-  rest_module_call($first_node_ip_to_update, 'kill_force_cluster');
+   pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/kill_force_cluster', {});
 
   #wait mysql force cluster process to quit and start db service on first node
   sleep 10;
-  rest_sys_call($first_node_ip_to_update, '/usr/bin/systemctl', 'start', 'packetfence-mariadb');
+  pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/db', {'opts'=>['start']});
 
 }
 
 #restart of services on all nodes, VIP will float to the one with high priotiry value in keepalived.conf
 sub restart_pf_all_services {
   for my $ip (@all_nodes_ip) {
-    my $ret = rest_sys_call($ip, '/usr/local/pf/bin/pfcmd', 'service', 'pf', 'restart');
+    my $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['pf', 'restart']});
     if ($ret != 0) {
       commit_cluster_update_log("Service restart failed, please use join cluster process to continue!");
       exit 1;
@@ -189,28 +144,28 @@ sub restart_pf_all_services {
 sub disable_misc_services {
   #disable node and restart services on remaining nodes
   for my $ip (@remains_nodes_ip_to_update) {
-    rest_sys_call($ip, '/usr/local/pf/bin/cluster/node', $first_node_hostname, 'disable');
-    rest_sys_call($ip, '/usr/local/pf/bin/pfcmd', 'service', 'haproxy-db', 'restart');
-    rest_sys_call($ip, '/usr/local/pf/bin/pfcmd', 'service', 'keepalived', 'restart');
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/node', {'opts'=>["$first_node_hostname", 'disable']});
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['haproxy-db', 'restart']});
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['keepalived', 'restart']});
   }
 
   #disable node on first node
   for my $hostname (@remains_nodes_hostname) {
-    rest_sys_call($first_node_ip_to_update, '/usr/local/pf/bin/cluster/node', $hostname, 'disable');
+    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/node', {'opts'=>["$hostname", 'disable']});
   }
   #restart db on first node
-  rest_sys_call($first_node_ip_to_update, '/usr/bin/systemctl', 'restart', 'packetfence-mariadb');
+  pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/db', {'opts'=>['restart']});
 }
 
 sub enable_nodes_after_update {
   #enable node on remaining nodes
   for my $hostname (@remains_nodes_hostname) {
-    rest_sys_call($first_node_ip_to_update, '/usr/local/pf/bin/cluster/node', $hostname, 'enable');
+    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/node', {'opts'=>["$hostname", 'enable']});
   }
 
   #enable node on first node
   for my $ip (@remains_nodes_ip_to_update) {
-    rest_sys_call($ip, '/usr/local/pf/bin/cluster/node', $first_node_hostname, 'enable');
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/node', {'opts'=>["$first_node_hostname", 'enable']});
   }
 }
 
@@ -226,15 +181,15 @@ apply_db_schema();
 
 #stop pf service and db service on remaining nodes
 for my $ip (@remains_nodes_ip_to_update) {
-  rest_sys_call($ip, '/usr/local/pf/bin/pfcmd', 'service', 'pf', 'stop');
-  rest_sys_call($ip, '/usr/bin/systemctl', 'stop', 'packetfence-mariadb');
+  pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['pf', 'stop']});
+  pf::a3_cluster_update::remote_api_call_post($ip, 'a3/db', {'opts'=>['stop']});
 }
 
 #post step on first node
-rest_module_call($first_node_ip_to_update, 'post_update');
+pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/post_update', {});
 
 #start pf service on first node
-rest_sys_call($first_node_ip_to_update, '/usr/local/pf/bin/pfcmd', 'service', 'pf', 'start');
+pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/pf_cmd', {'opts'=>['pf', 'start']});
 
 #update A3 rpm on remaining nodes
 for my $ip (@remains_nodes_ip_to_update) {
