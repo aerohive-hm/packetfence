@@ -503,8 +503,8 @@ class clusterNetworkingCtl extends Component {
                     MANAGEMENT:self.state.i18n.management,
                     REGISTRATION:self.state.i18n.registration,
                     ISOLATION:self.state.i18n.isolation,
-                    NONE:self.state.i18n.none,
-                    OTHER:self.state.i18n.other,
+                    // NONE:self.state.i18n.none,
+                    // OTHER:self.state.i18n.other,
                     PORTAL:self.state.i18n.portal,
                 }
                 return (

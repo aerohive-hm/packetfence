@@ -1020,8 +1020,8 @@ class networksCtl extends Component {
                             <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                             <Option value="ISOLATION">{self.state.i18n.isolation}</Option>
                             <Option value="PORTAL">{self.state.i18n.portal}</Option>
-                            <Option value="NONE">{self.state.i18n.none}</Option>
-                            <Option value="OTHER">{self.state.i18n.other}</Option>
+                            {/*<Option value="NONE">{self.state.i18n.none}</Option>
+                            <Option value="OTHER">{self.state.i18n.other}</Option>*/}
                         </Select>
                     </div>
                 );
@@ -1298,8 +1298,8 @@ class networksCtl extends Component {
                                         <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                                         <Option value="ISOLATION" >{self.state.i18n.isolation}</Option>
                                         <Option value="PORTAL">{self.state.i18n.portal}</Option>
-                                        <Option value="NONE" >{self.state.i18n.none}</Option>
-                                        <Option value="OTHER" >{self.state.i18n.other}</Option>
+                                        {/*<Option value="NONE" >{self.state.i18n.none}</Option>
+                                        <Option value="OTHER" >{self.state.i18n.other}</Option>*/}
                                     </Select>
 
                                 )}
