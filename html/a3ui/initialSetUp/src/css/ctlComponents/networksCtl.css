@@ -316,7 +316,6 @@
 
 .vlan-add-div-networksCtl{
     float:left;
-    height: 28px;
     cursor: pointer;
     width:110px;
 }
@@ -333,18 +332,19 @@
     width:20px;
 }
 .vlan-add-text-div-networksCtl{
+    width:86px;
     float:left;
-    margin-left: 6px;
-    height: 28px;
-    line-height: 28px;
+    margin-left: 4px;
     color:#2c6aff;
+    word-break: break-all;
+    line-height: 28px;
+
 
 }
 
 .vlan-remove-div-networksCtl{
     float:left;
     width:110px;
-    height: 28px;
     cursor: pointer;
 }
 .vlan-remove-img-div-networksCtl{
@@ -359,11 +359,12 @@
     width:20px;
 }
 .vlan-remove-text-div-networksCtl{
+    width:86px;
     float:left;
-    margin-left: 6px;
-    height: 28px;
-    line-height: 28px;
+    margin-left: 4px;
     color:#2c6aff;
+    word-break: break-all;
+    line-height: 28px;
 }
 
 .form-button-div-networksCtl{
@@ -459,4 +460,20 @@
 .modal-form-button-next-antd-button-networksCtl{
     width:78px;
     height:32px;
+}
+
+
+
+.form-button-div-networksCtl .ant-btn{
+    padding-left:0px !important ;
+    padding-right: 0px !important ;
+    padding-top:0px !important ;
+    padding-bottom: 0px !important ;
+}
+
+.modal-form-button-div-networksCtl .ant-btn{
+    padding-left:0px !important ;
+    padding-right: 0px !important ;
+    padding-top:0px !important ;
+    padding-bottom: 0px !important ;
 }

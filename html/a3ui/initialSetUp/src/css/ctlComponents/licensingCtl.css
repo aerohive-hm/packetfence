@@ -55,7 +55,7 @@
     line-height: 50px;
     color: #ffffff;
     text-align: center; 
-    font-size: 36px;
+    font-size: 34px;
     font-weight: bold;
 }
 .thirty-day-trial-button-div-licensingCtl{
@@ -101,7 +101,7 @@
     line-height: 50px;
     color: #ffffff;
     text-align: center; 
-    font-size: 36px;
+    font-size: 34px;
     font-weight: bold;
 }
 .enter-entitlement-key-button-div-licensingCtl{
@@ -234,4 +234,18 @@
 .modal-eula-submit-antd-button-licensingCtl{
     width:80px;
     height:32px;
+}
+
+.modal-form-button-div-licensingCtl .ant-btn{
+    padding-left:0px !important ;
+    padding-right: 0px !important ;
+    padding-top:0px !important ;
+    padding-bottom: 0px !important ;
+}
+
+.modal-eula-submit-div-licensingCtl .ant-btn{
+    padding-left:0px !important ;
+    padding-right: 0px !important ;
+    padding-top:0px !important ;
+    padding-bottom: 0px !important ;
 }
