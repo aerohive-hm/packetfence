@@ -7,7 +7,7 @@ $(document).ready(function(){
     var clouduser = document.getElementById('user').value;
     var cloudpass = document.getElementById('pass').value;
     if(cloudurl == "" || clouduser == "" || cloudpass == ""){
-      document.getElementById('errorMessage').innerHTML = "Fill in all fields.";
+      document.getElementById('errorMessage').innerHTML = "Enter all the fields below to link with aerohive account.";
       $("#error-alert").show();
       setTimeout(function (){
         $("#error-alert").slideUp(500);
@@ -24,7 +24,6 @@ $(document).ready(function(){
     document.getElementById("link-account").disabled = false;
     unlinkAerohiveAccount();
   }
-
 });
 
 function getNodeInfo(){
@@ -35,7 +34,7 @@ function getNodeInfo(){
       lastContactTime   = document.getElementById('lastContactTime'),
       vhmId             = document.getElementById('vhmId');
   var base_url = window.location.origin;
-
+  $("#cloud-cluster-table-tbody tr").remove();
   $.ajax({
     type: 'GET',
     url: base_url + '/a3/api/v1/configuration/cloud',
@@ -51,14 +50,35 @@ function getNodeInfo(){
           $('#region').html(data.body.header.region);
         }
         $('#ownerId').html(data.body.header.ownerId);
-        $('#lastContactTime').html("unknown");
+        if (data.body.header.lastContactTime == ""){
+          $('#lastContactTime').html("unknown");
+        } else {
+          $('#lastContactTime').html(data.body.header.lastContactTime);
+        }
         $('#vhmId').html(data.body.header.vhmId);
 
         $(".disconnected").hide();
         $(".linked").show();
         $.each(data.body.data, function(i, items){
           console.log(items);
-          $("#cloud-cluster-table-tbody").append("<tr><td>" + items.status + "</td><td>" + items.hostname + "</td><td>" +  items.lastContactTime + "</td></tr>");
+          //convert time stamp here
+          $("#cloud-cluster-table-tbody").append("<tr><td id='connectedIcon'>" + items.status + "</td><td>" + items.hostname + "</td><td>" +  items.lastContactTime + "</td></tr>");
+        });
+        $('#cloud-cluster-table-tbody td:nth-child(1)').each(function() {
+          console.log($(this));
+          console.log("hi");
+          if ($(this).text() == "connected"){
+              $(this).html('<i class="icon-circle icon" style="color:#28a745; font-size:15px; margin: 0 auto;"></i>');
+          } else if ($(this).text() == "connecting") {
+              $(this).html('<i class="icon-circle icon" style="color:#ffc107; font-size:15px; margin: 0 auto;"></i>');
+          } else if ($(this).text() == "disconnect") {
+              $(this).html('<i class="icon-circle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
+          } else {
+              $(this).html('<i class="icon-exclamation-triangle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
+          }
+        });
+        $('#cloud-cluster-table-tbody tr:nth-child(even) td').each(function(){
+            $(this).css('background-color', '#f4f6f9');
         });
 
         //unlinked

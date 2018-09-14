@@ -285,8 +285,9 @@ sub networks :Local {
 
 sub clustering :Local {
     my ($self, $c) = @_;
-    if ($pf::cluster::cluster_enabled){
-      $c->stash->{template} = "configuration/cluster.tt";
+    #only the master node will see the cluster page
+    if ($pf::cluster::cluster_enabled && pf::cluster::is_management()){
+        $c->stash->{template} = "configuration/cluster.tt";
     }
 }
 

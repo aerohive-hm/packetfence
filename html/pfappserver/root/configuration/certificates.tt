@@ -33,11 +33,27 @@
     background-color: #dc3545;
   }
   #https_serv_view_more, #eap_ca_view_more, #eap_serv_view_more{
-    height:100px;
-    width: 300px;
+    height:150px;
+    width: 700px;
     overflow-y: auto;
-    border: 1px solid gray;
+    padding: 5px;
+    border: 1px solid #999;
+    border-radius: 2px;
   }
+
+  #https_serv_view_more::-webkit-scrollbar, #eap_ca_view_more::-webkit-scrollbar, #eap_serv_view_more::-webkit-scrollbar {
+      width: 1em;
+  }
+
+  #https_serv_view_more::-webkit-scrollbar-track, #eap_ca_view_more::-webkit-scrollbar-track, #eap_serv_view_more::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  }
+
+  #https_serv_view_more::-webkit-scrollbar-thumb, #eap_ca_view_more::-webkit-scrollbar-thumb, #eap_serv_view_more::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid slategrey;
+  }
+
 </style>
 </head>
 <div id="success-alert"><div style="padding: 10px;" id="successMessage"></div></div>
@@ -65,7 +81,7 @@
                         <span>A server key and server certificate are required.
                           Uploading cert files requires a restart of all httpd services. </span>
                         <br><br>
-                        <h5>Current Server Certificate <a id="download_button" style="padding-left: 10px;">Download</a></h5>
+                        <h5>Current Server Certificate <a class="btn" id="download_button_https" style="margin-left: 447px;"> Download </a></h5>
                         <div id="https_serv_view_more"></div>
                         <br>
                         <input id="https_key_path" name="https_key_path" type="hidden" value="">
@@ -76,7 +92,9 @@
                         <label><h5>Server Certificate (file type:  .pem/.crt/.cer)</h5></label>
                         <input class="https_serverCert_upload btn btn-primary" id="https_serverCert_upload" type="file">
                       </div>
-                      <button id="https-upload" class="btn btn-success" style="float:right;">Submit</button>
+                      <br>
+                      <button id="https-upload" class="btn btn-success" style="float:left; width: 260px;">Submit</button>
+                      <br>
                    </form>
                </div>
             </div>
@@ -92,9 +110,9 @@
                     <span>Uploading cert files requires a restart of radiusd service.</span>
                     <br><br>
                     <div class="certificate-info">
-                      <h5>Current Server Certificate <a id="download_button" style="padding-left: 10px;">Download</a></h5>
+                      <h5>Current Server Certificate <a class="btn" id="download_button_eap_serv" style="margin-left: 447px;">Download</a></h5>
                       <div id="eap_serv_view_more"></div>
-                      <h5>Current CA Certificate <a id="download_button" style="padding-left: 10px;">Download</a></h5>
+                      <h5>Current CA Certificate <a class="btn" id="download_button_eap_ca" style="margin-left: 471px;">Download</a></h5>
                       <div id="eap_ca_view_more"></div>
                     </div>
                     <br>
@@ -105,18 +123,14 @@
                     <input id="eap_cert_path" name="eap_cert_path" type="hidden" value="">
                     <label><h6>Server Certificate (file type:  .pem/.crt/.cer)</h6></label>
                     <input id="serverCert_upload" name="serverCert_upload" class="serverCert_upload btn btn-primary" type="file"/>
-                    <br>
+                    <br><br>
                     <input id="eap_cacert_path" name="eap_cacert_path" type="hidden" value="">
                     <label><h6>CA Certificate Upload (file type:  .pem/.crt/.cer)</h6></label>
                     <input id="caCert_upload" name="caCert_upload" class="caCert_upload btn btn-primary" type="file"/>
                   </div>
-                  <!-- <br>
-                  <div class="caFile">
-                    <input id="eap_cacert_path" name="eap_cacert_path" type="hidden" value="">
-                    <h6>CA Certificate Upload (file type:  .pem/.crt/.cer)</h6>
-                    <input id="caCert_upload" class="caCert_upload btn btn-primary" type="file">
-                  </div> -->
-                  <button id="eap-upload" class="btn btn-success" style="float:right;">Submit</button>
+                  <br>
+                  <button id="eap-upload" class="btn btn-success"  style="float:left; width: 260px;">Submit</button>
+                  <br>
                 </form>
               </div>
             </div>
