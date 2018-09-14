@@ -77,7 +77,7 @@ func CheckCreateIfValid(i Item) error {
 		return nil
 	}
 	/*check new inteface if exsit*/
-	ifname := ChangeUiInterfacename(i.Name)
+	ifname := ChangeUiInterfacename(i.Name, strings.ToLower(i.Prefix))
 	if utils.IfaceExists(ifname) {
 		msg = fmt.Sprintf("%s is exsit in system", i.Name)
 		return errors.New(msg)
@@ -142,7 +142,7 @@ func CreateSystemInterface(ctx context.Context, i Item) error {
 
 func DelSystemInterface(ctx context.Context, i Item) error {
 	var err error
-	ifname := ChangeUiInterfacename(i.Name)
+	ifname := ChangeUiInterfacename(i.Name, strings.ToLower(i.Prefix))
 	sectionId := []string{fmt.Sprintf("interface %s", ifname)}
 	if VlanInface(i.Name) {
 		utils.DelVlanIface(ifname)
@@ -165,11 +165,11 @@ func DelSystemInterface(ctx context.Context, i Item) error {
 	return nil
 }
 
-func ChangeUiInterfacename(uiifname string) string {
+func ChangeUiInterfacename(uiifname, prefix string) string {
 	var ifname string
 	if VlanInface(uiifname) {
 		name := []rune(uiifname) /*need to delete vlan for name*/
-		ifname = fmt.Sprintf("eth0.%s", string(name[4:]))
+		ifname = fmt.Sprintf("%s.%s", prefix, string(name[4:]))
 
 	} else {
 		ifname = uiifname

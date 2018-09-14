@@ -48,8 +48,9 @@ func UpdateInterface(i Item) error {
 			return errors.New(msg)
 		}
 		/*check vip if exsit*/
-		ifname := ChangeUiInterfacename(i.Name)
+		ifname := ChangeUiInterfacename(i.Name, strings.ToLower(i.Prefix))
 		vip := ClusterNew().GetPrimaryClusterVip(ifname)
+
 		if vip != i.Vip {
 			if utils.IsIpExists(i.Vip) {
 				//msg := fmt.Sprintf("%s is exsit in net", i.Vip)
@@ -70,7 +71,7 @@ func UpdateInterface(i Item) error {
 func UpdateEthInterface(i Item) error {
 	/*check eth0 ip should be equal to primary ip*/
 	if i.IpAddr == ReadClusterPrimary() {
-		msg := fmt.Sprintf("eth0 ip(%s) is equal to primary ip (%s) ", i.IpAddr, ReadClusterPrimary())
+		msg := fmt.Sprintf("%s ip(%s) is equal to primary ip (%s) ", i.Prefix, i.IpAddr, ReadClusterPrimary())
 		return errors.New(msg)
 	}
 	err := utils.UpdateEthIface(i.Name, i.IpAddr, i.NetMask)
@@ -103,9 +104,10 @@ func UpdateEthInterface(i Item) error {
 func UpdateVlanInterface(i Item) error {
 	s := []rune(i.Name)
 	vlan := string(s[4:]) /*need to delete vlan for name*/
-	ifname := fmt.Sprintf("eth0.%s", vlan)
+	prefix := strings.ToLower(i.Prefix)
+	ifname := fmt.Sprintf("%s.%s", prefix, vlan)
 
-	err := utils.UpdateVlanIface(ifname, vlan, i.IpAddr, i.NetMask)
+	err := utils.UpdateVlanIface(ifname, prefix, vlan, i.IpAddr, i.NetMask)
 	if err != nil {
 		return err
 	}
