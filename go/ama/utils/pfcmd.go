@@ -107,7 +107,6 @@ func InitStartService(isCluster bool) error {
 	//}
 	//ExecCmds(cmds)
 
-	UpdateCurrentlyAt()
 	return nil
 }
 

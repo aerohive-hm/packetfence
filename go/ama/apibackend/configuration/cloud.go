@@ -118,7 +118,7 @@ func (nodes *GetNodesInfo) getValue(ctx context.Context) {
 	self.LastContactTime = fmt.Sprintf("%v", amac.ReadLastConTime().Format("2006-01-02 15:04:05 MST"))
 	nodes.Body.Data = append(nodes.Body.Data, self)
 
-	nodeList := a3config.FetchNodesInfo()
+	nodeList := a3config.ClusterNew().FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 	for _, node := range nodeList {
 		other := CloudGetData{}
@@ -237,7 +237,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		code = "ok"
 		ret = "disable cloud integration successfully"
 
-		nodeList := a3config.FetchNodesInfo()
+		nodeList := a3config.ClusterNew().FetchNodesInfo()
 		ownMgtIp := utils.GetOwnMGTIp()
 		for _, node := range nodeList {
 			if node.IpAddr == ownMgtIp {
