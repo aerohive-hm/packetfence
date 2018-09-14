@@ -55,6 +55,7 @@ sub auto :Private {
         $c->stash->{is_eula_accepted} = pf::a3_eula_acceptance::is_eula_accepted();
         $c->stash->{get_trial_status} = pf::a3_entitlement::get_trial_status();
         $c->stash->{is_cluster_enabled} = $pf::cluster::cluster_enabled;
+        $c->stash->{is_master_node} = pf::cluster::is_management();
     }
 
     return 1;

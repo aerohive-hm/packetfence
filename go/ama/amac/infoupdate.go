@@ -106,9 +106,8 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, s
 
 	switch msgType {
 	case RemoveNodeFromCluster:
-		//systemIdArray := in.([]string)
-		//nodeInfo = a3share.GetRemoveNodeInfo(ctx, systemIdArray)
-		nodeInfo = a3share.FillRemoveNodeInfo(ctx)
+		systemIdArray := in.([]string)
+		nodeInfo = a3share.FillRemoveNodeInfo(ctx, systemIdArray)
 
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")
