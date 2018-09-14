@@ -59,6 +59,9 @@ func syncRemove2Other(ctx context.Context) {
 
 	//notify other nodes to startSync
 	a3share.NotifyClusterStatus(a3share.StartSync)
+
+	//notify cloud server removed in cluster
+
 }
 
 // Send by the UI to remove a node from cluster on UI
