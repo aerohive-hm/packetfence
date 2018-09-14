@@ -9,16 +9,17 @@
 package cache
 
 import (
-	"github.com/garyburd/redigo/redis"
+	"github.com/inverse-inc/packetfence/go/log"
+	"context"
 	"fmt"
 )
 
 const tableSets string = "a3tables"
 
 func CacheTableInfo(tableId string, value []byte) error {
-	r, err := newRedisPool("", "")
+	r, err := NewRedisPool("", "")
 	if err != nil {
-		fmt.Println("New Redis Pool failed")
+		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
 		return err
 	}
 
@@ -27,74 +28,75 @@ func CacheTableInfo(tableId string, value []byte) error {
 
 	_, err = c.Do("SET", tableId, string(value))
 	if err != nil {
-		fmt.Println("SET key ", tableId, "failed")
+		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("SET key %s failed", tableId))
 		return err
 	}
 
 	_, err = c.Do("SADD", tableSets, tableId)
 	if err != nil {
-		fmt.Println("ADD table ", tableId, "failed")
+		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("ADD table %s failed", tableId) )
 		return err
 	}
 
 	return nil
 }
 
-func FetchTablesInfo(count int, handle func([]byte)(interface{},error)) ([]interface{}, error){
+func FetchTablesInfo(count int) ([]interface{}, error){
 	var tables []interface{}
+	var max int = count
 
-	r, err := newRedisPool("", "")
+	r, err := NewRedisPool("", "")
 	if err != nil {
-		fmt.Println("New Redis Pool failed")
+		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
 		return nil, err
 	}
 
 	c := r.pool.Get()
 	defer c.Close()
 
-	max, err := c.Do("SCARD", tableSets)
+	number, err := c.Do("SCARD", tableSets)
 	if err != nil {
-		fmt.Println("Get sets count failed")
+		log.LoggerWContext(context.Background()).Error("Get sets count failed")
 		return nil,err
 	}
 
-	if count < max {
-		max = count
+	if int64(count) > number.(int64) {
+		max = int(number.(int64))
+	}
+	if max == 0 {
+		log.LoggerWContext(context.Background()).Info("No memeber in sets:", tableSets)
+		return nil, nil
 	}
 
 	for i := 0; i < max; i++ {
 		tableId, err := c.Do("SRANDMEMBER", tableSets)
 		if err != nil {
-			fmt.Println("SRANDMEMBER", tableSets, "failed")
+			log.LoggerWContext(context.Background()).Error("SRANDMEMBER", tableSets, "failed")
 			continue
 		}
 
-		tableValue, err := c.Do("GET", tableId)
+		table, err := c.Do("GET", string(tableId.([]byte)))
 		if err != nil {
-			fmt.Println("Get", tableId, "failed")
+			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("Get %s failed", string(tableId.([]byte))) )
 			continue;
-		}
-
-		table, err := handle([]byte(tableValue))
-		if err != nil {
-			fmt.Println("Convert to slice item failed")
-			continue
 		}
 
 		tables = append(tables, table)
 
-		_, err = c.Do("DEL", tableId)
+		_, err = c.Do("DEL", string(tableId.([]byte)))
 		if err != nil {
-			fmt.Println("DEL", tableId, "failed")
+			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("DEL %s failed", string(tableId.([]byte))))
 			continue
 		}
 
-		_, err = c.Do("SREM", tableId)
+		_, err = c.Do("SREM", tableSets, string(tableId.([]byte)))
 		if err != nil {
-			fmt.Println("Remove", tableId, "from table sets failed")
+			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("Remove %s from table sets failed", string(tableId.([]byte))))
 			continue
 		}
 	}
 
 	return tables, err
 }
+
+

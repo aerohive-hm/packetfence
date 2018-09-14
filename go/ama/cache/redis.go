@@ -2,8 +2,9 @@ package cache
 
 import (
 	"github.com/garyburd/redigo/redis"
+	"github.com/inverse-inc/packetfence/go/log"
+	"context"
 	"time"
-	"fmt"
 )
 
 type RedisPool struct {
@@ -21,12 +22,12 @@ func NewRedisPool(server, passwd string) (*RedisPool, error) {
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", server)
 			if err != nil {
-				fmt.Println(err)
+				log.LoggerWContext(context.Background()).Error(err.Error())
 			}
 			if passwd != "" {
 				if _, err := c.Do("AUTH", passwd); err != nil {
 					c.Close()
-					fmt.Println(err)
+					log.LoggerWContext(context.Background()).Error(err.Error())
 				}
 			}
 			return c, err

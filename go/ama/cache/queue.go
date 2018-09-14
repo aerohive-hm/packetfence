@@ -1,9 +1,9 @@
 package cache
 
 import (
+	"github.com/inverse-inc/packetfence/go/log"
+	"context"
 	"errors"
-	"fmt"
-	"github.com/garyburd/redigo/redis"
 )
 
 func (r *RedisPool) Enqueue(queueName string, data []byte) error {
@@ -14,7 +14,7 @@ func (r *RedisPool) Enqueue(queueName string, data []byte) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Enqueue succeed!")
+	log.LoggerWContext(context.Background()).Info("Enqueue succeed!")
 
 	return nil
 }
@@ -27,7 +27,7 @@ func (r *RedisPool) Dequeue(queueName string) ([]byte, error) {
 	if err != nil {
 		return nil,err
 	}
-	fmt.Println("Dequeue succeed!")
+	log.LoggerWContext(context.Background()).Info("Dequeue succeed!")
 
 	return reply.([]byte),nil
 }
