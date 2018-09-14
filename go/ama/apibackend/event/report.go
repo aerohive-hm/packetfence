@@ -10,8 +10,9 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama/amac"
-	"github.com/inverse-inc/packetfence/go/ama/report"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/cache"
+	"github.com/inverse-inc/packetfence/go/ama/report"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -51,7 +52,12 @@ func handlePostReport(r *http.Request, d crud.HandlerData) []byte {
 
 	//To do, save the data to queue, check if up the limit, if yes
 	//Call this API to send data to cloud
-	amac.ReportDbTable(ctx, d.ReqData)
+	err := cache.CacheTableInfo(redisKey, d.ReqData)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("cache data to queue fail")
+	}
+
+	amac.ReportDbTable(ctx)
 
 	return []byte(crud.PostOK)
 }

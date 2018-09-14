@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama/cache"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
@@ -105,7 +106,8 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 }
 
 //This function will be called by restAPI, it is public
-func ReportDbTable(ctx context.Context, data []byte) int {
+func ReportDbTable(ctx context.Context) int {
+	msgFlag := false
 	reportMsg := ReportDbTableMessage{}
 	table := ReportTable{}
 
@@ -125,15 +127,28 @@ func ReportDbTable(ctx context.Context, data []byte) int {
 	fillReportHeader(&reportMsg.Header)
 	reportMsg.Data.MsgType = "a3-report-db"
 
-	err := json.Unmarshal(data, &table.Data)
+	msgQue, err := cache.FetchTablesInfo(30)
 	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
+		log.LoggerWContext(ctx).Error("Fetch table message fail")
 		return -1
 	}
-	reportMsg.Data.Tables = append(reportMsg.Data.Tables, table.Data)
+	for _, singleMsg := range msgQue {
+		err := json.Unmarshal(singleMsg.([]byte), &table.Data)
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			return -1
+		}
+		reportMsg.Data.Tables = append(reportMsg.Data.Tables, table.Data)
+		msgFlag = true
+	}
 
-	res := sendReport2Cloud(ctx, &reportMsg)
-	return res
+	if msgFlag {
+		res := sendReport2Cloud(ctx, &reportMsg)
+		return res
+	} else {
+		log.LoggerWContext(ctx).Info("No report messages")
+		return 0
+	}
 }
 
 func reportSysInfo(ctx context.Context) int {
@@ -173,7 +188,7 @@ func reportRoutine(ctx context.Context) {
 			continue
 		}
 
-		res := ReportDbTable(ctx, []byte(""))
+		res := ReportDbTable(ctx)
 		if res != 0 {
 			failCount++
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
