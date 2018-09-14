@@ -58,7 +58,7 @@ func SendClusterSync(ip, Status string) error {
 
 func NotifyClusterStatus(status string) error {
 	ctx := context.Background()
-	nodeList := FetchNodesInfo()
+	nodeList := a3config.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 
 	for _, node := range nodeList {

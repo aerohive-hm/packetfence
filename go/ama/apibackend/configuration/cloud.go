@@ -88,7 +88,7 @@ func CloudNew(ctx context.Context) crud.SectionCmd {
 
 func getRunMode() string {
 
-	if a3config.CheckClusterEnable() {
+	if a3config.ClusterNew().CheckClusterEnable() {
 		return "cluster"
 	} else {
 		return "standalone"
@@ -118,7 +118,7 @@ func (nodes *GetNodesInfo) getValue(ctx context.Context) {
 	self.LastContactTime = fmt.Sprintf("%v", amac.ReadLastConTime().Format("2006-01-02 15:04:05 MST"))
 	nodes.Body.Data = append(nodes.Body.Data, self)
 
-	nodeList := a3share.FetchNodesInfo()
+	nodeList := a3config.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 	for _, node := range nodeList {
 		other := CloudGetData{}
@@ -186,7 +186,7 @@ func startService() {
 		return
 	}
 
-	clusterEnable := a3config.CheckClusterEnable()
+	clusterEnable := a3config.ClusterNew().CheckClusterEnable()
 
 	if clusterEnable {
 		a3config.UpdateGaleraUser()
@@ -237,7 +237,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		code = "ok"
 		ret = "disable cloud integration successfully"
 
-		nodeList := a3share.FetchNodesInfo()
+		nodeList := a3config.FetchNodesInfo()
 		ownMgtIp := utils.GetOwnMGTIp()
 		for _, node := range nodeList {
 			if node.IpAddr == ownMgtIp {
@@ -293,7 +293,7 @@ END:
 }
 
 //Request AMA status from one node.
-func ReqAMAStatusfromOneNode(ctx context.Context, node a3share.NodeInfo) *event.AMAStatus {
+func ReqAMAStatusfromOneNode(ctx context.Context, node a3config.NodeInfo) *event.AMAStatus {
 	amaInfo := event.AMAStatus{}
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/ama/status", node.IpAddr)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Query AMA info from node %s", node.IpAddr))
@@ -318,7 +318,7 @@ func ReqAMAStatusfromOneNode(ctx context.Context, node a3share.NodeInfo) *event.
 }
 
 // Enable or DIsable special node connect to GDC.
-func EnableNodeConnGDC(ctx context.Context, node a3share.NodeInfo, enable bool) error {
+func EnableNodeConnGDC(ctx context.Context, node a3config.NodeInfo, enable bool) error {
 	action := event.AMAAction{}
 	if enable == true {
 		action.Action = "enable"

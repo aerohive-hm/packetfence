@@ -73,7 +73,7 @@ sub uploadKey :Chained('/') :PathPart('uploadKey') :Args(0) :AdminRole('CERTIFIC
         if ($filesize && $filesize > 8000) {
             $logger->warn("Uploaded file $filename is too large");
             $c->response->status($STATUS::BAD_REQUEST);
-            $c->stash->{status_msg} = $c->loc("Certificate key size is too big. Try again.");
+            $c->stash->{status_msg} = $c->loc("Private key size is too big. Try again.");
             return;
         }
 
@@ -220,8 +220,8 @@ sub uploadCACert :Chained('/') :PathPart('uploadCACert') :Args(0) :AdminRole('CE
             return;
         }
 
-        $c->stash->{filePath} = $radius_ca_cert;
-        $c->stash->{status_msg} = $c->loc("Successfully uploaded the CA-Cert!");
+        $c->stash->{CN_CA} = pf::util::get_cert_subject_cn($radius_ca_cert);
+        $c->stash->{status_msg} = $c->loc("Successfully uploaded the CA certificate!");
         $c->response->status($STATUS::OK);
         $logger->info("Saved radius CA certificate at $radius_ca_cert");
     } else {

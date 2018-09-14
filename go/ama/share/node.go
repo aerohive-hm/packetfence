@@ -1,19 +1,15 @@
 package a3share
 
 import (
-	"github.com/inverse-inc/packetfence/go/ama/a3config"
+//	"github.com/inverse-inc/packetfence/go/ama/a3config"
 )
-
-type NodeInfo struct {
-	IpAddr string
-	Hostname string
-}
 
 type RespData struct {
 	Code string `json:"code"`
 	Msg  string `json:"msg"`
 }
 
+/*
 func FetchNodesInfo() []NodeInfo {
 	conf := a3config.A3Read("CLUSTER", "all")
 	if conf == nil {
@@ -34,3 +30,4 @@ func FetchNodesInfo() []NodeInfo {
 	}
 	return nodes
 }
+*/

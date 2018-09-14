@@ -307,13 +307,20 @@ func setInterfaceGateway(ifname, gateway string) error {
 	return nil
 }
 
-func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
+/*GetifaceIpInfo return ip and mask*/
+func GetifaceIpInfo(ifname string) (string, string) {
+	iface, i := GetIfaceList(ifname)
+	if i == 0 {
+		return iface[0].IpAddr, iface[0].NetMask
+	}
+	return "", ""
+}
+
+func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 	var err error
 	if IfaceExists(ifname) {
-		iface, _ := GetIfaceList(ifname)
-		oldip := iface[0].IpAddr
-
-		oldmasklen, _ := strconv.Atoi(iface[0].NetMask)
+		oldip, oldmask := GetifaceIpInfo(ifname)
+		oldmasklen, _ := strconv.Atoi(oldmask)
 		if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
 			/*check ip if is exsit*/
 			if IsIpExists(ip) {
@@ -342,7 +349,7 @@ func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
 			msg := fmt.Sprintf("%s is exsit in net", ip)
 			return errors.New(msg)
 		}
-		CreateVlanIface("eth0", vlan)
+		CreateVlanIface(prefix, vlan)
 		err = SetIfaceIIpAddr(ifname, ip, mask)
 		if err != nil {
 			return err
@@ -360,9 +367,8 @@ func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
 func UpdateEthIface(ifname string, ip, mask string) error {
 	var err error
 	gateway := GetA3DefaultGW()
-	iface, _ := GetIfaceList(ifname)
-	oldip := iface[0].IpAddr
-	oldmasklen, _ := strconv.Atoi(iface[0].NetMask)
+	oldip, oldmask := GetifaceIpInfo(ifname)
+	oldmasklen, _ := strconv.Atoi(oldmask)
 	if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
 		info := fmt.Sprintf("UpdateEthIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
 		fmt.Println(info)
@@ -402,4 +408,26 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 		}
 	}
 	return nil
+}
+
+func IsManagement(mip string) bool {
+	out, err := ExecShell("sudo ip -4 -o addr show")
+	if err != nil {
+		return false
+	}
+
+	r := regexp.MustCompile(`\binet (([^\/]+)\/\d+)`)
+	ret := r.FindAllStringSubmatch(out, -1)
+
+	if len(ret) < 2 {
+		return false
+	}
+
+	for _, item := range ret {
+		net := strings.Split(item[1], "/")
+		if net[1] == "32" && net[0] == mip {
+			return true
+		}
+	}
+	return false
 }

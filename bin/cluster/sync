@@ -86,12 +86,14 @@ my $logger = get_logger();
 
 if (-e '/usr/local/pf/conf/cluster-files.txt') {
     open(my $fh, '<', '/usr/local/pf/conf/cluster-files.txt')
-      or get_logger->warn("Couldn't open the list of additionnal files to sync.");
+      or get_logger->warn("Couldn't open the list of additional files to sync.");
 
     while (my $row = <$fh>) {
         chomp $row;
-        push @files, $row;
-        push @added_files, $row;
+        if ($row ne "") {
+            push @files, $row;
+            push @added_files, $row;
+        }
     }
     close($fh);
 }

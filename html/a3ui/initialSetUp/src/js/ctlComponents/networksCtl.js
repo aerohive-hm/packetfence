@@ -44,6 +44,7 @@ class networksCtl extends Component {
             isEditing:false,
             originalDescription:"",
             addVlanVisible:false,
+            addVlanPrefix:"",
         };
 
 
@@ -434,6 +435,8 @@ class networksCtl extends Component {
         let items=[];
         for(let i=0;i<self.state.dataTable.length;i++){
             items.push({
+                prefix:self.state.dataTable[i].prefix,
+                original:self.state.dataTable[i].original,
                 name:self.state.dataTable[i].name,
                 ip_addr:self.state.dataTable[i].ip_addr,
                 netmask:self.state.dataTable[i].netmask,
@@ -561,6 +564,7 @@ class networksCtl extends Component {
         let param
         if(column==="type"){
             param={
+                "prefix":dataCopy[index].prefix,
                 "original":dataCopy[index].original,
                 "name":dataCopy[index].name.trim(),
                 "ip_addr":dataCopy[index].ip_addr.trim(),
@@ -571,6 +575,7 @@ class networksCtl extends Component {
             }
         }else{
             param={
+                "prefix":dataCopy[index].prefix,
                 "original":dataCopy[index].original,
                 "name":dataCopy[index].name.trim(),
                 "ip_addr":dataCopy[index].ip_addr.trim(),
@@ -632,6 +637,7 @@ class networksCtl extends Component {
         let dataCopy=self.state.dataTable;
         
         let param={
+            "prefix":dataCopy[index].prefix,
             "original":dataCopy[index].original,
             "name":dataCopy[index].name.trim(),
             "ip_addr":dataCopy[index].ip_addr.trim(),
@@ -707,6 +713,7 @@ class networksCtl extends Component {
         wrongMessageCopy.netmaskWrongMessage="";
         wrongMessageCopy.vipWrongMessage="";
         self.setState({ 
+            addVlanPrefix:self.state.dataTable[index].prefix,
             addVlanVisible:true,
         });
 
@@ -751,6 +758,7 @@ class networksCtl extends Component {
                 let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
+                    "prefix":self.state.addVlanPrefix,
                     "original":"",
                     "name":"VLAN"+values.name.toString().trim(),
                     "ip_addr":values.ip_addr.trim(),
@@ -823,6 +831,7 @@ class networksCtl extends Component {
                 let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
+                    "prefix":dataCopy[index].prefix,
                     "original":dataCopy[index].original,
                     "name":dataCopy[index].name.trim(),
                     "ip_addr":dataCopy[index].ip_addr.trim(),
