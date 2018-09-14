@@ -83,10 +83,11 @@ func GetClusterInfoData(ctx context.Context, clusterdata *a3config.ClusterInfoDa
 		clusterdata.SharedKey, clusterdata.RouterId))
 
 	// Get cluster node Information
-	nodeList := a3config.FetchNodesInfo()
+	conf := a3config.ClusterNew()
+	nodeList := conf.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 
-	clusterdata.Ifaces = a3config.ClusterNew().GetClusterVips()
+	clusterdata.Ifaces = conf.GetClusterVips()
 
 	dbClusterList := amadb.QueryDBClusterIpSet()
 
