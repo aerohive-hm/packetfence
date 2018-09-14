@@ -60,7 +60,6 @@ class networksCtl extends Component {
     getRightI18n= () => {
         let self=this;
         let navigatorLanguage = self.props.navigatorLanguage; 
-        //navigatorLanguage="d";
         let rightI18n;
         if(navigatorLanguage==="fr"){
             rightI18n=i18nfr;
