@@ -99,4 +99,23 @@ func FetchTablesInfo(count int) ([]interface{}, error){
 	return tables, err
 }
 
+func RedisTablesCount() (int,error) {
+	r, err := NewRedisPool("", "")
+	if err != nil {
+		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
+		return 0, err
+	}
+
+	c := r.pool.Get()
+	defer c.Close()
+	
+	count, err := c.Do("SCARD", tableSets)
+	if err != nil {
+		log.LoggerWContext(context.Background()).Error("Get sets count failed")
+		return 0,err
+	}
+
+	return int(count.(int64)), nil
+}
+
 
