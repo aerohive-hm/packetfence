@@ -71,9 +71,9 @@ class licensingCtl extends Component {
 
     getRightI18n= () => {
         let self=this;
-        let localeForLicenseInfo=window.localStorage.getItem('getStart');
+        let navigatorLanguage = self.props.navigatorLanguage; 
         let rightI18n;
-        if(localeForLicenseInfo==="fr"){
+        if(navigatorLanguage==="fr"){
             rightI18n=i18nfr;
         }else{
             rightI18n=i18n;
@@ -139,7 +139,7 @@ class licensingCtl extends Component {
                 
                 let param={
                     trial:"0",
-                    key:values.key,
+                    key:values.key.trim(),
                 }
                 self.setState({
                     loading : true,
@@ -193,7 +193,7 @@ class licensingCtl extends Component {
         let param={
             trial:"0",
             eula_accept:true,
-            key:self.state.key,
+            key:self.state.key.trim(),
         }
         self.setState({
             loading : true,
@@ -273,6 +273,7 @@ class licensingCtl extends Component {
         wrongMessageCopy.keyWrongMessage="";
         self.setState({ 
             enterEntitlementKeyVisible:true,
+            enableEnterEntitlementKey:false,
         });
     }
 

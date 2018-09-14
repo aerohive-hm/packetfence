@@ -500,6 +500,31 @@ sub _insert_data {
         }
         $data{$field} = $new_value;
     }
+
+    # Send tables contents to AMA for Aerohive reporting
+    if (($self->table eq 'node') ||
+    	($self->table eq 'node_category') ||
+       ($self->table eq 'violation') ||
+       ($self->table eq 'locationlog') ||
+       ($self->table eq 'radacct') ||
+       ($self->table eq 'class') ||
+       ($self->table eq 'ip4log')) {
+       
+        my $sendtable = $self->table;
+        eval {
+            my $sendtable = $self->table;
+            my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
+            my $timestamp = $seconds * 1000 * 1000 + $microseconds;
+            pf::api::unifiedapiclient->default_client->call("POST", "/a3/api/v1/event/report", 
+                {ah_tablename => ${sendtable}, ah_timestamp => "$timestamp", %data,});
+        };
+        if ($@) {
+            $self->logger->error("Error send DB update data to AMA : $@");
+        }
+    }
+        
+
+
     return $STATUS::OK, \%data;
 }
 

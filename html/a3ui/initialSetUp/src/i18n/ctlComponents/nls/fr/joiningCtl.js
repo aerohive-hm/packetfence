@@ -1,3 +1,4 @@
 export let i18nfr ={
-	"getStart": "getStart",
+	"joiningCluster": "Rejoindre la grappe en cours...",
+	
 }

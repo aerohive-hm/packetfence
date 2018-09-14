@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/log"
 	"net"
 	"regexp"
 	"strconv"
@@ -10,12 +12,13 @@ import (
 )
 
 type Iface struct {
-	Ifidx   int
-	Name    string
-	Master  string // phy iface of vlan interface
-	Active  string
-	HwAddr  string
-	Vlan    string
+	Ifidx  int
+	Name   string
+	Master string // phy iface of vlan interface
+	Active string
+	HwAddr string
+	Vlan   string
+
 	IpAddr  string
 	IpMode  string // DHCP or Static
 	NetMask string
@@ -124,6 +127,15 @@ func SetIfaceDown(ifname string) int {
 func IfaceExists(ifname string) bool {
 	_, err := GetIfaceList(ifname)
 	if err < 0 {
+		return false
+	}
+	return true
+}
+
+func IsIpExists(ip string) bool {
+	cmd := fmt.Sprintf("sudo ping -c 1 -r %s -w 1", ip)
+	_, err := ExecShell(cmd)
+	if err != nil {
 		return false
 	}
 	return true
@@ -288,7 +300,7 @@ func setInterfaceGateway(ifname, gateway string) error {
 	cmd := fmt.Sprintf("sudo ip route replace to default via %s dev %s", gateway, ifname)
 	_, err := ExecShell(cmd)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
+		log.LoggerWContext(context.Background()).Info("exec" + cmd + "error")
 		return err
 	}
 
@@ -300,67 +312,116 @@ func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
 	if IfaceExists(ifname) {
 		iface, _ := GetIfaceList(ifname)
 		oldip := iface[0].IpAddr
-		oldmask := iface[0].NetMask
-		if oldip != ip || oldmask != mask {
+
+		oldmasklen, _ := strconv.Atoi(iface[0].NetMask)
+		if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
+			/*check ip if is exsit*/
+			if IsIpExists(ip) {
+				msg := fmt.Sprintf("%s is exsit in net", ip)
+				return errors.New(msg)
+			}
 			err = DelIfaceIIpAddr(ifname, oldip)
 			if err != nil {
 				return err
 			}
-
 			err = SetIfaceIIpAddr(ifname, ip, mask)
 			if err != nil {
 				return err
 			}
-
-			err = SetIfaceUp(ifname)
-			if err != nil {
-				return err
+			if !isIfaceActive(ifname) {
+				err = SetIfaceUp(ifname)
+				if err != nil {
+					return err
+				}
 			}
 		}
 
 	} else {
+		/*check ip if is exsit*/
+		if IsIpExists(ip) {
+			msg := fmt.Sprintf("%s is exsit in net", ip)
+			return errors.New(msg)
+		}
 		CreateVlanIface("eth0", vlan)
 		err = SetIfaceIIpAddr(ifname, ip, mask)
 		if err != nil {
 			return err
 		}
-		err = SetIfaceUp(ifname)
-		if err != nil {
-			return err
+		if !isIfaceActive(ifname) {
+			err = SetIfaceUp(ifname)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
 func UpdateEthIface(ifname string, ip, mask string) error {
-	// var err error
-	// gateway := GetA3DefaultGW()
-	// iface, _ := GetIfaceList(ifname)
-	// oldip := iface[0].IpAddr
-	// oldmask := iface[0].NetMask
-	// if oldip != ip || oldmask != mask {
-	// 	/*new ip must be the same net range with the old ip */
-	// 	if !IsSameIpRange(ip, oldip, mask) {
-	// 		msg := fmt.Sprintf("new ip(%s) is not same net range with oldip(%s)", ip, oldip)
-	// 		return errors.New(msg)
-	// 	}
-	// 	err = DelIfaceIIpAddr(ifname, oldip)
-	// 	if err != nil {
-	// 		return err
-	// 	}
+	var err error
+	gateway := GetA3DefaultGW()
+	iface, _ := GetIfaceList(ifname)
+	oldip := iface[0].IpAddr
+	oldmasklen, _ := strconv.Atoi(iface[0].NetMask)
+	if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
+		info := fmt.Sprintf("UpdateEthIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
+		fmt.Println(info)
+		log.LoggerWContext(context.Background()).Info(info)
+		/*new ip must be the same net range with the old ip */
+		if !IsSameIpRange(ip, oldip, mask) {
+			msg := fmt.Sprintf("new ip(%s) is not same net range with oldip(%s)", ip, oldip)
+			return errors.New(msg)
+		}
+		/*check ip if is exsit*/
+		/*check ip if is exsit*/
+		if IsIpExists(ip) {
+			msg := fmt.Sprintf("%s is exsit in net", ip)
+			return errors.New(msg)
+		}
 
-	// 	err = SetIfaceIIpAddr(ifname, ip, mask)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	err = setInterfaceGateway(ifname, gateway)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	err = SetIfaceUp(ifname)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
+		err = DelIfaceIIpAddr(ifname, oldip)
+		if err != nil {
+			return err
+		}
+		log.LoggerWContext(context.Background()).Info("DelIfaceIIpAddr OK:")
+		err = SetIfaceIIpAddr(ifname, ip, mask)
+		if err != nil {
+			return err
+		}
+		log.LoggerWContext(context.Background()).Info("SetIfaceIIpAddr OK:")
+		err = setInterfaceGateway(ifname, gateway)
+		if err != nil {
+			return err
+		}
+		log.LoggerWContext(context.Background()).Info("setInterfaceGateway OK:")
+		if !isIfaceActive(ifname) {
+			err = SetIfaceUp(ifname)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	return nil
+}
+
+func IsManagement(mip string) bool {
+	out, err := ExecShell("sudo ip -4 -o addr show")
+	if err != nil {
+		return false
+	}
+
+	r := regexp.MustCompile(`\binet (([^\/]+)\/\d+)`)
+	ret := r.FindAllStringSubmatch(out, -1)
+
+	if len(ret) < 2 {
+		return false
+	}
+
+	for _, item := range ret {
+		net := strings.Split(item[1], "/")
+		if net[1] == "32" && net[0] == mip {
+			return true
+		}
+	}
+	return false
 }

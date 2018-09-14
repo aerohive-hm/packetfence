@@ -22,10 +22,10 @@ import (
 	This function is used to send update message if network/license changes
 	be aware: asynchronous mode
 */
-func updateMsgToRdcAsyn(ctx context.Context, msgType int) int {
+func UpdateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 	var nodeInfo interface{}
 
-	if updateMsgUrl == "" {
+	if asynMsgUrl == "" {
 		log.LoggerWContext(ctx).Error("RDC URL is NULL")
 		return -1
 	}
@@ -45,7 +45,7 @@ func updateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 	log.LoggerWContext(ctx).Error(string(data))
 	reader := bytes.NewReader(data)
 	for {
-		request, err := http.NewRequest("POST", updateMsgUrl, reader)
+		request, err := http.NewRequest("POST", asynMsgUrl, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
@@ -96,17 +96,19 @@ func updateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 	be aware: synchronous mode, should be called by rest APIs and return the
 	result
 */
-func UpdateMsgToRdcSyn(ctx context.Context, msgType int) (int, string) {
+func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, string) {
 	var nodeInfo interface{}
 
-	if connMsgUrl == "" {
+	if synMsgUrl == "" {
 		log.LoggerWContext(ctx).Error("RDC URL is NULL")
 		return -1, UrlIsNull
 	}
 
 	switch msgType {
 	case RemoveNodeFromCluster:
-		nodeInfo = a3share.GetRemoveNodeInfo(ctx)
+		systemIdArray := in.([]string)
+		nodeInfo = a3share.FillRemoveNodeInfo(ctx, systemIdArray)
+
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")
 	}
@@ -116,7 +118,7 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int) (int, string) {
 	log.LoggerWContext(ctx).Info(string(data))
 	reader := bytes.NewReader(data)
 	for {
-		request, err := http.NewRequest("POST", connMsgUrl, reader)
+		request, err := http.NewRequest("POST", synMsgUrl, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1, OtherError

@@ -6,14 +6,15 @@ package a3config
 //Below is the APIs for write/read cloud.conf
 //The const value as items presented in cloud.conf
 const (
-	GDCUrl   = "GDC_url"
-	RDCUrl   = "RDC_url"
-	User     = "user"
-	Switch   = "switch" //Enable/Disable connection.
-	Interval = "keepalive_interval"
-	Vhm      = "vhm"
-	OwnerId  = "owenerId"
-	OrgId    = "orgId"
+	GDCUrl         = "GDC_url"
+	RDCUrl         = "RDC_url"
+	User           = "user"
+	Switch         = "switch" //Enable/Disable connection.
+	Interval       = "keepalive_interval"
+	Vhm            = "vhm"
+	OwnerId        = "owenerId"
+	OrgId          = "orgId"
+	ReportInterval = "report_interval"
 )
 
 func UpdateCloudConf(key string, value string) error {

@@ -6,6 +6,7 @@ package event
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -40,69 +41,7 @@ func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 */
 func prepareClusterNodeJoin() {
 	utils.ForceNewCluster()
-	notifyClusterStartSync()
-}
-
-func sendClusterSync(ip, Status string) error {
-	ctx := context.Background()
-	data := new(SyncData)
-
-	data.Status = Status
-	data.Code = "ok"
-	data.SendIp = utils.GetOwnMGTIp()
-	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
-
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("post cluster event sync with: %s", url))
-
-	client := new(apibackclient.Client)
-	client.Host = ip
-	jsonData, err := json.Marshal(&data)
-	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
-		return err
-	}
-
-	err = client.ClusterSend("POST", url, string(jsonData))
-
-	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
-	}
-
-	return err
-}
-
-func stopServiceByJoin() error {
-	nodeList := a3share.FetchNodesInfo()
-	ownMgtIp := utils.GetOwnMGTIp()
-
-	for _, node := range nodeList {
-		if node.IpAddr == ownMgtIp {
-			continue
-		}
-		err := sendClusterSync(node.IpAddr, "StopServices")
-		if err != nil {
-			return err
-		}
-		
-	}
-	return nil
-}
-
-func notifyClusterStartSync() error {
-	ctx := context.Background()
-	nodeList := a3share.FetchNodesInfo()
-	ownMgtIp := utils.GetOwnMGTIp()
-
-	for _, node := range nodeList {
-		if node.IpAddr == ownMgtIp {
-			continue
-		}
-		err := sendClusterSync(node.IpAddr, "StartSync")
-		if err != nil {
-			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
-		}
-	}
-	return nil
+	a3share.NotifyClusterStatus(a3share.StartSync)
 }
 
 func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
@@ -116,10 +55,16 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	err = stopServiceByJoin()
+	if ama.IsClusterJoinMode() {
+		err = errors.New("another server is joining the cluster.")
+		goto END
+	}
+	ama.InitClusterStatus("primary")
+
+	err = a3share.NotifyClusterStatus(a3share.StopService)
 	if err != nil {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("post event sync to stopService failed"))
-		//goto END
+		goto END
 	}
 
 	err, respdata = a3config.UpdateEventClusterJoinData(ctx, *clusterData)
@@ -129,22 +74,19 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	resp, _ = json.Marshal(respdata)
 
 	// Prepare for cluster node sync
-	ama.InitClusterStatus("primary")
 	go prepareClusterNodeJoin()
 
 END:
 	if err != nil {
-		return []byte(fmt.Sprintf(`{"code":"fail","msg":"%s"}`, err.Error))
+		ama.ClearClusterStatus()
+		return []byte(fmt.Sprintf(`{"code":"fail","msg":"%s"}`, err.Error()))
 	}
 	return resp
 }
 
-
-
-
 func waitPrimarySync(ip string) error {
 	ctx := context.Background()
-	var msg SyncData
+	var msg a3share.SyncData
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
 
 	client := new(apibackclient.Client)
@@ -167,7 +109,7 @@ func waitPrimarySync(ip string) error {
 		}
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("read sync status=%s from primary %s", msg.Status, msg.SendIp))
 
-		if msg.Status == "StartSync" {
+		if msg.Status == a3share.StartSync {
 			break
 		}
 
@@ -189,11 +131,8 @@ func ActiveSyncFromPrimary(ip, user, password string) {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("notify to primary with FinishSync and start pf service"))
 	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
 	utils.ExecShell(`systemctl restart packetfence-api-frontend`)
-	sendClusterSync(ip, "FinishSync")
+	a3share.SendClusterSync(ip, a3share.FinishSync)
 
 	utils.UpdateCurrentlyAt()
 
 }
-
-
-

@@ -137,6 +137,9 @@ func Entry(ctx context.Context) {
 	//start a goroutine, sending the keepalive only when the status is connected
 	go keepaliveToRdc(ctx)
 
+	//start a goroutine, sending the report only when the status is connected
+	go reportRoutine(ctx)
+
 	/*
 		Read the channel to monitor the configuration change from UI
 		If config change, change the connect status to init and reconnect
@@ -173,10 +176,11 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	case GdcConfigChange:
 
 	case NetworkChange:
-		updateMsgToRdcAsyn(ctx, NetworkChange)
+		//Export API for restAPI, no need to event for now
+		//updateMsgToRdcAsyn(ctx, NetworkChange)
 
 	case LicenseInfoChange:
-		updateMsgToRdcAsyn(ctx, LicenseInfoChange)
+		//updateMsgToRdcAsyn(ctx, LicenseInfoChange)
 
 	case CloudIntegrateFunction:
 		if msg.Data == "disable" {
@@ -200,7 +204,7 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 		connectToRdcWithoutPara(ctx)
 
 	case RemoveNodeFromCluster:
-		UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
+		//UpdateMsgToRdcSyn(ctx, RemoveNodeFromCluster)
 
 	case JoinClusterComplete:
 		//Read the conf file and install RDC URL
@@ -276,9 +280,15 @@ func keepaliveToRdc(ctx context.Context) {
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))
 
-		//Dispatch the data coming with keepalive reponses
-		dispathMsgFromRdc(ctx, []byte(body))
-		resp.Body.Close()
+		statusCode := resp.StatusCode
+		if statusCode == 200 {
+			//Dispatch the data coming with keepalive reponses
+			dispathMsgFromRdc(ctx, []byte(body))
+		} else {
+			timeoutCount++
+			resp.Body.Close()
+			continue
+		}
 	}
 }
 

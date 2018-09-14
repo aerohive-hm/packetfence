@@ -32,7 +32,7 @@ class App extends Component {
         this.state = {
             i18n:{},
             loading : false,
-            show:"getStart",
+            show:"",
             // getStart
             // adminUser
             // networks
@@ -51,20 +51,26 @@ class App extends Component {
     componentDidMount() {
         let self=this;
         self.getRightI18n();
-        self.getStep();
+        
     }
 
     getRightI18n= () => {
         let self=this;
-        let localeForLicenseInfo=window.localStorage.getItem('getStart');
+
+        let navigatorLanguage = navigator.language||navigator.userLanguage;
+        navigatorLanguage = navigatorLanguage.substr(0, 2);
+        console.log("navigatorLanguage:"+navigatorLanguage);
         let rightI18n;
-        if(localeForLicenseInfo==="fr"){
+        if(navigatorLanguage==="fr"){
             rightI18n=fr_FR;
         }else{
             rightI18n=en_GB;
         }
         self.setState({
             i18n : rightI18n,
+            navigatorLanguage:navigatorLanguage,
+        },function(){
+            self.getStep();
         })
 
     }
@@ -106,7 +112,7 @@ class App extends Component {
     }
 
     render() {
-        const {i18n,show,loading} = this.state;
+        const {i18n,show,loading,navigatorLanguage} = this.state;
         let self=this;
 
         let contentHtml;
@@ -114,30 +120,35 @@ class App extends Component {
             contentHtml=<div>
                 <GetStartCtl 
                     changeStatus={self.changeStatus.bind(self)} 
+                    navigatorLanguage={navigatorLanguage}
                 />
             </div>
         }else if(show==="adminUser"){
             contentHtml=<div>
                 <AdminUserCtl 
                     changeStatus={self.changeStatus.bind(self)} 
+                    navigatorLanguage={navigatorLanguage}
                 />
             </div>
         }else if(show==="networks"){
             contentHtml=<div>
                 <NetworksCtl 
                     changeStatus={self.changeStatus.bind(self)} 
+                    navigatorLanguage={navigatorLanguage}
                 />
             </div>
         }else if(show==="aerohiveCloud"){
             contentHtml=<div>
                 <AerohiveCloudCtl 
                     changeStatus={self.changeStatus.bind(self)} 
+                    navigatorLanguage={navigatorLanguage}
                 />
             </div>
         }else if(show==="joinCluster"){
             contentHtml=<div>
                 <JoinClusterCtl 
                     changeStatus={self.changeStatus.bind(self)} 
+                    navigatorLanguage={navigatorLanguage}
                 />
             </div>
         }else if(show==="licensing"||show==="licensing,enterEntitlementKey"||show==="licensing,endUserLicenseAgreement"){
@@ -145,6 +156,7 @@ class App extends Component {
                 <LicensingCtl 
                     show={show}
                     changeStatus={self.changeStatus.bind(self)} 
+                    navigatorLanguage={navigatorLanguage}
                 />
             </div>
         }else if(show==="startingManagement"){
@@ -152,6 +164,7 @@ class App extends Component {
                 <StartingCtl 
                     title={"Initial setup complete!"}
                     changeStatus={self.changeStatus.bind(self)} 
+                    navigatorLanguage={navigatorLanguage}
                 />
             </div>
         }else if(show==="startingRegistration"){
@@ -159,18 +172,21 @@ class App extends Component {
                 <StartingCtl 
                     title={"Successfully joined cluster!"}
                     changeStatus={self.changeStatus.bind(self)} 
+                    navigatorLanguage={navigatorLanguage}
                 />
             </div>
         }else if(show==="joining"){
             contentHtml=<div>
                 <JoiningCtl 
                     changeStatus={self.changeStatus.bind(self)} 
+                    navigatorLanguage={navigatorLanguage}
                 />
             </div>
         }else if(show==="clusterNetworking"){
             contentHtml=<div>
                 <ClusterNetworkingCtl 
                     changeStatus={self.changeStatus.bind(self)} 
+                    navigatorLanguage={navigatorLanguage}
                 />
             </div>
         }
@@ -179,7 +195,9 @@ class App extends Component {
             <LocaleProvider locale={i18n}>
             <div className="app-div-index">
                 <Spin spinning={loading}>
-                <Logo />
+                <Logo 
+                    navigatorLanguage={navigatorLanguage}
+                />
                 <div className="content-div-index" >
                     {contentHtml}
                 </div>

@@ -14,7 +14,6 @@ var ConfDict = map[string]string{
 	"PFD":       "pf.conf.defaults",
 	"NETWORKS":  "networks.conf",
 	"CLUSTER":   "cluster.conf",
-	"A3DB":      "dbinfo.A3",
 	"CLOUD":     "cloud.conf",
 	"RDCREGION": "rdc_region.conf",
 	"STEP":      "step.conf",
@@ -182,13 +181,17 @@ func (conf *A3Conf) deleteSection(sectionId string) {
 	return
 }
 
-func A3Delete(key string, sectionId string) error {
+func A3Delete(key string, sectionIds []string) error {
 	conf := new(A3Conf)
 	err := conf.loadCfg(ConfRoot + "/" + ConfDict[key])
 	if err != nil {
 		return err
 	}
-	conf.deleteSection(sectionId)
+
+	for _, section := range sectionIds {
+		conf.deleteSection(section)
+	}
+
 	conf.cfg.SaveTo(conf.path)
 
 	return nil

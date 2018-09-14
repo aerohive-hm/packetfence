@@ -24,7 +24,7 @@ export let i18n ={
 	"interfaces": "Interfaces",
 	"next": "NEXT",
 	"cancel": "CANCEL",
-	"invalidHostName": "invalid Host Name.",
+	"invalidHostName": "Invalid Host Name.",
 	"pleaseFinishTheEditFirst": "Please finish the edit first.",
 	
 }

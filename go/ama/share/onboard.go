@@ -81,7 +81,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		a3Interface.IpAddress = iface.IpAddr
 		value, _ := strconv.Atoi(iface.NetMask)
 		a3Interface.Netmask = utils.NetmaskLen2Str(value)
-		a3Interface.Vip = a3config.GetPrimaryClusterVip(iface.Name)
+		a3Interface.Vip = a3config.ClusterNew().GetPrimaryClusterVip(iface.Name)
 		a3Interface.Type = a3config.GetIfaceType(iface.Name)
 		a3Interface.Service = a3config.GetIfaceServices(iface.Name)
 		onboardingData.Interfaces = append(onboardingData.Interfaces, *a3Interface)
@@ -91,20 +91,21 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	onboardingData.IpMode = "STATIC"
 	onboardingData.DefaultGateway = utils.GetA3DefaultGW()
 	onboardingData.SoftwareVersion = utils.GetA3Version()
-	onboardingData.SystemUptime = time.Now().UnixNano() / int64(time.Millisecond)
+	onboardingData.SystemUptime = time.Now().UTC().UnixNano() / int64(time.Millisecond)
 	onboardingData.ClusterPrimary = amadb.IsPrimaryCluster()
 	managementIface, errint := utils.GetIfaceList("eth0")
 	if errint < 0 {
 		fmt.Errorf("Get ETH0 interfaces infomation failed")
 		return
 	}
+	clusterConf := a3config.ClusterNew()
 	for _, iface := range managementIface {
 		onboardingData.MacAddress = strings.ToUpper(strings.Replace(iface.HwAddr, ":", "", -1))
 		onboardingData.IpAddress = iface.IpAddr
 		value, _ := strconv.Atoi(iface.NetMask)
 		onboardingData.Netmask = utils.NetmaskLen2Str(value)
-		onboardingData.Vip = a3config.GetPrimaryClusterVip(iface.Name)
-		onboardingData.ClusterHostName = a3config.GetPrimaryClusterVip(iface.Name)
+		onboardingData.Vip = clusterConf.GetPrimaryClusterVip(iface.Name)
+		onboardingData.ClusterHostName = clusterConf.GetPrimaryClusterVip(iface.Name)
 		break
 	}
 	//Fetch license info

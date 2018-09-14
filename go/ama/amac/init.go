@@ -17,9 +17,10 @@ var (
 	password          string
 	globalSwitch      string //enable/disable the cloud integration
 	keepaliveInterval int
+	reportInterval    int
 )
 
-func UpdateConnSwitch(action string) error{
+func UpdateConnSwitch(action string) error {
 	switchConf := a3config.ReadCloudConf(a3config.Switch)
 	if switchConf != action {
 		err := a3config.UpdateCloudConf(a3config.Switch, action)
@@ -59,7 +60,7 @@ func update(pass string) error {
 	if pass != "" {
 		password = url.QueryEscape(pass)
 	}
-	//If not specify the interval, write default value to conf
+	//If not specify the keepalive interval, write default value to conf
 	intervalStr := a3config.ReadCloudConf(a3config.Interval)
 	if intervalStr == "" {
 		err := a3config.UpdateCloudConf(a3config.Interval, "30") //30 second by default
@@ -69,6 +70,18 @@ func update(pass string) error {
 		keepaliveInterval = 30
 	} else {
 		keepaliveInterval, _ = strconv.Atoi(intervalStr)
+	}
+
+	//If not specify the report interval, write default value to conf
+	reportIntervalStr := a3config.ReadCloudConf(a3config.ReportInterval)
+	if reportIntervalStr == "" {
+		err := a3config.UpdateCloudConf(a3config.ReportInterval, "30") //30 second by default
+		if err != nil {
+			return errors.New("Set report interval failed")
+		}
+		reportInterval = 30
+	} else {
+		reportInterval, _ = strconv.Atoi(reportIntervalStr)
 	}
 
 	globalSwitch = a3config.ReadCloudConf(a3config.Switch)

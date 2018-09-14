@@ -11,13 +11,15 @@ import (
 
 func init() {
 	sections := crud.Sections{
-		"onboarding":  event.OnBoardingNew,
-		"clusterjoin": event.ClusterJoinNew,
-		"clustersync": event.ClusterSyncNew,
-		"rdctoken":   event.RdcTokenNew,
+		"onboarding":    event.OnBoardingNew,
+		"clusterjoin":   event.ClusterJoinNew,
+		"clustersync":   event.ClusterSyncNew,
+		"rdctoken":      event.RdcTokenNew,
 		"clusterremove": event.RemoveNodeNew,
-		"amastatus"	:	event.AMAStatusNew,
-
+		"amastatus":     event.AMAStatusNew,
+		"amaaction":     event.AMAActionNew,
+		"report":        event.ReportNew,
+		"perlevent":      event.PerlEventNew,
 	}
 	Register("event", sections)
 }

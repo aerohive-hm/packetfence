@@ -49,9 +49,9 @@ class adminUserCtl extends Component {
 
     getRightI18n= () => {
         let self=this;
-        let localeForLicenseInfo=window.localStorage.getItem('getStart');
+        let navigatorLanguage = self.props.navigatorLanguage; 
         let rightI18n;
-        if(localeForLicenseInfo==="fr"){
+        if(navigatorLanguage==="fr"){
             rightI18n=i18nfr;
         }else{
             rightI18n=i18n;
@@ -194,7 +194,7 @@ class adminUserCtl extends Component {
                 let url= "/a3/api/v1/configurator/admin_user";
                 
                 let param={
-                    user:values.user,
+                    user:values.user.trim(),
                     pass:values.pass,
                 }
                 self.setState({

@@ -25,3 +25,16 @@ func GetA3DefaultGW() string {
 
 	return ""
 }
+
+func GetIpAddr(ifname string) string {
+	managementIface, errint := GetIfaceList(ifname)
+	if errint < 0 {
+		fmt.Errorf("Get interfaces infomation failed")
+		return ""
+	}
+	for _, iface := range managementIface {
+		return iface.IpAddr
+	}
+	return ""
+}
+

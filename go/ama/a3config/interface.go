@@ -2,6 +2,7 @@ package a3config
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -17,36 +18,49 @@ func GetIfaceElementVlaue(ifname, element string) string {
 }
 
 func GetIfaceType(ifname string) string {
-	iftype := strings.Split(strings.ToUpper(GetIfaceElementVlaue(ifname, "type")), ",")
+
 	if strings.Contains(ifname, ".") {
 		netsection := A3Read("NETWORKS", "all")
 		for k, _ := range netsection {
 			if netsection[k]["gateway"] == GetIfaceElementVlaue(ifname, "ip") {
-				iftype = strings.Split(strings.ToUpper(netsection[k]["type"]), ",")
+				if netsection[k]["type"] == "" {
+					return ""
+				}
+				s := strings.Split(strings.ToUpper(netsection[k]["type"]), ",")
 				/*need to delete vlan- for type*/
-				Type := []rune(iftype[0])
-				return string(Type[5:])
+				if strings.Contains(s[0], "VLAN-") {
+					Type := []rune(s[0])
+					return string(Type[5:])
+				}
+				return s[0]
 			}
 		}
+	} else {
+		iftype := GetIfaceElementVlaue(ifname, "type")
+		if iftype == "" {
+			return ""
+		}
+		s := strings.Split(strings.ToUpper(iftype), ",")
+		return s[0]
 	}
-	return iftype[0]
+	return ""
 }
 
 func GetIfaceServices(ifname string) []string {
 	services := []string{}
-	iftype := strings.ToUpper(GetIfaceElementVlaue(ifname, "type"))
+	iftype := GetIfaceElementVlaue(ifname, "type")
 	if iftype == "" {
 		return services
 	}
-	s := strings.Split(iftype, ",")
-	l := len(s)
-	if strings.Contains(iftype, "HIGH-AVAILABILITY") {
-		services = s[1 : l-1]
-	} else {
-		services = s[1:]
-	}
 
-	return services
+	s := strings.Split(strings.ToUpper(iftype), ",")
+	for _, value := range s {
+		if value == "HIGH-AVAILABILITY" {
+			continue
+		}
+		services = append(services, value)
+	}
+	return services[1:]
 }
 
 func VlanInface(infacename string) bool {
@@ -56,10 +70,22 @@ func VlanInface(infacename string) bool {
 	return false
 }
 
-func UpdateSystemInterface(ctx context.Context, i Item) error {
-	var err error
-
-	err = UpdateInterface(i)
+func CheckCreateIfValid(i Item) error {
+	msg := ""
+	isvlan := VlanInface(i.Name)
+	if !isvlan {
+		return nil
+	}
+	/*check new inteface if exsit*/
+	ifname := ChangeUiInterfacename(i.Name)
+	if utils.IfaceExists(ifname) {
+		msg = fmt.Sprintf("%s is exsit in system", i.Name)
+		return errors.New(msg)
+	}
+	return nil
+}
+func UpdateInterfaceInfo(ctx context.Context, i Item) error {
+	err := UpdateInterface(i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update Interface error:" + err.Error())
 		return err
@@ -76,12 +102,48 @@ func UpdateSystemInterface(ctx context.Context, i Item) error {
 	}
 	return err
 }
+func UpdateSystemInterface(ctx context.Context, i Item) error {
+	var err error
+	/*delete original interface*/
+	items := GetItemsValue(ctx)
+	for _, item := range items {
+		if i.Original == item.Original {
+			if i.Name != item.Name {
+				err = DelSystemInterface(ctx, item)
+				if err != nil {
+					return err
+				}
+				err = CreateSystemInterface(ctx, i)
+				return err
+			}
+		}
+	}
+	err = UpdateInterfaceInfo(ctx, i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdateInterfaceInfo:" + err.Error())
+		return err
+	}
+	return err
+}
+
+func CreateSystemInterface(ctx context.Context, i Item) error {
+	err := CheckCreateIfValid(i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("CheckCreateIfValid:" + err.Error())
+		return err
+	}
+	err = UpdateInterfaceInfo(ctx, i)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdateInterfaceInfo:" + err.Error())
+		return err
+	}
+	return err
+}
 
 func DelSystemInterface(ctx context.Context, i Item) error {
 	var err error
-	var sectionId string
 	ifname := ChangeUiInterfacename(i.Name)
-	sectionId = fmt.Sprintf("interface %s", ifname)
+	sectionId := []string{fmt.Sprintf("interface %s", ifname)}
 	if VlanInface(i.Name) {
 		utils.DelVlanIface(ifname)
 	}

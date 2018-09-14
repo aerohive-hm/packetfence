@@ -3,14 +3,13 @@ package a3config
 
 import (
 	//"context"
-	"context"
-
+	"errors"
 	"fmt"
 	"net"
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/utils"
-	"github.com/inverse-inc/packetfence/go/log"
+	//"github.com/inverse-inc/packetfence/go/log"
 )
 
 func UpdateEmail(email string) error {
@@ -23,6 +22,10 @@ func UpdateEmail(email string) error {
 }
 
 func UpdateHostname(hostname string) error {
+	err := utils.SetHostname(hostname)
+	if err != nil {
+		return err
+	}
 	section := Section{
 		"general": {
 			"hostname": hostname,
@@ -37,6 +40,23 @@ func UpdateInterface(i Item) error {
 	if err != nil {
 		return err
 	}
+	/*check ip vip the same net range*/
+	if clusterEnableDefault {
+		/*check ip vip the same net range*/
+		if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
+			msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
+			return errors.New(msg)
+		}
+		/*check vip if exsit*/
+		ifname := ChangeUiInterfacename(i.Name)
+		vip := ClusterNew().GetPrimaryClusterVip(ifname)
+		if vip != i.Vip {
+			if utils.IsIpExists(i.Vip) {
+				msg := fmt.Sprintf("%s is exsit in net", i.Vip)
+				return errors.New(msg)
+			}
+		}
+	}
 
 	isvlan := VlanInface(i.Name)
 	if isvlan {
@@ -48,6 +68,11 @@ func UpdateInterface(i Item) error {
 }
 
 func UpdateEthInterface(i Item) error {
+	/*check eth0 ip should be equal to primary ip*/
+	if i.IpAddr == ReadClusterPrimary() {
+		msg := fmt.Sprintf("eth0 ip(%s) is equal to primary ip (%s) ", i.IpAddr, ReadClusterPrimary())
+		return errors.New(msg)
+	}
 	err := utils.UpdateEthIface(i.Name, i.IpAddr, i.NetMask)
 	if err != nil {
 		return err
@@ -150,100 +175,8 @@ func DeleteNetconf(i Item) error {
 	a := utils.NetmaskStr2Len(i.NetMask)
 	ipv4Addr := net.ParseIP(i.IpAddr)
 	ipv4Mask := net.CIDRMask(a, 32)
-	sectionid := fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask)) // ip & mask
+	sectionid := []string{fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask))} // ip & mask
 	return A3Delete("NETWORKS", sectionid)
-}
-
-func DeletePrimaryClusterconf(i Item) error {
-	var sectionid string
-	isvlan := VlanInface(i.Name)
-	ifname := ChangeUiInterfacename(i.Name)
-	hostname := GetPfHostname()
-	if isvlan {
-		sectionid = fmt.Sprintf("CLUSTER interface %s", ifname)
-		A3Delete("CLUSTER", sectionid)
-		sectionid = fmt.Sprintf("%s interface %s", hostname, ifname)
-		return A3Delete("CLUSTER", sectionid)
-	} else {
-		sectionid = "CLUSTER"
-		A3Delete("CLUSTER", sectionid)
-		sectionid = fmt.Sprintf("CLUSTER interface %s", ifname)
-		A3Delete("CLUSTER", sectionid)
-		sectionid = hostname
-		A3Delete("CLUSTER", sectionid)
-		sectionid = fmt.Sprintf("%s interface %s", hostname, ifname)
-		return A3Delete("CLUSTER", sectionid)
-	}
-
-}
-
-func UpdatePrimaryClusterconf(enable bool, i Item) error {
-	var keyname string
-
-	if !enable {
-		/* cp cluster.conf.example to replace cluster.conf */
-		utils.UseDefaultClusterConf()
-		return nil
-	}
-	if i.Vip == "" || i.Vip == "0.0.0.0" {
-		return nil
-	}
-	utils.CreateClusterId()
-	isvlan := VlanInface(i.Name)
-	if isvlan {
-		name := []rune(i.Name) /*need to delete vlan for name*/
-		keyname = fmt.Sprintf("CLUSTER interface eth0.%s", string(name[4:]))
-		section := Section{
-			keyname: {
-				"ip": i.Vip,
-			},
-		}
-		return A3Commit("CLUSTER", section)
-
-	} else {
-		section := Section{
-			"CLUSTER": {
-				"management_ip": i.Vip,
-			},
-			"CLUSTER interface eth0": {
-				"ip": i.Vip,
-			},
-		}
-		return A3Commit("CLUSTER", section)
-	}
-}
-func UpdateJoinClusterconf(i Item, hostname string) error {
-	var keyname string
-
-	if !CheckClusterEnable() {
-		log.LoggerWContext(context.Background()).Info(fmt.Sprintf(" Cluster Disenabled"))
-		return nil
-	}
-
-	isvlan := VlanInface(i.Name)
-	if isvlan {
-		name := []rune(i.Name) /*need to delete vlan for name*/
-		keyname = fmt.Sprintf("%s interface eth0.%s", hostname, string(name[4:]))
-
-		section := Section{
-			keyname: {
-				"ip": i.IpAddr,
-			},
-		}
-		return A3Commit("CLUSTER", section)
-
-	} else {
-		keyname = fmt.Sprintf("%s interface %s", hostname, i.Name)
-		section := Section{
-			hostname: {
-				"management_ip": i.IpAddr,
-			},
-			keyname: {
-				"ip": i.IpAddr,
-			},
-		}
-		return A3Commit("CLUSTER", section)
-	}
 }
 
 func UpdateWebservicesAcct() error {
@@ -261,12 +194,12 @@ func UpdateWebservicesAcct() error {
 
 func UpdateGaleraUser() error {
 
-	rsection := A3ReadFull("A3DB", "DEFAULT")["DEFAULT"]
+	rsection := A3ReadFull("PF", "active_active")["active_active"]
 
 	wsection := Section{
 		"active_active": {
-			"galera_replication_username": rsection["dbroot_user"],
-			"galera_replication_password": rsection["dbroot_pass"],
+			"galera_replication_username": rsection["galera_replication_username"],
+			"galera_replication_password": rsection["galera_replication_password"],
 		},
 	}
 
@@ -288,7 +221,16 @@ func WriteUserPassToPF(host, username, passw string) error {
 	return A3Commit("PF", section)
 
 }
+func UpdatePrimaryHostnameToClusterPF(hostname string) error {
 
+	section := Section{
+		"Cluster Primary": {
+			"hostname": hostname,
+		},
+	}
+	return A3Commit("PF", section)
+
+}
 func UpdateWebservices(user, password string) error {
 
 	section := Section{
@@ -299,10 +241,4 @@ func UpdateWebservices(user, password string) error {
 	}
 	return A3Commit("PF", section)
 
-}
-
-func UpdateClusterFile() {
-	cmd := `echo -e "\n/usr/local/pf/conf/cloud.conf\n` +
-		`/usr/local/pf/conf/clusterid.conf" >> /usr/local/pf/conf/cluster-files.txt`
-	utils.ExecShell(cmd)
 }

@@ -185,6 +185,7 @@
 }
 
 .cloud-message-div-aerohiveCloudCtl{
+    padding-bottom: 24px;
     width:350px;
 }
 .cloud-message-item-div-aerohiveCloudCtl{
@@ -195,4 +196,13 @@
     font-size: 14px;
     color:#333333;
 
+}
+
+.ant-popover-placement-right > .ant-popover-content > .ant-popover-arrow:after, .ant-popover-placement-rightTop > .ant-popover-content > .ant-popover-arrow:after, .ant-popover-placement-rightBottom > .ant-popover-content > .ant-popover-arrow:after{
+    border-right-color:#b6e3f6;
+}
+
+
+.ant-popover-inner{
+    background: #b6e3f6;
 }

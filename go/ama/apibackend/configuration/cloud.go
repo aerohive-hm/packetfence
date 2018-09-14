@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"errors"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
@@ -87,7 +88,7 @@ func CloudNew(ctx context.Context) crud.SectionCmd {
 
 func getRunMode() string {
 
-	if a3config.CheckClusterEnable() {
+	if a3config.ClusterNew().CheckClusterEnable() {
 		return "cluster"
 	} else {
 		return "standalone"
@@ -97,8 +98,8 @@ func getRunMode() string {
 }
 
 type CloudGetHandler interface {
-		getValue(context.Context)
-		convertToJson(ctx context.Context) []byte
+	getValue(context.Context)
+	convertToJson(ctx context.Context) []byte
 }
 
 func (nodes *GetNodesInfo) getValue(ctx context.Context) {
@@ -114,10 +115,10 @@ func (nodes *GetNodesInfo) getValue(ctx context.Context) {
 
 	self.Hostname = utils.GetHostname()
 	self.Status = amac.GetAMAConnStatus()
-	self.LastContactTime = fmt.Sprintf("%v", amac.ReadLastConTime())
+	self.LastContactTime = fmt.Sprintf("%v", amac.ReadLastConTime().Format("2006-01-02 15:04:05 MST"))
 	nodes.Body.Data = append(nodes.Body.Data, self)
 
-	nodeList := a3share.FetchNodesInfo()
+	nodeList := a3config.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 	for _, node := range nodeList {
 		other := CloudGetData{}
@@ -145,7 +146,7 @@ func (conf *GetCloudConf) getValue(ctx context.Context) {
 }
 
 func (nodesInfo *GetNodesInfo) convertToJson(ctx context.Context) []byte {
-	jsonData, err := json.Marshal(nodesInfo) 
+	jsonData, err := json.Marshal(nodesInfo)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		return []byte(err.Error())
@@ -154,7 +155,7 @@ func (nodesInfo *GetNodesInfo) convertToJson(ctx context.Context) []byte {
 }
 
 func (cloudConf *GetCloudConf) convertToJson(ctx context.Context) []byte {
-	jsonData, err := json.Marshal(cloudConf) 
+	jsonData, err := json.Marshal(cloudConf)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		return []byte(err.Error())
@@ -176,7 +177,7 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		cloudConf.getValue(ctx)
 		handler = cloudConf
 	}
-	
+
 	return handler.convertToJson(ctx)
 }
 
@@ -185,14 +186,31 @@ func startService() {
 		return
 	}
 
-	a3config.UpdateGaleraUser()
-	a3config.UpdateWebservicesAcct()
-	a3config.UpdateClusterFile()
-	utils.InitStartService()
+	clusterEnable := a3config.ClusterNew().CheckClusterEnable()
+
+	if clusterEnable {
+		a3config.UpdateGaleraUser()
+		a3config.UpdateWebservicesAcct()
+		a3config.UpdateClusterFile()
+	}
+
+	utils.InitStartService(clusterEnable)
 	amac.JoinCompleteEvent()
 }
+
+func forceUrlStartWithHttps(s string) string {
+	if s[0:5] == "https" {
+		return s
+	} else if s[0:4] == "http" {
+		s1 := strings.Replace(s, "http", "https", 1)
+		return s1
+	} else {
+		s2 := strings.Join([]string{"https://", s}, "")
+		return s2
+	}
+}
 func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
-	var ret string
+	var ret, s string
 	var reason string
 	var result int
 
@@ -219,7 +237,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		code = "ok"
 		ret = "disable cloud integration successfully"
 
-		nodeList := a3share.FetchNodesInfo()
+		nodeList := a3config.FetchNodesInfo()
 		ownMgtIp := utils.GetOwnMGTIp()
 		for _, node := range nodeList {
 			if node.IpAddr == ownMgtIp {
@@ -231,7 +249,8 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	err = a3config.UpdateCloudConf(a3config.GDCUrl, postInfo.Url)
+	s = forceUrlStartWithHttps(postInfo.Url)
+	err = a3config.UpdateCloudConf(a3config.GDCUrl, s)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update cloud GDC URL error: " + err.Error())
 		goto END
@@ -274,7 +293,7 @@ END:
 }
 
 //Request AMA status from one node.
-func ReqAMAStatusfromOneNode(ctx context.Context, node a3share.NodeInfo) *event.AMAStatus {
+func ReqAMAStatusfromOneNode(ctx context.Context, node a3config.NodeInfo) *event.AMAStatus {
 	amaInfo := event.AMAStatus{}
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/ama/status", node.IpAddr)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Query AMA info from node %s", node.IpAddr))
@@ -299,7 +318,7 @@ func ReqAMAStatusfromOneNode(ctx context.Context, node a3share.NodeInfo) *event.
 }
 
 // Enable or DIsable special node connect to GDC.
-func EnableNodeConnGDC(ctx context.Context, node a3share.NodeInfo, enable bool) error {
+func EnableNodeConnGDC(ctx context.Context, node a3config.NodeInfo, enable bool) error {
 	action := event.AMAAction{}
 	if enable == true {
 		action.Action = "enable"

@@ -64,7 +64,7 @@ func initClusterDB() {
 
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
-		A3Root + `systemctl start packetfence-mariadb`,
+		`systemctl start packetfence-mariadb`,
 	}
 	ExecCmds(cmds)
 }
@@ -80,7 +80,7 @@ func initStandAloneDb() {
 }
 
 // only Start Services during initial setup
-func InitStartService() error {
+func InitStartService(isCluster bool) error {
 	UpdatePfServices()
 
 	out, err := restartPfconfig()
@@ -89,8 +89,8 @@ func InitStartService() error {
 	}
 
 	waitProcStart("pfconfig")
-	if IsFileExist(A3Root + "conf/cluster.conf") {
-		go initClusterDB()
+	if isCluster {
+		initClusterDB()
 	} else {
 		initStandAloneDb()
 	}
@@ -106,7 +106,6 @@ func InitStartService() error {
 	//	pfservice + "httpd.admin restart",
 	//}
 	//ExecCmds(cmds)
-	//ama.InitClusterStatus("primary")
 
 	UpdateCurrentlyAt()
 	return nil
@@ -189,6 +188,20 @@ func RecoverDB() {
 	cmds := []string{
 		`systemctl restart packetfence-mariadb`,
 		//pfservice + "pf restart",
+	}
+
+	ExecCmds(cmds)
+}
+
+func RestartKeepAlived() {
+	ExecShell(pfservice + "keepalived restart")
+}
+
+func RemoveFromCluster() {
+	cmds := []string{
+		"rm -f " + A3Root + "/conf/cluster.pf",
+		`systemctl stop packetfence-etcd`,
+		`rm -rf /usr/local/pf/var/etcd/`,
 	}
 
 	ExecCmds(cmds)

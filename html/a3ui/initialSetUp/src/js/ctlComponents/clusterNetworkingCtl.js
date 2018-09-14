@@ -53,9 +53,9 @@ class clusterNetworkingCtl extends Component {
 
     getRightI18n= () => {
         let self=this;
-        let localeForLicenseInfo=window.localStorage.getItem('getStart');
+        let navigatorLanguage = self.props.navigatorLanguage; 
         let rightI18n;
-        if(localeForLicenseInfo==="fr"){
+        if(navigatorLanguage==="fr"){
             rightI18n=i18nfr;
         }else{
             rightI18n=i18n;
@@ -252,13 +252,14 @@ class clusterNetworkingCtl extends Component {
 
     handleSubmit = (e) => {
         let self=this;
+        e.preventDefault();
         if(self.state.isEditing===true){
             message.destroy();
             message.error(self.state.i18n.pleaseFinishTheEditFirst);
             return;
         }
 
-        e.preventDefault();
+
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 console.log(values);
@@ -275,7 +276,7 @@ class clusterNetworkingCtl extends Component {
                 let url= "/a3/api/v1/configurator/cluster/networks";
                 
                 let param={
-                    hostname:values.hostname,
+                    hostname:values.hostname.trim(),
                     items:self.getItems(),
                 }
                 self.setState({
@@ -319,6 +320,8 @@ class clusterNetworkingCtl extends Component {
         let self=this;
         
         if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
             return;
         }
         let dataCopy=self.state.dataTable;
@@ -359,10 +362,11 @@ class clusterNetworkingCtl extends Component {
         let dataCopy=self.state.dataTable;
         
         let param={
-            "name":dataCopy[index].name,
-            "ip_addr":dataCopy[index].ip_addr,
-            "netmask":dataCopy[index].netmask,
-            "vip":dataCopy[index].vip,
+            "original":dataCopy[index].original,
+            "name":dataCopy[index].name.trim(),
+            "ip_addr":dataCopy[index].ip_addr.trim(),
+            "netmask":dataCopy[index].netmask.trim(),
+            "vip":dataCopy[index].vip.trim(),
             "type":dataCopy[index].type,
             "services":dataCopy[index].services.join(","),
         }
@@ -499,8 +503,8 @@ class clusterNetworkingCtl extends Component {
                     MANAGEMENT:self.state.i18n.management,
                     REGISTRATION:self.state.i18n.registration,
                     ISOLATION:self.state.i18n.isolation,
-                    NONE:self.state.i18n.none,
-                    OTHER:self.state.i18n.other,
+                    // NONE:self.state.i18n.none,
+                    // OTHER:self.state.i18n.other,
                     PORTAL:self.state.i18n.portal,
                 }
                 return (
@@ -565,6 +569,7 @@ class clusterNetworkingCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckHostname.bind(self)}
+                                maxLength={64}
                                 />
                             )}
                         </div>

@@ -58,9 +58,9 @@ class networksCtl extends Component {
 
     getRightI18n= () => {
         let self=this;
-        let localeForLicenseInfo=window.localStorage.getItem('getStart');
+        let navigatorLanguage = self.props.navigatorLanguage; 
         let rightI18n;
-        if(localeForLicenseInfo==="fr"){
+        if(navigatorLanguage==="fr"){
             rightI18n=i18nfr;
         }else{
             rightI18n=i18n;
@@ -159,9 +159,44 @@ class networksCtl extends Component {
 
     onChangeCheckbox=(e)=>{
         let self=this;
-        this.setState({
-            enableClustering: e.target.checked,
-        });
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
+
+        let xCsrfToken="";
+        let url= "/a3/api/v1/configurator/networks";
+        
+        let param={
+            cluster_enable:e.target.checked,
+        }
+
+        self.setState({
+            loading : true,
+        })
+
+        new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+            if(data.code==="ok"){
+                self.setState({
+                    loading : false,
+                    enableClustering: e.target.checked,
+                })
+                
+            }else{
+                self.setState({
+                    loading : false,
+                })
+                message.destroy();
+                message.error(data.msg);
+            }
+
+        },()=>{
+            self.setState({
+                loading : false,
+            })
+
+        }) 
     }
 
     onBlurCheckHostname(e){
@@ -412,14 +447,12 @@ class networksCtl extends Component {
 
     handleSubmit = (e) => {
         let self=this;
+        e.preventDefault();
         if(self.state.isEditing===true){
             message.destroy();
             message.error(self.state.i18n.pleaseFinishTheEditFirst);
             return;
         }
-
-
-        e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 console.log(values);
@@ -437,7 +470,7 @@ class networksCtl extends Component {
                 
                 let param={
                     cluster_enable:self.state.enableClustering,
-                    hostname:values.hostname,
+                    hostname:values.hostname.trim(),
                     items:self.getItems(),
                 }
 
@@ -484,8 +517,11 @@ class networksCtl extends Component {
         let self=this;
         
         if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
             return;
         }
+
         let dataCopy=self.state.dataTable;
         dataCopy[index].clicked=column;
         self.setState({
@@ -499,7 +535,7 @@ class networksCtl extends Component {
         let self=this;
         let dataCopy=self.state.dataTable;
         if(column==="name"){
-            dataCopy[index][column]="VLAN"+e.target.value;
+            dataCopy[index][column]="VLAN"+e.target.value.toString().trim();
         }else{
             dataCopy[index][column]=e.target.value;
         }
@@ -512,8 +548,11 @@ class networksCtl extends Component {
 
     onChangeSelect=(index,column,value) =>{
         let self=this;
-
-
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         let xCsrfToken="";
         let url= "/a3/api/v1/configurator/interface";
 
@@ -522,19 +561,21 @@ class networksCtl extends Component {
         let param
         if(column==="type"){
             param={
-                "name":dataCopy[index].name,
-                "ip_addr":dataCopy[index].ip_addr,
-                "netmask":dataCopy[index].netmask,
-                "vip":dataCopy[index].vip,
+                "original":dataCopy[index].original,
+                "name":dataCopy[index].name.trim(),
+                "ip_addr":dataCopy[index].ip_addr.trim(),
+                "netmask":dataCopy[index].netmask.trim(),
+                "vip":dataCopy[index].vip.trim(),
                 "type":value,
                 "services":dataCopy[index].services.join(","),
             }
         }else{
             param={
-                "name":dataCopy[index].name,
-                "ip_addr":dataCopy[index].ip_addr,
-                "netmask":dataCopy[index].netmask,
-                "vip":dataCopy[index].vip,
+                "original":dataCopy[index].original,
+                "name":dataCopy[index].name.trim(),
+                "ip_addr":dataCopy[index].ip_addr.trim(),
+                "netmask":dataCopy[index].netmask.trim(),
+                "vip":dataCopy[index].vip.trim(),
                 "type":dataCopy[index].type,
                 "services":value.join(","),
             } 
@@ -591,10 +632,11 @@ class networksCtl extends Component {
         let dataCopy=self.state.dataTable;
         
         let param={
-            "name":dataCopy[index].name,
-            "ip_addr":dataCopy[index].ip_addr,
-            "netmask":dataCopy[index].netmask,
-            "vip":dataCopy[index].vip,
+            "original":dataCopy[index].original,
+            "name":dataCopy[index].name.trim(),
+            "ip_addr":dataCopy[index].ip_addr.trim(),
+            "netmask":dataCopy[index].netmask.trim(),
+            "vip":dataCopy[index].vip.trim(),
             "type":dataCopy[index].type,
             "services":dataCopy[index].services.join(","),
         }
@@ -642,6 +684,11 @@ class networksCtl extends Component {
 
     onClickAddVlan= (index) => {
         let self=this;
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         self.props.form.setFieldsValue({
             name:"",
             ip_addr:"",
@@ -704,17 +751,18 @@ class networksCtl extends Component {
                 let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
+                    "original":"",
                     "name":"VLAN"+values.name.toString().trim(),
-                    "ip_addr":values.ip_addr,
-                    "netmask":values.netmask,
-                    "vip":values.vip,
+                    "ip_addr":values.ip_addr.trim(),
+                    "netmask":values.netmask.trim(),
+                    "vip":values.vip.trim(),
                     "type":values.type,
                     "services":values.services.join(","),
                 }
                 self.setState({
                     loading : true,
                 })
-                new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
+                new RequestApi('put',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
                         self.setState({ 
                             addVlanVisible:false,
@@ -759,6 +807,11 @@ class networksCtl extends Component {
 
     onClickRemoveVlan= (index) => {
         let self=this;
+        if(self.state.isEditing===true){
+            message.destroy();
+            message.error(self.state.i18n.pleaseFinishTheEditFirst);
+            return;
+        }
         Modal.confirm({
             content: self.state.i18n.areYouSureYouWantToDoThis,
             okText: self.state.i18n.yes,
@@ -770,10 +823,11 @@ class networksCtl extends Component {
                 let url= "/a3/api/v1/configurator/interface";
                 
                 let param={
-                    "name":dataCopy[index].name,
-                    "ip_addr":dataCopy[index].ip_addr,
-                    "netmask":dataCopy[index].netmask,
-                    "vip":dataCopy[index].vip,
+                    "original":dataCopy[index].original,
+                    "name":dataCopy[index].name.trim(),
+                    "ip_addr":dataCopy[index].ip_addr.trim(),
+                    "netmask":dataCopy[index].netmask.trim(),
+                    "vip":dataCopy[index].vip.trim(),
                     "type":dataCopy[index].type,
                     "services":dataCopy[index].services.join(","),
                 }
@@ -823,6 +877,7 @@ class networksCtl extends Component {
             title:self.state.i18n.name,
             dataIndex: 'name',
             key: 'name',
+            width:'157px',
             render: (text, record, index) => {
                 let numberHtml;
                 if(dataTable[index].clicked==="name"){
@@ -873,12 +928,13 @@ class networksCtl extends Component {
             title: self.state.i18n.iPAddress,
             dataIndex: 'ip_addr',
             key: 'ip_addr',
+            width:'129px',
             render: (text, record, index) => {
                 return (
                     <div>
                         {
                             dataTable[index].clicked==="ip_addr"?
-                            <div className=""  >
+                            <div className="ipAddr-edit-div-networksCtl"  >
                                 <div className="ipAddr-edit-input-div-networksCtl">
                                     <Input
                                         value={text}
@@ -907,12 +963,13 @@ class networksCtl extends Component {
             title:self.state.i18n.netmask,
             dataIndex: 'netmask',
             key: 'netmask',
+            width:'129px',
             render: (text, record, index) => {
                 return (
                     <div>
                         {
                             dataTable[index].clicked==="netmask"?
-                            <div className=""  >
+                            <div className="netmask-edit-div-networksCtl"  >
                                 <div className="netmask-edit-input-div-networksCtl">
                                     <Input
                                         value={text}
@@ -943,12 +1000,13 @@ class networksCtl extends Component {
                 title:self.state.i18n.vip,
                 dataIndex: 'vip',
                 key: 'vip',
+                width:'129px',
                 render: (text, record, index) => {
                     return (
                         <div>
                             {
                                 dataTable[index].clicked==="vip"?
-                                <div className=""  >
+                                <div className="vip-edit-div-networksCtl"  >
                                     <div className="vip-edit-input-div-networksCtl">
                                         <Input
                                             value={text}
@@ -979,6 +1037,7 @@ class networksCtl extends Component {
             title:self.state.i18n.type,
             dataIndex: 'type',
             key: 'type',
+            width:'122px',
             render: (text, record, index) => {
                 return (
                     <div>
@@ -991,8 +1050,8 @@ class networksCtl extends Component {
                             <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                             <Option value="ISOLATION">{self.state.i18n.isolation}</Option>
                             <Option value="PORTAL">{self.state.i18n.portal}</Option>
-                            <Option value="NONE">{self.state.i18n.none}</Option>
-                            <Option value="OTHER">{self.state.i18n.other}</Option>
+                            {/*<Option value="NONE">{self.state.i18n.none}</Option>
+                            <Option value="OTHER">{self.state.i18n.other}</Option>*/}
                         </Select>
                     </div>
                 );
@@ -1003,13 +1062,14 @@ class networksCtl extends Component {
             title: self.state.i18n.services,
             dataIndex: 'services',
             key: 'services',
+            width:'112px',
             render: (text, record, index) => {
                 return (
                     <div>
                         <Select 
                             value={text} 
                             onChange={self.onChangeSelect.bind(self,index,"services")}
-                            style={{ width: 110 }} 
+                            style={{ width: 100 }} 
                             mode="multiple"
                         >
                             <Option value="PORTAL">{self.state.i18n.portal}</Option>
@@ -1024,6 +1084,7 @@ class networksCtl extends Component {
             title: self.state.i18n.vlan,
             dataIndex: 'vlan',
             key: 'vlan',
+            width:'122px',
             render: (text, record, index) => {
                 return (
                     text.indexOf("VLAN")===-1?
@@ -1079,7 +1140,7 @@ class networksCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckHostname.bind(self)}
-                                maxLength={254}
+                                maxLength={64}
                                 />
                             )}
                         </div>
@@ -1267,8 +1328,8 @@ class networksCtl extends Component {
                                         <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                                         <Option value="ISOLATION" >{self.state.i18n.isolation}</Option>
                                         <Option value="PORTAL">{self.state.i18n.portal}</Option>
-                                        <Option value="NONE" >{self.state.i18n.none}</Option>
-                                        <Option value="OTHER" >{self.state.i18n.other}</Option>
+                                        {/*<Option value="NONE" >{self.state.i18n.none}</Option>
+                                        <Option value="OTHER" >{self.state.i18n.other}</Option>*/}
                                     </Select>
 
                                 )}

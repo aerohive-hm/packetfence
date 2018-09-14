@@ -106,21 +106,23 @@
 
 .name-etho-div-networksCtl{
     float:left;
+    width:145px;
     height: 28px;
     line-height: 28px;
 }
 .name-vlan-div-networksCtl{
     float:left;
     height: 28px;
+    width:145px;
 }
 .name-vlan-blank-div-networksCtl{
     float:left;
     height: 28px;
-    width:20px;
+    width:10px;
 }
 .name-vlan-text-div-networksCtl{
     float:left;
-    padding-right:4px;
+    width:34px;
     height: 28px;
     line-height: 28px;
 }
@@ -129,11 +131,11 @@
 .name-edit-div-networksCtl{
     float:left;
     height: 28px;
-    margin-left:4px;  
+    width:101px;
 }
 .name-edit-input-div-networksCtl{
     float:left;
-    width:100px;
+    width:49px;
     height: 28px;
 }
 .name-edit-ok-div-networksCtl{
@@ -168,6 +170,7 @@
     float:left;
     height:28px;
     line-height: 28px;
+    width:101px;
     cursor: pointer;
     color:#2c6aff;
 }
@@ -175,10 +178,13 @@
 
 
 
-
+.ipAddr-edit-div-networksCtl{
+    float:left;
+    width:117px;
+}
 .ipAddr-edit-input-div-networksCtl{
     float:left;
-    width:100px;
+    width:61px;
     height: 28px;
 }
 .ipAddr-edit-ok-div-networksCtl{
@@ -210,14 +216,19 @@
     cursor: pointer;
 }
 .ipAddr-text-div-networksCtl{
+    float:left;
+    width:117px;
     cursor: pointer;
     color:#2c6aff;
 }
 
-
 .netmask-edit-input-div-networksCtl{
     float:left;
-    width:100px;
+    width:117px;
+}
+.netmask-edit-input-div-networksCtl{
+    float:left;
+    width:61px;
     height: 28px;
 }
 .netmask-edit-ok-div-networksCtl{
@@ -249,6 +260,8 @@
     cursor: pointer;
 }
 .netmask-text-div-networksCtl{
+    float:left;
+    width:117px;
     cursor: pointer;
     color:#2c6aff;
 }
@@ -256,10 +269,13 @@
 
 
 
-
+.vip-edit-div-networksCtl{
+    float:left;
+    width:117px;
+}
 .vip-edit-input-div-networksCtl{
     float:left;
-    width:100px;
+    width:61px;
     height: 28px;
 }
 .vip-edit-ok-div-networksCtl{
@@ -291,6 +307,8 @@
     cursor: pointer;
 }
 .vip-text-div-networksCtl{
+    float:left;
+    width:117px;
     cursor: pointer;
     color:#2c6aff;
 }
@@ -300,6 +318,7 @@
     float:left;
     height: 28px;
     cursor: pointer;
+    width:110px;
 }
 .vlan-add-img-div-networksCtl{
     float:left;
@@ -324,6 +343,7 @@
 
 .vlan-remove-div-networksCtl{
     float:left;
+    width:110px;
     height: 28px;
     cursor: pointer;
 }

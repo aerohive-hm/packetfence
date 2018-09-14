@@ -13,6 +13,7 @@ import (
 )
 
 type Item struct {
+	Original string `json:"original"`
 	Name     string `json:"name"`
 	IpAddr   string `json:"ip_addr"`
 	NetMask  string `json:"netmask"`
@@ -23,11 +24,12 @@ type Item struct {
 
 type NetworksData struct {
 	ClusterEnable bool   `json:"cluster_enable"`
-	HostName      string `json:"hostname"`
-	Items         []Item `json:"items"`
+	HostName      string `json:"hostname,omitempty"`
+	Items         []Item `json:"items,omitempty"`
 }
 
 var contextNetworks = log.LoggerNewContext(context.Background())
+var clusterEnableDefault = true
 
 func GetItemsValue(ctx context.Context) []Item {
 	var items []Item
@@ -44,16 +46,16 @@ func GetItemsValue(ctx context.Context) []Item {
 		} else {
 			item.Name = iname[0]
 		}
+		item.Original = item.Name
 		value, _ := strconv.Atoi(iface.NetMask)
 		item.IpAddr = iface.IpAddr
 		item.NetMask = utils.NetmaskLen2Str(value)
-		item.Vip = GetPrimaryClusterVip(iface.Name)
+		item.Vip = ClusterNew().GetPrimaryClusterVip(iface.Name)
 		item.Type = GetIfaceType(iface.Name)
 		item.Services = strings.Join(GetIfaceServices(iface.Name), ",")
 		items = append(items, *item)
 	}
 	return items
-
 }
 
 func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
@@ -104,7 +106,7 @@ func GetNetworksData(ctx context.Context) NetworksData {
 		context = ctx
 	}
 	networksData.Items = GetItemsValue(context)
-	networksData.ClusterEnable = true
+	networksData.ClusterEnable = clusterEnableDefault
 	networksData.HostName = GetPfHostname()
 	return networksData
 }
@@ -117,7 +119,11 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 	} else {
 		context = ctx
 	}
-
+	clusterEnableDefault = networksData.ClusterEnable
+	if len(networksData.Items) == 0 {
+		/*only update cluster enable*/
+		return nil
+	}
 	err := CheckItemValid(ctx, networksData.ClusterEnable, networksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("CheckItemValid error:" + err.Error())
@@ -128,7 +134,6 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
 		return err
 	}
-	utils.SetHostname(networksData.HostName)
 	err = UpdateItemsValue(context, networksData.ClusterEnable, networksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())
@@ -158,7 +163,7 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 	}
 
 	/*eth0 ip and vlan ip should not be the same net range*/
-	for _, item := range items {
+	for k1, item := range items {
 		if !VlanInface(item.Name) {
 			continue
 		}
@@ -166,6 +171,22 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 		if utils.IsSameIpRange(item.IpAddr, eth0ip, item.NetMask) {
 			msg = fmt.Sprintf("eth0 ip(%s) and vlan (%s) should not be the same net range", eth0ip, item.IpAddr)
 			return errors.New(msg)
+		}
+		/* vlan ip should not be the same*/
+		for k2, i := range items {
+			if !VlanInface(item.Name) || k1 == k2 {
+				continue
+			}
+
+			if item.IpAddr == i.IpAddr {
+				msg = fmt.Sprintf("ip(%s) is more than one in form", item.IpAddr)
+				return errors.New(msg)
+			}
+			/* vlan name should not be the same*/
+			if item.Name == i.Name {
+				msg = fmt.Sprintf("vlan name(%s) is more than one in form", item.Name)
+				return errors.New(msg)
+			}
 		}
 	}
 	return nil
@@ -182,6 +203,18 @@ func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	return errors.New(msg)
 }
 
+func CheckItemServiceValid(ctx context.Context, items []Item) error {
+	msg := ""
+	for _, item := range items {
+		if strings.Contains(item.Type, "PORTAL") {
+			if item.Services == "" {
+				msg = fmt.Sprintf("%s type is Portal, service portal is mandatory", item.Name)
+				return errors.New(msg)
+			}
+		}
+	}
+	return nil
+}
 func CheckMaskValid(mask string) error {
 
 	var i, value int = 0, 0
@@ -219,6 +252,10 @@ func CheckItemValid(ctx context.Context, enable bool, items []Item) error {
 		return err
 	}
 	err = CheckItemTypeValid(ctx, items)
+	if err != nil {
+		return err
+	}
+	err = CheckItemServiceValid(ctx, items)
 	if err != nil {
 		return err
 	}
