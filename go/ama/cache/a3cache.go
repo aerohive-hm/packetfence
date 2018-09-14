@@ -16,11 +16,11 @@ import (
 
 const tableSets string = "a3tables"
 
-func CacheTableInfo(tableId string, value []byte) error {
+func CacheTableInfo(tableId string, value []byte) (int,error) {
 	r, err := NewRedisPool("", "")
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
-		return err
+		return 0,err
 	}
 
 	c := r.pool.Get()
@@ -29,16 +29,22 @@ func CacheTableInfo(tableId string, value []byte) error {
 	_, err = c.Do("SET", tableId, string(value))
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("SET key %s failed", tableId))
-		return err
+		return 0,err
 	}
 
 	_, err = c.Do("SADD", tableSets, tableId)
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("ADD table %s failed", tableId) )
-		return err
+		return 0,err
 	}
 
-	return nil
+	count, err := c.Do("SCARD", tableSets)
+	if err != nil {
+		log.LoggerWContext(context.Background()).Error("Get sets count failed")
+		return 0,err
+	}
+	
+	return int(count.(int64)),nil
 }
 
 func FetchTablesInfo(count int) ([]interface{}, error){
