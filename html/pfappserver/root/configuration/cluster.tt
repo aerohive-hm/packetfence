@@ -14,20 +14,14 @@
     <a href="#[% action %]">[% l(description) %]</a>
   </li>
 [% END -%] -->
-
-<div class="removeModal fade hide in" id="removeConfirmation" aria-hidden="false" style="display:none;">
-    <h3><i>Remove Selected Cluster Nodes?</i> <span></span></h3>
-  </div>
-  <div class="modal-body">
-    <p><span id="listOfSelectedNodes"><span> will be removed from the cluster.</p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-warning" id="close-modal" data-dismiss="removeModal">Close</button>
-    <button type="button" class="btn btn-success" id="removing-node">Remove</button>
-  </div>
-</div>
-
-<div class="modal" id="removeModal" tabindex="-1" role="dialog" aria-hidden="true" role="dialog">
+<head>
+  <style>
+    thead tr{
+       background-color: #f4f6f9;
+    }
+  </style>
+</head>
+<div class="modal fade hide in" id="removeModal" tabindex="-1" role="dialog" aria-hidden="true" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -37,7 +31,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <p><span id="listOfSelectedNodes"><span> will be removed from the cluster.</p>
+        <p><span id="listOfSelectedNodes"><span></p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -62,7 +56,7 @@
           <br>
           <label style="float:left; width:130px;">  </label>
           <button class="btn btn-success submit" id="submitNewClusterInfo" style="width: 220px;">Submit</button>
-
+          <br/>
           <br/>
           <h6>Network Interfaces</h6>
           <table id="items net-interfaces-table" class="table items">
@@ -76,7 +70,6 @@
             </tbody>
           </table>
 
-          <br/>
           <br/>
           <h6>Cluster Node List</h6>
           <table id="items cluster-management-table" class="table items">
