@@ -8,6 +8,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend"
@@ -78,15 +79,18 @@ func buildA3apiHandler(ctx context.Context) (A3apiHandler, error) {
 
 
 func (h A3apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	//ctx := r.Context()
+	ctx := r.Context()
 
-    /*  keep open now
-	if apibackend.HandleRedirect(w, r) == "redirect"  {
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("initial setup done, redirect path %s", r.URL.Path))
-		return h.Next.ServeHTTP(w, r)
-	}
-	*/
-
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA REST URL path %s", r.URL.Path))
+	sections := strings.Split(r.URL.Path, "/") //r.URL.Path: 
+	if len(sections) > 2 && sections[1] == "configurator" {
+		if apibackend.HandleRedirect(w, r) == "redirect"  {
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("initial setup done, redirect path %s", r.URL.Path))
+			return h.Next.ServeHTTP(w, r)
+		}
+	} 
+	
+	
 	if handle, params, _ := h.router.Lookup(r.Method, r.URL.Path); handle != nil {
 		w.Header().Set("Content-Type", "application/json")
 		handle(w, r, params)

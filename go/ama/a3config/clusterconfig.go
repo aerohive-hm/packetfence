@@ -90,7 +90,11 @@ func (sections Section) GetClusterVips() map[string]string {
 	return vips
 }
 
-func fetchNodes(sections Section) []NodeInfo {
+func (sections Section) FetchNodesInfo() []NodeInfo {
+	if sections == nil {
+		return nil
+	}
+
 	nodes := []NodeInfo{}
 	for secName, kvpair := range sections {
 		if secName == "CLUSTER" {
@@ -105,14 +109,6 @@ func fetchNodes(sections Section) []NodeInfo {
 		}
 	}
 	return nodes
-}
-
-func FetchNodesInfo() []NodeInfo {
-	conf := A3Read("CLUSTER", "all")
-	if conf == nil {
-		return nil
-	}
-	return fetchNodes(conf)
 }
 
 func DeletePrimaryClusterconf(i Item) error {
@@ -236,6 +232,7 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 
 func UpdateClusterFile() {
 	cmd := `echo -e "\n/usr/local/pf/conf/cloud.conf\n` +
-		`/usr/local/pf/conf/clusterid.conf" >> /usr/local/pf/conf/cluster-files.txt`
+		`/usr/local/pf/conf/clusterid.conf\n` +
+		`/usr/local/pf/conf/dbinfo.A3" >> /usr/local/pf/conf/cluster-files.txt`
 	utils.ExecShell(cmd)
 }

@@ -82,6 +82,7 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf restart")
 
 		a3share.SendClusterSync(ip, a3share.FinishSync)
+		ama.SetClusterStatus(ama.Idle)
 	case sync.Status == a3share.FinishSync:
 		//slave node notify primary to sync completed
 		ama.UpdateClusterNodeStatus(sync.SendIp, ama.SyncFinished)

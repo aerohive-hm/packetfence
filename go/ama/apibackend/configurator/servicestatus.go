@@ -35,6 +35,10 @@ func handleGetServiceStatus(r *http.Request, d crud.HandlerData) []byte {
 	if msg == "" {
 		code = "fail"
 	}
-	
+
+	if msg == "100" {
+		utils.UpdateCurrentlyAt()
+	}
+
 	return []byte(fmt.Sprintf(`{"code":"%s", "percentage":"%s"}`, code, msg))
 }
