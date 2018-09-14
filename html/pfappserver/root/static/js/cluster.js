@@ -131,7 +131,7 @@ function removeClusterNode(nodeArray){
         console.log(data);
         getClusterStatusInfo();
         $("#cluster-management-table").load("#cluster-management-table-tbody");
-
+           
         //let user know 7 - 15 minutes restarting services
       },
       error: function(data){

@@ -56,10 +56,10 @@
 
 </style>
 </head>
-<div id="success-alert"><div style="padding: 10px;" id="successMessage"></div></div>
-<div id="error-alert"><div style="padding: 10px;" id="errorMessage"></div></div>
 <div class="card">
     <div class="card-block">
+      <div id="success-alert" style="display:none; background-color: #28a745; color: white;"><div style="padding: 10px;" id="successMessage"></div></div>
+      <div id="error-alert" style="display:none; background-color: #dc3545; color: white;"><div style="padding: 10px;" id="errorMessage"></div></div>
         <h2>[% l('Certificates') %]</h2>
           <ul class="nav nav-tabs">
             <li class="active">
