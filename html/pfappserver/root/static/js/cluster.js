@@ -1,4 +1,19 @@
-var fakeData = [
+var fakeData = {
+      "interfaces":[
+        {
+            "name":"eth0",
+            "vip":"10.0.123.254"
+        },
+        {
+            "name":"eth0.10",
+            "vip":"192.168.10.254"
+        },
+        {
+            "name":"eth1",
+            "vip":"10.0.234.254"
+        }
+    ],
+    "nodes": [
         {
             "hostname":"a3_node1.aerohive.com",
             "ipaddr":"10.155.100.1",
@@ -16,9 +31,9 @@ var fakeData = [
             "ipaddr":"10.155.100.3",
             "type":"slave",
             "status":"inactive"
-        },
-    ]
-
+        }
+      ]
+}
 
 $(document).ready(function(){
     // getClusterStatusInfo();
@@ -34,12 +49,20 @@ $(document).ready(function(){
 
     // getClusterStatusInfo();
 
-    $.each(fakeData, function(i, members){
+    $.each(fakeData.nodes, function(i, members){
       console.log("inside each function");
       if (members.type == "master"){
         $("#cluster-management-table-tbody").append("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
       } else {
         $("#cluster-management-table-tbody").append("<tr><td>" + "<input type='checkbox' class='remove-cluster-node' name='remove-cluster-node' id='remove-cluster-node' value=" + members.hostname + ">" + "</td><td>" +  members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
+      }
+    });
+
+    $.each(fakeData.interfaces, function(i, members){
+      if (members.name == "eth0.10"){
+        $("#net-interfaces-table-tbody").append("<tr><td>" + "VLAN 10" + "</td><td>" + members.vip + "</td></tr>");
+      } else {
+        $("#net-interfaces-table-tbody").append("<tr><td>" + members.name + "</td><td>" + members.vip + "</td></tr>");
       }
     });
 
@@ -131,7 +154,7 @@ function removeClusterNode(nodeArray){
         console.log(data);
         getClusterStatusInfo();
         $("#cluster-management-table").load("#cluster-management-table-tbody");
-           
+
         //let user know 7 - 15 minutes restarting services
       },
       error: function(data){
@@ -151,7 +174,7 @@ function getClusterStatusInfo(){
       success: function(fakeData){
         console.log("success");
         console.log(fakeData);
-        $.each(fakeData.items, function(i, members){
+        $.each(fakeData.nodes, function(i, members){
           console.log(members);
           if (members.type == "master"){
             $("#cluster-management-table-tbody").append("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
@@ -159,6 +182,14 @@ function getClusterStatusInfo(){
             $("#cluster-management-table-tbody").append("<tr><td>" + "<a id='remove' style='padding-left:1px;' href=''><i class='icon-trash-o'></i></a>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
           }
         });
+        $.each(fakeData.interfaces, function(i, members){
+          if (members.name == "eth0.10"){
+            $("#net-interfaces-table-tbody").append("<tr><td>" + "VLAN 10" + "</td><td>" + members.vip + "</td></tr>");
+          } else {
+            $("#net-interfaces-table-tbody").append("<tr><td>" + members.name + "</td><td>" + members.vip + "</td></tr>");
+          }
+        });
+
       },
       error: function(fakeData){
         document.getElementById('errorMessage').innerHTML = "Could not grab the cluster info";

@@ -15,7 +15,7 @@
   </li>
 [% END -%] -->
 
-<!-- <div class="removeModal fade hide in" id="removeConfirmation" aria-hidden="false" style="display:none;">
+<div class="removeModal fade hide in" id="removeConfirmation" aria-hidden="false" style="display:none;">
     <h3><i>Remove Selected Cluster Nodes?</i> <span></span></h3>
   </div>
   <div class="modal-body">
@@ -25,7 +25,7 @@
     <button type="button" class="btn btn-warning" id="close-modal" data-dismiss="removeModal">Close</button>
     <button type="button" class="btn btn-success" id="removing-node">Remove</button>
   </div>
-</div> -->
+</div>
 
 <div class="modal" id="removeModal" tabindex="-1" role="dialog" aria-hidden="true" role="dialog">
   <div class="modal-dialog" role="document">
@@ -63,6 +63,20 @@
           <label style="float:left; width:130px;">  </label>
           <button class="btn btn-success submit" id="submitNewClusterInfo" style="width: 220px;">Submit</button>
 
+          <br/>
+          <h6>Network Interfaces</h6>
+          <table id="items net-interfaces-table" class="table items">
+            <thead>
+              <tr>
+                <th>Interface</th>
+                <th>VIP</th>
+              </tr>
+            </thead>
+            <tbody id="net-interfaces-table-tbody">
+            </tbody>
+          </table>
+
+          <br/>
           <br/>
           <h6>Cluster Node List</h6>
           <table id="items cluster-management-table" class="table items">
