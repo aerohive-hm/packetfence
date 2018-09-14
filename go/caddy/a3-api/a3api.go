@@ -78,12 +78,14 @@ func buildA3apiHandler(ctx context.Context) (A3apiHandler, error) {
 
 
 func (h A3apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	ctx := r.Context()
+	//ctx := r.Context()
 
-	if ( apibackend.HandleRedirect(w, r) == "redirect" ) {
+    /*  keep open now
+	if apibackend.HandleRedirect(w, r) == "redirect"  {
 		log.LoggerWContext(ctx).Error(fmt.Sprintf("initial setup done, redirect path %s", r.URL.Path))
 		return h.Next.ServeHTTP(w, r)
 	}
+	*/
 
 	if handle, params, _ := h.router.Lookup(r.Method, r.URL.Path); handle != nil {
 		w.Header().Set("Content-Type", "application/json")
