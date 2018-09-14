@@ -253,6 +253,24 @@ func CheckMaskValid(mask string) error {
 	return nil
 }
 
+func IsBroadcastIp(ip, mask string) bool {
+	netip := utils.IpBitwiseAndMask(ip, mask)
+	snetip := strings.Split(netip, ".")
+	smask := strings.Split(mask, ".")
+	s := make([]string, 4)
+	for k := 0; k < 4; k++ {
+		value, _ := strconv.Atoi(snetip[k])
+		mvalue, _ := strconv.Atoi(smask[k])
+		b := (uint(^mvalue) | uint(value)) & 255
+		s[k] = strconv.Itoa(int(b))
+	}
+	boradip := strings.Join(s, ".")
+	if ip == boradip {
+		return true
+	}
+	return false
+}
+
 func CheckItemValid(ctx context.Context, enable bool, items []Item) error {
 	err := CheckItemIpValid(ctx, enable, items)
 	if err != nil {

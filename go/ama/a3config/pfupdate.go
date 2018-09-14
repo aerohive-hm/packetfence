@@ -40,11 +40,23 @@ func UpdateInterface(i Item) error {
 	if err != nil {
 		return err
 	}
+	/*check  ip if the broadcast*/
+	if IsBroadcastIp(i.IpAddr, i.NetMask) {
+		msg := fmt.Sprintf("ip (%s) is broadcast ip", i.IpAddr)
+		return errors.New(msg)
+	}
 	/*check ip vip the same net range*/
 	if clusterEnableDefault {
-		/*check ip vip the same net range*/
-		if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
-			msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
+		/*only primary check ip vip the same net range*/
+		if ReadClusterPrimary() == "" {
+			if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
+				msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
+				return errors.New(msg)
+			}
+		}
+		/*check  vip if the broadcast*/
+		if IsBroadcastIp(i.Vip, i.NetMask) {
+			msg := fmt.Sprintf("vip (%s) is broadcast ip", i.Vip)
 			return errors.New(msg)
 		}
 		/*check vip if exsit*/
@@ -222,6 +234,10 @@ func WriteUserPassToPF(host, username, passw string) error {
 	}
 	return A3Commit("PF", section)
 
+}
+func DeleteClusterPrimary() error {
+	sectionid := []string{"Cluster Primary", "webservices"}
+	return A3Delete("PF", sectionid)
 }
 func UpdatePrimaryHostnameToClusterPF(hostname string) error {
 
