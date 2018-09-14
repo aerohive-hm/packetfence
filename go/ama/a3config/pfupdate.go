@@ -47,6 +47,12 @@ func UpdateInterface(i Item) error {
 	}
 	/*check ip vip the same net range*/
 	if clusterEnableDefault {
+		/*check ip if equal vip*/
+		if i.IpAddr == i.Vip {
+			msg := fmt.Sprintf("ip(%s) and vip(%s) are the same", i.IpAddr, i.Vip)
+			return errors.New(msg)
+		}
+
 		/*only primary check ip vip the same net range*/
 		if ReadClusterPrimary() == "" {
 			if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
@@ -54,6 +60,7 @@ func UpdateInterface(i Item) error {
 				return errors.New(msg)
 			}
 		}
+
 		/*check  vip if the broadcast*/
 		if IsBroadcastIp(i.Vip, i.NetMask) {
 			msg := fmt.Sprintf("vip (%s) is broadcast ip", i.Vip)
@@ -65,8 +72,8 @@ func UpdateInterface(i Item) error {
 
 		if vip != i.Vip {
 			if utils.IsIpExists(i.Vip) {
-				//msg := fmt.Sprintf("%s is exsit in net", i.Vip)
-				//return errors.New(msg)
+				msg := fmt.Sprintf("%s is exsit in net", i.Vip)
+				return errors.New(msg)
 			}
 		}
 	}
