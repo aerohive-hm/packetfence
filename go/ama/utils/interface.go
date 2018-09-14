@@ -327,7 +327,8 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 			info := fmt.Sprintf("UpdateVlanIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
 			fmt.Println(info)
 			log.LoggerWContext(context.Background()).Info(info)
-			if IsIpExists(ip) {
+
+			if oldip != ip && IsIpExists(ip) {
 				msg := fmt.Sprintf("%s is exsit in net", ip)
 				return errors.New(msg)
 			}
@@ -382,8 +383,7 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 			return errors.New(msg)
 		}
 		/*check ip if is exsit*/
-		/*check ip if is exsit*/
-		if IsIpExists(ip) {
+		if oldip != ip && IsIpExists(ip) {
 			msg := fmt.Sprintf("%s is exsit in net", ip)
 			return errors.New(msg)
 		}
