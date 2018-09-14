@@ -52,7 +52,15 @@ $(document).ready(function(){
       }
     } else {
       console.log("ca is not empty");
+      if(eap_key.files.length != 0 && eap_server_cert.files.length != 0){
         uploadCertAndKey(eap_server_cert, eap_key, "eap_tls_form", "eap", document.getElementById('caCert_upload'));
+      } else {
+        document.getElementById('errorMessage').innerHTML = "Upload both a key and certificate file.";
+        $("#error-alert").show();
+        setTimeout(function(){
+          $("#error-alert").slideUp(500);
+        }, 3000);
+      }
     }
   }
 
@@ -305,7 +313,8 @@ function removeCert(path){
 function downloadFile (fileName, data){
   console.log("download file");
   console.log(data);
-  data = JSON.stringify(data);
+  data = JSON.stringify(data.Cert_Content)
+  data = data.replace(/\\n/g,"\n").replace(/"/g,"");
   console.log('- - - - - - -- - - ');
   var element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
