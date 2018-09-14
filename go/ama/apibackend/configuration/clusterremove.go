@@ -12,6 +12,7 @@ import (
 
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	//"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -61,6 +62,7 @@ func syncRemove2Other(ctx context.Context) {
 	a3share.NotifyClusterStatus(a3share.StartSync)
 
 	//notify cloud server removed in cluster
+	//amac.UpdateMsgToRdcSyn(ctx, amac.RemoveNodeFromCluster)
 
 }
 

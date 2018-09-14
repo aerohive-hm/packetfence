@@ -324,7 +324,7 @@ func distributeToSingleNode(ctx context.Context, mem a3config.NodeInfo, selfRene
 	3) If selfRenew is true, will notice every node to renew RDC token by itself.
 */
 func TriggerUpdateNodesToken(ctx context.Context, selfRenew bool) {
-	nodeList := a3config.FetchNodesInfo()
+	nodeList := a3config.ClusterNew().FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 	for _, node := range nodeList {
 		if node.IpAddr == ownMgtIp {
