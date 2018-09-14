@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Iface struct {
@@ -323,6 +324,9 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 		oldmasklen, _ := strconv.Atoi(oldmask)
 		if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
 			/*check ip if is exsit*/
+			info := fmt.Sprintf("UpdateVlanIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
+			fmt.Println(info)
+			log.LoggerWContext(context.Background()).Info(info)
 			if IsIpExists(ip) {
 				msg := fmt.Sprintf("%s is exsit in net", ip)
 				return errors.New(msg)
@@ -365,7 +369,6 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 }
 
 func UpdateEthIface(ifname string, ip, mask string) error {
-	var err error
 	gateway := GetA3DefaultGW()
 	oldip, oldmask := GetifaceIpInfo(ifname)
 	oldmasklen, _ := strconv.Atoi(oldmask)
@@ -384,32 +387,36 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 			msg := fmt.Sprintf("%s is exsit in net", ip)
 			return errors.New(msg)
 		}
+		go doUpdateEthIface(ifname, ip, oldip, mask, gateway)
+	}
+	return nil
+}
+func doUpdateEthIface(ifname, ip, oldip, mask, gateway string) error {
 
-		err = DelIfaceIIpAddr(ifname, oldip)
+	time.Sleep(time.Duration(2) * time.Second)
+	err := DelIfaceIIpAddr(ifname, oldip)
+	if err != nil {
+		return err
+	}
+	log.LoggerWContext(context.Background()).Info("DelIfaceIIpAddr OK:")
+	err = SetIfaceIIpAddr(ifname, ip, mask)
+	if err != nil {
+		return err
+	}
+	log.LoggerWContext(context.Background()).Info("SetIfaceIIpAddr OK:")
+	err = setInterfaceGateway(ifname, gateway)
+	if err != nil {
+		return err
+	}
+	log.LoggerWContext(context.Background()).Info("setInterfaceGateway OK:")
+	if !isIfaceActive(ifname) {
+		err = SetIfaceUp(ifname)
 		if err != nil {
 			return err
-		}
-		log.LoggerWContext(context.Background()).Info("DelIfaceIIpAddr OK:")
-		err = SetIfaceIIpAddr(ifname, ip, mask)
-		if err != nil {
-			return err
-		}
-		log.LoggerWContext(context.Background()).Info("SetIfaceIIpAddr OK:")
-		err = setInterfaceGateway(ifname, gateway)
-		if err != nil {
-			return err
-		}
-		log.LoggerWContext(context.Background()).Info("setInterfaceGateway OK:")
-		if !isIfaceActive(ifname) {
-			err = SetIfaceUp(ifname)
-			if err != nil {
-				return err
-			}
 		}
 	}
 	return nil
 }
-
 func IsManagement(mip string) bool {
 	out, err := ExecShell("sudo ip -4 -o addr show")
 	if err != nil {
