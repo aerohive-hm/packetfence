@@ -206,3 +206,11 @@
 .ant-popover-inner{
     background: #b6e3f6;
 }
+
+
+.form-button-div-aerohiveCloudCtl .ant-btn{
+    padding-left:0px !important ;
+    padding-right: 0px !important ;
+    padding-top:0px !important ;
+    padding-bottom: 0px !important ;
+}
