@@ -88,9 +88,12 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		ama.UpdateClusterNodeStatus(sync.SendIp, ama.SyncFinished)
 		if ama.IsAllNodeStatus(ama.SyncFinished) {
 			utils.RecoverDB()
+			ama.SetClusterStatus(ama.Idle)
 		}
 	case sync.Status == a3share.ServerRemoved:
 		utils.RemoveFromCluster()
+	case sync.Status == a3share.UpdateConf:
+		utils.RestartKeepAlived()
 	default:
 		code = "fail"
 		ret = "Unkown status."

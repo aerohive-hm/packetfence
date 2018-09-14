@@ -63,14 +63,14 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		ret = err.Error()
-		a3config.DeleteClusterPrimary()
+		//a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
 	err, clusterRespData := a3share.UpdatePrimaryNetworksData(ctx, *clusternetdata)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdatePrimaryNetworksData error:" + err.Error())
 		ret := err.Error()
-		a3config.DeleteClusterPrimary()
+		//a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
 
@@ -78,7 +78,7 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateClusterNetworksData error:" + err.Error())
 		ret := err.Error()
-		a3config.DeleteClusterPrimary()
+		//a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
 

@@ -20,6 +20,7 @@ const (
 	FinishSync       = "FinishSync"
 	PrimaryRecovered = "PrimaryRecovered"
 	ServerRemoved    = "ServerRemoved"
+	UpdateConf       = "UpdateConf"
 )
 
 type SyncData struct {
