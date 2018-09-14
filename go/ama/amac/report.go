@@ -119,17 +119,17 @@ func ReportDbTable(ctx context.Context, data []byte) int {
 	   To do, pop redis queue instead of inputing data
 	*/
 
+	//log.LoggerWContext(ctx).Info("print table.Data")
+	//log.LoggerWContext(ctx).Info(string(table.Data))
+
+	fillReportHeader(&reportMsg.Header)
+	reportMsg.Data.MsgType = "a3-report-db"
+
 	err := json.Unmarshal(data, &table.Data)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return -1
 	}
-	//log.LoggerWContext(ctx).Info("print table.Data")
-	//log.LoggerWContext(ctx).Info(string(table.Data))
-
-	fillReportHeader(&reportMsg.Header)
-	reportMsg.Data.MsgType = "a3reportingDB"
-
 	reportMsg.Data.Tables = append(reportMsg.Data.Tables, table.Data)
 
 	res := sendReport2Cloud(ctx, &reportMsg)
@@ -140,7 +140,7 @@ func reportSysInfo(ctx context.Context) int {
 	reportMsg := ReportSysInfoMessage{}
 
 	fillReportHeader(&reportMsg.Header)
-	reportMsg.Data.MsgType = "a3reportingsysteminfo"
+	reportMsg.Data.MsgType = "a3-report-system-info"
 
 	system := utils.GetCpuMem()
 	reportMsg.Data.CpuUsage = int(system.CpuRate)
@@ -151,14 +151,13 @@ func reportSysInfo(ctx context.Context) int {
 	return res
 }
 func reportRoutine(ctx context.Context) {
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", reportInterval))
 	if reportInterval == 0 {
 		reportInterval = 30
 	}
 	// create a ticker for report
 	ticker := time.NewTicker(time.Duration(reportInterval) * time.Second)
 	failCount := 0
-
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", reportInterval))
 	for _ = range ticker.C {
 		/*
 			check if allow to the connect to cloud, if not,
