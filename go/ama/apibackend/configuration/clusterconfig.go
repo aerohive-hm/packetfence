@@ -13,6 +13,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/database"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -66,6 +67,11 @@ func handlePostClusterInfo(r *http.Request, d crud.HandlerData) []byte {
 	//restart keepalived service
 	utils.RestartKeepAlived()
 	//notify other node sync configuration and restart keepalived
+	err = utils.SyncFromMaster(utils.A3Root + `/conf/pf.conf`)
+	if err != nil {
+		return []byte(err.Error())
+	}
+	a3share.NotifyClusterStatus(a3share.UpdateConf)
 
 	code = "ok"
 	return crud.FormPostRely(code, retMsg)

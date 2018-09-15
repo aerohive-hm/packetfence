@@ -34,6 +34,7 @@ func UpdateHostname(hostname string) error {
 	return A3Commit("PF", section)
 }
 
+// Configure primary and cluster node will call this function
 func UpdateInterface(i Item) error {
 	ifname := ChangeUiInterfacename(i.Name, strings.ToLower(i.Prefix))
 	/*check mask is valid*/
@@ -53,11 +54,9 @@ func UpdateInterface(i Item) error {
 			msg := fmt.Sprintf("ip(%s) and vip(%s) are the same", i.IpAddr, i.Vip)
 			return errors.New(msg)
 		}
-
 		/*only primary check vip if valid*/
-		if ReadClusterPrimary() == "" {
+		if !Isclusterjoin {
 			vip := ClusterNew().GetPrimaryClusterVip(ifname)
-
 			if vip != i.Vip {
 				/*check vip if the same net range*/
 				if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {

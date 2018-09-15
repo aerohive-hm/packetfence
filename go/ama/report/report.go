@@ -40,6 +40,10 @@ func (d ViolationParseStruct) GetTableKey4Redis() string {
 	return fmt.Sprintf("%s+%s", d.TableName, d.Id)
 }
 
+func (d RadauditParseStruct) GetTableKey4Redis() string {
+	return fmt.Sprintf("%s+%s", d.TableName, d.Id)
+}
+
 type ReportData struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
@@ -75,6 +79,8 @@ func GetkeyfromPostReport(r *http.Request, d crud.HandlerData) string {
 		parseReportData = new(ClassParseStruct)
 	case "violation":
 		parseReportData = new(ViolationParseStruct)
+	case "radius_audit_log":
+		parseReportData = new(RadauditParseStruct)
 
 	default:
 		log.LoggerWContext(ctx).Error(fmt.Sprintf("don't know table %s", reportData.TableName))

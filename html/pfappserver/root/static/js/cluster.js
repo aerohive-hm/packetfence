@@ -1,30 +1,12 @@
-var fakeData = [
-        {
-            "hostname":"a3_node1.aerohive.com",
-            "ipaddr":"10.155.100.1",
-            "type":"master",
-            "status":"active"
-        },
-        {
-            "hostname":"a3_node2.aerohive.com",
-            "ipaddr":"10.155.100.2",
-            "type":"slave",
-            "status":"active"
-        },
-        {
-            "hostname":"a3_node3.aerohive.com",
-            "ipaddr":"10.155.100.3",
-            "type":"slave",
-            "status":"inactive"
-        },
-    ]
-
 
 $(document).ready(function(){
-    // getClusterStatusInfo();
-    document.getElementById("submitNewClusterInfo").onclick = function(){
-      console.log("in submitNewClusterInfo");
+    //functions in this file:
+    //getCheckedNodes(inputTbody)
+    //getClusterStatusInfo()
+    //submitClusterInfo()
+    //removeClusterNode(nodeArray)
 
+    document.getElementById("submitNewClusterInfo").onclick = function(){
       if( $("#sharedKey").val().length === 0 || $("#vrid").val().length === 0 || $("#vip").val().length === 0 ) {
         $(this).parents('p').addClass('warning');
       } else {
@@ -32,34 +14,27 @@ $(document).ready(function(){
       }
     }
 
-    // getClusterStatusInfo();
+    $("#cluster-management-table-tbody tr").remove();
+    $("#net-interfaces-table-tbody tr").remove();
+    getClusterStatusInfo();
 
-    $.each(fakeData, function(i, members){
-      console.log("inside each function");
-      if (members.type == "master"){
-        $("#cluster-management-table-tbody").append("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
-      } else {
-        $("#cluster-management-table-tbody").append("<tr><td>" + "<input type='checkbox' class='remove-cluster-node' name='remove-cluster-node' id='remove-cluster-node' value=" + members.hostname + ">" + "</td><td>" +  members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
-      }
-    });
-
-
-    //button press on trashcan, array, removeClusterNode();
+    //button press on trashcan, array, removeClusterNode(), removeClusterNode(nodeArray)
     document.getElementById('remove-node').onclick = function(){
         var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         console.log("get List of nodes: "); console.log(getListOfNodes);
 
         $('.removeModal').show();
-        $("#listOfSelectedNodes").text(getListOfNodes);
+        $("#listOfSelectedNodes").text(getListOfNodes + "will be removed from the cluster");
 
         $('#close-modal').on('click', function() {
-            $('#openModal').hide();
+            $('modal').hide();
         });
-        $('#removing-modal').on('click', function() {
+        $('#removing-node').on('click', function() {
             removeClusterNode(getListOfNodes);
-            $('#openModal').hide();
+            $('modal').hide();
         });
     }
+
 });
 
 function getCheckedNodes(inputTbody){
@@ -131,7 +106,6 @@ function removeClusterNode(nodeArray){
         console.log(data);
         getClusterStatusInfo();
         $("#cluster-management-table").load("#cluster-management-table-tbody");
-
         //let user know 7 - 15 minutes restarting services
       },
       error: function(data){
@@ -148,16 +122,30 @@ function getClusterStatusInfo(){
   $.ajax({
       type: 'GET',
       url: base_url + '/a3/api/v1/configuration/cluster',
-      success: function(fakeData){
+      success: function(data){
         console.log("success");
-        console.log(fakeData);
-        $.each(fakeData.items, function(i, members){
+        console.log(data);
+        //cluster management table
+        $.each(data.nodes, function(i, members){
           console.log(members);
           if (members.type == "master"){
             $("#cluster-management-table-tbody").append("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
           } else {
-            $("#cluster-management-table-tbody").append("<tr><td>" + "<a id='remove' style='padding-left:1px;' href=''><i class='icon-trash-o'></i></a>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
+            $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' />" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
           }
+        });
+        //interfaces table
+        $.each(data.interfaces, function(ethr, vip) {
+            if(ethr.indexOf('.') !== -1){ //if there is period
+              ethr = "VLAN" + ethr.split(".").pop();
+              $("#net-interfaces-table-tbody").append("<tr><td style='padding-left:25px;'>" + ethr + "</td><td>" + vip + "</td></tr>");
+            } else {
+              ethr = ethr;
+              $("#net-interfaces-table-tbody").append("<tr><td>" + ethr + "</td><td>" + vip + "</td></tr>");
+            }
+        });
+        $('table tr:nth-child(even) td').each(function(){
+            $(this).css('background-color', '#f4f6f9');
         });
       },
       error: function(fakeData){
