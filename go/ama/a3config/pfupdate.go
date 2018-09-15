@@ -35,6 +35,7 @@ func UpdateHostname(hostname string) error {
 }
 
 func UpdateInterface(i Item) error {
+	ifname := ChangeUiInterfacename(i.Name, strings.ToLower(i.Prefix))
 	/*check mask is valid*/
 	err := CheckMaskValid(i.NetMask)
 	if err != nil {
@@ -45,7 +46,7 @@ func UpdateInterface(i Item) error {
 		msg := fmt.Sprintf("ip (%s) is broadcast ip", i.IpAddr)
 		return errors.New(msg)
 	}
-	/*check ip vip the same net range*/
+
 	if clusterEnableDefault {
 		/*check ip if equal vip*/
 		if i.IpAddr == i.Vip {
@@ -53,26 +54,32 @@ func UpdateInterface(i Item) error {
 			return errors.New(msg)
 		}
 
-		/*only primary check ip vip the same net range*/
+		/*only primary check vip if valid*/
 		if ReadClusterPrimary() == "" {
+			vip := ClusterNew().GetPrimaryClusterVip(ifname)
+
+			if vip != i.Vip {
+				/*check vip if the same net range*/
+				if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
+					msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
+					return errors.New(msg)
+				}
+				/*check vip if exsit*/
+				if utils.IsIpExists(i.Vip) {
+					msg := fmt.Sprintf("%s is exsit in net", i.Vip)
+					return errors.New(msg)
+				}
+				/*check vip if the broadcast*/
+				if IsBroadcastIp(i.Vip, i.NetMask) {
+					msg := fmt.Sprintf("vip (%s) is broadcast ip", i.Vip)
+					return errors.New(msg)
+				}
+			}
+
+		} else {
+			/*cluster vip is solid ,noly check ip valid*/
 			if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
 				msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
-				return errors.New(msg)
-			}
-		}
-
-		/*check  vip if the broadcast*/
-		if IsBroadcastIp(i.Vip, i.NetMask) {
-			msg := fmt.Sprintf("vip (%s) is broadcast ip", i.Vip)
-			return errors.New(msg)
-		}
-		/*check vip if exsit*/
-		ifname := ChangeUiInterfacename(i.Name, strings.ToLower(i.Prefix))
-		vip := ClusterNew().GetPrimaryClusterVip(ifname)
-
-		if vip != i.Vip {
-			if utils.IsIpExists(i.Vip) {
-				msg := fmt.Sprintf("%s is exsit in net", i.Vip)
 				return errors.New(msg)
 			}
 		}
