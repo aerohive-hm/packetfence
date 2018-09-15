@@ -112,7 +112,7 @@ func UpdateEthInterface(i Item) error {
 		Type = strings.ToLower(i.Type)
 	}
 
-	if i.Vip != "" && i.Vip != "0.0.0.0" {
+	if clusterEnableDefault {
 		Type = fmt.Sprintf("%s,high-availability", Type)
 	}
 
