@@ -56,10 +56,10 @@
 
 </style>
 </head>
-<div id="success-alert"><div style="padding: 10px;" id="successMessage"></div></div>
-<div id="error-alert"><div style="padding: 10px;" id="errorMessage"></div></div>
 <div class="card">
     <div class="card-block">
+      <div id="success-alert" style="display:none; background-color: #28a745; color: white;"><div style="padding: 10px;" id="successMessage"></div></div>
+      <div id="error-alert" style="display:none; background-color: #dc3545; color: white;"><div style="padding: 10px;" id="errorMessage"></div></div>
         <h2>[% l('Certificates') %]</h2>
           <ul class="nav nav-tabs">
             <li class="active">
@@ -79,7 +79,7 @@
                       <div class="server">
                         <h6>Server Certificate and Key Upload</h6>
                         <span>A server key and server certificate are required.
-                          Uploading cert files requires a restart of all httpd services. </span>
+                          Uploading certificate files requires a restart of all httpd services. </span>
                         <br><br>
                         <h5>Current Server Certificate <a class="btn" id="download_button_https" style="margin-left: 447px;"> Download </a></h5>
                         <div id="https_serv_view_more"></div>
@@ -107,7 +107,7 @@
                   <div class="server">
                     <h6>Server Certificate and Key Upload</h6>
                     <span>A server key and server certificate are required. Uploading a CA certificate is optional.</span>
-                    <span>Uploading cert files requires a restart of radiusd service.</span>
+                    <span>Uploading certificate files requires a restart of radiusd service.</span>
                     <br><br>
                     <div class="certificate-info">
                       <h5>Current Server Certificate <a class="btn" id="download_button_eap_serv" style="margin-left: 447px;">Download</a></h5>
