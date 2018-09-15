@@ -404,7 +404,8 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 	return nil
 }
 
-func IsManagement(mip string) bool {
+// check if we are vip owner
+func IsManagement(vip string) bool {
 	out, err := ExecShell("sudo ip -4 -o addr show")
 	if err != nil {
 		return false
@@ -419,7 +420,7 @@ func IsManagement(mip string) bool {
 
 	for _, item := range ret {
 		net := strings.Split(item[1], "/")
-		if net[1] == "32" && net[0] == mip {
+		if net[1] == "32" && net[0] == vip {
 			return true
 		}
 	}
