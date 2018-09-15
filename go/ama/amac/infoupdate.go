@@ -90,6 +90,26 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 	return 0
 }
 
+func getSuccPrompt(msgType int) string {
+	switch msgType {
+	case RemoveNodeFromCluster:
+		return "Remove the link from cloud successfully"
+
+	default:
+		return ""
+	}
+}
+
+func getFailPrompt(msgType int) string {
+	switch msgType {
+	case RemoveNodeFromCluster:
+		return "Remove the link from cloud fail"
+
+	default:
+		return ""
+	}
+}
+
 /*
 	This function is used to send update message if network/license changes
 	be aware: synchronous mode, should be called by rest APIs and return the
@@ -128,7 +148,6 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, s
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
-			log.LoggerWContext(ctx).Info("remove node message to RDC fail")
 			log.LoggerWContext(ctx).Info(err.Error())
 			return -1, SrvNoResponse
 		}
@@ -153,10 +172,10 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, s
 				return -1, InvalidToken
 			}
 		} else if statusCode == 200 {
-			return 0, UpdateMsgSuc
+			return 0, getSuccPrompt(msgType)
 		} else {
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Update message faile, server(RDC) respons the code %d", statusCode))
-			return -1, InvalidToken
+			return -1, getFailPrompt(msgType)
 		}
 	}
 	return 0, UpdateMsgSuc
@@ -167,5 +186,13 @@ func JoinCompleteEvent() {
 
 	event.MsgType = JoinClusterComplete
 	event.Data = "Join cluster complete"
+	MsgChannel <- *event
+}
+
+func EnableCloundIntegration(enableOrDisable string) {
+	event := new(MsgStru)
+
+	event.MsgType = CloudIntegrateFunction
+	event.Data = enableOrDisable
 	MsgChannel <- *event
 }
