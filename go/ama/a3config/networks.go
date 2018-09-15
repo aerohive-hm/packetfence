@@ -31,6 +31,7 @@ type NetworksData struct {
 
 var contextNetworks = log.LoggerNewContext(context.Background())
 var clusterEnableDefault = true
+var Isclusterjoin = false
 
 func GetItemsValue(ctx context.Context) []Item {
 	var items []Item
@@ -66,12 +67,12 @@ func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
 	for _, item := range items {
 		err = UpdateInterface(item)
 		if err != nil {
-			log.LoggerWContext(ctx).Error("UpdateInterface error:" + err.Error())
+			log.LoggerWContext(ctx).Error("Update Interface error:" + err.Error())
 			return err
 		}
 		err = UpdateNetconf(item)
 		if err != nil {
-			log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
+			log.LoggerWContext(ctx).Error("Update Netconf error:" + err.Error())
 			return err
 		}
 		err = writeOneNetworkConfig(ctx, item)
@@ -122,6 +123,7 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 		context = ctx
 	}
 	clusterEnableDefault = networksData.ClusterEnable
+	Isclusterjoin = false
 	if len(networksData.Items) == 0 {
 		/*only update cluster enable*/
 		return nil

@@ -143,7 +143,7 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	defer db.Close()
 
 	//Fetch LicensedCapacity data
-	results, err := db.Query("SELECT endpoint_count FROM a3_entitlement where type != 'Trial'")
+	results, err := db.Query("SELECT endpoint_count FROM a3_entitlement where TO_DAYS(NOW()) < TO_DAYS(sub_end) AND type != 'Trial'")
 	if err != nil {
 		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
@@ -158,7 +158,7 @@ func (lic *A3License) GetValue(ctx context.Context) {
 		}
 		if lic.LicensedCapacity == 0 {
 			var trialCount int
-			err = db.QueryRow("SELECT endpoint_count FROM a3_entitlement where type = 'Trial'").Scan(&trialCount)
+			err = db.QueryRow("SELECT endpoint_count FROM a3_entitlement where TO_DAYS(NOW()) < TO_DAYS(sub_end) AND type = 'Trial'").Scan(&trialCount)
 			if err != nil {
 				log.LoggerWContext(context).Error("Query database error: " + err.Error())
 			} else {

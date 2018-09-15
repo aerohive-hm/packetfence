@@ -132,6 +132,7 @@ func ActiveSyncFromPrimary(ip, user, password string) {
 	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start")
 	utils.ExecShell(`systemctl restart packetfence-api-frontend`)
 	a3share.SendClusterSync(ip, a3share.FinishSync)
+	ama.ClearClusterStatus()
 
 	utils.UpdateCurrentlyAt()
 
