@@ -113,7 +113,7 @@ func (sections Section) FetchNodesInfo() []NodeInfo {
 
 func DeletePrimaryClusterconf(i Item) error {
 	isvlan := VlanInface(i.Name)
-	ifname := ChangeUiInterfacename(i.Name)
+	ifname := ChangeUiInterfacename(i.Name, i.Prefix)
 	hostname := GetPfHostname()
 	if isvlan {
 		sectionid := []string{
@@ -174,7 +174,7 @@ func UpdatePrimaryClusterconf(enable bool, i Item) error {
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		name := []rune(i.Name) /*need to delete vlan for name*/
-		keyname = fmt.Sprintf("CLUSTER interface eth0.%s", string(name[4:]))
+		keyname = fmt.Sprintf("CLUSTER interface %s.%s", i.Prefix, string(name[4:]))
 		section := Section{
 			keyname: {
 				"ip": i.Vip,
@@ -183,11 +183,12 @@ func UpdatePrimaryClusterconf(enable bool, i Item) error {
 		return A3Commit("CLUSTER", section)
 
 	} else {
+		sectionid := fmt.Sprintf("CLUSTER interface %s", i.Prefix)
 		section := Section{
 			"CLUSTER": {
 				"management_ip": i.Vip,
 			},
-			"CLUSTER interface eth0": {
+			sectionid: {
 				"ip": i.Vip,
 			},
 		}
@@ -206,7 +207,7 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 	isvlan := VlanInface(i.Name)
 	if isvlan {
 		name := []rune(i.Name) /*need to delete vlan for name*/
-		keyname = fmt.Sprintf("%s interface eth0.%s", hostname, string(name[4:]))
+		keyname = fmt.Sprintf("%s interface %s.%s", hostname, i.Prefix, string(name[4:]))
 
 		section := Section{
 			keyname: {

@@ -46,8 +46,8 @@ fi
 
 #Create replication user
 DB_CLUSTER_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
-/usr/bin/mysql -u root -p$DB_ROOT_PW -e "CREATE USER 'aerohivecluster'@'%' IDENTIFIED BY ${DB_CLUSTER_USER_PW};"
-/usr/bin/mysql -u root -p$DB_ROOT_PW -e "CREATE USER 'aerohivecluster'@'localhost' IDENTIFIED BY ${DB_CLUSTER_USER_PW};"
+/usr/bin/mysql -u root -p$DB_ROOT_PW -e "CREATE USER 'aerohivecluster'@'%' IDENTIFIED BY '${DB_CLUSTER_USER_PW}';"
+/usr/bin/mysql -u root -p$DB_ROOT_PW -e "CREATE USER 'aerohivecluster'@'localhost' IDENTIFIED BY '${DB_CLUSTER_USER_PW}';"
 /usr/bin/mysql -u root -p$DB_ROOT_PW -e "GRANT PROCESS, RELOAD, LOCK TABLES, REPLICATION CLIENT, SUPER ON *.* TO 'aerohivecluster'@'%';"
 /usr/bin/mysql -u root -p$DB_ROOT_PW -e "GRANT PROCESS, RELOAD, LOCK TABLES, REPLICATION CLIENT, SUPER ON *.* TO 'aerohivecluster'@'localhost';"
 /usr/bin/mysql -u root -p$DB_ROOT_PW -e "FLUSH PRIVILEGES;"

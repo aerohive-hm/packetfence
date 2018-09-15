@@ -15,6 +15,7 @@ import (
 type Item struct {
 	Original string `json:"original"`
 	Name     string `json:"name"`
+	Prefix   string `json:"prefix,omitempty"`
 	IpAddr   string `json:"ip_addr"`
 	NetMask  string `json:"netmask"`
 	Vip      string `json:"vip"`
@@ -41,6 +42,7 @@ func GetItemsValue(ctx context.Context) []Item {
 	for _, iface := range ifaces {
 		item := new(Item)
 		iname := strings.Split(iface.Name, ".")
+		item.Prefix = iname[0]
 		if len(iname) > 1 {
 			item.Name = fmt.Sprintf("VLAN%s", iname[1])
 		} else {
@@ -144,16 +146,16 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 
 func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 	msg := ""
-	eth0ip := ""
-
+	eip := make(map[string]string)
 	/*ip and vip should be the same net range*/
 	for _, item := range items {
 		if enable && !utils.IsSameIpRange(item.IpAddr, item.Vip, item.NetMask) {
 			msg = fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", item.IpAddr, item.Vip)
 			return errors.New(msg)
 		}
-		if item.Name == "eth0" {
-			eth0ip = item.IpAddr
+
+		if !VlanInface(item.Name) {
+			eip[item.Name] = item.IpAddr
 		}
 		/*mask should be valid*/
 		err := CheckMaskValid(item.NetMask)
@@ -162,19 +164,19 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 		}
 	}
 
-	/*eth0 ip and vlan ip should not be the same net range*/
+	/*eth ip and vlan ip should not be the same net range*/
 	for k1, item := range items {
 		if !VlanInface(item.Name) {
 			continue
 		}
 
-		if utils.IsSameIpRange(item.IpAddr, eth0ip, item.NetMask) {
-			msg = fmt.Sprintf("eth0 ip(%s) and vlan (%s) should not be the same net range", eth0ip, item.IpAddr)
+		if utils.IsSameIpRange(item.IpAddr, eip[item.Prefix], item.NetMask) {
+			msg = fmt.Sprintf("%s ip(%s) and %s (%s) should not be the same net range", item.Prefix, eip[item.Prefix], item.Name, item.IpAddr)
 			return errors.New(msg)
 		}
 		/* vlan ip should not be the same*/
 		for k2, i := range items {
-			if !VlanInface(item.Name) || k1 == k2 {
+			if !VlanInface(i.Name) || k1 == k2 || item.Prefix != i.Prefix {
 				continue
 			}
 
@@ -192,6 +194,11 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 	return nil
 }
 
+func GetPrefixIP(i Item) string {
+	ifname := strings.ToLower(i.Prefix)
+	ip, _ := utils.GetifaceIpInfo(ifname)
+	return ip
+}
 func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	msg := ""
 	for _, item := range items {
@@ -246,6 +253,24 @@ func CheckMaskValid(mask string) error {
 	return nil
 }
 
+func IsBroadcastIp(ip, mask string) bool {
+	netip := utils.IpBitwiseAndMask(ip, mask)
+	snetip := strings.Split(netip, ".")
+	smask := strings.Split(mask, ".")
+	s := make([]string, 4)
+	for k := 0; k < 4; k++ {
+		value, _ := strconv.Atoi(snetip[k])
+		mvalue, _ := strconv.Atoi(smask[k])
+		b := (uint(^mvalue) | uint(value)) & 255
+		s[k] = strconv.Itoa(int(b))
+	}
+	boradip := strings.Join(s, ".")
+	if ip == boradip {
+		return true
+	}
+	return false
+}
+
 func CheckItemValid(ctx context.Context, enable bool, items []Item) error {
 	err := CheckItemIpValid(ctx, enable, items)
 	if err != nil {
@@ -274,7 +299,7 @@ const (
 // create ifcfg-xxx file and write IpAddr, Netmask
 // write gateway to system files
 func writeOneNetworkConfig(ctx context.Context, item Item) error {
-	ifname := ChangeUiInterfacename(item.Name)
+	ifname := ChangeUiInterfacename(item.Name, strings.ToLower(item.Prefix))
 	ip := item.IpAddr
 	netmask := item.NetMask
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig:ifname=%s ,ip =%s, netmask =%s", ifname, ip, netmask))

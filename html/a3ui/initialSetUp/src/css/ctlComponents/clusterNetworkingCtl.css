@@ -222,3 +222,11 @@
     width:78px;
     height:32px;
 }
+
+
+.form-button-div-clusterNetworkingCtl .ant-btn{
+    padding-left:0px !important ;
+    padding-right: 0px !important ;
+    padding-top:0px !important ;
+    padding-bottom: 0px !important ;
+}

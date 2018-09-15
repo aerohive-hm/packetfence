@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Iface struct {
@@ -307,16 +308,27 @@ func setInterfaceGateway(ifname, gateway string) error {
 	return nil
 }
 
-func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
+/*GetifaceIpInfo return ip and mask*/
+func GetifaceIpInfo(ifname string) (string, string) {
+	iface, i := GetIfaceList(ifname)
+	if i == 0 {
+		return iface[0].IpAddr, iface[0].NetMask
+	}
+	return "", ""
+}
+
+func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 	var err error
 	if IfaceExists(ifname) {
-		iface, _ := GetIfaceList(ifname)
-		oldip := iface[0].IpAddr
-
-		oldmasklen, _ := strconv.Atoi(iface[0].NetMask)
+		oldip, oldmask := GetifaceIpInfo(ifname)
+		oldmasklen, _ := strconv.Atoi(oldmask)
 		if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
 			/*check ip if is exsit*/
-			if IsIpExists(ip) {
+			info := fmt.Sprintf("UpdateVlanIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
+			fmt.Println(info)
+			log.LoggerWContext(context.Background()).Info(info)
+
+			if oldip != ip && IsIpExists(ip) {
 				msg := fmt.Sprintf("%s is exsit in net", ip)
 				return errors.New(msg)
 			}
@@ -342,7 +354,7 @@ func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
 			msg := fmt.Sprintf("%s is exsit in net", ip)
 			return errors.New(msg)
 		}
-		CreateVlanIface("eth0", vlan)
+		CreateVlanIface(prefix, vlan)
 		err = SetIfaceIIpAddr(ifname, ip, mask)
 		if err != nil {
 			return err
@@ -358,11 +370,9 @@ func UpdateVlanIface(ifname string, vlan, ip, mask string) error {
 }
 
 func UpdateEthIface(ifname string, ip, mask string) error {
-	var err error
 	gateway := GetA3DefaultGW()
-	iface, _ := GetIfaceList(ifname)
-	oldip := iface[0].IpAddr
-	oldmasklen, _ := strconv.Atoi(iface[0].NetMask)
+	oldip, oldmask := GetifaceIpInfo(ifname)
+	oldmasklen, _ := strconv.Atoi(oldmask)
 	if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
 		info := fmt.Sprintf("UpdateEthIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
 		fmt.Println(info)
@@ -373,32 +383,36 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 			return errors.New(msg)
 		}
 		/*check ip if is exsit*/
-		/*check ip if is exsit*/
-		if IsIpExists(ip) {
+		if oldip != ip && IsIpExists(ip) {
 			msg := fmt.Sprintf("%s is exsit in net", ip)
 			return errors.New(msg)
 		}
+		go doUpdateEthIface(ifname, ip, oldip, mask, gateway)
+	}
+	return nil
+}
+func doUpdateEthIface(ifname, ip, oldip, mask, gateway string) error {
 
-		err = DelIfaceIIpAddr(ifname, oldip)
+	time.Sleep(time.Duration(2) * time.Second)
+	err := DelIfaceIIpAddr(ifname, oldip)
+	if err != nil {
+		return err
+	}
+	log.LoggerWContext(context.Background()).Info("DelIfaceIIpAddr OK:")
+	err = SetIfaceIIpAddr(ifname, ip, mask)
+	if err != nil {
+		return err
+	}
+	log.LoggerWContext(context.Background()).Info("SetIfaceIIpAddr OK:")
+	err = setInterfaceGateway(ifname, gateway)
+	if err != nil {
+		return err
+	}
+	log.LoggerWContext(context.Background()).Info("setInterfaceGateway OK:")
+	if !isIfaceActive(ifname) {
+		err = SetIfaceUp(ifname)
 		if err != nil {
 			return err
-		}
-		log.LoggerWContext(context.Background()).Info("DelIfaceIIpAddr OK:")
-		err = SetIfaceIIpAddr(ifname, ip, mask)
-		if err != nil {
-			return err
-		}
-		log.LoggerWContext(context.Background()).Info("SetIfaceIIpAddr OK:")
-		err = setInterfaceGateway(ifname, gateway)
-		if err != nil {
-			return err
-		}
-		log.LoggerWContext(context.Background()).Info("setInterfaceGateway OK:")
-		if !isIfaceActive(ifname) {
-			err = SetIfaceUp(ifname)
-			if err != nil {
-				return err
-			}
 		}
 	}
 	return nil

@@ -12,8 +12,8 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/event"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -63,12 +63,14 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		ret = err.Error()
+		//a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
 	err, clusterRespData := a3share.UpdatePrimaryNetworksData(ctx, *clusternetdata)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdatePrimaryNetworksData error:" + err.Error())
 		ret := err.Error()
+		//a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
 
@@ -76,6 +78,7 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateClusterNetworksData error:" + err.Error())
 		ret := err.Error()
+		//a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
 

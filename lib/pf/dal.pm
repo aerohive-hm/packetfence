@@ -508,6 +508,7 @@ sub _insert_data {
        ($self->table eq 'locationlog') ||
        ($self->table eq 'radacct') ||
        ($self->table eq 'class') ||
+       ($self->table eq 'radius_audit_log') ||
        ($self->table eq 'ip4log')) {
        
         my $sendtable = $self->table;

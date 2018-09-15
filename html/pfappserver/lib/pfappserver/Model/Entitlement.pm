@@ -85,6 +85,14 @@ sub apply_entitlement_key {
             # On success, save entitlement properties and return object
             if (pf::a3_entitlement::create($key, $responseHash)) {
                 $logger->info("Total capacity is now " . $self->get_licensed_capacity());
+                eval {
+                    # LicenseChange = 3
+                    my $msgtype = 3;
+                    pf::api::unifiedapiclient->default_client->call("POST", "/a3/api/v1/event/perlevent", {msgtype => $msgtype,});
+                };
+                if ($@) {
+                    $self->logger->error("Error send LicenseInfoChange data to AMA : $@");
+                }
                 return pf::a3_entitlement::find_one($key);
             }
         }

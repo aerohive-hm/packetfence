@@ -238,3 +238,9 @@ func ServiceStatus() string {
 	percent := strconv.Itoa((started + 1) * 100 / toBeStarted)
 	return percent
 }
+
+func SyncFromMaster(file string) error {
+	cmd := A3Root + `/bin/cluster/sync --as-master --file=` + file
+	_, err := ExecShell(cmd)
+	return err
+}

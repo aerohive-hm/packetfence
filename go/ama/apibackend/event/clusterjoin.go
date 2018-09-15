@@ -57,7 +57,7 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 
 	if ama.IsClusterJoinMode() {
 		err = errors.New("another server is joining the cluster.")
-		goto END
+		return []byte(fmt.Sprintf(`{"code":"fail","msg":"%s"}`, err.Error()))
 	}
 	ama.InitClusterStatus("primary")
 

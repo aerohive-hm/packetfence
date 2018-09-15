@@ -32,17 +32,17 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 
 	switch msgType {
 	case NetworkChange:
-		log.LoggerWContext(ctx).Error("begin to send initerface change to RDC")
+		log.LoggerWContext(ctx).Info("begin to send initerface change to RDC")
 		nodeInfo = a3share.GetIntChgInfo(ctx)
 	case LicenseInfoChange:
-		log.LoggerWContext(ctx).Error("begin to send license update to RDC")
+		log.LoggerWContext(ctx).Info("begin to send license update to RDC")
 		nodeInfo = a3share.GetLicenseUpdateInfo(ctx)
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")
 	}
 
 	data, _ := json.Marshal(nodeInfo)
-	log.LoggerWContext(ctx).Error(string(data))
+	log.LoggerWContext(ctx).Info(string(data))
 	reader := bytes.NewReader(data)
 	for {
 		request, err := http.NewRequest("POST", asynMsgUrl, reader)
@@ -56,14 +56,13 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
-			log.LoggerWContext(ctx).Error("Update message to RDC fail")
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("receive the response %d", resp.StatusCode))
-		log.LoggerWContext(ctx).Error(string(body))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %d", resp.StatusCode))
+		log.LoggerWContext(ctx).Info(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
 		/*
