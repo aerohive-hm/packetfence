@@ -198,7 +198,6 @@ func RestartKeepAlived() {
 
 func RemoveFromCluster() {
 	cmds := []string{
-		"rm -f " + A3Root + "/conf/cluster.pf",
 		`systemctl stop packetfence-etcd`,
 		`rm -rf /usr/local/pf/var/etcd/`,
 	}

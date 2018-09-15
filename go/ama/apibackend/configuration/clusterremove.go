@@ -36,13 +36,35 @@ func handleGetClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 }
 
 // remove Cluster server on local
-func removeServerOnLocal(hostname []string) {
+func removeServerOnLocal(hostname []string) bool {
+
 	ama.InitClusterStatus("primary")
 
-	ip := utils.GetOwnMGTIp()
-	a3share.SendClusterSync(ip, a3share.ServerRemoved)
+	nodes := a3config.ClusterNew().FetchNodesInfo()
+
+	var ips []string
+	for _, h := range hostname {
+		ip := ""
+		for _, n := range nodes {
+			if h == n.Hostname {
+				ip = n.IpAddr
+				break
+			}
+		}
+
+		if ip == "" {
+			ama.ClearClusterStatus()
+			return false
+		}
+		ips = append(ips, ip)
+	}
+
+	for _, ip := range ips {
+		a3share.SendClusterSync(ip, a3share.ServerRemoved)
+	}
 	//remove node configuration from cluster.conf
 	a3config.RemoveClusterServer(hostname)
+	return true
 }
 
 // sync cluster remove to members
@@ -77,6 +99,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	removeData := new(a3config.ClusterRemoveData)
 	code := "fail"
 	retMsg := ""
+	var rc bool
 	var hostname string
 
 	err := json.Unmarshal(d.ReqData, removeData)
@@ -105,7 +128,11 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Try to remove cluster node = %s", removeData.Hostname))
-	removeServerOnLocal(removeData.Hostname)
+	rc = removeServerOnLocal(removeData.Hostname)
+	if !rc {
+		retMsg = "invalid hostname"
+		goto END
+	}
 	go syncRemove2Other(ctx)
 	code = "ok"
 END:
