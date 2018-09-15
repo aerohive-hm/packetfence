@@ -71,8 +71,9 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		if ama.IsClusterJoinMode() {
 			code = "fail"
 			ret = "already in cluster join"
-		} else {
+		} else {		
 			utils.StopService()
+			ama.SetClusterStatus(ama.PrepareSync)
 		}
 	case sync.Status == a3share.StartSync:
 		//primary tell slave node to start sync
@@ -82,13 +83,13 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf restart")
 
 		a3share.SendClusterSync(ip, a3share.FinishSync)
-		ama.SetClusterStatus(ama.Idle)
+		ama.ClearClusterStatus()
 	case sync.Status == a3share.FinishSync:
 		//slave node notify primary to sync completed
 		ama.UpdateClusterNodeStatus(sync.SendIp, ama.SyncFinished)
 		if ama.IsAllNodeStatus(ama.SyncFinished) {
 			utils.RecoverDB()
-			ama.SetClusterStatus(ama.Idle)
+			ama.ClearClusterStatus()
 		}
 	case sync.Status == a3share.ServerRemoved:
 		utils.RemoveFromCluster()

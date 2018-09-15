@@ -61,16 +61,19 @@ func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) Clust
 
 }
 
+
+// when cluster node join, update self networks data
 func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworksData, respData ClusterEventRespData) error {
 
 	web := respData.Items[0]
 	err := UpdateWebservices(web.User, web.Password)
 
 	if err != nil {
-		log.LoggerWContext(ctx).Error("UpdateWebservices error:" + err.Error())
+		log.LoggerWContext(ctx).Error("Update Webservices account error:" + err.Error())
 		return err
 	}
 
+	// update hostname to system and pf.conf
 	err = UpdateHostname(networksData.HostName)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
@@ -80,7 +83,7 @@ func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworks
 	for _, item := range networksData.Items {
 		err = UpdateInterface(item)
 		if err != nil {
-			log.LoggerWContext(ctx).Error("UpdateInterface error:" + err.Error())
+			log.LoggerWContext(ctx).Error("Update Interface error:" + err.Error())
 			return err
 		}
 

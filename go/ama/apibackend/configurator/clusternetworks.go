@@ -63,22 +63,22 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
 		ret = err.Error()
-		//a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
+
+	// update primary node networks data
+	a3config.Isclusterjoin = true
 	err, clusterRespData := a3share.UpdatePrimaryNetworksData(ctx, *clusternetdata)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("UpdatePrimaryNetworksData error:" + err.Error())
+		log.LoggerWContext(ctx).Error("Update Primary Node Networks Data error:" + err.Error())
 		ret := err.Error()
-		//a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
 
 	err = a3config.UpdateClusterNetworksData(ctx, *clusternetdata, clusterRespData)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("UpdateClusterNetworksData error:" + err.Error())
+		log.LoggerWContext(ctx).Error("Update My Networks Data error:" + err.Error())
 		ret := err.Error()
-		//a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
 

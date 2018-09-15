@@ -34,6 +34,8 @@ func UpdateHostname(hostname string) error {
 	return A3Commit("PF", section)
 }
 
+
+// Configure primary and cluster node will call this function
 func UpdateInterface(i Item) error {
 	/*check mask is valid*/
 	err := CheckMaskValid(i.NetMask)
@@ -45,21 +47,20 @@ func UpdateInterface(i Item) error {
 		msg := fmt.Sprintf("ip (%s) is broadcast ip", i.IpAddr)
 		return errors.New(msg)
 	}
-	/*check ip vip the same net range*/
-	if clusterEnableDefault {
+	/* primary node check ip and vip */
+	if clusterEnableDefault && !Isclusterjoin {
 		/*check ip if equal vip*/
 		if i.IpAddr == i.Vip {
 			msg := fmt.Sprintf("ip(%s) and vip(%s) are the same", i.IpAddr, i.Vip)
 			return errors.New(msg)
 		}
 
-		/*only primary check ip vip the same net range*/
-		if ReadClusterPrimary() == "" {
-			if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
-				msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
-				return errors.New(msg)
-			}
+		/* check ip vip the same net range*/
+		if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
+			msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
+			return errors.New(msg)
 		}
+
 
 		/*check  vip if the broadcast*/
 		if IsBroadcastIp(i.Vip, i.NetMask) {
@@ -70,11 +71,33 @@ func UpdateInterface(i Item) error {
 		ifname := ChangeUiInterfacename(i.Name, strings.ToLower(i.Prefix))
 		vip := ClusterNew().GetPrimaryClusterVip(ifname)
 
-		if vip != i.Vip {
+		if vip == "0.0.0.0" {
+			//first config
 			if utils.IsIpExists(i.Vip) {
-				//msg := fmt.Sprintf("%s is exsit in net", i.Vip)
-				//return errors.New(msg)
+				msg := fmt.Sprintf("%s is exsit in the network", i.Vip)
+				return errors.New(msg)
 			}
+		} else if vip != i.Vip {
+			if utils.IsIpExists(i.Vip) {
+				msg := fmt.Sprintf("%s is exsit in the network", i.Vip)
+				return errors.New(msg)
+			}
+		}
+	}
+
+
+	/*check ip vip the same net range*/
+	if clusterEnableDefault && Isclusterjoin {
+		/*check ip if equal vip*/
+		if i.IpAddr == i.Vip {
+			msg := fmt.Sprintf("ip(%s) and vip(%s) are the same", i.IpAddr, i.Vip)
+			return errors.New(msg)
+		}
+
+		/* check ip vip the same net range */
+		if !utils.IsSameIpRange(i.IpAddr, i.Vip, i.NetMask) {
+			msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
+			return errors.New(msg)
 		}
 	}
 

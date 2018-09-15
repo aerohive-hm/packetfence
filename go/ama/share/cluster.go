@@ -103,6 +103,12 @@ func GetPrimaryNetworksData(ctx context.Context) (error, a3config.NetworksData) 
 
 }
 
+
+// When cluster node join, cluster node information should send to primary node to update
+// update data: 
+//    IP for eth interface of joining node
+//    VLAN interface IP address
+//    hostname for joining node
 func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.ClusterNetworksData) (error, a3config.ClusterEventRespData) {
 	RespData := a3config.ClusterEventRespData{}
 	jsonClusterData, err := json.Marshal(&clusterData)
