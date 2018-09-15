@@ -407,18 +407,3 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 
 	return nil
 }
-
-// Set network interface into system files
-// Only handle CentOS /usr/local/pf/html/pfappserver/root/interface/interface_rhel.tt
-func WriteNetworkConfigs(ctx context.Context, networksData NetworksData) error {
-
-	for _, item := range networksData.Items {
-		err := writeOneNetworkConfig(ctx, item)
-		if err != nil {
-			log.LoggerWContext(ctx).Error("writeOneNetworkConfig error:" + err.Error())
-			return err
-		}
-	}
-
-	return nil
-}
