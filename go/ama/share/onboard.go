@@ -167,12 +167,21 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	}
 	//Fetch NextExpirationDate
 	var times time.Time
-	row := db.QueryRow("SELECT max(sub_end) FROM a3_entitlement")
+	row := db.QueryRow("SELECT max(sub_end) FROM a3_entitlement where type != 'Trial'")
 	err = row.Scan(&times)
 	if err != nil {
 		log.LoggerWContext(context).Error("Query database error: " + err.Error())
 	} else {
 		lic.NextExpirationDate = times.UnixNano() / int64(time.Millisecond)
+	}
+	if lic.NextExpirationDate == 0 {
+		row = db.QueryRow("SELECT sub_end FROM a3_entitlement")
+		err = row.Scan(&times)
+		if err != nil {
+			log.LoggerWContext(context).Error("Query database error: " + err.Error())
+		} else {
+			lic.NextExpirationDate = times.UnixNano() / int64(time.Millisecond)
+		}
 	}
 
 	//Fetch AverageUsedCapacity
