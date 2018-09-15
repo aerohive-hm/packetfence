@@ -8,7 +8,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"strconv"
-	"strings"
 )
 
 type A3IntChgHeader struct {
@@ -26,9 +25,6 @@ type A3IntChgInfo struct {
 }
 
 func (intChgData *A3IntChgData) GetValue() {
-	var ifullname string
-	var services []string
-
 	ifaces, errint := utils.GetIfaceList("all")
 	if errint < 0 {
 		fmt.Errorf("Get interfaces infomation failed.")
@@ -42,29 +38,13 @@ func (intChgData *A3IntChgData) GetValue() {
 			a3Interface.Parent = iface.Master
 		}
 
-		iname := strings.Split(iface.Name, ".")
-
-		if len(iname) > 1 {
-			ifullname = fmt.Sprintf("VLAN%s", iname[1])
-		} else {
-			ifullname = iname[0]
-		}
-
 		a3Interface.Vlan, _ = strconv.Atoi(iface.Vlan)
 		a3Interface.IpAddress = iface.IpAddr
-		a3Interface.Netmask = "255.255.255.0"
-		a3Interface.Vip = iface.Vip
-		a3Interface.Type = a3config.GetIfaceType(ifullname)
-		a3Interface.Type = strings.ToUpper(a3Interface.Type)
-		a3Interface.Type = "MANAGEMENT"
-		//a3Interface.Service = []string{"PORTAL"}
-		a3Interface.Service = a3config.GetIfaceServices(ifullname)
-		for _, service := range a3Interface.Service {
-			service = strings.ToUpper(service)
-			services = append(services, service)
-			//log.LoggerWContext(ctx).Error(service)
-		}
-		a3Interface.Service = services
+		value, _ := strconv.Atoi(iface.NetMask)
+		a3Interface.Netmask = utils.NetmaskLen2Str(value)
+		a3Interface.Vip = a3config.ClusterNew().GetPrimaryClusterVip(iface.Name)
+		a3Interface.Type = a3config.GetIfaceType(iface.Name)
+		a3Interface.Service = a3config.GetIfaceServices(iface.Name)
 		intChgData.Interfaces = append(intChgData.Interfaces, *a3Interface)
 	}
 
