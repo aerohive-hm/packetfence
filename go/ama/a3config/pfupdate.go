@@ -34,7 +34,7 @@ func UpdateHostname(hostname string) error {
 	domain := defaultDomain
 	if len(s) > 1 {
 		/*contain domain*/
-		domain = s[1]
+		domain = strings.Join(s[1:], ".")
 	}
 	err := utils.SetHostname(host)
 	if err != nil {
