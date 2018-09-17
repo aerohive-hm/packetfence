@@ -19,7 +19,7 @@ import (
 )
 
 var httpClient = http.Client{
-	Timeout: time.Duration(15 * time.Second),
+	Timeout: time.Duration(15) * time.Second,
 }
 
 type Client struct {
@@ -31,6 +31,7 @@ type Client struct {
 	Host     string
 	Port     string
 	Token    string
+	Timeout  int
 }
 
 var preUrl = map[string]string{
@@ -40,17 +41,6 @@ var preUrl = map[string]string{
 
 type ErrorReply struct {
 	Message string `json:"message"`
-}
-
-func New(ctx context.Context) *Client {
-	return &Client{
-		Host: "10.155.103.191",
-		Port: "9999",
-	}
-}
-
-func genUrl(url string, host string, suffix string) string {
-	return fmt.Sprintf(url, host, suffix)
 }
 
 func skipCertVerify() {
@@ -98,6 +88,10 @@ func (c *Client) Call(method, url string, body string) error {
 		return err
 	}
 
+	if c.Timeout != 0 {
+		httpClient.Timeout = time.Duration(c.Timeout) * time.Second
+	}
+
 	resp, err := httpClient.Do(r)
 	if err != nil {
 		return err
@@ -132,6 +126,7 @@ func (c *Client) ClusterAuth() error {
 	body := fmt.Sprintf(`{"username": "%s", "password":"%s"}`,
 		webCfg["user"], webCfg["pass"])
 
+	c.Timeout = 30
 	err := c.Call("POST", url, body)
 	if err != nil {
 		return err
