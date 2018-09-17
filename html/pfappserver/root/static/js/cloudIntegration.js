@@ -41,6 +41,7 @@ function getNodeInfo(){
     success: function(data){
       //determin which page to show if linked or unlinked
       //linked
+      console.log(data);
       if (data.msgtype == "nodesInfo"){
         $('#rdcUrl').html(data.body.header.rdcUrl);
         document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
@@ -50,10 +51,12 @@ function getNodeInfo(){
           $('#region').html(data.body.header.region);
         }
         $('#ownerId').html(data.body.header.ownerId);
-        if (data.body.header.lastContactTime == ""){
-          $('#lastContactTime').html("unknown");
-        } else {
-          $('#lastContactTime').html(data.body.header.lastContactTime);
+        if ($( "#lastContactTime" ).length){
+          if (typeof data.body.data[0].lastContactTime === "undefined"){
+            $('#lastContactTime').html("unknown");
+          } else {
+            $('#lastContactTime').html(data.body.data[0].lastContactTime);
+          }
         }
         $('#vhmId').html(data.body.header.vhmId);
 
@@ -90,11 +93,11 @@ function getNodeInfo(){
         } else {
           $('#region').html(data.body.header.region);
         }
-        // if ($('#lastContactTime').text() == ""){
+        if ($('#lastContactTime').text() == ""){
         $('#lastContactTime').html("unknown");
-        // } else {
-        //   $('#lastContactTime').html(data.body.data.lastContactTime);
-        // }
+        } else {
+          $('#lastContactTime').html(data.body.data.lastContactTime);
+        }
         $('#ownerId').html(data.body.header.ownerId);
         $('#vhmId').html(data.body.header.vhmId);
         $(".linked").hide();

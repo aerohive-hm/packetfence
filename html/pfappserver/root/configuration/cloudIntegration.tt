@@ -85,7 +85,7 @@
               </tr>
               <tr>
                 <td class="td-title" style="width: 100px;"><h6>Last Contact</h6></td>
-                <td id="lastContactTime"></td>
+                <td id="lastContactTim"></td>
               </tr>
             </tbody>
           </table>
