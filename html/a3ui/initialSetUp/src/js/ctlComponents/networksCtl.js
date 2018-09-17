@@ -76,7 +76,7 @@ class networksCtl extends Component {
         let self=this;
 
         let xCsrfToken="";
-        let url= "/a3/api/v1/configurator/networks";
+        let url= "/a3/api/v1/configurator/networks?timestamp="+new Date().getTime();
          
         let param={
         }
@@ -121,7 +121,7 @@ class networksCtl extends Component {
         let self=this;
 
         let xCsrfToken="";
-        let url= "/a3/api/v1/configurator/networks";
+        let url= "/a3/api/v1/configurator/networks?timestamp="+new Date().getTime();
          
         let param={
         }
