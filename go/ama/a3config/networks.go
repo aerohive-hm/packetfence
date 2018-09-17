@@ -311,9 +311,12 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	netmask := item.NetMask
 	var section Section
 	var sysGatewayCfgFile string
-	var dns1, dns2 string
+	var dns []string
+	var i int
+	var l string
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig:ifname=%s ,ip =%s, netmask =%s", ifname, ip, netmask))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig: ifname=%s, "+
+		"ip =%s, netmask =%s", ifname, ip, netmask))
 
 	// write to /usr/local/pf/var/ifcfg- firstly
 	ifcfgFile := varDir + interfaceConfFile + ifname
@@ -351,7 +354,7 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	err = A3CommitPath(ifcfgFile, section)
 
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() + ifcfgFile)
 		return err
 	}
 
@@ -361,9 +364,10 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	}
 
 	/* write dns to sysifcfgfile for eth0*/
-	dns1, dns2 = utils.GetDnsServer()
-	section[""]["DNS1"] = dns1
-	section[""]["DNS2"] = dns2
+	dns = utils.GetDnsServer()
+	for i, l = range dns {
+		section[""]["DNS"+strconv.Itoa(i)] = l
+	}
 
 	//write gateway
 	section[""]["GATEWAY"] = utils.GetA3DefaultGW()
@@ -373,14 +377,15 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 
 	err = A3CommitPath(sysGatewayCfgFile, section)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysGatewayCfgFile)
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
+			sysGatewayCfgFile)
 		return err
 	}
 
 END:
 	err = A3CommitPath(sysifCfgFile, section)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() +
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
 			sysifCfgFile)
 	}
 	return nil
