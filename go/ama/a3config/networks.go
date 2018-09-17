@@ -192,7 +192,7 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 				return errors.New(msg)
 			}
 			/* vlan vip should not be the same*/
-			if item.Vip == i.Vip {
+			if enable && item.Vip == i.Vip {
 				msg = fmt.Sprintf("vlan vip(%s) is more than one in form", item.Vip)
 				return errors.New(msg)
 			}
@@ -208,13 +208,22 @@ func GetPrefixIP(i Item) string {
 }
 func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	msg := ""
-	for _, item := range items {
-		if strings.Contains(item.Type, "MANAGEMENT") {
-			return nil
+	for _, i := range items {
+		/*eth0 must contain management, other can not contian management*/
+		if i.Name == "eth0" {
+			if !strings.Contains(i.Type, "MANAGEMENT") {
+				msg = fmt.Sprintf("the interface eth0  must contain management type")
+				return errors.New(msg)
+			}
+		} else {
+			if strings.Contains(i.Type, "MANAGEMENT") {
+				msg = fmt.Sprintf("the %s does not allow to contain management type", i.Name)
+				return errors.New(msg)
+			}
 		}
+
 	}
-	msg = fmt.Sprintf("the interface does not contain management type")
-	return errors.New(msg)
+	return nil
 }
 
 func CheckItemServiceValid(ctx context.Context, items []Item) error {
@@ -306,7 +315,7 @@ const (
 // create ifcfg-xxx file and write IpAddr, Netmask
 // write gateway to system files
 func writeOneNetworkConfig(ctx context.Context, item Item) error {
-	ifname := ChangeUiInterfacename(item.Name, strings.ToLower(item.Prefix))
+	ifname := ChangeUiIfname(item.Name, item.Prefix)
 	ip := item.IpAddr
 	netmask := item.NetMask
 	var section Section

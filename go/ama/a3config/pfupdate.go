@@ -12,6 +12,10 @@ import (
 	//"github.com/inverse-inc/packetfence/go/log"
 )
 
+const (
+	defaultDomain = "example.com"
+)
+
 func UpdateEmail(email string) error {
 	section := Section{
 		"alerting": {
@@ -22,13 +26,24 @@ func UpdateEmail(email string) error {
 }
 
 func UpdateHostname(hostname string) error {
-	err := utils.SetHostname(hostname)
+	if hostname == "" {
+		return nil
+	}
+	s := strings.Split(hostname, ".")
+	host := s[0]
+	domain := defaultDomain
+	if len(s) > 1 {
+		/*contain domain*/
+		domain = strings.Join(s[1:], ".")
+	}
+	err := utils.SetHostname(host)
 	if err != nil {
 		return err
 	}
 	section := Section{
 		"general": {
-			"hostname": hostname,
+			"hostname": host,
+			"domain":   domain,
 		},
 	}
 	return A3Commit("PF", section)
@@ -36,7 +51,7 @@ func UpdateHostname(hostname string) error {
 
 // Configure primary and cluster node will call this function
 func UpdateInterface(i Item) error {
-	ifname := ChangeUiInterfacename(i.Name, strings.ToLower(i.Prefix))
+	ifname := ChangeUiIfname(i.Name, i.Prefix)
 	/*check mask is valid*/
 	err := CheckMaskValid(i.NetMask)
 	if err != nil {

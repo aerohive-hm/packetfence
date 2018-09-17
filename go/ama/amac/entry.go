@@ -121,7 +121,7 @@ func Entry(ctx context.Context) {
 	var msg MsgStru
 
 	//check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
-	if globalSwitch == "enable" {
+	if GlobalSwitch == "enable" {
 		//trying to connect to the cloud when damon start
 		result := connectToRdcWithoutPara(ctx)
 		if result != 0 {
@@ -200,7 +200,7 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 		}
 
 	case RdcTokenUpdate:
-		//To do, set the globalswitch to enable
+		//To do, set the Globalswitch to enable
 		connectToRdcWithoutPara(ctx)
 
 	case RemoveNodeFromCluster:
@@ -209,7 +209,7 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	case JoinClusterComplete:
 		//Read the conf file and install RDC URL
 		_ = update("")
-		if globalSwitch == "enable" {
+		if GlobalSwitch == "enable" {
 			connectToRdcWithoutPara(ctx)
 		}
 
@@ -220,21 +220,19 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 
 //Sending keepalive packets after onboarding successfully
 func keepaliveToRdc(ctx context.Context) {
-
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the keepalive interval %d seconds", keepaliveInterval))
 	// create a ticker for heartbeat
-	if keepaliveInterval == 0 {
-		keepaliveInterval = 30
+	if KeepaliveInterval == 0 {
+		KeepaliveInterval = 30
 	}
-	ticker := time.NewTicker(time.Duration(keepaliveInterval) * time.Second)
+	ticker := time.NewTicker(time.Duration(KeepaliveInterval) * time.Second)
 	timeoutCount = 0
-
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the keepalive interval %d seconds", KeepaliveInterval))
 	for _ = range ticker.C {
 		/*
 			check if allow to the connect to cloud, if not,
 			not send the keepalive
 		*/
-		if globalSwitch != "enable" {
+		if GlobalSwitch != "enable" {
 			timeoutCount = 0
 			continue
 		}
@@ -271,11 +269,13 @@ func keepaliveToRdc(ctx context.Context) {
 		request.Header.Add("Authorization", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
 
+		AmacSendEventCounter++
 		resp, result := client.Do(request)
 		if result != nil {
 			timeoutCount++
 			continue
 		}
+		AmacSendEventSuccessCounter++
 		timeoutCount = 0
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))

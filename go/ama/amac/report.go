@@ -16,6 +16,11 @@ import (
 	"time"
 )
 
+const (
+	CacheTableUpLimit                 = 30
+)
+var	AmacSendEventCounter        int64 = 0
+var AmacSendEventSuccessCounter int64 = 0
 type ReportHeader struct {
 	SystemID  string `json:"systemId"`
 	ClusterID string `json:"clusterId"`
@@ -56,6 +61,11 @@ func fillReportHeader(header *ReportHeader) {
 }
 
 func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
+	if asynMsgUrl == "" {
+		log.LoggerWContext(ctx).Error("RDC URL is NULL")
+		return -1
+	}
+
 	message, _ := json.Marshal(reportMsg)
 	log.LoggerWContext(ctx).Info(string(message))
 
@@ -66,7 +76,7 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
 		}
-
+		AmacSendEventCounter++
 		//Add header option, the tokenStr is from RDC now
 		request.Header.Add("Authorization", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
@@ -76,7 +86,7 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 			log.LoggerWContext(ctx).Info(err.Error())
 			return -1
 		}
-
+		AmacSendEventSuccessCounter++
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %d", resp.StatusCode))
 		log.LoggerWContext(ctx).Info(string(body))
@@ -106,52 +116,57 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 }
 
 //This function will be called by restAPI, it is public
-func ReportDbTable(ctx context.Context) int {
+func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 	msgFlag := false
 	reportMsg := ReportDbTableMessage{}
 	table := ReportTable{}
 
 	log.LoggerWContext(ctx).Info("Into SendReport")
 
-	if asynMsgUrl == "" {
-		log.LoggerWContext(ctx).Error("RDC URL is NULL")
-		return -1
+	msgQue, err := cache.FetchTablesInfo(CacheTableUpLimit)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Fetch table message fail")
+		return nil, -1
 	}
-	/*
-	   To do, pop redis queue instead of inputing data
-	*/
-
-	//log.LoggerWContext(ctx).Info("print table.Data")
-	//log.LoggerWContext(ctx).Info(string(table.Data))
+	if msgQue == nil {
+		log.LoggerWContext(ctx).Info("msgQue is nil, no report messages")
+		return nil, 0
+	}
 
 	fillReportHeader(&reportMsg.Header)
 	reportMsg.Data.MsgType = "a3-report-db"
 
-	msgQue, err := cache.FetchTablesInfo(30)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("Fetch table message fail")
-		return -1
-	}
 	for _, singleMsg := range msgQue {
 		err := json.Unmarshal(singleMsg.([]byte), &table.Data)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
-			return -1
+			return nil, -1
 		}
 		reportMsg.Data.Tables = append(reportMsg.Data.Tables, table.Data)
 		msgFlag = true
 	}
 
 	if msgFlag {
-		res := sendReport2Cloud(ctx, &reportMsg)
-		return res
-	} else {
-		log.LoggerWContext(ctx).Info("No report messages")
-		return 0
+		//sendFlag is true, means the cache table up to the limit
+		if sendFlag {
+			reportArray := make([]ReportDbTableMessage, 0)
+			reportArray = append(reportArray, reportMsg)
+			res := sendReport2Cloud(ctx, &reportArray)
+			if res != 0 {
+				log.LoggerWContext(ctx).Info("Send to report messages fail when the cache table overflow")
+				return nil, -1
+			} else {
+				return nil, 0
+			}
+		} else {
+			return reportMsg, 0
+		}
 	}
+	log.LoggerWContext(ctx).Info("No report messages")
+	return nil, 0
 }
 
-func reportSysInfo(ctx context.Context) int {
+func reportSysInfo(ctx context.Context) (interface{}, int) {
 	reportMsg := ReportSysInfoMessage{}
 
 	fillReportHeader(&reportMsg.Header)
@@ -162,23 +177,25 @@ func reportSysInfo(ctx context.Context) int {
 	reportMsg.Data.MemoryTotal = int(system.MemTotal)
 	reportMsg.Data.MemoryUsed = int(system.MemUsed)
 
-	res := sendReport2Cloud(ctx, &reportMsg)
-	return res
+	//reportArray := make([]ReportSysInfoMessage, 0)
+	//reportArray = append(reportArray, reportMsg)
+	//res := sendReport2Cloud(ctx, &reportArray)
+	return reportMsg, 0
 }
 func reportRoutine(ctx context.Context) {
-	if reportInterval == 0 {
-		reportInterval = 30
+	if ReportInterval == 0 {
+		ReportInterval = 30
 	}
 	// create a ticker for report
-	ticker := time.NewTicker(time.Duration(reportInterval) * time.Second)
+	ticker := time.NewTicker(time.Duration(ReportInterval) * time.Second)
 	failCount := 0
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", reportInterval))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", ReportInterval))
 	for _ = range ticker.C {
 		/*
 			check if allow to the connect to cloud, if not,
 			not send the report
 		*/
-		if globalSwitch != "enable" {
+		if GlobalSwitch != "enable" {
 			failCount = 0
 			continue
 		}
@@ -187,22 +204,29 @@ func reportRoutine(ctx context.Context) {
 			failCount = 0
 			continue
 		}
-
-		res := ReportDbTable(ctx)
-		if res != 0 {
+		reportArray := new([]interface{})
+		dbMsg, resDb := ReportDbTable(ctx, false)
+		if resDb != 0 {
 			failCount++
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
 		} else {
-			failCount = 0
+			if dbMsg != nil {
+				*reportArray = append(*reportArray, dbMsg)
+			}
 		}
 
-		res = reportSysInfo(ctx)
-		if res != 0 {
+		sysMsg, resSys := reportSysInfo(ctx)
+		if resSys != 0 {
 			failCount++
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
 		} else {
-			failCount = 0
+			if sysMsg != nil {
+				*reportArray = append(*reportArray, sysMsg)
+			}
+		}
+		res := sendReport2Cloud(ctx, &reportArray)
+		if res != 0 {
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending report data to cloud fail"))
 		}
 	}
-
 }

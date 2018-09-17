@@ -22,7 +22,7 @@ type ReportDBCounter struct {
 	recvCounterLoationlog int64
 }
 
-var Counter ReportDBCounter
+var ReportCounter ReportDBCounter
 
 type Report struct {
 	crud.Crud
@@ -38,9 +38,9 @@ func ReportNew(ctx context.Context) crud.SectionCmd {
 func handlePostReport(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 
-	Counter.recvCounter++
+	ReportCounter.recvCounter++
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive DB report event data count: %d", Counter.recvCounter))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive DB report event data count: %d", ReportCounter.recvCounter))
 	log.LoggerWContext(ctx).Debug(string(d.ReqData))
 
 	redisKey := report.GetkeyfromPostReport(r, d)
@@ -56,8 +56,8 @@ func handlePostReport(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(crud.PostOK)
 	}
 	log.LoggerWContext(ctx).Debug(fmt.Sprintf("%d messages in queue", count))
-	if count >= 30 {
-		amac.ReportDbTable(ctx)
+	if count >= amac.CacheTableUpLimit {
+		amac.ReportDbTable(ctx, true)
 	}
 
 	return []byte(crud.PostOK)

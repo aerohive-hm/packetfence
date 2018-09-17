@@ -26,7 +26,8 @@ type Ip4logParseStruct struct {
 }
 
 type Ip4logReportData struct {
-       TableName string `json:"tablename"`
-       TimeStamp string `json:"timestamp"`
-       Data Ip4logParseStruct  `json:"data"`
+	TableName string `json:"ah_tablename"`
+	TimeStamp string `json:"ah_timestamp"`
+	TenantID  string `json:"tenant_id"`
+	Ip               string `json:"ip"`
 }
