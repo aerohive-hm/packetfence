@@ -192,7 +192,7 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 				return errors.New(msg)
 			}
 			/* vlan vip should not be the same*/
-			if item.Vip == i.Vip {
+			if enable && item.Vip == i.Vip {
 				msg = fmt.Sprintf("vlan vip(%s) is more than one in form", item.Vip)
 				return errors.New(msg)
 			}
