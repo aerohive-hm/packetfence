@@ -113,7 +113,7 @@ func (sections Section) FetchNodesInfo() []NodeInfo {
 
 func DeletePrimaryClusterconf(i Item) error {
 	isvlan := VlanInface(i.Name)
-	ifname := ChangeUiInterfacename(i.Name, i.Prefix)
+	ifname := ChangeUiIfname(i.Name, i.Prefix)
 	hostname := GetPfHostname()
 	if isvlan {
 		sectionid := []string{

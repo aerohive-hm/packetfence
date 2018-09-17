@@ -306,7 +306,7 @@ const (
 // create ifcfg-xxx file and write IpAddr, Netmask
 // write gateway to system files
 func writeOneNetworkConfig(ctx context.Context, item Item) error {
-	ifname := ChangeUiInterfacename(item.Name, strings.ToLower(item.Prefix))
+	ifname := ChangeUiIfname(item.Name, item.Prefix)
 	ip := item.IpAddr
 	netmask := item.NetMask
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig:ifname=%s ,ip =%s, netmask =%s", ifname, ip, netmask))

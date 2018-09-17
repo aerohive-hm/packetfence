@@ -36,7 +36,7 @@ func UpdateHostname(hostname string) error {
 
 // Configure primary and cluster node will call this function
 func UpdateInterface(i Item) error {
-	ifname := ChangeUiInterfacename(i.Name, strings.ToLower(i.Prefix))
+	ifname := ChangeUiIfname(i.Name, i.Prefix)
 	/*check mask is valid*/
 	err := CheckMaskValid(i.NetMask)
 	if err != nil {
