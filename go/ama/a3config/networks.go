@@ -309,9 +309,15 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	ifname := ChangeUiIfname(item.Name, item.Prefix)
 	ip := item.IpAddr
 	netmask := item.NetMask
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig:ifname=%s ,ip =%s, netmask =%s", ifname, ip, netmask))
-
 	var section Section
+	var sysGatewayCfgFile string
+	var dns []string
+	var i int
+	var l string
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig: ifname=%s, "+
+		"ip =%s, netmask =%s", ifname, ip, netmask))
+
 	// write to /usr/local/pf/var/ifcfg- firstly
 	ifcfgFile := varDir + interfaceConfFile + ifname
 	// write to /etc/sysconfig/network-scripts/ifcfg-
@@ -338,72 +344,49 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 			},
 		}
 	}
+
+	section[""]["ONBOOT"] = "yes"
+	section[""]["BOOTPROTO"] = "static"
+	section[""]["NM_CONTROLLED"] = "no"
+	section[""]["IPADDR"] = ip
+	section[""]["NETMASK"] = netmask
+
 	err = A3CommitPath(ifcfgFile, section)
 
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
-		return err
-	}
-	err = A3CommitPath(sysifCfgFile, section)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
-		return err
-	}
-	section = Section{
-		"": {
-			"ONBOOT":        "yes",
-			"BOOTPROTO":     "static",
-			"NM_CONTROLLED": "no",
-			"IPADDR":        ip,
-			"NETMASK":       netmask,
-		},
-	}
-	err = A3CommitPath(ifcfgFile, section)
-
-	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
-		return err
-	}
-
-	//just write another copy to /etc/sysconfig/
-	err = A3CommitPath(sysifCfgFile, section)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() + ifcfgFile)
 		return err
 	}
 
 	// don't need write gateway
 	if utils.IsVlanIface(ifname) {
-		return nil
-	}
-	/* write dns to sysifcfgfile for eth0*/
-	dns1, dns2 := utils.GetDnsServer()
-	section = Section{
-		"": {
-			"DNS1": dns1,
-			"DNS2": dns2,
-		},
+		goto END
 	}
 
-	err = A3CommitPath(sysifCfgFile, section)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
-		return err
+	/* write dns to sysifcfgfile for eth0*/
+	dns = utils.GetDnsServer()
+	for i, l = range dns {
+		section[""]["DNS"+strconv.Itoa(i)] = l
 	}
+
 	//write gateway
-	section = Section{
-		"": {
-			"GATEWAY": utils.GetA3DefaultGW(),
-		},
-	}
+	section[""]["GATEWAY"] = utils.GetA3DefaultGW()
+
 	// /etc/sysconfig/network
-	sysGatewayCfgFile := networtConfDir + networkConfFile
+	sysGatewayCfgFile = networtConfDir + networkConfFile
 
 	err = A3CommitPath(sysGatewayCfgFile, section)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysGatewayCfgFile)
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
+			sysGatewayCfgFile)
 		return err
 	}
 
+END:
+	err = A3CommitPath(sysifCfgFile, section)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
+			sysifCfgFile)
+	}
 	return nil
 }
