@@ -331,7 +331,6 @@ function downloadFile (fileName, data){
 function downloadCert(qualifier){
   console.log("in download cert");
   var base_url    = window.location.origin;
-  var qualifier   = "https";
   var contentType = "text/plain";
   return $.ajax({
       type: 'GET',

@@ -1,4 +1,64 @@
 
+[%  jsFiles = [
+        'js/vendor/raphael.min',
+        'admin/config/items',
+        'js/node',
+        'js/user',
+        'admin/common.js'
+        ]
+-%]
+
+<head>
+  <style>
+     .spin-spinner{
+        transition: transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86),
+        -webkit-transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86)
+        list-style: none;
+        margin: 0;
+        padding:0;
+        text-align: center;
+        /* display: none; */
+     }
+
+     .spinner-circle{
+        position: relative;
+        display: inline-block;
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+        -webkit-animation: spinner 1.2s infinite linear;
+        animation: spinner 1.2s infinite linear;
+     }
+
+     .spinner-circle i{
+        width: 9px;
+        height: 9px;
+        color: #1890ff;
+        -webkit-transform: scale(0.75);
+        -ms-transform: scale(0.75);
+        transform: scale(0.75);
+        /* display: block;
+        position: absolute; */
+        opacity: 0.3;
+        -webkit-animation: changeOpacity 1s infinite linear alternate;
+        animation: changeOpacity 1s infinite linear alternate;
+        -webkit-transform-origin: 50% 50%;
+        -ms-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
+     }
+
+     @keyframes spinner {
+       100% { transform: rotate(405deg); }
+     }
+
+     @keyframes changeOpacity {
+       0%   { color:#1890ff; }
+       25%  { color:#87c4ff; }
+       50%  { color:#1890ff; }
+       75%  { color:#53a9ff; }
+       100% { color:#1890ff; }
+     }
+  </style>
+</head>
 <div class="card">
   <div class="card-block">
     <div id="success-alert" style="display:none; background-color: #28a745; color: white;"><div style="padding: 10px;" id="successMessage"></div></div>
@@ -21,8 +81,16 @@
               <label class="form-horizontal control-label" style="float:left; width:130px;" for="pass">Password</label>
               <div class="input-append"><input class="cloud-pw form-inline help-inline pf-obfuscated-text" type="text" name="pass" id="pass" placeholder="*********" data-required="required"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
               <br/>
-              <label style="float:left; width:130px;">  </label>
+              <label style="float:left; width:130px;"> </label>
               <button class="btn btn-primary" id="link-account" style="float:right; width: 220px; margin-right: 50px;">Link with Aerohive Account</button>
+              <div class="spin-spinner">
+                <div class="spinner-circle">
+                    <i class="icon-circle icon"></i>
+                    <i class="icon-circle icon" style="padding-left: 10px;"></i>
+                    <i class="icon-circle icon"></i>
+                    <i class="icon-circle icon"></i>
+                </div>
+              </div>
           </form>
         </div>
 
@@ -85,12 +153,14 @@
               </tr>
               <tr>
                 <td class="td-title" style="width: 100px;"><h6>Last Contact</h6></td>
-                <td id="lastContactTim"></td>
+                <td id="lastContactTime"></td>
               </tr>
             </tbody>
           </table>
           <br>
+          [% IF is_master_node %]
           <button class="btn btn-danger" id="unlink-account">Unlink from Aerohive Cloud Account</button>
+          [% END %]
         </div>
     [% END %]
     </div>

@@ -4,8 +4,7 @@
         'admin/config/items',
         'js/node',
         'js/user',
-        ]
-    cssFiles = [
+        'admin/common.js'
         ]
 -%]
 <!-- [% MACRO list_entry(action,description) BLOCK %]
@@ -43,15 +42,22 @@
 
 <div class="card">
     <div class="card-block">
-        <div id="success-alert"><div id="errorMessage"></div></div>
+      <div id="success-alert" style="display:none; background-color: #28a745; color: white;"><div style="padding: 10px;" id="successMessage"></div></div>
+      <div id="error-alert" style="display:none; background-color: #dc3545; color: white;"><div style="padding: 10px;" id="errorMessage"></div></div>
         <div class="documentation">
           <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
           <form name="newClusterInfo" id="newClusterInfo">
               <label class="form-horizontal control-label" style="float:left; width: 130px;" for="sharedKey">Shared Key</label>
-              <div class="input-append"><input class="sharedKey form-inline help-inline pf-obfuscated-text" type="text" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
+              <div class="controls">
+                <div class="input-append"><input class="sharedKey form-inline help-inline pf-obfuscated-text" type="text" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
+                <p class="help-block">Shared KEY for VRRP protocol (must be the same on all members)</p>
+              </div>
               <br/>
               <label class="form-horizontal control-label" style="float:left; width:130px;" for="vrid">Virtual Router Id</label>
-              <input class="vrid form-inline help-inline" type="text" name="vrid" id="vrid" placeholder="50"><br>
+              <div class="controls">
+                <input class="vrid form-inline help-inline" type="text" name="vrid" id="vrid" placeholder="50"><br>
+                <p class="help-block">The virtual router id for keepalive. Leave untouched unless you have another keepalive cluster in this network. Must be between 1 and 255.</p>
+              </div>
           </form>
           <br>
           <label style="float:left; width:130px;">  </label>

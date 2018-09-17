@@ -4,7 +4,8 @@
         'admin/config/items',
         'js/node',
         'js/user',
-        'js/certificates'
+        'js/certificates',
+        'admin/common.js'
         ]
 -%]
 <head>
@@ -117,15 +118,15 @@
                     </div>
                     <br>
                     <input id="eap_key_path" name="eap_key_path" type="hidden" value="">
-                    <label><h6>Key (file type:  .key)</h6></label>
+                    <label><h5>Key (file type:  .key)</h5></label>
                     <input id="serverKey_upload" name="serverKey_upload" class="serverKey_upload btn btn-primary" type="file"/>
                     <br>
                     <input id="eap_cert_path" name="eap_cert_path" type="hidden" value="">
-                    <label><h6>Server Certificate (file type:  .pem/.crt/.cer)</h6></label>
+                    <label><h5>Server Certificate (file type:  .pem/.crt/.cer)</h5></label>
                     <input id="serverCert_upload" name="serverCert_upload" class="serverCert_upload btn btn-primary" type="file"/>
                     <br><br>
                     <input id="eap_cacert_path" name="eap_cacert_path" type="hidden" value="">
-                    <label><h6>CA Certificate Upload (file type:  .pem/.crt/.cer)</h6></label>
+                    <label><h5>CA Certificate Upload (file type:  .pem/.crt/.cer)</h5></label>
                     <input id="caCert_upload" name="caCert_upload" class="caCert_upload btn btn-primary" type="file"/>
                   </div>
                   <br>

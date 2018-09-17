@@ -86,20 +86,20 @@ function getNodeInfo(){
 
         //unlinked
       } else if (data.msgtype == "cloudConf"){
-        $('#rdcUrl').html(data.body.header.rdcUrl);
-        document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
-        if (data.body.header.region == ""){
-          $('#region').html("unknown");
-        } else {
-          $('#region').html(data.body.header.region);
-        }
-        if ($('#lastContactTime').text() == ""){
-        $('#lastContactTime').html("unknown");
-        } else {
-          $('#lastContactTime').html(data.body.data.lastContactTime);
-        }
-        $('#ownerId').html(data.body.header.ownerId);
-        $('#vhmId').html(data.body.header.vhmId);
+        // $('#rdcUrl').html(data.body.header.rdcUrl);
+        // document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
+        // if (data.body.header.region == ""){
+        //   $('#region').html("unknown");
+        // } else {
+        //   $('#region').html(data.body.header.region);
+        // }
+        // if ($('#lastContactTime').text() == ""){
+        // $('#lastContactTime').html("unknown");
+        // } else {
+        //   $('#lastContactTime').html(data.body.data.lastContactTime);
+        // }
+        // $('#ownerId').html(data.body.header.ownerId);
+        // $('#vhmId').html(data.body.header.vhmId);
         $(".linked").hide();
         $(".disconnected").show();
       } else {
