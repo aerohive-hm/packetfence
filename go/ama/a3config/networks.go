@@ -191,6 +191,11 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 				msg = fmt.Sprintf("vlan name(%s) is more than one in form", item.Name)
 				return errors.New(msg)
 			}
+			/* vlan vip should not be the same*/
+			if item.Vip == i.Vip {
+				msg = fmt.Sprintf("vlan vip(%s) is more than one in form", item.Vip)
+				return errors.New(msg)
+			}
 		}
 	}
 	return nil
@@ -398,21 +403,6 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysGatewayCfgFile)
 		return err
-	}
-
-	return nil
-}
-
-// Set network interface into system files
-// Only handle CentOS /usr/local/pf/html/pfappserver/root/interface/interface_rhel.tt
-func WriteNetworkConfigs(ctx context.Context, networksData NetworksData) error {
-
-	for _, item := range networksData.Items {
-		err := writeOneNetworkConfig(ctx, item)
-		if err != nil {
-			log.LoggerWContext(ctx).Error("writeOneNetworkConfig error:" + err.Error())
-			return err
-		}
 	}
 
 	return nil
