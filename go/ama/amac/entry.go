@@ -220,15 +220,13 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 
 //Sending keepalive packets after onboarding successfully
 func keepaliveToRdc(ctx context.Context) {
-
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the keepalive interval %d seconds", KeepaliveInterval))
 	// create a ticker for heartbeat
 	if KeepaliveInterval == 0 {
 		KeepaliveInterval = 30
 	}
 	ticker := time.NewTicker(time.Duration(KeepaliveInterval) * time.Second)
 	timeoutCount = 0
-
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the keepalive interval %d seconds", KeepaliveInterval))
 	for _ = range ticker.C {
 		/*
 			check if allow to the connect to cloud, if not,
@@ -271,11 +269,13 @@ func keepaliveToRdc(ctx context.Context) {
 		request.Header.Add("Authorization", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
 
+		AmacSendEventCounter++
 		resp, result := client.Do(request)
 		if result != nil {
 			timeoutCount++
 			continue
 		}
+		AmacSendEventSuccessCounter++
 		timeoutCount = 0
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))

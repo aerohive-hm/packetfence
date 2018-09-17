@@ -56,8 +56,8 @@ func handlePostReport(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(crud.PostOK)
 	}
 	log.LoggerWContext(ctx).Debug(fmt.Sprintf("%d messages in queue", count))
-	if count >= 30 {
-		amac.ReportDbTable(ctx)
+	if count >= amac.CacheTableUpLimit {
+		amac.ReportDbTable(ctx, true)
 	}
 
 	return []byte(crud.PostOK)

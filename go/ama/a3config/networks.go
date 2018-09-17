@@ -208,13 +208,22 @@ func GetPrefixIP(i Item) string {
 }
 func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	msg := ""
-	for _, item := range items {
-		if strings.Contains(item.Type, "MANAGEMENT") {
-			return nil
+	for _, i := range items {
+		/*eth0 must contain management, other can not contian management*/
+		if i.Name == "eth0" {
+			if !strings.Contains(i.Type, "MANAGEMENT") {
+				msg = fmt.Sprintf("the interface eth0  must contain management type")
+				return errors.New(msg)
+			}
+		} else {
+			if strings.Contains(i.Type, "MANAGEMENT") {
+				msg = fmt.Sprintf("the %s does not allow to contain management type", i.Name)
+				return errors.New(msg)
+			}
 		}
+
 	}
-	msg = fmt.Sprintf("the interface does not contain management type")
-	return errors.New(msg)
+	return nil
 }
 
 func CheckItemServiceValid(ctx context.Context, items []Item) error {

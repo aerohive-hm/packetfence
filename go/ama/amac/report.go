@@ -16,6 +16,11 @@ import (
 	"time"
 )
 
+const (
+	CacheTableUpLimit                 = 30
+)
+var	AmacSendEventCounter        int64 = 0
+var AmacSendEventSuccessCounter int64 = 0
 type ReportHeader struct {
 	SystemID  string `json:"systemId"`
 	ClusterID string `json:"clusterId"`
@@ -56,6 +61,11 @@ func fillReportHeader(header *ReportHeader) {
 }
 
 func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
+	if asynMsgUrl == "" {
+		log.LoggerWContext(ctx).Error("RDC URL is NULL")
+		return -1
+	}
+
 	message, _ := json.Marshal(reportMsg)
 	log.LoggerWContext(ctx).Info(string(message))
 
@@ -66,7 +76,7 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
 		}
-
+		AmacSendEventCounter++
 		//Add header option, the tokenStr is from RDC now
 		request.Header.Add("Authorization", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
@@ -76,7 +86,7 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 			log.LoggerWContext(ctx).Info(err.Error())
 			return -1
 		}
-
+		AmacSendEventSuccessCounter++
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %d", resp.StatusCode))
 		log.LoggerWContext(ctx).Info(string(body))
@@ -106,28 +116,14 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 }
 
 //This function will be called by restAPI, it is public
-func ReportDbTable(ctx context.Context) (interface{}, int) {
+func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 	msgFlag := false
 	reportMsg := ReportDbTableMessage{}
 	table := ReportTable{}
 
 	log.LoggerWContext(ctx).Info("Into SendReport")
 
-	if asynMsgUrl == "" {
-		log.LoggerWContext(ctx).Error("RDC URL is NULL")
-		return nil, -1
-	}
-	/*
-	   To do, pop redis queue instead of inputing data
-	*/
-
-	//log.LoggerWContext(ctx).Info("print table.Data")
-	//log.LoggerWContext(ctx).Info(string(table.Data))
-
-	fillReportHeader(&reportMsg.Header)
-	reportMsg.Data.MsgType = "a3-report-db"
-
-	msgQue, err := cache.FetchTablesInfo(30)
+	msgQue, err := cache.FetchTablesInfo(CacheTableUpLimit)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Fetch table message fail")
 		return nil, -1
@@ -136,6 +132,10 @@ func ReportDbTable(ctx context.Context) (interface{}, int) {
 		log.LoggerWContext(ctx).Info("msgQue is nil, no report messages")
 		return nil, 0
 	}
+
+	fillReportHeader(&reportMsg.Header)
+	reportMsg.Data.MsgType = "a3-report-db"
+
 	for _, singleMsg := range msgQue {
 		err := json.Unmarshal(singleMsg.([]byte), &table.Data)
 		if err != nil {
@@ -147,14 +147,23 @@ func ReportDbTable(ctx context.Context) (interface{}, int) {
 	}
 
 	if msgFlag {
-		//reportArray := make([]ReportDbTableMessage, 0)
-		//reportArray = append(reportArray, reportMsg)
-		//res := sendReport2Cloud(ctx, &reportArray)
-		return reportMsg, 0
-	} else {
-		log.LoggerWContext(ctx).Info("No report messages")
-		return nil, 0
+		//sendFlag is true, means the cache table up to the limit
+		if sendFlag {
+			reportArray := make([]ReportDbTableMessage, 0)
+			reportArray = append(reportArray, reportMsg)
+			res := sendReport2Cloud(ctx, &reportArray)
+			if res != 0 {
+				log.LoggerWContext(ctx).Info("Send to report messages fail when the cache table overflow")
+				return nil, -1
+			} else {
+				return nil, 0
+			}
+		} else {
+			return reportMsg, 0
+		}
 	}
+	log.LoggerWContext(ctx).Info("No report messages")
+	return nil, 0
 }
 
 func reportSysInfo(ctx context.Context) (interface{}, int) {
@@ -196,7 +205,7 @@ func reportRoutine(ctx context.Context) {
 			continue
 		}
 		reportArray := new([]interface{})
-		dbMsg, resDb := ReportDbTable(ctx)
+		dbMsg, resDb := ReportDbTable(ctx, false)
 		if resDb != 0 {
 			failCount++
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
@@ -220,5 +229,4 @@ func reportRoutine(ctx context.Context) {
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending report data to cloud fail"))
 		}
 	}
-
 }

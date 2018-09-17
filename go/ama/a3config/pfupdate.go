@@ -30,19 +30,18 @@ func UpdateHostname(hostname string) error {
 		return nil
 	}
 	s := strings.Split(hostname, ".")
-	host := s[0]
 	domain := defaultDomain
 	if len(s) > 1 {
 		/*contain domain*/
-		domain = s[1]
+		domain = strings.Join(s[1:], ".")
 	}
-	err := utils.SetHostname(host)
+	err := utils.SetHostname(hostname)
 	if err != nil {
 		return err
 	}
 	section := Section{
 		"general": {
-			"hostname": host,
+			"hostname": hostname,
 			"domain":   domain,
 		},
 	}
