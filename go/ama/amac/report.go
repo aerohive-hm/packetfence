@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	CacheTableUpLimit = 30
-	AmacSendEventCounter int64 = 0
+	CacheTableUpLimit                 = 30
+	AmacSendEventCounter        int64 = 0
 	AmacSendEventSuccessCounter int64 = 0
 )
 
@@ -77,7 +77,7 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
 		}
-
+		AmacSendEventCounter++
 		//Add header option, the tokenStr is from RDC now
 		request.Header.Add("Authorization", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
@@ -87,7 +87,7 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 			log.LoggerWContext(ctx).Info(err.Error())
 			return -1
 		}
-
+		AmacSendEventSuccessCounter++
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %d", resp.StatusCode))
 		log.LoggerWContext(ctx).Info(string(body))
