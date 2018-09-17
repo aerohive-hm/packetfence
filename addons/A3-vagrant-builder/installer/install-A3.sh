@@ -26,6 +26,10 @@ yum install --enablerepo=packetfence,aerohive A3 -y
 yum install --enablerepo=packetfence,aerohive --disablerepo=A3_os,A3_deps,A3_release A3-PKI -y
 yum install --enablerepo=packetfence,aerohive nodejs perl-REST-Client -y
 
+# install npm modules
+cd /usr/local/pf/a3_cluster_update/
+npm install
+
 # Don't need our repository anymore
 rm /etc/yum.repos.d/aerohive.repo
 
