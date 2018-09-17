@@ -15,9 +15,9 @@ var (
 	vhmidUrl          string
 	userName          string
 	password          string
-	globalSwitch      string //enable/disable the cloud integration
-	keepaliveInterval int
-	reportInterval    int
+	GlobalSwitch      string //enable/disable the cloud integration
+	KeepaliveInterval int
+	ReportInterval    int
 )
 
 func UpdateConnSwitch(action string) error {
@@ -28,13 +28,13 @@ func UpdateConnSwitch(action string) error {
 			return err
 		}
 	}
-	globalSwitch = action
+	GlobalSwitch = action
 	return nil
 }
 
 func init() {
 	_ = update("")
-	if len(globalSwitch) == 0 {
+	if len(GlobalSwitch) == 0 {
 		UpdateConnSwitch("disable")
 	}
 }
@@ -67,9 +67,9 @@ func update(pass string) error {
 		if err != nil {
 			return errors.New("Set keepalive interval failed")
 		}
-		keepaliveInterval = 30
+		KeepaliveInterval = 30
 	} else {
-		keepaliveInterval, _ = strconv.Atoi(intervalStr)
+		KeepaliveInterval, _ = strconv.Atoi(intervalStr)
 	}
 
 	//If not specify the report interval, write default value to conf
@@ -79,12 +79,12 @@ func update(pass string) error {
 		if err != nil {
 			return errors.New("Set report interval failed")
 		}
-		reportInterval = 30
+		ReportInterval = 30
 	} else {
-		reportInterval, _ = strconv.Atoi(reportIntervalStr)
+		ReportInterval, _ = strconv.Atoi(reportIntervalStr)
 	}
 
-	globalSwitch = a3config.ReadCloudConf(a3config.Switch)
+	GlobalSwitch = a3config.ReadCloudConf(a3config.Switch)
 
 	return nil
 }
@@ -96,7 +96,7 @@ func updateRDCInfo() {
 		installRdcUrl(nil, rdcUrl)
 	}
 
-	globalSwitch = a3config.ReadCloudConf(a3config.Switch)
+	GlobalSwitch = a3config.ReadCloudConf(a3config.Switch)
 
 	VhmidStr = a3config.ReadCloudConf(a3config.Vhm)
 
