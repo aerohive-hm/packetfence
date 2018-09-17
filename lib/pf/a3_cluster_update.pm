@@ -749,7 +749,7 @@ sub roll_back_app {
   #2)old rpm is partially removed, and new rpm is not installed(probabyl we will not get there per rpm update mechanism)
   #3)new rpm is partially installed
   my ($prev_version, $to_version) = get_versions();
-  commit_update_log("RPM version is $rpm_version and previous version before update is $prev_version");
+  _commit_update_log("RPM version is $rpm_version and previous version before update is $prev_version");
   if (! $rpm_version) {
     if (call_system_cmd("$YUM_BIN install $a3_pkg."-".$prev_version -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE}") != 0) {
       A3_Die("Failed to roll back application, really Die!!");
