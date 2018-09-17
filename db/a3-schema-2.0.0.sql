@@ -1298,7 +1298,7 @@ CREATE TABLE a3_daily_avg (
 ) ENGINE=InnoDB;
 
 CREATE TABLE a3_cluster_member (
-	system_id varchar (39)
-	hostname varchar (64)
+	system_id varchar (39) NOT NULL,
+	hostname varchar (64) NOT NULL,
 	PRIMARY KEY (system_id)
 ) ENGINE=InnoDB;
