@@ -269,11 +269,13 @@ func keepaliveToRdc(ctx context.Context) {
 		request.Header.Add("Authorization", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
 
+		AmacSendEventCounter++
 		resp, result := client.Do(request)
 		if result != nil {
 			timeoutCount++
 			continue
 		}
+		AmacSendEventSuccessCounter++
 		timeoutCount = 0
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))
