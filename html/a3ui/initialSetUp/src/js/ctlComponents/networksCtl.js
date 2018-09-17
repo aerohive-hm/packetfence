@@ -654,11 +654,22 @@ class networksCtl extends Component {
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
                 dataCopy[index].clicked="";
-                self.setState({
-                    dataTable : dataCopy,
-                    isEditing: false,
-                    loading : false,
-                }) 
+                if(dataCopy[index].original==="eth0"){
+                    self.setState({
+                        dataTable : dataCopy,
+                        isEditing: false,
+                    },function(){
+                        setTimeout(function(){
+                            window.location.href="https://"+dataCopy[index].ip_addr.trim()+":1443/";
+                        }, 3000 )
+                    })
+                }else{
+                    self.setState({
+                        dataTable : dataCopy,
+                        isEditing: false,
+                        loading : false,
+                    })
+                }
             }else{
                 self.setState({
                     loading : false,
@@ -700,7 +711,7 @@ class networksCtl extends Component {
             ip_addr:"",
             netmask:"",
             vip:"",
-            type:"MANAGEMENT",
+            type:"REGISTRATION",
             services:["PORTAL"],
 
         })
@@ -1053,7 +1064,8 @@ class networksCtl extends Component {
                         <Select 
                             value={text} 
                             onChange={self.onChangeSelect.bind(self,index,"type")}
-                            style={{ width: 110 }} 
+                            style={{ width: 110 }}
+                            disabled={dataTable[index].original==="eth0"?true:false} 
                         >
                             <Option value="MANAGEMENT">{self.state.i18n.management}</Option>
                             <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
@@ -1326,14 +1338,14 @@ class networksCtl extends Component {
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('type', {
                                     rules: [],
-                                    initialValue:"MANAGEMENT",
+                                    initialValue:"REGISTRATION",
                                 })(
 
                                     <Select 
-                                        option={{initialValue:"MANAGEMENT"}}
+                                        option={{initialValue:"REGISTRATION"}}
                                         style={{ height: 32 }} 
                                     >
-                                        <Option value="MANAGEMENT" >{self.state.i18n.management}</Option>
+                                        {/*<Option value="MANAGEMENT" >{self.state.i18n.management}</Option>*/}
                                         <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                                         <Option value="ISOLATION" >{self.state.i18n.isolation}</Option>
                                         <Option value="PORTAL">{self.state.i18n.portal}</Option>
