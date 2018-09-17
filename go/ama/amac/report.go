@@ -106,7 +106,7 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 }
 
 //This function will be called by restAPI, it is public
-func ReportDbTable(ctx context.Context) int {
+func ReportDbTable(ctx context.Context) (interface{}, int) {
 	msgFlag := false
 	reportMsg := ReportDbTableMessage{}
 	table := ReportTable{}
@@ -115,7 +115,7 @@ func ReportDbTable(ctx context.Context) int {
 
 	if asynMsgUrl == "" {
 		log.LoggerWContext(ctx).Error("RDC URL is NULL")
-		return -1
+		return nil, -1
 	}
 	/*
 	   To do, pop redis queue instead of inputing data
@@ -130,28 +130,34 @@ func ReportDbTable(ctx context.Context) int {
 	msgQue, err := cache.FetchTablesInfo(30)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Fetch table message fail")
-		return -1
+		return nil, -1
+	}
+	if msgQue == nil {
+		log.LoggerWContext(ctx).Info("msgQue is nil, no report messages")
+		return nil, 0
 	}
 	for _, singleMsg := range msgQue {
 		err := json.Unmarshal(singleMsg.([]byte), &table.Data)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
-			return -1
+			return nil, -1
 		}
 		reportMsg.Data.Tables = append(reportMsg.Data.Tables, table.Data)
 		msgFlag = true
 	}
 
 	if msgFlag {
-		res := sendReport2Cloud(ctx, &reportMsg)
-		return res
+		//reportArray := make([]ReportDbTableMessage, 0)
+		//reportArray = append(reportArray, reportMsg)
+		//res := sendReport2Cloud(ctx, &reportArray)
+		return reportMsg, 0
 	} else {
 		log.LoggerWContext(ctx).Info("No report messages")
-		return 0
+		return nil, 0
 	}
 }
 
-func reportSysInfo(ctx context.Context) int {
+func reportSysInfo(ctx context.Context) (interface{}, int) {
 	reportMsg := ReportSysInfoMessage{}
 
 	fillReportHeader(&reportMsg.Header)
@@ -162,10 +168,15 @@ func reportSysInfo(ctx context.Context) int {
 	reportMsg.Data.MemoryTotal = int(system.MemTotal)
 	reportMsg.Data.MemoryUsed = int(system.MemUsed)
 
-	res := sendReport2Cloud(ctx, &reportMsg)
-	return res
+	//reportArray := make([]ReportSysInfoMessage, 0)
+	//reportArray = append(reportArray, reportMsg)
+	//res := sendReport2Cloud(ctx, &reportArray)
+	return reportMsg, 0
 }
 func reportRoutine(ctx context.Context) {
+	//var in []interface{}
+	//in := make([]interface{}, 0)
+
 	if reportInterval == 0 {
 		reportInterval = 30
 	}
@@ -187,21 +198,29 @@ func reportRoutine(ctx context.Context) {
 			failCount = 0
 			continue
 		}
-
-		res := ReportDbTable(ctx)
-		if res != 0 {
+		reportArray := new([]interface{})
+		dbMsg, resDb := ReportDbTable(ctx)
+		if resDb != 0 {
 			failCount++
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
 		} else {
-			failCount = 0
+			if dbMsg != nil {
+				*reportArray = append(*reportArray, dbMsg)
+			}
 		}
 
-		res = reportSysInfo(ctx)
-		if res != 0 {
+		sysMsg, resSys := reportSysInfo(ctx)
+		if resSys != 0 {
 			failCount++
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
 		} else {
-			failCount = 0
+			if sysMsg != nil {
+				*reportArray = append(*reportArray, sysMsg)
+			}
+		}
+		res := sendReport2Cloud(ctx, &reportArray)
+		if res != 0 {
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending report data to cloud fail"))
 		}
 	}
 
