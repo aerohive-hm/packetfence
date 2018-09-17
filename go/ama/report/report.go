@@ -12,36 +12,36 @@ type ReportDataer interface {
 	GetTableKey4Redis() string
 }
 
-func (d NodeParseStruct) GetTableKey4Redis() string {
+func (d NodeReportData) GetTableKey4Redis() string {
 	return fmt.Sprintf("%s+%s+%s", d.TableName, d.TenantId, d.Mac)
 }
 
-func (d NodecategoryParseStruct) GetTableKey4Redis() string {
-	return fmt.Sprintf("%s+%s+%s", d.TableName, d.CategoryID, d.Name)
+func (d NodecategoryReportData) GetTableKey4Redis() string {
+	return fmt.Sprintf("%s+%d+%s", d.TableName, d.CategoryID, d.Name)
 }
 
-func (d LocationlogParseStruct) GetTableKey4Redis() string {
-	return fmt.Sprintf("%s+%s", d.TableName, d.Id)
+func (d LocationlogReportData) GetTableKey4Redis() string {
+	return fmt.Sprintf("%s+%d", d.TableName, d.Id)
 }
 
-func (d RadacctParseStruct) GetTableKey4Redis() string {
-	return fmt.Sprintf("%s+%s", d.TableName, d.RadacctID)
+func (d RadacctReportData) GetTableKey4Redis() string {
+	return fmt.Sprintf("%s+%d", d.TableName, d.RadacctID)
 }
 
-func (d Ip4logParseStruct) GetTableKey4Redis() string {
+func (d Ip4logReportData) GetTableKey4Redis() string {
 	return fmt.Sprintf("%s+%s+%s", d.TableName, d.TenantID, d.Ip)
 }
 
-func (d ClassParseStruct) GetTableKey4Redis() string {
-	return fmt.Sprintf("%s+%s", d.TableName, d.Vid)
+func (d ClassReportData) GetTableKey4Redis() string {
+	return fmt.Sprintf("%s+%d", d.TableName, d.Vid)
 }
 
-func (d ViolationParseStruct) GetTableKey4Redis() string {
-	return fmt.Sprintf("%s+%s", d.TableName, d.Id)
+func (d ViolationReportData) GetTableKey4Redis() string {
+	return fmt.Sprintf("%s+%d", d.TableName, d.Id)
 }
 
-func (d RadauditParseStruct) GetTableKey4Redis() string {
-	return fmt.Sprintf("%s+%s", d.TableName, d.Id)
+func (d RadauditReportData) GetTableKey4Redis() string {
+	return fmt.Sprintf("%s+%d", d.TableName, d.Id)
 }
 
 type ReportData struct {
@@ -61,26 +61,26 @@ func GetkeyfromPostReport(r *http.Request, d crud.HandlerData) string {
 		return ""
 	}
 
-	log.LoggerWContext(ctx).Debug(fmt.Sprintf("receive DB report event data : table:%s", reportData.TableName))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive DB report event data : table:%s", reportData.TableName))
 
 	var parseReportData ReportDataer
 	switch reportData.TableName {
 	case "node":
-		parseReportData = new(NodeParseStruct)
+		parseReportData = new(NodeReportData)
 	case "node_category":
-		parseReportData = new(NodecategoryParseStruct)
+		parseReportData = new(NodecategoryReportData)
 	case "locationlog":
-		parseReportData = new(LocationlogParseStruct)
+		parseReportData = new(LocationlogReportData)
 	case "radacct":
-		parseReportData = new(RadacctParseStruct)
+		parseReportData = new(RadacctReportData)
 	case "ip4log":
-		parseReportData = new(Ip4logParseStruct)
+		parseReportData = new(Ip4logReportData)
 	case "class":
-		parseReportData = new(ClassParseStruct)
+		parseReportData = new(ClassReportData)
 	case "violation":
-		parseReportData = new(ViolationParseStruct)
+		parseReportData = new(ViolationReportData)
 	case "radius_audit_log":
-		parseReportData = new(RadauditParseStruct)
+		parseReportData = new(RadauditReportData)
 
 	default:
 		log.LoggerWContext(ctx).Error(fmt.Sprintf("don't know table %s", reportData.TableName))
@@ -93,7 +93,7 @@ func GetkeyfromPostReport(r *http.Request, d crud.HandlerData) string {
 		return ""
 	}
 
-	log.LoggerWContext(ctx).Debug(fmt.Sprintf("receive DB report event table data:%#v", parseReportData))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive DB report event table data:%#v", parseReportData))
 
 	return parseReportData.GetTableKey4Redis()
 }

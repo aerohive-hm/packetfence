@@ -24,7 +24,8 @@ type NodecategoryParseStruct struct {
 
 
 type NodecategoryReportData struct {
-       TableName string `json:"tablename"`
-       TimeStamp string `json:"timestamp"`
-       Data NodecategoryParseStruct  `json:"data"`
+	TableName string `json:"ah_tablename"`
+	TimeStamp string `json:"ah_timestamp"`
+	CategoryID int `json:"category_id"`
+	Name       string  `json:"name"`
 }

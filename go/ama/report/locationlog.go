@@ -32,8 +32,8 @@ MariaDB [A3]> desc locationlog;
 type LocationlogParseStruct struct {
 	TableName        string `json:"ah_tablename"`
 	TimeStamp        string `json:"ah_timestamp"`
-	Id               string  `json:"id"`
-	TenantID         string  `json:"tenant_id"`
+	Id               string `json:"id"`
+	TenantID         string `json:"tenant_id"`
 	Mac              string `json:"mac"`
 	Switch           string `json:"switch"`
 	Port             string `json:"port"`
@@ -43,8 +43,8 @@ type LocationlogParseStruct struct {
 	connSubType      string `json:"connection_sub_type"`
 	Dot1xUserName    string `json:"dot1x_username"`
 	Ssid             string `json:"ssid"`
-	StartTime        string  `json:"start_time"`
-	EndTime          string  `json:"end_time"`
+	StartTime        string `json:"start_time"`
+	EndTime          string `json:"end_time"`
 	SwitchIp         string `json:"switch_ip"`
 	SwitchMac        string `json:"switch_mac"`
 	StrippedUserName string `json:"stripped_user_name"`
@@ -54,7 +54,7 @@ type LocationlogParseStruct struct {
 }
 
 type LocationlogReportData struct {
-       TableName string `json:"tablename"`
-       TimeStamp string `json:"timestamp"`
-       Data LocationlogParseStruct  `json:"data"`
+	TableName string `json:"ah_tablename"`
+	TimeStamp string `json:"ah_timestamp"`
+	Id         int   `json:"id"`
 }

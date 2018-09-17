@@ -91,3 +91,10 @@ type RadauditParseStruct struct {
 	RadReply         string `json:"radius_reply"`
 	RequestTime      string `json:"request_time"`
 }
+
+type RadauditReportData struct {
+	TableName string `json:"ah_tablename"`
+	TimeStamp string `json:"ah_timestamp"`
+	Id           int `json:"id"`
+}
+
