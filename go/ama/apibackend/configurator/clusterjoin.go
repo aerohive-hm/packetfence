@@ -61,5 +61,6 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	}
 	code = "ok"
 	a3config.RecordSetupStep(a3config.StepClusterNetworking, code)
+	a3config.Isclusterjoin = true
 	return crud.FormPostRely(code, ret)
 }
