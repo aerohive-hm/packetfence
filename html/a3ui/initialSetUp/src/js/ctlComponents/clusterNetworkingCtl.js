@@ -70,7 +70,7 @@ class clusterNetworkingCtl extends Component {
         let self=this;
 
         let xCsrfToken="";
-        let url= "/a3/api/v1/configurator/cluster/networks";
+        let url= "/a3/api/v1/configurator/cluster/networks?timestamp="+new Date().getTime();
          
         let param={
         }
