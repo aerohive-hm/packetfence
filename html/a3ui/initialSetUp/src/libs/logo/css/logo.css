@@ -5,7 +5,8 @@
     height: 50px;
 }
 .title-screen-center-div-logo{
-    margin:0 auto;
+    
+    float: left;
     width:1280px;
     height: 50px;
 
