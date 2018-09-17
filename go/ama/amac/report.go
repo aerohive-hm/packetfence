@@ -18,10 +18,9 @@ import (
 
 const (
 	CacheTableUpLimit                 = 30
-	AmacSendEventCounter        int64 = 0
-	AmacSendEventSuccessCounter int64 = 0
 )
-
+var	AmacSendEventCounter        int64 = 0
+var AmacSendEventSuccessCounter int64 = 0
 type ReportHeader struct {
 	SystemID  string `json:"systemId"`
 	ClusterID string `json:"clusterId"`
