@@ -195,7 +195,6 @@ func startService() {
 	}
 
 	utils.InitStartService(clusterEnable)
-	amac.JoinCompleteEvent()
 }
 
 func forceUrlStartWithHttps(s string) string {

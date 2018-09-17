@@ -25,6 +25,7 @@ class getStartCtl extends Component {
         super(props);
         this.state = {
             i18n:{},
+            globalMarginTop:0,
         };
 
     }
@@ -33,6 +34,25 @@ class getStartCtl extends Component {
     componentDidMount() {
         let self=this;
         self.getRightI18n();
+        self.centerGlobalDivGetStartCtl();
+        $(window).resize(function() {
+            self.centerGlobalDivGetStartCtl();
+        });
+    }
+
+    centerGlobalDivGetStartCtl= () => {
+        let self=this;
+        if(document.body.offsetHeight<690){
+            self.setState({
+                globalMarginTop : 0,
+            })
+        }else{
+            self.setState({
+                globalMarginTop : parseInt((document.body.offsetHeight-690)/2),
+            })
+            
+        }
+
     }
 
     getRightI18n= () => {
@@ -65,7 +85,7 @@ class getStartCtl extends Component {
     }
 
     render() {
-        const {} = this.state;
+        const {globalMarginTop} = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
@@ -73,7 +93,7 @@ class getStartCtl extends Component {
             duration: 10,
         });
         return (
-            <div className="global-div-getStartCtl">
+            <div className="global-div-getStartCtl" style={{marginTop:globalMarginTop+"px"}}>
                 <div className="new-deployment-div-getStartCtl">
                     <div className="new-deployment-logo-div-getStartCtl">
                         <img src={newDeploymentLogoImg} className="new-deployment-logo-img-getStartCtl" />

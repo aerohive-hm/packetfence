@@ -174,22 +174,27 @@ func reportSysInfo(ctx context.Context) (interface{}, int) {
 	return reportMsg, 0
 }
 func reportRoutine(ctx context.Context) {
+<<<<<<< HEAD
 	//var in []interface{}
 	//in := make([]interface{}, 0)
 
 	if reportInterval == 0 {
 		reportInterval = 30
+=======
+	if ReportInterval == 0 {
+		ReportInterval = 30
+>>>>>>> 242f7652dfb2ed7acab29cce4b332528164d436f
 	}
 	// create a ticker for report
-	ticker := time.NewTicker(time.Duration(reportInterval) * time.Second)
+	ticker := time.NewTicker(time.Duration(ReportInterval) * time.Second)
 	failCount := 0
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", reportInterval))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", ReportInterval))
 	for _ = range ticker.C {
 		/*
 			check if allow to the connect to cloud, if not,
 			not send the report
 		*/
-		if globalSwitch != "enable" {
+		if GlobalSwitch != "enable" {
 			failCount = 0
 			continue
 		}
