@@ -5,8 +5,8 @@ After=network-online.target
 [Service]
 Type=simple
 User=root
-ExecStart=/bin/sh -c '/usr/bin/node /root/A3_Cluster.js'
-WorkingDirectory=/root/
+ExecStart=/bin/sh -c '/usr/bin/node A3_Cluster.js'
+WorkingDirectory=/usr/local/pf/a3_cluster_update
 Restart=on-failure
 RestartSec=20s
 
