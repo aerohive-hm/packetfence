@@ -3,8 +3,8 @@ package a3config
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	//"strings"
 
 	//"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
@@ -29,6 +29,13 @@ func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterEventJoi
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("ClusterEventJoinData %v", clusterData))
 	var err error
 	var clusterRespData = ClusterEventRespData{}
+	nodeList := ClusterNew().FetchNodesInfo()
+	for _, node := range nodeList {
+		if node.Hostname == clusterData.Hostname {
+			msg := fmt.Sprintf("hostname (%s) is exsit.", clusterData.Hostname)
+			return errors.New(msg), clusterRespData
+		}
+	}
 
 	for _, i := range clusterData.Items {
 		err = UpdateJoinClusterconf(i, clusterData.Hostname)

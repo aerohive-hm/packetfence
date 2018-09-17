@@ -2,10 +2,11 @@ package amadb
 
 import (
 	"context"
-	"fmt"
+	//	"fmt"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
+/* to be removed latter
 func IsPrimaryCluster() bool {
 	var ctx = context.Background()
 
@@ -28,7 +29,7 @@ func IsPrimaryCluster() bool {
 	fmt.Println("Cluster status:", strValue)
 	return strValue == "Primary"
 }
-
+*/
 
 func QueryDBClusterIpSet() string {
 	var ctx = context.Background()
@@ -54,4 +55,3 @@ func QueryDBClusterIpSet() string {
 
 	return strValue
 }
-

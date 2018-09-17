@@ -155,10 +155,3 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 
 	return err, RespData
 }
-
-/*
-func IsPrimaryCluster() {
-	ClusterIp := a3config.ReadClusterPrimary()
-
-}
-*/
