@@ -24,6 +24,7 @@ $(document).ready(function(){
 
     //button press on trashcan, array, removeClusterNode(), removeClusterNode(nodeArray)
     document.getElementById('remove-node').onclick = function(){
+        getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         console.log("get List of nodes: "); console.log(getListOfNodes);
 
@@ -51,7 +52,7 @@ function getCheckedNodes(inputTbody){
       nodeArray.push(getInputFields[i].value);
     }
   }
-  $("#listOfSelectedNodes").text(nodeArray + "will be removed from the cluster");
+  $("#listOfSelectedNodes").text(nodeArray + " will be removed from the cluster");
   return nodeArray;
 }
 
@@ -142,7 +143,7 @@ function getClusterStatusInfo(){
           if (members.type == "master"){
             $("#cluster-management-table-tbody").append("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
           } else {
-            $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' />" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
+            $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' value='"+ members.hostname +"'/>" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
           }
         });
         //interfaces table

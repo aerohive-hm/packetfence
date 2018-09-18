@@ -14,6 +14,7 @@ $(document).ready(function(){
       }, 3000);
     } else {
       linkAerohiveAccount();
+
     }
     console.log("clicked on link account");
     //add loader here
@@ -155,6 +156,7 @@ function unlinkAerohiveAccount(){
 
 //function to submit form
 function linkAerohiveAccount(){
+  $('#spin-spinner').show();
   console.log("inside link aerohive account");
   var base_url = window.location.origin;
   var form = document.forms.namedItem("cloudForm");
@@ -167,12 +169,13 @@ function linkAerohiveAccount(){
   document.getElementById("link-account").disabled = true;
   $.ajax({
       type: 'POST',
-      url: base_url + '/a3/api/v1/configuration/cloud',
+      url: base_url + '/ama/cloud_integration/' + "?json=" + jsonFormData,
       dataType: 'json',
       data: jsonFormData,
       success: function(data){
         console.log("went through");
         console.log(data);
+        $('.spin-spinner').hide();
         if (data.code == "fail"){
           document.getElementById('errorMessage').innerHTML = data.msg;
           $("#error-alert").show();
