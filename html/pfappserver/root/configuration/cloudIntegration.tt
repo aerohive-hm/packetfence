@@ -31,7 +31,10 @@
               <input class="cloud-admin form-inline help-inline" type="text" name="user" id="user" placeholder="admin@example.com" data-required="required"><br>
               <br/>
               <label class="form-horizontal control-label" style="float:left; width:130px;" for="pass">Password</label>
-              <div class="input-append"><input class="cloud-pw form-inline help-inline pf-obfuscated-text" type="text" name="pass" id="pass" placeholder="*********" data-required="required"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
+              <div class="input-append"><input class="cloud-pw form-inline help-inline pf-obfuscated-text" type="password" name="pass" id="pass" placeholder="*********" data-required="required">
+                <button type="button" class="btn"><i class="icon-eye"></i></button>
+              </div>
+              <br/>
               <br/>
               <label style="float:left; width:130px;"> </label>
               <div style="display:inline-block">
@@ -112,9 +115,7 @@
             </tbody>
           </table>
           <br>
-          [% IF is_master_node %]
           <button class="btn btn-danger" id="unlink-account">Unlink from Aerohive Cloud Account</button>
-          [% END %]
         </div>
     [% END %]
     </div>

@@ -53,7 +53,7 @@
           <form name="newClusterInfo" id="newClusterInfo">
               <label class="form-horizontal control-label" style="float:left; width: 130px;" for="sharedKey">Shared Key</label>
               <div class="controls">
-                <div class="input-append"><input class="sharedKey form-inline help-inline pf-obfuscated-text" type="text" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
+                <div class="input-append"><input class="sharedKey form-inline help-inline pf-obfuscated-text" type="password" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
                 <p class="help-block">Shared KEY for VRRP protocol (must be the same on all members)</p>
               </div>
               <label class="form-horizontal control-label" style="float:left; width:130px;" for="vrid">Virtual Router Id</label>

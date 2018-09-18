@@ -55,7 +55,6 @@ function updateKeyTable(userKeyInput) {
            }
            return true;
         }).fail(function(xhr, status, error){
-           console.log("error: " + error);
            return false;
         });
 }
@@ -68,10 +67,8 @@ function checkKeyInput(userKeyInput){
     //TRUE OR FALSE
     if (checkKeyRegex.test(userKeyInput)){
         $("#keyInput").css('border','1px solid #dfdfdf');
-        console.log("TRUE");
         return true;
     } else {
-        console.log("FALSE");
         return false;
     }
 }
@@ -85,17 +82,16 @@ function openEulaModal(){
 
 //user submits eula with button press
 function userSubmitEula(){
-    console.log("inside userSubmitEula");
-  var base_url = window.location.origin;
-  $.ajax({
-      type: 'POST',
-      url: base_url + '/eula'
-  }).done(function(data){
-      $('.trialIndicator').remove();
-      $('#eulaModal').modal('hide');
-      $(".modal-backdrop").hide();
-      $(".licenseTrialText").hide();
-  }).fail(function(xhr, status, error){
-      console.log(error);
-  });
+    var base_url = window.location.origin;
+    $.ajax({
+        type: 'POST',
+        url: base_url + '/eula'
+    }).done(function(data){
+        $('.trialIndicator').remove();
+        $('#eulaModal').modal('hide');
+        $(".modal-backdrop").hide();
+        $(".licenseTrialText").hide();
+    }).fail(function(xhr, status, error){
+        console.log(error);
+    });
 }
