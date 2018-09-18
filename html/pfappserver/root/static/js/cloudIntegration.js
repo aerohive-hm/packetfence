@@ -1,6 +1,6 @@
 $(document).ready(function(){
     //three function calls: getNodeInfo, linkAerohiveAccount, unlinkAerohiveAccount
-
+    setupObfuscatedTextHover('.pf-obfuscated-text + button');
     getNodeInfo();
     //link account btn press
     document.getElementById("link-account").onclick = function(e){
@@ -10,7 +10,7 @@ $(document).ready(function(){
         var cloudpass = document.getElementById('pass').value;
         if(cloudurl == "" || clouduser == "" || cloudpass == ""){
             //if any of the three fields are empty
-            document.getElementById('errorMessage').innerHTML = "Enter all the fields below to link with aerohive account.";
+            document.getElementById('errorMessage').innerHTML = "Enter values in all fields.";
             $("#error-alert").show();
             setTimeout(function (){
               $("#error-alert").slideUp(500);
@@ -89,20 +89,6 @@ function getNodeInfo(){
 
             //unlinked
             } else if (data.msgtype == "cloudConf"){
-                // $('#rdcUrl').html(data.body.header.rdcUrl);
-                // document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
-                // if (data.body.header.region == ""){
-                //   $('#region').html("unknown");
-                // } else {
-                //   $('#region').html(data.body.header.region);
-                // }
-                // if ($('#lastContactTime').text() == ""){
-                // $('#lastContactTime').html("unknown");
-                // } else {
-                //   $('#lastContactTime').html(data.body.data.lastContactTime);
-                // }
-                // $('#ownerId').html(data.body.header.ownerId);
-                // $('#vhmId').html(data.body.header.vhmId);
                 $(".linked").hide();
                 $(".disconnected").show();
             } else {
@@ -202,7 +188,6 @@ function linkAerohiveAccount(){
                     $("#success-alert").slideUp(500);
                 }, 3000);
                 getNodeInfo();
-
             }
         },
         error: function(data){
