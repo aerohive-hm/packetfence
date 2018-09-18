@@ -93,7 +93,7 @@ func GetkeyfromPostReport(r *http.Request, d crud.HandlerData) string {
 		return ""
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive DB report event table data:%#v", parseReportData))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("receive DB report event table data:%#v", parseReportData))
 
 	return parseReportData.GetTableKey4Redis()
 }
