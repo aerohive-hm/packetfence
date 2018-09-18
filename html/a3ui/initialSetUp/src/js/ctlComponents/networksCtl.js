@@ -1059,25 +1059,22 @@ class networksCtl extends Component {
             key: 'type',
             width:'122px',
             render: (text, record, index) => {
+                let optionHtml=[];
+                if(dataTable[index].original.slice(0,3)==="eth"){
+                    optionHtml.push(<Option value="MANAGEMENT">{self.state.i18n.management}</Option>);
+                }
+                optionHtml.push(<Option value="REGISTRATION">{self.state.i18n.registration}</Option>);
+                optionHtml.push(<Option value="ISOLATION">{self.state.i18n.isolation}</Option>);
+                optionHtml.push(<Option value="PORTAL">{self.state.i18n.portal}</Option>);
                 return (
                     <div>
-                        {
-                            dataTable[index].original==="eth0"?
-                            self.state.i18n.management
-                            :
-                            <Select 
-                                value={text} 
-                                onChange={self.onChangeSelect.bind(self,index,"type")}
-                                style={{ width: 110 }}
-                            >
-                                {/*<Option value="MANAGEMENT">{self.state.i18n.management}</Option>*/}
-                                <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
-                                <Option value="ISOLATION">{self.state.i18n.isolation}</Option>
-                                <Option value="PORTAL">{self.state.i18n.portal}</Option>
-                                {/*<Option value="NONE">{self.state.i18n.none}</Option>
-                                <Option value="OTHER">{self.state.i18n.other}</Option>*/}
-                            </Select>
-                        }
+                        <Select 
+                            value={text} 
+                            onChange={self.onChangeSelect.bind(self,index,"type")}
+                            style={{ width: 110 }}
+                        >
+                            {optionHtml}
+                        </Select>
                     </div>
                 );
             } 
