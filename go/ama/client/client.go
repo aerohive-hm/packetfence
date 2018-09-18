@@ -126,7 +126,6 @@ func (c *Client) ClusterAuth() error {
 	body := fmt.Sprintf(`{"username": "%s", "password":"%s"}`,
 		webCfg["user"], webCfg["pass"])
 
-	c.Timeout = 30
 	err := c.Call("POST", url, body)
 	if err != nil {
 		return err
@@ -160,6 +159,7 @@ func (c *Client) ClusterSend(method, url string, body string) error {
 			return err
 		}
 	}
+	c.Timeout = 30
 
 	return c.Call(method, url, body)
 }
