@@ -206,6 +206,7 @@ sub remove_nodes_from_cluster {
   my $res_data = decode_json($client->responseContent());
   my $token=$res_data->{'token'};
 
+  commit_cluster_update_log("The token get from $first_node_ip_to_updates is $token");
   
   $data = {};
   $url = "https://".$first_node_ip_to_update.":9999/a3/api/v1/configuration/cluster/remove";
