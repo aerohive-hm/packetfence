@@ -14,6 +14,7 @@ $(document).ready(function(){
       }, 3000);
     } else {
       linkAerohiveAccount();
+
     }
     console.log("clicked on link account");
     //add loader here
@@ -86,20 +87,20 @@ function getNodeInfo(){
 
         //unlinked
       } else if (data.msgtype == "cloudConf"){
-        $('#rdcUrl').html(data.body.header.rdcUrl);
-        document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
-        if (data.body.header.region == ""){
-          $('#region').html("unknown");
-        } else {
-          $('#region').html(data.body.header.region);
-        }
-        if ($('#lastContactTime').text() == ""){
-        $('#lastContactTime').html("unknown");
-        } else {
-          $('#lastContactTime').html(data.body.data.lastContactTime);
-        }
-        $('#ownerId').html(data.body.header.ownerId);
-        $('#vhmId').html(data.body.header.vhmId);
+        // $('#rdcUrl').html(data.body.header.rdcUrl);
+        // document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
+        // if (data.body.header.region == ""){
+        //   $('#region').html("unknown");
+        // } else {
+        //   $('#region').html(data.body.header.region);
+        // }
+        // if ($('#lastContactTime').text() == ""){
+        // $('#lastContactTime').html("unknown");
+        // } else {
+        //   $('#lastContactTime').html(data.body.data.lastContactTime);
+        // }
+        // $('#ownerId').html(data.body.header.ownerId);
+        // $('#vhmId').html(data.body.header.vhmId);
         $(".linked").hide();
         $(".disconnected").show();
       } else {
@@ -155,6 +156,7 @@ function unlinkAerohiveAccount(){
 
 //function to submit form
 function linkAerohiveAccount(){
+  $('#spin-spinner').show();
   console.log("inside link aerohive account");
   var base_url = window.location.origin;
   var form = document.forms.namedItem("cloudForm");
@@ -173,6 +175,7 @@ function linkAerohiveAccount(){
       success: function(data){
         console.log("went through");
         console.log(data);
+        $('.spin-spinner').hide();
         if (data.code == "fail"){
           document.getElementById('errorMessage').innerHTML = data.msg;
           $("#error-alert").show();

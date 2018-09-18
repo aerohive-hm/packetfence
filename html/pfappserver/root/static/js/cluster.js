@@ -7,8 +7,12 @@ $(document).ready(function(){
     //removeClusterNode(nodeArray)
 
     document.getElementById("submitNewClusterInfo").onclick = function(){
-      if( $("#sharedKey").val().length === 0 || $("#vrid").val().length === 0 || $("#vip").val().length === 0 ) {
-        $(this).parents('p').addClass('warning');
+      if( $("#sharedKey").val().length === 0 || $("#vrid").val().length === 0 ) {
+        document.getElementById('errorMessage').innerHTML = "Unsuccessful update of the cluster info";
+        $("#error-alert").show();
+        setTimeout(function(){
+          $("#error-alert").slideUp(500);
+        }, 3000);
       } else {
         submitClusterInfo();
       }
@@ -20,11 +24,11 @@ $(document).ready(function(){
 
     //button press on trashcan, array, removeClusterNode(), removeClusterNode(nodeArray)
     document.getElementById('remove-node').onclick = function(){
+        getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         console.log("get List of nodes: "); console.log(getListOfNodes);
 
         $('.removeModal').show();
-        $("#listOfSelectedNodes").text(getListOfNodes + "will be removed from the cluster");
 
         $('#close-modal').on('click', function() {
             $('modal').hide();
@@ -48,6 +52,7 @@ function getCheckedNodes(inputTbody){
       nodeArray.push(getInputFields[i].value);
     }
   }
+  $("#listOfSelectedNodes").text(nodeArray + " will be removed from the cluster");
   return nodeArray;
 }
 
@@ -79,9 +84,9 @@ function submitClusterInfo(){
       },
       error: function(data){
         document.getElementById('errorMessage').innerHTML = "Unsuccessful update of the cluster info";
-        $("#success-alert").show();
+        $("#error-alert").show();
         setTimeout(function(){
-          $("#success-alert").slideUp(500);
+          $("#error-alert").slideUp(500);
         }, 3000);
       }
   });
@@ -111,6 +116,11 @@ function removeClusterNode(nodeArray){
       error: function(data){
         console.log("error");
         console.log(data);
+        document.getElementById('errorMessage').innerHTML = data.msg;
+        $("#error-alert").show();
+        setTimeout(function(){
+          $("#error-alert").slideUp(500);
+        }, 3000);
       }
    });
 }
@@ -125,13 +135,15 @@ function getClusterStatusInfo(){
       success: function(data){
         console.log("success");
         console.log(data);
+        $("#cluster-management-table-tbody tr").remove();
+        $("#net-interfaces-table-tbody tr").remove();
         //cluster management table
         $.each(data.nodes, function(i, members){
           console.log(members);
           if (members.type == "master"){
             $("#cluster-management-table-tbody").append("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
           } else {
-            $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' />" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
+            $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' value='"+ members.hostname +"'/>" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
           }
         });
         //interfaces table
@@ -148,7 +160,7 @@ function getClusterStatusInfo(){
             $(this).css('background-color', '#f4f6f9');
         });
       },
-      error: function(fakeData){
+      error: function(data){
         document.getElementById('errorMessage').innerHTML = "Could not grab the cluster info";
         $("#success-alert").show();
         setTimeout(function(){
