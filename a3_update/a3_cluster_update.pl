@@ -2,11 +2,13 @@
 use strict;
 use warnings;
 use JSON;
+use REST::Client;
 use Readonly;
 use POSIX;
 
 use lib '/usr/local/pf/lib';
 use pf::a3_cluster_update;
+use pf::config qw(%Config);
 
 Readonly::Scalar my $A3_CLUSTER_UPDATE_LOG_FILE   => "/usr/local/pf/logs/a3_cluster_update.log";
 open(UPDATE_CLUSTER_LOG,   '>>', $A3_CLUSTER_UPDATE_LOG_FILE)   || die "Unable to open update log file";
@@ -80,7 +82,11 @@ sub a3_app_update {
   if ($ret != 0) {
     pf::a3_cluster_update::remote_api_call_post($ip, 'a3/rollback_app', {});
     pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['pf', 'start']});
-    exit 1;
+    #at later stage failing on other nodes, we using API to remove them from cluster
+    if ($ip ne $first_node_ip_to_update) {
+      remove_nodes_from_cluster();
+      exit 1;
+    }
   }
 }
 
@@ -165,6 +171,58 @@ sub enable_nodes_after_update {
   #enable node on first node
   for my $ip (@remains_nodes_ip_to_update) {
     pf::a3_cluster_update::remote_api_call_post($ip, 'a3/node', {'opts'=>["$first_node_hostname", 'enable']});
+  }
+}
+
+
+sub remove_nodes_from_cluster {
+  my $url = "https://".$first_node_ip_to_update.":9999/api/v1/login";
+  my $data = {};
+  my $remove_nodes_list = [];
+
+  my $client = REST::Client->new({timeout=>360});
+
+  $client->addHeader('Content-Type', 'application/json');
+  $client->addHeader('charset', 'UTF-8');
+  $client->addHeader('Accept', 'application/json');
+  
+  
+  $client->getUseragent()->ssl_opts(SSL_verify_mode => 'SSL_VERIFY_NONE');
+  $client->getUseragent()->ssl_opts(verify_hostname => 0);
+  my ($username, $passwd);
+  $username = $Config{webservices}->{user};
+  $passwd = $Config{webservices}->{pass};
+
+  $data->{username} = $username;
+  $data->{password} = $passwd;
+ 
+  my $json_data = encode_json($data);
+  $client->POST($url, $json_data);
+  if( $client->responseCode() ne '200' ){
+     commit_cluster_update_log("Unable to get token from $first_node_ip_to_update");
+     exit 1;
+  }
+  
+  my $res_data = decode_json($client->responseContent());
+  my $token=$res_data->{'token'};
+
+  
+  $data = {};
+  $url = "https://".$first_node_ip_to_update.":9999/a3/api/v1/configuration/cluster/remove";
+  $client->addHeader('Authorization', "$token");
+  $client->GET($url);
+
+  foreach my $node (@remains_nodes_hostname) {
+    push @$remove_nodes_list, $node;
+  }
+
+  $data->{'hostname'} = $remove_nodes_list;
+  $json_data = encode_json($data);
+  $client->POST($url, $json_data);
+
+  if( $client->responseCode() ne '200' ){
+     commit_cluster_update_log("Unable to remove node from $first_node_ip_to_update");
+     exit 1;
   }
 }
 
