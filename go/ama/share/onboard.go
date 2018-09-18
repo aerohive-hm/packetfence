@@ -92,7 +92,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	onboardingData.DefaultGateway = utils.GetA3DefaultGW()
 	onboardingData.SoftwareVersion = utils.GetA3Version()
 	onboardingData.SystemUptime = time.Now().UTC().UnixNano() / int64(time.Millisecond)
-	onboardingData.ClusterPrimary = amadb.IsPrimaryCluster()
+	//onboardingData.ClusterPrimary = amadb.IsPrimaryCluster()
 	managementIface, errint := utils.GetIfaceList("eth0")
 	if errint < 0 {
 		fmt.Errorf("Get ETH0 interfaces infomation failed")
@@ -105,6 +105,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 		value, _ := strconv.Atoi(iface.NetMask)
 		onboardingData.Netmask = utils.NetmaskLen2Str(value)
 		onboardingData.Vip = clusterConf.GetPrimaryClusterVip(iface.Name)
+		onboardingData.ClusterPrimary = utils.IsManagement(onboardingData.Vip)
 		onboardingData.ClusterHostName = clusterConf.GetPrimaryClusterVip(iface.Name)
 		break
 	}

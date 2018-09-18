@@ -62,8 +62,12 @@ func GetItemsValue(ctx context.Context) []Item {
 }
 
 func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
-	var err error
 
+	err := DeleteIfcfgFile(ctx)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("DeleteIfcfgFile error:" + err.Error())
+		return err
+	}
 	for _, item := range items {
 		err = UpdateInterface(item)
 		if err != nil {
@@ -192,7 +196,7 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 				return errors.New(msg)
 			}
 			/* vlan vip should not be the same*/
-			if item.Vip == i.Vip {
+			if enable && item.Vip == i.Vip {
 				msg = fmt.Sprintf("vlan vip(%s) is more than one in form", item.Vip)
 				return errors.New(msg)
 			}
@@ -208,13 +212,29 @@ func GetPrefixIP(i Item) string {
 }
 func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	msg := ""
-	for _, item := range items {
-		if strings.Contains(item.Type, "MANAGEMENT") {
-			return nil
+	for _, i := range items {
+		/*eth0 must contain management, other can not contian management*/
+		if i.Name == "eth0" {
+			if i.Type != "MANAGEMENT" {
+				msg = fmt.Sprintf("the interface eth0  must be management type")
+				return errors.New(msg)
+			}
+		} else {
+			/*vlan can not allowed to contain management*/
+			if i.Type == "MANAGEMENT" {
+				msg = fmt.Sprintf("the %s does not allow to contain management type", i.Name)
+				return errors.New(msg)
+			}
+			/*if vlan type is portal ,the service must contian portal*/
+			if i.Type == "PORTAL" {
+				if !strings.Contains(i.Services, "PORTAL") {
+					msg = fmt.Sprintf("the %s must contain portal service if the type is portal", i.Name)
+					return errors.New(msg)
+				}
+			}
 		}
 	}
-	msg = fmt.Sprintf("the interface does not contain management type")
-	return errors.New(msg)
+	return nil
 }
 
 func CheckItemServiceValid(ctx context.Context, items []Item) error {
@@ -306,22 +326,23 @@ const (
 // create ifcfg-xxx file and write IpAddr, Netmask
 // write gateway to system files
 func writeOneNetworkConfig(ctx context.Context, item Item) error {
-	ifname := ChangeUiInterfacename(item.Name, strings.ToLower(item.Prefix))
+	ifname := ChangeUiIfname(item.Name, item.Prefix)
 	ip := item.IpAddr
 	netmask := item.NetMask
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig:ifname=%s ,ip =%s, netmask =%s", ifname, ip, netmask))
-
 	var section Section
-	// write to /usr/local/pf/var/ifcfg- firstly
+	var sysGatewayCfgFile string
+	var dns []string
+	var i int
+	var l string
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig: ifname=%s, "+
+		"ip =%s, netmask =%s", ifname, ip, netmask))
+
+	// ifcfgfile: /usr/local/pf/var/ifcfg-
 	ifcfgFile := varDir + interfaceConfFile + ifname
-	// write to /etc/sysconfig/network-scripts/ifcfg-
+	// sysifCfgFile: /etc/sysconfig/network-scripts
 	sysifCfgFile := networtConfDir + interfaceConfDir + interfaceConfFile + ifname
 
-	err := utils.ClearFileContent(sysifCfgFile)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
-		return err
-	}
 	//eth0, eth0.xx
 	if utils.IsVlanIface(ifname) {
 		section = Section{
@@ -338,87 +359,60 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 			},
 		}
 	}
-	err = A3CommitPath(ifcfgFile, section)
+
+	section[""]["ONBOOT"] = "yes"
+	section[""]["BOOTPROTO"] = "static"
+	section[""]["NM_CONTROLLED"] = "no"
+	section[""]["IPADDR"] = ip
+	section[""]["NETMASK"] = netmask
+
+	err := A3CommitPath(ifcfgFile, section)
 
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() + ifcfgFile)
 		return err
+	}
+
+	if !utils.IsVlanIface(ifname) {
+		/* write dns to sysifcfgfile for eth0*/
+		dns = utils.GetDnsServer()
+		for i, l = range dns {
+			section[""]["DNS"+strconv.Itoa(i)] = l
+		}
 	}
 	err = A3CommitPath(sysifCfgFile, section)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
-		return err
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
+			sysifCfgFile)
 	}
-	section = Section{
-		"": {
-			"ONBOOT":        "yes",
-			"BOOTPROTO":     "static",
-			"NM_CONTROLLED": "no",
-			"IPADDR":        ip,
-			"NETMASK":       netmask,
-		},
-	}
-	err = A3CommitPath(ifcfgFile, section)
-
-	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
-		return err
-	}
-
-	//just write another copy to /etc/sysconfig/
-	err = A3CommitPath(sysifCfgFile, section)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
-		return err
-	}
-
-	// don't need write gateway
-	if utils.IsVlanIface(ifname) {
-		return nil
-	}
-	/* write dns to sysifcfgfile for eth0*/
-	dns1, dns2 := utils.GetDnsServer()
-	section = Section{
-		"": {
-			"DNS1": dns1,
-			"DNS2": dns2,
-		},
-	}
-
-	err = A3CommitPath(sysifCfgFile, section)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysifCfgFile)
-		return err
-	}
-	//write gateway
+	//write gateway to etc/sysconfig/network
 	section = Section{
 		"": {
 			"GATEWAY": utils.GetA3DefaultGW(),
 		},
 	}
-	// /etc/sysconfig/network
-	sysGatewayCfgFile := networtConfDir + networkConfFile
+
+	sysGatewayCfgFile = networtConfDir + networkConfFile
 
 	err = A3CommitPath(sysGatewayCfgFile, section)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + sysGatewayCfgFile)
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
+			sysGatewayCfgFile)
 		return err
 	}
-
 	return nil
 }
 
-// Set network interface into system files
-// Only handle CentOS /usr/local/pf/html/pfappserver/root/interface/interface_rhel.tt
-func WriteNetworkConfigs(ctx context.Context, networksData NetworksData) error {
-
-	for _, item := range networksData.Items {
-		err := writeOneNetworkConfig(ctx, item)
-		if err != nil {
-			log.LoggerWContext(ctx).Error("writeOneNetworkConfig error:" + err.Error())
-			return err
-		}
+func DeleteIfcfgFile(ctx context.Context) error {
+	err := utils.DeleteFile("/usr/local/pf/var/ifcfg-eth*")
+	if err != nil {
+		log.LoggerWContext(ctx).Error("DeleteIfcfgFile  error")
+		return err
 	}
-
+	err = utils.DeleteFile("/etc/sysconfig/network-scripts/ifcfg-eth*")
+	if err != nil {
+		log.LoggerWContext(ctx).Error("DeleteIfcfgFile error")
+		return err
+	}
 	return nil
 }

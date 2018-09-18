@@ -113,7 +113,7 @@ func (sections Section) FetchNodesInfo() []NodeInfo {
 
 func DeletePrimaryClusterconf(i Item) error {
 	isvlan := VlanInface(i.Name)
-	ifname := ChangeUiInterfacename(i.Name, i.Prefix)
+	ifname := ChangeUiIfname(i.Name, i.Prefix)
 	hostname := GetPfHostname()
 	if isvlan {
 		sectionid := []string{
@@ -135,8 +135,11 @@ func DeletePrimaryClusterconf(i Item) error {
 
 func matchHost(sectionId string, hostname []string) bool {
 	for _, host := range hostname {
-		l := len(host)
-		if sectionId[:l] == host {
+		l1, l2 := len(sectionId), len(host)
+		if l1 < l2 {
+			continue
+		}
+		if sectionId[:l2] == host {
 			return true
 		}
 	}
@@ -154,7 +157,7 @@ func RemoveClusterServer(hostname []string) {
 	}
 
 	if len(ids) > 0 {
-		log.LoggerWContext(context.Background()).Info("update cluster.conf")
+		log.LoggerWContext(context.Background()).Info("to be removed from cluster: ")
 		A3Delete("CLUSTER", ids)
 	}
 }

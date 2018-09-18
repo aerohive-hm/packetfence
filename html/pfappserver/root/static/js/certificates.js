@@ -27,58 +27,61 @@ $(document).ready(function(){
         if(https_key.files.length != 0 && https_server_cert.files.length != 0){
             uploadCertAndKey(https_server_cert, https_key, "https_form", "https", eap_ca_cert);
         } else {
-          document.getElementById('errorMessage').innerHTML = "Upload both a key and certificate file.";
-          $("#error-alert").show();
-          setTimeout(function(){
-              $("#error-alert").slideUp(500);
-          }, 3000);
+            document.getElementById('errorMessage').innerHTML = "Upload both a key and certificate file.";
+            $("#error-alert").show();
+            setTimeout(function(){
+                $("#error-alert").slideUp(500);
+            }, 3000);
         }
     }
 
     document.getElementById("eap-upload").onclick = function(e){
         e.preventDefault();
         if (eap_ca_cert.value == ""){
+            console.log("ca is empty");
             if(eap_key.files.length != 0 && eap_server_cert.files.length != 0){
                 uploadCertAndKey(eap_server_cert, eap_key, "eap_tls_form", "eap", eap_ca_cert);
             } else {
-                document.getElementById('errorMessage').innerHTML = "Upload both a key and certificate file.";
-                $("#error-alert").show();
+            document.getElementById('errorMessage').innerHTML = "Upload both a key and certificate file.";
+            $("#error-alert").show();
                 setTimeout(function(){
-                  $("#error-alert").slideUp(500);
+                    $("#error-alert").slideUp(500);
                 }, 3000);
             }
         } else {
-          if(eap_key.files.length != 0 && eap_server_cert.files.length != 0){
-              uploadCertAndKey(eap_server_cert, eap_key, "eap_tls_form", "eap", document.getElementById('caCert_upload'));
-          } else {
-              document.getElementById('errorMessage').innerHTML = "Upload both a key and certificate file.";
-              $("#error-alert").show();
-              setTimeout(function(){
-                $("#error-alert").slideUp(500);
-              }, 3000);
-          }
+            console.log("ca is not empty");
+            if(eap_key.files.length != 0 && eap_server_cert.files.length != 0){
+            uploadCertAndKey(eap_server_cert, eap_key, "eap_tls_form", "eap", document.getElementById('caCert_upload'));
+            } else {
+            document.getElementById('errorMessage').innerHTML = "Upload both a key and certificate file.";
+            $("#error-alert").show();
+            setTimeout(function(){
+              $("#error-alert").slideUp(500);
+            }, 3000);
+            }
         }
-     }
+    }
 
     //DOWNLOAD
     document.getElementById("download_button_https").addEventListener("click", function(e){
+        console.log("inside add eventlistener click");
         e.preventDefault();
         $.when(downloadCert("https")).done(function(downloadFileInfo){
-          downloadFile("server.crt", downloadFileInfo);
+            downloadFile("server.crt", downloadFileInfo);
         });
     }, false);
 
     document.getElementById("download_button_eap_serv").addEventListener("click", function(e){
         e.preventDefault();
         $.when(downloadCert("eap")).done(function(downloadFileInfo){
-          downloadFile("eap-server.crt", downloadFileInfo);
+            downloadFile("eap-server.crt", downloadFileInfo);
         });
     }, false);
 
     document.getElementById("download_button_eap_ca").addEventListener("click", function(e){
         e.preventDefault();
         $.when(downloadCert("eap-ca")).done(function(downloadFileInfo){
-          downloadFile("ca.pem", downloadFileInfo);
+            downloadFile("ca.pem", downloadFileInfo);
         });
     }, false);
 
@@ -86,51 +89,52 @@ $(document).ready(function(){
 
 //API call to run server cert and key together first before ca file upload if ca exist
 function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_file_upload){
-      uploadCert(server_cert_upload, form).then(function(cert_path){
-      console.log("server_cert_upload: "); console.log(server_cert_upload);
-      console.log("cert_path: "); console.log(cert_path); //gets cert path
-      if (qualifier == "https"){
-          https_server_path = cert_path;
-      } else {
-          eap_server_path = cert_path;
-      }
-      var uploadKeyFile  = uploadKey(key_upload, form);
-      return uploadKeyFile;
-  }, function(error){
-      console.log("error on uploadCert");
-      return;
-  }).then(function(key_path, cert_path){
-      console.log("key_path: ");  console.log(key_path);
-      if (qualifier == "https"){
-        var verifyCertFile = verifyCert(https_server_path.filePath, key_path.filePath, qualifier);
-      } else {
-        var verifyCertFile = verifyCert(eap_server_path.filePath, key_path.filePath, qualifier);
-      }
-      return verifyCertFile;
-  }, function(error){
-      console.log("error on uploadKey");
-      removeCert(cert_path.filePath);
-      return;
-  }).then(function(verified){
-      console.log("verified"); console.log(verified);
-      //if ca file caFileExists --> uploadCA Cert --> get path
-      if (ca_file_upload.files.length != 0){
-        console.log("ca_file_upload: "); console.log(ca_file_upload);
-        return uploadCACert(ca_file_upload, form);
-      } else {
+    uploadCert(server_cert_upload, form).then(function(cert_path){
+        console.log("server_cert_upload: "); console.log(server_cert_upload);
+        console.log("cert_path: "); console.log(cert_path); //gets cert path
+        if (qualifier == "https"){
+            https_server_path = cert_path;
+        } else {
+            eap_server_path = cert_path;
+        }
+        var uploadKeyFile  = uploadKey(key_upload, form);
+        console.log("key_upload: "); console.log(key_upload);
+        console.log("uploadKeyFile: "); console.log(uploadKeyFile);
+        return uploadKeyFile;
+    }, function(error){
+        console.log("error on uploadCert");
         return;
-      }
-      //else don't even call upload CA Cert-- > return some error messages
-  }, function(error){
-      console.log("error on verifyCert");
-      return;
-  }).then(function(eap_ca_cert_path){
-      console.log("eap_ca_cert_path: "); console.log(eap_ca_cert_path);
-      readCert("eap");
-  },function(error){
-      console.log("ERROOORRR");
-
-  });
+    }).then(function(key_path, cert_path){
+        console.log("key_path: ");  console.log(key_path);
+        if (qualifier == "https"){
+            var verifyCertFile = verifyCert(https_server_path.filePath, key_path.filePath, qualifier);
+        } else {
+            var verifyCertFile = verifyCert(eap_server_path.filePath, key_path.filePath, qualifier);
+        }
+        return verifyCertFile;
+    }, function(error){
+        console.log("error on uploadKey");
+        removeCert(cert_path.filePath);
+        return;
+    }).then(function(verified){
+        console.log("verified"); console.log(verified);
+        //if ca file caFileExists --> uploadCA Cert --> get path
+        if (ca_file_upload.files.length != 0){
+        console.log("ca_file_upload: "); console.log(ca_file_upload);
+            return uploadCACert(ca_file_upload, form);
+        } else {
+            return;
+        }
+        //else don't even call upload CA Cert-- > return some error messages
+    }, function(error){
+        console.log("error on verifyCert");
+        return;
+    }).then(function(eap_ca_cert_path){
+        console.log("eap_ca_cert_path: "); console.log(eap_ca_cert_path);
+        readCert("eap");
+    },function(error){
+        console.log("ERROOORRR");
+    });
 }
 
 //upload key
@@ -152,58 +156,58 @@ function uploadKey(input, sentForm){
         processData: false,
         contentType: false,
         success: function(data){
-          // console.log("uploadKey data: " );
-          // console.log(data);
-          // console.log("- - - - - - - - -");
-          document.getElementById("https_key_path").value = data.filePath;
-          var filePath = data.filePath;
+            // console.log("uploadKey data: " );
+            // console.log(data);
+            // console.log("- - - - - - - - -");
+            document.getElementById("https_key_path").value = data.filePath;
+            var filePath = data.filePath;
         },
         error: function(data){
-          // alert("did not go through");
-          console.log("File for key is incorrect. Upload key file again.");
-          console.log(data);
-          document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
-          $("#error-alert").show();
-          setTimeout(function(){
-            $("#error-alert").slideUp(500);
-          }, 3000);
+            // alert("did not go through");
+            console.log("File for key is incorrect. Upload key file again.");
+            console.log(data);
+            document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
+            $("#error-alert").show();
+            setTimeout(function(){
+                $("#error-alert").slideUp(500);
+            }, 3000);
         }
     });
 }
 
 //upload server cert
 function uploadCert(input, sentForm){
-  console.log("in upload cert");
-  console.log("input"); console.log(input.value);
-  var base_url = window.location.origin;
-  var form = document.forms.namedItem(sentForm);
-  var fd = new FormData(form[0]);
-  fd.append("file", input.files[0]);
+    console.log("in upload cert");
+    console.log("input"); console.log(input.value);
+    var base_url = window.location.origin;
+    var form = document.forms.namedItem(sentForm);
+    var fd = new FormData(form[0]);
+    fd.append("file", input.files[0]);
 
-  return $.ajax({
-      type: 'POST',
-      url: base_url + '/uploadServerCert',
-      data: fd,
-      dataType: 'json',
-      processData: false,
-      contentType: false,
-      success: function(data){
-        console.log("upload serv cert data: ");
-        console.log(data);
-        document.getElementById("https_cert_path").value = data.filePath;
-        var filePath = data.filePath;
-      },
-      error: function(data){
-        // console.log("upload cert failed");
-        // console.log("dataaaaaaaa: "  + data);
-        // console.log("------------end of upload cert failed--------------");
-        document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
-        $("#error-alert").show();
-        setTimeout(function(){
-          $("#error-alert").slideUp(500);
-        }, 3000);
-      }
-  });
+    return $.ajax({
+        type: 'POST',
+        url: base_url + '/uploadServerCert',
+        data: fd,
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        success: function(data){
+            console.log("upload serv cert data: ");
+            console.log(data);
+            document.getElementById("https_cert_path").value = data.filePath;
+            var filePath = data.filePath;
+        },
+        error: function(data){
+            // console.log("upload cert failed");
+            // console.log("dataaaaaaaa: "  + data);
+            // console.log("------------end of upload cert failed--------------");
+            document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
+            $("#error-alert").show();
+            setTimeout(function(){
+                $("#error-alert").slideUp(500);
+            }, 3000);
+        }
+    });
 }
 
 // for eap only
@@ -259,16 +263,19 @@ function readCert(qualifier){
         type: 'GET',
         url: base_url + '/readCert/' + "?qualifier=" + qualifier,
         success: function(data){
-          //https_key_view_more || https_serv_view_more,
-          //eap_key_view_more || eap_serv_view_more || eap_ca_view_more
+            // console.log("readacert data: " );
+            // console.log(data);
+            // console.log("- - - - - - - - - - - - -");
+            //https_key_view_more || https_serv_view_more,
+            //eap_key_view_more || eap_serv_view_more || eap_ca_view_more
             if (qualifier == "https"){
-              var Server_INFO = data.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
-              document.getElementById('https_serv_view_more').innerHTML = data.CN_Server + '<br><br>' + Server_INFO;
+                var Server_INFO = data.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
+                document.getElementById('https_serv_view_more').innerHTML = data.CN_Server + '<br><br>' + Server_INFO;
             } else {
-              var Server_INFO = data.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
-              var CA_INFO = data.CA_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
-              document.getElementById('eap_serv_view_more').innerHTML = data.CN_Server + '<br><br>' + Server_INFO;
-              document.getElementById('eap_ca_view_more').innerHTML = data.CN_CA + '<br><br>' + CA_INFO;
+                var Server_INFO = data.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
+                var CA_INFO = data.CA_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
+                document.getElementById('eap_serv_view_more').innerHTML = data.CN_Server + '<br><br>' + Server_INFO;
+                document.getElementById('eap_ca_view_more').innerHTML = data.CN_CA + '<br><br>' + CA_INFO;
             }
         },
         error: function(data){
@@ -291,23 +298,19 @@ function removeCert(path){
         data: filePath,
         dataType: 'json',
         success: function(data){
-          console.log("removed files");
+            console.log("removed files");
         },
         error: function(data){
-          console.log("couldn't remove files");
-
+            console.log("couldn't remove files");
         }
     })
 }
 
 //DOWNLOAD
 function downloadFile (fileName, data){
-    console.log("download file");
-    console.log(data);
-    data = JSON.stringify(data.Cert_Content);
-    data = data.replace(/\\n/g,"\n").replace(/"/g,"");
+
     var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data.Cert_Content));
     element.setAttribute('download', fileName);
 
     element.style.display = 'none';
@@ -319,8 +322,9 @@ function downloadFile (fileName, data){
 
 //eap, https, eap-ca option
 function downloadCert(qualifier){
+    console.log("in download cert");
     var base_url    = window.location.origin;
-    var contentType = "text/plain";
+    var dataType = "json";
     return $.ajax({
         type: 'GET',
         url: base_url + '/downloadCert/' + "?qualifier=" + qualifier,

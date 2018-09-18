@@ -67,7 +67,6 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	// update primary node networks data
-	a3config.Isclusterjoin = true
 	err, clusterRespData := a3share.UpdatePrimaryNetworksData(ctx, *clusternetdata)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update Primary Node Networks Data error:" + err.Error())

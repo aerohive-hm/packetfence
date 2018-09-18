@@ -86,6 +86,7 @@ func syncRemove2Other(ctx context.Context) {
 	//notify cloud server removed in cluster
 	//amac.UpdateMsgToRdcSyn(ctx, amac.RemoveNodeFromCluster)
 
+	ama.ClearClusterStatus()
 }
 
 // Send by the UI to remove a node from cluster on UI
@@ -127,7 +128,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Try to remove cluster node = %s", removeData.Hostname))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Try to remove cluster node = %v", removeData.Hostname))
 	rc = removeServerOnLocal(removeData.Hostname)
 	if !rc {
 		retMsg = "invalid hostname"

@@ -140,6 +140,9 @@ sub delete {
         }
     }
 
+    # Send event to AMA, Don't care result
+    $self->notify_ama($interface);
+
     return ($STATUS::OK, ["Interface VLAN [_1] successfully deleted",$interface]);
 }
 

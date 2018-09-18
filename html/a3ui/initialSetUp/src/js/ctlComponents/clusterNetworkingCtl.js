@@ -70,7 +70,7 @@ class clusterNetworkingCtl extends Component {
         let self=this;
 
         let xCsrfToken="";
-        let url= "/a3/api/v1/configurator/cluster/networks";
+        let url= "/a3/api/v1/configurator/cluster/networks?timestamp="+new Date().getTime();
          
         let param={
         }
@@ -379,11 +379,22 @@ class clusterNetworkingCtl extends Component {
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
                 dataCopy[index].clicked="";
-                self.setState({
-                    dataTable : dataCopy,
-                    isEditing: false,
-                    loading : false,
-                }) 
+                if(dataCopy[index].original==="eth0"){
+                    self.setState({
+                        dataTable : dataCopy,
+                        isEditing: false,
+                    },function(){
+                        setTimeout(function(){
+                            window.location.href="https://"+dataCopy[index].ip_addr.trim()+":1443/";
+                        }, 3000 )
+                    })
+                }else{
+                    self.setState({
+                        dataTable : dataCopy,
+                        isEditing: false,
+                        loading : false,
+                    })
+                }
             }else{
                 self.setState({
                     loading : false,

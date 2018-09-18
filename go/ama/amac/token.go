@@ -281,7 +281,7 @@ func distributeToSingleNode(ctx context.Context, mem a3config.NodeInfo, selfRene
 		cloudInfo.Token = ReqTokenForOtherNode(ctx, NodeInfo{})
 	} else {
 		cloudInfo.RdcUrl = rdcUrl
-		cloudInfo.Switch = globalSwitch
+		cloudInfo.Switch = GlobalSwitch
 		cloudInfo.VhmID = VhmidStr
 		cloudInfo.PriNode = utils.GetOwnMGTIp()
 		cloudInfo.OrgID = OrgIdStr
