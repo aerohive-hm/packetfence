@@ -1,6 +1,6 @@
 $(document).ready(function(){
     //three function calls: getNodeInfo, linkAerohiveAccount, unlinkAerohiveAccount
-    
+
     getNodeInfo();
     //link account btn press
     document.getElementById("link-account").onclick = function(e){
@@ -40,7 +40,7 @@ function getNodeInfo(){
         type: 'GET',
         url: base_url + '/ama/cloud_integration/',
         success: function(data){
-            //determin which page to show if linked or unlinked
+            //determine which page to show if linked or unlinked
             //linked
             data = jQuery.parseJSON(data.A3_data);
             console.log(data);
@@ -53,6 +53,7 @@ function getNodeInfo(){
                 $('#region').html(data.body.header.region);
             }
             $('#ownerId').html(data.body.header.ownerId);
+             //if the field lastContactTime exists on the tt file
             if ($( "#lastContactTime" ).length){
                 if (typeof data.body.data[0].lastContactTime === "undefined"){
                 $('#lastContactTime').html("unknown");

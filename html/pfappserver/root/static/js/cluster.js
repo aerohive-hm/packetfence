@@ -96,9 +96,6 @@ function submitClusterInfo(){
 function removeClusterNode(nodeArray){
     var base_url = window.location.origin;
     var dataJson = {"hostname":nodeArray};
-    console.log("datajson: ");
-    console.log(dataJson);
-    console.log("- - - - - - - - - - - ");
 
     $.ajax({
         type: 'POST',
@@ -109,11 +106,14 @@ function removeClusterNode(nodeArray){
         contentType: false,
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log("successful");
-            console.log(data);
             getClusterStatusInfo();
             $("#cluster-management-table").load("#cluster-management-table-tbody");
-            //let user know 7 - 15 minutes restarting services
+                        //let user know 7 - 15 minutes restarting services
+            document.getElementById('successMessage').innerHTML = "Wait for 7 - 15 minutes for the node to completely remove.";
+            $("#success-alert").show();
+            setTimeout(function(){
+                $("#success-alert").slideUp(500);
+            }, 3000);
         },
         error: function(data){
             data = jQuery.parseJSON(data.A3_data);
@@ -130,29 +130,25 @@ function removeClusterNode(nodeArray){
 
 //function to get cluster table data
 function getClusterStatusInfo(){
-    console.log("get cluster status info");
     var base_url = window.location.origin;
     $.ajax({
         type: 'GET',
         url: base_url + '/ama/cluster',
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log("success");
-            console.log(data);
             $("#cluster-management-table-tbody tr").remove();
             $("#net-interfaces-table-tbody tr").remove();
             //cluster management table
             $.each(data.nodes, function(i, members){
-                console.log(members);
                 if (members.type == "master"){
                     $("#cluster-management-table-tbody").append("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
                 } else {
                     $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' value='"+ members.hostname +"'/>" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
                 }
             });
-        //interfaces table
+            //interfaces table
             $.each(data.interfaces, function(ethr, vip) {
-                if(ethr.indexOf('.') !== -1){ //if there is period
+                if(ethr.indexOf('.') !== -1){ //if there is period in eth0
                     ethr = "VLAN" + ethr.split(".").pop();
                     $("#net-interfaces-table-tbody").append("<tr><td style='padding-left:25px;'>" + ethr + "</td><td>" + vip + "</td></tr>");
                 } else {
@@ -160,6 +156,8 @@ function getClusterStatusInfo(){
                     $("#net-interfaces-table-tbody").append("<tr><td>" + ethr + "</td><td>" + vip + "</td></tr>");
                 }
             });
+
+            //stylizes the stripes on the table
             $('table tr:nth-child(even) td').each(function(){
                 $(this).css('background-color', '#f4f6f9');
             });

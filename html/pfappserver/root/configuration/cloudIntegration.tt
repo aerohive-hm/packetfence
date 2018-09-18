@@ -112,9 +112,7 @@
             </tbody>
           </table>
           <br>
-          [% IF is_master_node %]
           <button class="btn btn-danger" id="unlink-account">Unlink from Aerohive Cloud Account</button>
-          [% END %]
         </div>
     [% END %]
     </div>
