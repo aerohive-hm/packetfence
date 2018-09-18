@@ -91,6 +91,49 @@ sub cloud_integration :Local :Args() :AdminRole('SYSTEM_READ') {
     }
 }
 
+=head2
+
+Status of the cluster
+
+Usage: /ama/cluster
+
+=cut
+
+sub cluster :Local :Args() :AdminRole('SYSTEM_READ') {
+    my ($self, $c) = @_;
+
+    my $logger = get_logger();
+    my $url = "http://127.0.0.1:10000/api/v1/configuration/cluster";
+    my $input_data = $c->request->{parameters};
+
+    if ($c->request->method eq 'POST'){
+
+        my ($retcode, $response_body, $response_code) = _call_url('POST', $url, $input_data);
+
+        if ($retcode == 0) {
+            $c->stash->{A3_data} = $response_body;
+            $c->response->status($response_code);
+        }
+        else {
+            $logger->error("Failed to call POST $url ret: $retcode");
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+        }
+    } elsif ($c->request->method eq 'GET') {
+        my ($retcode, $response_body, $response_code) = _call_url('GET', $url, $input_data);
+
+        if ($retcode == 0) {
+            $c->stash->{A3_data} = $response_body;
+            $c->response->status($response_code);
+        }
+        else {
+            $logger->error("Failed to call POST $url ret: $retcode");
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+        }
+    } else {
+        $c->response->status($STATUS::METHOD_NOT_ALLOWED);
+    }
+}
+
 =head2 _call_url
 
 =cut
