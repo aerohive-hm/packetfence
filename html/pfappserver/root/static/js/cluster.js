@@ -41,6 +41,7 @@ $(document).ready(function(){
 
 });
 
+//function to get the number of cluster nodes checked in table
 function getCheckedNodes(inputTbody){
     var nodeArray = [];
     var getInputFields = inputTbody.getElementsByTagName('input');
@@ -56,9 +57,8 @@ function getCheckedNodes(inputTbody){
     return nodeArray;
 }
 
-
+//function to submit the password and virtual router id
 function submitClusterInfo(){
-    console.log("inside submit cluster info");
     var base_url = window.location.origin;
     var form = document.forms.namedItem("newClusterInfo");
     var formData = new FormData(form);
@@ -92,6 +92,7 @@ function submitClusterInfo(){
     });
 }
 
+//function to remove the cluster node child
 function removeClusterNode(nodeArray){
     var base_url = window.location.origin;
     var dataJson = {"hostname":nodeArray};

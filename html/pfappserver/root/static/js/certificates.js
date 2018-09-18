@@ -1,5 +1,3 @@
-//TO-DO
-//downloadcert
 
 $(document).ready(function(){
     readCert("https");
@@ -24,7 +22,7 @@ $(document).ready(function(){
     var eap_ca_path       = document.getElementById('eap_cacert_path');
 
     document.getElementById("https-upload").onclick = function(e){
-    e.preventDefault();
+        e.preventDefault();
 
         if(https_key.files.length != 0 && https_server_cert.files.length != 0){
             uploadCertAndKey(https_server_cert, https_key, "https_form", "https", eap_ca_cert);
@@ -89,6 +87,7 @@ $(document).ready(function(){
 
 });
 
+//API call to run server cert and key together first before ca file upload if ca exist
 function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_file_upload){
     uploadCert(server_cert_upload, form).then(function(cert_path){
         console.log("server_cert_upload: "); console.log(server_cert_upload);
@@ -225,39 +224,38 @@ function uploadCACert(input, sentForm){
     xhr.send(fd);
 }
 
-
+//verify if the server cert and key are matching
 function verifyCert(https_cert_path, https_key_path, qualifier){
     console.log("in verify cert");
     var base_url = window.location.origin;
     return $.ajax({
-        type: 'POST',
-        url: base_url + '/verifyCert/' + "?cert_path=" + https_cert_path + "&key_path=" + https_key_path + "&qualifier=" + qualifier,
-        dataType: 'json',
-        success: function(data){
-            $("#https_serv_view_more").innerHTML = data.CN_Server;
-            document.getElementById('successMessage').innerHTML = data.status_msg;
-            $("#success-alert").show();
-            setTimeout(function(){
-                $("#success-alert").slideUp(500);
-            }, 3000);
-            if (qualifier == "https"){
-                readCert("https");
-            } else {
-                readCert("eap");
-            }
-        },
-        error: function(data){
-            console.log(" verify cert not successful");
-            // console.log(data);
-            document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
-            $("#error-alert").show();
-            setTimeout(function(){
-                $("#error-alert").slideUp(500);
-            }, 3000);
-        }
-    });
+      type: 'POST',
+      url: base_url + '/verifyCert/' + "?cert_path=" + https_cert_path + "&key_path=" + https_key_path + "&qualifier=" + qualifier,
+      dataType: 'json',
+      success: function(data){
+          $("#https_serv_view_more").innerHTML = data.CN_Server;
+          document.getElementById('successMessage').innerHTML = data.status_msg;
+          $("#success-alert").show();
+          setTimeout(function(){
+              $("#success-alert").slideUp(500);
+          }, 3000);
+          if (qualifier == "https"){
+              readCert("https");
+          } else {
+              readCert("eap");
+          }
+      },
+      error: function(data){
+          document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
+          $("#error-alert").show();
+          setTimeout(function(){
+              $("#error-alert").slideUp(500);
+          }, 3000);
+      }
+  });
 }
 
+//gives information about the current certs existing
 function readCert(qualifier){
     console.log("in read cert");
     var base_url = window.location.origin;
@@ -290,8 +288,8 @@ function readCert(qualifier){
     });
 }
 
+//will remove the server cert if the key is empty
 function removeCert(path){
-    console.log("in removeCert");
     var filePath = path;
     var base_url = window.location.origin;
     $.ajax({
@@ -308,6 +306,7 @@ function removeCert(path){
     })
 }
 
+//DOWNLOAD
 function downloadFile (fileName, data){
 
     var element = document.createElement('a');
@@ -330,17 +329,12 @@ function downloadCert(qualifier){
         type: 'GET',
         url: base_url + '/downloadCert/' + "?qualifier=" + qualifier,
         success: function(data){
-            console.log("download cert pass");
-            console.log(data);
         },
         error: function(data){
-            console.log("download cert fail");
-            console.log(data);
-            console.log("- - - - - - - - - - - - ");
             document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
             $("#error-alert").show();
             setTimeout(function(){
-                $("#error-alert").slideUp(500);
+              $("#error-alert").slideUp(500);
             }, 3000);
         }
     });

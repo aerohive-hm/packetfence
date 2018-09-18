@@ -1,38 +1,39 @@
 $(document).ready(function(){
+    //three function calls: getNodeInfo, linkAerohiveAccount, unlinkAerohiveAccount
+    
     getNodeInfo();
-
+    //link account btn press
     document.getElementById("link-account").onclick = function(e){
-    e.preventDefault();
-    var cloudurl  = document.getElementById('url').value;
-    var clouduser = document.getElementById('user').value;
-    var cloudpass = document.getElementById('pass').value;
-    if(cloudurl == "" || clouduser == "" || cloudpass == ""){
-        document.getElementById('errorMessage').innerHTML = "Enter all the fields below to link with aerohive account.";
-        $("#error-alert").show();
-        setTimeout(function (){
-        $("#error-alert").slideUp(500);
-        }, 3000);
-    } else {
-        linkAerohiveAccount();
-    }
-    console.log("clicked on link account");
-        //add loader here
+        e.preventDefault();
+        var cloudurl  = document.getElementById('url').value;
+        var clouduser = document.getElementById('user').value;
+        var cloudpass = document.getElementById('pass').value;
+        if(cloudurl == "" || clouduser == "" || cloudpass == ""){
+            //if any of the three fields are empty
+            document.getElementById('errorMessage').innerHTML = "Enter all the fields below to link with aerohive account.";
+            $("#error-alert").show();
+            setTimeout(function (){
+              $("#error-alert").slideUp(500);
+            }, 3000);
+        } else {
+            linkAerohiveAccount();
+        }
     }
 
+    //unlink button press
     document.getElementById('unlink-account').onclick = function(){
-        console.log("clicked on unlink account");
         document.getElementById("link-account").disabled = false;
         unlinkAerohiveAccount();
     }
 });
 
+//api call to get the info for each node/standalone
 function getNodeInfo(){
-    console.log("inside getNodeInfo");
     var rdcUrl            = document.getElementById('rdcUrl'),
-      region            = document.getElementById('region'),
-      ownerId           = document.getElementById('ownerId'),
-      lastContactTime   = document.getElementById('lastContactTime'),
-      vhmId             = document.getElementById('vhmId');
+        region            = document.getElementById('region'),
+        ownerId           = document.getElementById('ownerId'),
+        lastContactTime   = document.getElementById('lastContactTime'),
+        vhmId             = document.getElementById('vhmId');
     var base_url = window.location.origin;
     $("#cloud-cluster-table-tbody tr").remove();
     $.ajax({
@@ -114,9 +115,10 @@ function getNodeInfo(){
                 $("#error-alert").slideUp(500);
             }, 3000);
         }
-    })
+    });
 }
 
+//function unlink account
 function unlinkAerohiveAccount(){
     console.log("inside unlink aerohive account");
     var base_url = window.location.origin;
@@ -160,7 +162,7 @@ function unlinkAerohiveAccount(){
     });
 }
 
-//function to submit form
+//function to link account
 function linkAerohiveAccount(){
     $('#spin-spinner').show();
     console.log("inside link aerohive account");
