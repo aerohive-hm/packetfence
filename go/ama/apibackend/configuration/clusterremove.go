@@ -86,6 +86,7 @@ func syncRemove2Other(ctx context.Context) {
 	//notify cloud server removed in cluster
 	//amac.UpdateMsgToRdcSyn(ctx, amac.RemoveNodeFromCluster)
 
+	ama.ClearClusterStatus()
 }
 
 // Send by the UI to remove a node from cluster on UI
