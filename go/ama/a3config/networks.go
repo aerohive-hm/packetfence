@@ -367,21 +367,25 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 		return err
 	}
 
-	// don't need write gateway
-	if utils.IsVlanIface(ifname) {
-		goto END
+	if !utils.IsVlanIface(ifname) {
+		/* write dns to sysifcfgfile for eth0*/
+		dns = utils.GetDnsServer()
+		for i, l = range dns {
+			section[""]["DNS"+strconv.Itoa(i)] = l
+		}
+	}
+	err = A3CommitPath(sysifCfgFile, section)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
+			sysifCfgFile)
+	}
+	//write gateway to etc/sysconfig/network
+	section = Section{
+		"": {
+			"GATEWAY": utils.GetA3DefaultGW(),
+		},
 	}
 
-	/* write dns to sysifcfgfile for eth0*/
-	dns = utils.GetDnsServer()
-	for i, l = range dns {
-		section[""]["DNS"+strconv.Itoa(i)] = l
-	}
-
-	//write gateway
-	section[""]["GATEWAY"] = utils.GetA3DefaultGW()
-
-	// /etc/sysconfig/network
 	sysGatewayCfgFile = networtConfDir + networkConfFile
 
 	err = A3CommitPath(sysGatewayCfgFile, section)
@@ -389,13 +393,6 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
 			sysGatewayCfgFile)
 		return err
-	}
-
-END:
-	err = A3CommitPath(sysifCfgFile, section)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
-			sysifCfgFile)
 	}
 	return nil
 }
