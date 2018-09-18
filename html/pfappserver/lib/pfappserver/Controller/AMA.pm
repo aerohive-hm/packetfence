@@ -102,6 +102,7 @@ sub _call_url {
     my $json = JSON->new->allow_nonref;
     if ($method eq 'POST') {
         $curl->setopt(CURLOPT_POST, 1);
+        $curl->setopt(CURLOPT_POSTFIELDS, $json->encode($input_data));
     } elsif ($method eq 'GET') {
         $curl->setopt(CURLOPT_HTTPGET, 1);
     } else {
@@ -111,14 +112,10 @@ sub _call_url {
 
     $curl->setopt(CURLOPT_URL, $url);
 
-
     $curl->setopt(CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
         'Accept: application/json'
     ]);
-
-
-    $curl->setopt(CURLOPT_POSTFIELDS, $json->encode($input_data));
 
     my $response_body;
     $curl->setopt(CURLOPT_WRITEDATA, \$response_body);
