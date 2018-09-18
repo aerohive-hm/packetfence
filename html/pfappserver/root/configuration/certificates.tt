@@ -125,7 +125,7 @@
                     <input id="serverCert_upload" name="serverCert_upload" class="serverCert_upload btn btn-primary" type="file"/>
                     <br><br><br><br>
                     <input id="eap_cacert_path" name="eap_cacert_path" type="hidden" value="">
-                    <label class="form-horizontal control-label" style="float:left; width: 130px;"><h5>CA Certificate Upload (file type:  .pem/.crt/.cer)</h5></label>
+                    <label class="form-horizontal control-label" style="float:left; width: 130px;"><h5>CA Certificate (file type:  .pem/.crt/.cer)</h5></label>
                     <input id="caCert_upload" name="caCert_upload" class="caCert_upload btn btn-primary" type="file"/>
                   </div>
                   <br>
