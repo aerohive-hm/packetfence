@@ -121,16 +121,16 @@ function unlinkAerohiveAccount(){
   console.log("inside unlink aerohive account");
   var base_url = window.location.origin;
   var data = {url: ""};
-  var jsonFormData = JSON.stringify(data);
 
   $.ajax({
     type: 'POST',
-    url: base_url + '/a3/api/v1/configuration/cloud',
+    url: base_url + '/ama/cloud_integration/',
     dataType: 'json',
-    data: jsonFormData,
+    data: data,
     success: function(data){
       console.log("went through");
       console.log(data);
+      data = jQuery.parseJSON(data.A3_data);
       if (data.code == "fail"){
         document.getElementById('errorMessage').innerHTML = data.msg;
         $("#error-alert").show();
@@ -148,8 +148,14 @@ function unlinkAerohiveAccount(){
       }
     },
     error: function(data){
-        alert('something went wrong');
+        data = jQuery.parseJSON(data.A3_data);
         console.log(data);
+        document.getElementById('errorMessage').innerHTML = data.msg;
+        $("#error-alert").show();
+        setTimeout(function (){
+            $("#error-alert").slideUp(500);
+        }, 3000);
+        document.getElementById("link-account").disabled = false;
     }
   });
 }
@@ -165,17 +171,17 @@ function linkAerohiveAccount(){
   formData.forEach(function(value, key){
       object[key] = value;
   });
-  var jsonFormData = JSON.stringify(object);
   document.getElementById("link-account").disabled = true;
   $.ajax({
       type: 'POST',
-      url: base_url + '/ama/cloud_integration/' + "?json=" + jsonFormData,
+      url: base_url + '/ama/cloud_integration/',
       dataType: 'json',
-      data: jsonFormData,
+      data: object,
       success: function(data){
         console.log("went through");
         console.log(data);
         $('.spin-spinner').hide();
+        data = jQuery.parseJSON(data.A3_data);
         if (data.code == "fail"){
           document.getElementById('errorMessage').innerHTML = data.msg;
           $("#error-alert").show();
@@ -196,6 +202,7 @@ function linkAerohiveAccount(){
         }
       },
       error: function(data){
+          data = jQuery.parseJSON(data.A3_data);
           console.log(data);
           document.getElementById('errorMessage').innerHTML = data.msg;
           $("#error-alert").show();

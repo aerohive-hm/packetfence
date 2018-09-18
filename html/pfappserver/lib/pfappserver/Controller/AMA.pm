@@ -61,12 +61,11 @@ sub cloud_integration :Local :Args() :AdminRole('SYSTEM_READ') {
 
     my $logger = get_logger();
     my $url = "http://127.0.0.1:10000/api/v1/configuration/cloud";
-    my $json = $c->request->{query_parameters}->{json};
-    $logger->info("jma_debug json: $json");
+    my $input_data = $c->request->{parameters};
 
     if ($c->request->method eq 'POST'){
 
-        my ($retcode, $response_body, $response_code) = _call_url('POST', $url, $json);
+        my ($retcode, $response_body, $response_code) = _call_url('POST', $url, $input_data);
 
         if ($retcode == 0) {
             $c->stash->{A3_data} = $response_body;
@@ -77,7 +76,16 @@ sub cloud_integration :Local :Args() :AdminRole('SYSTEM_READ') {
             $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
         }
     } elsif ($c->request->method eq 'GET') {
-        #$res = pf::api::unifiedapiclient->default_client->call("GET", $url, );
+        my ($retcode, $response_body, $response_code) = _call_url('GET', $url, $input_data);
+
+        if ($retcode == 0) {
+            $c->stash->{A3_data} = $response_body;
+            $c->response->status($response_code);
+        }
+        else {
+            $logger->error("Failed to call POST $url ret: $retcode");
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+        }
     } else {
         $c->response->status($STATUS::METHOD_NOT_ALLOWED);
     }
@@ -88,9 +96,10 @@ sub cloud_integration :Local :Args() :AdminRole('SYSTEM_READ') {
 =cut
 
 sub _call_url {
-    my ($method, $url, $json) = @_;
+    my ($method, $url, $input_data) = @_;
     my $curl = WWW::Curl::Easy->new;
     my $logger = get_logger();
+    my $json = JSON->new->allow_nonref;
     if ($method eq 'POST') {
         $curl->setopt(CURLOPT_POST, 1);
     } elsif ($method eq 'GET') {
@@ -109,13 +118,13 @@ sub _call_url {
     ]);
 
 
-    $curl->setopt(CURLOPT_POSTFIELDS, $json);
+    $curl->setopt(CURLOPT_POSTFIELDS, $json->encode($input_data));
 
     my $response_body;
     $curl->setopt(CURLOPT_WRITEDATA, \$response_body);
 
     my $retcode = $curl->perform;
-    $logger->info("calling url $method: $url, with $json");
+    $logger->info("calling url $method: $url, with $input_data");
 
     if ($retcode == 0) {
         my $response_code = $curl->getinfo(CURLINFO_HTTP_CODE);
