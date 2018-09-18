@@ -39,6 +39,14 @@ type CommandStatusData struct {
 	AmacCloudKeepalive   int `josn:"amac_cloud_keepalive"`
 	AmacCloudReportInterval   int `josn:"amac_cloud_report_interval"`
 	RecvDBReportCounter           int64   `json:"recvdb_report"`
+	RecvDBNodeCounter           int64   `json:"recvdb_node"`
+	RecvDBNodeCategoryCounter           int64   `json:"recvdb_node_category"`
+	RecvDBLocationlogCounter           int64   `json:"recvdb_locationlog"`
+	RecvDBRadacctCounter           int64   `json:"recvdb_radacct"`
+	RecvDBClassCounter           int64   `json:"recvdb_class"`
+	RecvDBViolationCounter           int64   `json:"recvdb_violation"`
+	RecvDBRadauditCounter           int64   `json:"recvdb_radaudit"`
+	RecvDBIp4logCounter           int64   `json:"recvdb_ip4log"`
 	AmacSendEventCounter          int64   `json:"amac_send_cloud"`
 	AmacSendEventSuccessCounter   int64 `json:"amac_send_cloud_success"`
 }
@@ -60,6 +68,14 @@ func handleGetCommandStatus(r *http.Request, d crud.HandlerData) []byte {
 	CommandData.AmacCloudKeepalive = amac.KeepaliveInterval
 	CommandData.AmacCloudReportInterval = amac.ReportInterval
 	CommandData.RecvDBReportCounter = ReportCounter.recvCounter
+	CommandData.RecvDBNodeCounter = ReportCounter.recvCounterNode
+	CommandData.RecvDBNodeCategoryCounter = ReportCounter.recvCounterNodeCategory
+	CommandData.RecvDBLocationlogCounter = ReportCounter.recvCounterLoationlog
+	CommandData.RecvDBRadacctCounter = ReportCounter.recvCounterRadacct
+	CommandData.RecvDBClassCounter = ReportCounter.recvCounterClass
+	CommandData.RecvDBViolationCounter = ReportCounter.recvCounterViolation
+	CommandData.RecvDBRadauditCounter = ReportCounter.recvCounterRadaudit
+	CommandData.RecvDBIp4logCounter = ReportCounter.recvCounterIp4log
 	CommandData.AmacSendEventCounter = 0
 	CommandData.AmacSendEventSuccessCounter = 0
 

@@ -79,6 +79,6 @@ type NodeParseStruct struct {
 type NodeReportData struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
-	TenantId  int    `json:"tenant_id"`
+	TenantId     int `json:"tenant_id"`
 	Mac       string `json:"mac"`
 }

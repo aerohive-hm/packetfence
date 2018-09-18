@@ -103,6 +103,54 @@ sub db_execute {
     my $attempts = 3;
     my $logger = $self->logger;
     my $status = $STATUS::INTERNAL_SERVER_ERROR;
+
+    my $table = $self->table;
+    if (($table eq 'node') ||
+       ($table eq 'node_category') ||
+       ($table eq 'violation') ||
+       ($table eq 'locationlog') ||
+       ($table eq 'radacct') ||
+       ($table eq 'class') ||
+       ($table eq 'radius_audit_log') ||
+       ($table eq 'ip4log')) {
+		
+		my @fieldarray;
+    	#$logger->error("db_execute ${table} sql:" .Dumper($sql));
+
+    	if ($sql =~/INSERT INTO/) {
+        	$sql =~ m/.*?\((.*?)\)/;
+ 			#$logger->error("db_execute: $1");
+ 			my $mystr = $1;
+ 
+			$mystr =~ s/^ +//;
+			@fieldarray = split(/\s+/, $mystr);
+			foreach(@fieldarray){
+				#$logger->error("db_execute ${table}: $_");
+                $_ =~  s/[`,]//g;
+			}			
+			my %ama_data;
+			for (0..$#fieldarray){
+				$ama_data{$fieldarray[$_]}=$bind[$_];
+			}
+
+    		#$logger->error("db_execute ama data:" .Dumper(\%ama_data));
+    		#$logger->error("db_execute ${table} bind:" .Dumper(\@bind));
+
+    		# Send tables contents to AMA for Aerohive reporting
+
+
+			eval {
+    			my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
+  				my $timestamp = $seconds * 1000 * 1000 + $microseconds;
+   				pf::api::unifiedapiclient->default_client->call("POST", "/a3/api/v1/event/report",
+            		{ah_tablename => $table, ah_timestamp => "$timestamp", %ama_data,});
+			};
+			if ($@) {
+				$logger->error("Error send DB update data to AMA : $@");
+			}
+		}
+    }
+  
     while ($attempts) {
         my $dbh = $self->get_dbh;
         unless ($dbh) {
@@ -500,32 +548,6 @@ sub _insert_data {
         }
         $data{$field} = $new_value;
     }
-
-    # Send tables contents to AMA for Aerohive reporting
-    if (($self->table eq 'node') ||
-    	($self->table eq 'node_category') ||
-       ($self->table eq 'violation') ||
-       ($self->table eq 'locationlog') ||
-      # ($self->table eq 'radacct') ||
-      # ($self->table eq 'class') ||
-       ($self->table eq 'radius_audit_log') ||
-       ($self->table eq 'ip4log')) {
-       
-        my $sendtable = $self->table;
-        eval {
-            my $sendtable = $self->table;
-            my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
-            my $timestamp = $seconds * 1000 * 1000 + $microseconds;
-            pf::api::unifiedapiclient->default_client->call("POST", "/a3/api/v1/event/report", 
-                {ah_tablename => ${sendtable}, ah_timestamp => "$timestamp", %data,});
-        };
-        if ($@) {
-            $self->logger->error("Error send DB update data to AMA : $@");
-        }
-    }
-        
-
-
     return $STATUS::OK, \%data;
 }
 
