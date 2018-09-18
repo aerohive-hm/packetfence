@@ -215,17 +215,24 @@ func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	for _, i := range items {
 		/*eth0 must contain management, other can not contian management*/
 		if i.Name == "eth0" {
-			if !strings.Contains(i.Type, "MANAGEMENT") {
-				msg = fmt.Sprintf("the interface eth0  must contain management type")
+			if i.Type != "MANAGEMENT" {
+				msg = fmt.Sprintf("the interface eth0  must be management type")
 				return errors.New(msg)
 			}
 		} else {
-			if strings.Contains(i.Type, "MANAGEMENT") {
+			/*vlan can not allowed to contain management*/
+			if i.Type == "MANAGEMENT" {
 				msg = fmt.Sprintf("the %s does not allow to contain management type", i.Name)
 				return errors.New(msg)
 			}
+			/*if vlan type is portal ,the service must contian portal*/
+			if i.Type == "PORTAL" {
+				if !strings.Contains(i.Services, "PORTAL") {
+					msg = fmt.Sprintf("the %s must contain portal service if the type is portal", i.Name)
+					return errors.New(msg)
+				}
+			}
 		}
-
 	}
 	return nil
 }
