@@ -8,7 +8,13 @@ $(document).ready(function(){
 
     document.getElementById("submitNewClusterInfo").onclick = function(){
         if( $("#sharedKey").val().length === 0 || $("#vrid").val().length === 0 ) {
-            document.getElementById('errorMessage').innerHTML = "Unsuccessful update of the cluster info";
+            document.getElementById('errorMessage').innerHTML = "Enter values in all fields.";
+            $("#error-alert").show();
+            setTimeout(function(){
+                $("#error-alert").slideUp(500);
+            }, 3000);
+        } else if ($("#vrid").val() < 1 || $("#vrid").val() > 255){
+            document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must be between 1 to 255.";
             $("#error-alert").show();
             setTimeout(function(){
                 $("#error-alert").slideUp(500);

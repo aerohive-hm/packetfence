@@ -1,0 +1,43 @@
+.popover{
+  max-width: 700px;
+}
+.popover-content{
+  height: 75px;
+  overflow-y: auto;
+}
+#success-alert, #error-alert{
+  display: none;
+  color: white;
+  z-index:5;
+  position: absolute;
+  right: 35%;
+}
+
+#success-alert{
+  background-color: #28a745;
+}
+
+#error-alert{
+  background-color: #dc3545;
+}
+#https_serv_view_more, #eap_ca_view_more, #eap_serv_view_more{
+  height:150px;
+  width: 700px;
+  overflow-y: auto;
+  padding: 5px;
+  border: 1px solid #999;
+  border-radius: 2px;
+}
+
+#https_serv_view_more::-webkit-scrollbar, #eap_ca_view_more::-webkit-scrollbar, #eap_serv_view_more::-webkit-scrollbar {
+    width: 1em;
+}
+
+#https_serv_view_more::-webkit-scrollbar-track, #eap_ca_view_more::-webkit-scrollbar-track, #eap_serv_view_more::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+
+#https_serv_view_more::-webkit-scrollbar-thumb, #eap_ca_view_more::-webkit-scrollbar-thumb, #eap_serv_view_more::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
+}
