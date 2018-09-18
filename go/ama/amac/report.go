@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	CacheTableUpLimit = 5
+	CacheTableUpLimit = 10
 )
 
 var AmacSendEventCounter int64 = 0
@@ -71,7 +71,7 @@ func sendReport2Cloud(ctx context.Context, reportMsg []interface{}) int {
 	}
 	log.LoggerWContext(ctx).Info("into sendReport2Cloud and print Marshal result,before marshal")
 	message, _ := json.Marshal(reportMsg)
-	log.LoggerWContext(ctx).Info(string(message))
+	log.LoggerWContext(ctx).Debug(string(message))
 
 	reader := bytes.NewReader(message)
 	for {
@@ -136,7 +136,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		log.LoggerWContext(ctx).Info("msgQue len is 0, no DB messages")
 		return nil, 0
 	}
-	log.LoggerWContext(ctx).Error(fmt.Sprintf("get %d messages from msgQue", len(msgQue)))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("get %d messages from msgQue", len(msgQue)))
 
 	fillReportHeader(&reportMsg.Header)
 	reportMsg.Data.MsgType = "a3-report-db"
@@ -151,17 +151,17 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		case "node":
 			var t report.NodeParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "node_category":
 			var t report.NodecategoryParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "violation":
 			var t report.ViolationParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		}
 
@@ -182,21 +182,15 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 			log.LoggerWContext(ctx).Info("Send to report messages fail when the cache table overflow")
 			return nil, -1
 		} else {
-			log.LoggerWContext(ctx).Info("xxxxx")
 			return nil, 0
 		}
 	} else {
-		log.LoggerWContext(ctx).Info("yyyy")
 		return reportMsg, 0
 	}
-
-	log.LoggerWContext(ctx).Info("No report messages")
-	return nil, 0
 }
 
 func reportSysInfo(ctx context.Context) (interface{}, int) {
 	reportMsg := ReportSysInfoMessage{}
-	log.LoggerWContext(ctx).Error("into reportSysInfo")
 
 	fillReportHeader(&reportMsg.Header)
 	reportMsg.Data.MsgType = "a3-report-system-info"
@@ -253,7 +247,6 @@ func reportRoutine(ctx context.Context) {
 				reportArray = append(reportArray, sysMsg)
 			}
 		}
-		log.LoggerWContext(ctx).Error("before invoke sendReport2Cloud")
 		res := sendReport2Cloud(ctx, reportArray)
 		if res != 0 {
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending report data to cloud fail"))
