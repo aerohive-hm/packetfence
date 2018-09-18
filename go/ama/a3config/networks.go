@@ -62,8 +62,12 @@ func GetItemsValue(ctx context.Context) []Item {
 }
 
 func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
-	var err error
 
+	err := DeleteIfcfgFile(ctx)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("DeleteIfcfgFile error:" + err.Error())
+		return err
+	}
 	for _, item := range items {
 		err = UpdateInterface(item)
 		if err != nil {
@@ -327,16 +331,11 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig: ifname=%s, "+
 		"ip =%s, netmask =%s", ifname, ip, netmask))
 
-	// write to /usr/local/pf/var/ifcfg- firstly
+	// ifcfgfile: /usr/local/pf/var/ifcfg-
 	ifcfgFile := varDir + interfaceConfFile + ifname
-	// write to /etc/sysconfig/network-scripts/ifcfg-
+	// sysifCfgFile: /etc/sysconfig/network-scripts
 	sysifCfgFile := networtConfDir + interfaceConfDir + interfaceConfFile + ifname
 
-	err := utils.ClearFileContent(sysifCfgFile)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
-		return err
-	}
 	//eth0, eth0.xx
 	if utils.IsVlanIface(ifname) {
 		section = Section{
@@ -360,7 +359,7 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	section[""]["IPADDR"] = ip
 	section[""]["NETMASK"] = netmask
 
-	err = A3CommitPath(ifcfgFile, section)
+	err := A3CommitPath(ifcfgFile, section)
 
 	if err != nil {
 		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() + ifcfgFile)
@@ -392,6 +391,20 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
 			sysGatewayCfgFile)
+		return err
+	}
+	return nil
+}
+
+func DeleteIfcfgFile(ctx context.Context) error {
+	err := utils.DeleteFile("/usr/local/pf/var/ifcfg-eth*")
+	if err != nil {
+		log.LoggerWContext(ctx).Error("DeleteIfcfgFile  error")
+		return err
+	}
+	err = utils.DeleteFile("/etc/sysconfig/network-scripts/ifcfg-eth*")
+	if err != nil {
+		log.LoggerWContext(ctx).Error("DeleteIfcfgFile error")
 		return err
 	}
 	return nil
