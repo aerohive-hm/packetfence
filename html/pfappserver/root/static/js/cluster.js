@@ -66,7 +66,7 @@ function submitClusterInfo(){
     //turn info into Json
     var object = {};
     formData.forEach(function(value, key){
-      object[key] = value;
+        object[key] = value;
     });
     console.log("object: " + object);
 
@@ -93,36 +93,38 @@ function submitClusterInfo(){
 }
 
 function removeClusterNode(nodeArray){
-   var base_url = window.location.origin;
-   var dataJson = {"hostname":nodeArray};
-   dataJson = JSON.stringify(dataJson);
-   console.log("datajson: "); console.log(dataJson);
-   console.log("- - - - - - - - - - - ");
+    var base_url = window.location.origin;
+    var dataJson = {"hostname":nodeArray};
+    console.log("datajson: ");
+    console.log(dataJson);
+    console.log("- - - - - - - - - - - ");
 
-   $.ajax({
-      type: 'POST',
-      url: base_url + '/a3/api/v1/configuration/cluster/remove',
-      dataType: 'json',
-      data: dataJson,
-      processData: false,
-      contentType: false,
-      success: function(data){
-        console.log("successful");
-        console.log(data);
-        getClusterStatusInfo();
-        $("#cluster-management-table").load("#cluster-management-table-tbody");
-        //let user know 7 - 15 minutes restarting services
-      },
-      error: function(data){
-        console.log("error");
-        console.log(data);
-        document.getElementById('errorMessage').innerHTML = data.msg;
-        $("#error-alert").show();
-        setTimeout(function(){
-          $("#error-alert").slideUp(500);
-        }, 3000);
-      }
-   });
+    $.ajax({
+        type: 'POST',
+        url: base_url + '/ama/cluster_remove',
+        dataType: 'json',
+        data: dataJson,
+        processData: false,
+        contentType: false,
+        success: function(data){
+            data = jQuery.parseJSON(data.A3_data);
+            console.log("successful");
+            console.log(data);
+            getClusterStatusInfo();
+            $("#cluster-management-table").load("#cluster-management-table-tbody");
+            //let user know 7 - 15 minutes restarting services
+        },
+        error: function(data){
+            data = jQuery.parseJSON(data.A3_data);
+            console.log("error");
+            console.log(data);
+            document.getElementById('errorMessage').innerHTML = data.msg;
+            $("#error-alert").show();
+            setTimeout(function(){
+                $("#error-alert").slideUp(500);
+            }, 3000);
+        }
+    });
 }
 
 //function to get cluster table data

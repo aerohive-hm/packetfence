@@ -134,6 +134,38 @@ sub cluster :Local :Args() :AdminRole('SYSTEM_READ') {
     }
 }
 
+=head2
+
+remove a cluster
+
+Usage: /ama/cluster_remove
+
+=cut
+
+sub cluster_remove :Local :Args() :AdminRole('SYSTEM_READ') {
+    my ($self, $c) = @_;
+
+    my $logger = get_logger();
+    my $url = "http://127.0.0.1:10000/api/v1/configuration/cluster/remove";
+    my $input_data = $c->request->{parameters};
+
+    if ($c->request->method eq 'POST'){
+
+        my ($retcode, $response_body, $response_code) = _call_url('POST', $url, $input_data);
+
+        if ($retcode == 0) {
+            $c->stash->{A3_data} = $response_body;
+            $c->response->status($response_code);
+        }
+        else {
+            $logger->error("Failed to call POST $url ret: $retcode");
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+        }
+    } else {
+        $c->response->status($STATUS::METHOD_NOT_ALLOWED);
+    }
+}
+
 =head2 _call_url
 
 =cut
@@ -164,7 +196,7 @@ sub _call_url {
     $curl->setopt(CURLOPT_WRITEDATA, \$response_body);
 
     my $retcode = $curl->perform;
-    $logger->info("calling url $method: $url, with $input_data");
+    $logger->info("calling url $method: $url");
 
     if ($retcode == 0) {
         my $response_code = $curl->getinfo(CURLINFO_HTTP_CODE);
