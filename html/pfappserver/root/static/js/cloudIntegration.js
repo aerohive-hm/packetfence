@@ -167,7 +167,7 @@ function linkAerohiveAccount(){
   document.getElementById("link-account").disabled = true;
   $.ajax({
       type: 'POST',
-      url: base_url + '/a3/api/v1/configuration/cloud',
+      url: base_url + '/ama/cloud_integration/' + "?json=" + jsonFormData,
       dataType: 'json',
       data: jsonFormData,
       success: function(data){
