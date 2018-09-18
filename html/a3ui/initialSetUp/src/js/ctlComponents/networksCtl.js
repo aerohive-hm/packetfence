@@ -654,7 +654,8 @@ class networksCtl extends Component {
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
                 dataCopy[index].clicked="";
-                if(dataCopy[index].original==="eth0"){
+                dataCopy[index].original=dataCopy[index].name.trim();
+                if(dataCopy[index].original==="eth0"&&column==="ip_addr"){
                     self.setState({
                         dataTable : dataCopy,
                         isEditing: false,
