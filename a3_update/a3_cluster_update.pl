@@ -211,7 +211,6 @@ sub remove_nodes_from_cluster {
   $data = {};
   $url = "https://".$first_node_ip_to_update.":9999/a3/api/v1/configuration/cluster/remove";
   $client->addHeader('Authorization', "$token");
-  $client->GET($url);
 
   foreach my $node (@remains_nodes_hostname) {
     push @$remove_nodes_list, $node;
