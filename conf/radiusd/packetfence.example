@@ -287,6 +287,7 @@ accounting {
 	attr_filter.accounting_response
     
 	rest
+	rest-ama
 }
 
 
@@ -334,6 +335,7 @@ post-auth {
 	# send it to packetfence
 	if (! EAP-Type || (EAP-Type != TTLS  && EAP-Type != PEAP) ) {
 		rest
+		rest-ama
 		update {
 			&request:User-Password := "******"
 		}

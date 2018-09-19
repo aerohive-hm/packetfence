@@ -10,13 +10,14 @@ import (
 )
 
 type ClusterNetworksData struct {
-	HostName string `json:"hostname"`
+	Hostname string `json:"hostname"`
+	SysId    string `json:"system_id,omitempty"`
 	Items    []Item `json:"items"`
 }
 
 func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) ClusterNetworksData {
 	clusterNetworksData := ClusterNetworksData{}
-	clusterNetworksData.HostName = GetPfHostname()
+	clusterNetworksData.Hostname = GetPfHostname()
 	Items := GetItemsValue(ctx)
 
 	for _, p := range primaryData.Items {
@@ -61,7 +62,6 @@ func GetClusterNetworksData(ctx context.Context, primaryData NetworksData) Clust
 
 }
 
-
 // when cluster node join, update self networks data
 func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworksData, respData ClusterEventRespData) error {
 
@@ -74,7 +74,7 @@ func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworks
 	}
 
 	// update hostname to system and pf.conf
-	err = UpdateHostname(networksData.HostName)
+	err = UpdateHostname(networksData.Hostname)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdateHostname error:" + err.Error())
 		return err

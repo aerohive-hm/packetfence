@@ -77,14 +77,14 @@ func UpdateInterface(i Item) error {
 					msg := fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", i.IpAddr, i.Vip)
 					return errors.New(msg)
 				}
-				/*check vip if exsit*/
-				if utils.IsIpExists(i.Vip) {
-					msg := fmt.Sprintf("%s is exsit in net", i.Vip)
-					return errors.New(msg)
-				}
 				/*check vip if the broadcast*/
 				if IsBroadcastIp(i.Vip, i.NetMask) {
 					msg := fmt.Sprintf("vip (%s) is broadcast ip", i.Vip)
+					return errors.New(msg)
+				}
+				/*check vip if exsit*/
+				if IsVipExsit(i) {
+					msg := fmt.Sprintf("%s is exsit in net", i.Vip)
 					return errors.New(msg)
 				}
 			}
@@ -107,6 +107,26 @@ func UpdateInterface(i Item) error {
 	return err
 }
 
+func IsVipExsit(i Item) bool {
+	ifname := ChangeUiIfname(i.Name, i.Prefix)
+	del, result := false, false /*need to delete vlan*/
+	if !utils.IfaceExists(ifname) {
+		s := []rune(i.Name)
+		vlan := string(s[4:])
+		utils.CreateVlanIface(i.Prefix, vlan)
+		del = true
+	}
+	if !utils.IsIfaceActive(ifname) {
+		utils.SetIfaceUp(ifname)
+	}
+	if utils.IsIpExists(ifname, i.Vip) {
+		result = true
+	}
+	if del {
+		utils.DelVlanIface(ifname)
+	}
+	return result
+}
 func UpdateEthInterface(i Item) error {
 	/*check eth0 ip should be equal to primary ip*/
 	if i.IpAddr == ReadClusterPrimary() {
