@@ -30,7 +30,7 @@ type NetworksData struct {
 }
 
 var contextNetworks = log.LoggerNewContext(context.Background())
-var clusterEnableDefault = true
+var clusterEnableDefault = false
 var Isclusterjoin = false
 
 func GetItemsValue(ctx context.Context) []Item {
