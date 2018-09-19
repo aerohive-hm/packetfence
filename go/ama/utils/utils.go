@@ -100,6 +100,14 @@ func IsFileExist(path string) bool {
 	return true
 }
 
+func IsFileZero(path string) bool {
+	stat, err := os.Stat(path)
+	if err != nil {
+		return os.IsNotExist(err)
+	}
+	return stat.Size() == 0
+}
+
 func CreateClusterId() error {
 	path := "/usr/local/pf/conf/clusterid.conf"
 	if IsFileExist(path) {
