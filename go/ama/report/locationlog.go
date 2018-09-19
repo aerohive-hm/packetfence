@@ -32,7 +32,7 @@ type LocationlogParseStruct struct {
 	TableName        string `json:"ah_tablename"`
 	TimeStamp        string `json:"ah_timestamp"`
 	Id               int    `json:"id"`
-	TenantID         int    `json:"tenant_id"`
+	TenantID         string `json:"tenant_id"`
 	Mac              string `json:"mac"`
 	Switch           string `json:"switch"`
 	Port             string `json:"port"`
