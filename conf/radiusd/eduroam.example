@@ -292,6 +292,7 @@ accounting {
 	attr_filter.accounting_response
     
 	rest
+	rest-ama
 }
 
 
@@ -336,6 +337,7 @@ post-auth {
 	#}
 
 	rest
+	rest-ama
 	if (updated || ok || noop) {
 		request-timing
 		-sql
