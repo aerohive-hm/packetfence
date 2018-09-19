@@ -5,25 +5,52 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
+	"strings"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
+/*
 const (
 	StdTimeFormat = "2006-01-02 15:04:05"
 )
+*/
 
 type SqlCmd struct {
 	Sql  string
 	Args []interface{}
 }
 
+type SqlCmd2 struct {
+	Table string
+	Vars  string
+	Args  []interface{}
+	Where string
+}
+
 type A3Db struct {
 	Sql []SqlCmd
 	Db  *sql.DB
 	cb  func(...interface{}) error
+}
+
+type SqlOpt int
+
+const (
+	_ SqlOpt = iota
+	INSERT
+	SELECT
+	REPLACE
+	UPDATE
+	DELETE
+)
+
+var sqlOpt = map[SqlOpt]string{
+	INSERT:  `insert into %s(%s)values(%s)`,
+	SELECT:  `select %s from %s%s`,
+	REPLACE: `replace into %s(%s)values(%s)`,
 }
 
 func connect(user, pass, host, port, dbname string) (*sql.DB, error) {
@@ -87,4 +114,20 @@ func (db *A3Db) Exec(sql []SqlCmd) error {
 		}
 	}
 	return nil
+}
+
+func (db *A3Db) Insert(sql SqlCmd2) error {
+	params := ""
+	for range sql.Args {
+		params += "?,"
+	}
+	params = strings.TrimRight(params, ",")
+
+	tmp := []SqlCmd{
+		{
+			fmt.Sprintf(`insert into %s(%s)values(%s)`, sql.Table, sql.Vars, params),
+			sql.Args,
+		},
+	}
+	return db.Exec(tmp)
 }

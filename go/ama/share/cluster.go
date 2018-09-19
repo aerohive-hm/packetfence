@@ -103,9 +103,8 @@ func GetPrimaryNetworksData(ctx context.Context) (error, a3config.NetworksData) 
 
 }
 
-
 // When cluster node join, cluster node information should send to primary node to update
-// update data: 
+// update data:
 //    IP for eth interface of joining node
 //    VLAN interface IP address
 //    hostname for joining node
@@ -117,8 +116,8 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 		return err, RespData
 	}
 	/*check cluset hostname is not same with primary hostname*/
-	if a3config.GetPrimaryHostname() == clusterData.HostName {
-		msg := fmt.Sprintf("hostename(%s) can not be the same with Primary hostname(%s).", clusterData.HostName, a3config.GetPrimaryHostname())
+	if a3config.GetPrimaryHostname() == clusterData.Hostname {
+		msg := fmt.Sprintf("hostename(%s) can not be the same with Primary hostname(%s).", clusterData.Hostname, a3config.GetPrimaryHostname())
 		return errors.New(msg), RespData
 	}
 	/* check ip and vip is the same net range*/
@@ -127,7 +126,6 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 		log.LoggerWContext(ctx).Error(err.Error())
 		return err, RespData
 	}
-	/* check ip and primary ip can not be same*/
 
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/join", a3config.ReadClusterPrimary())
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("post cluster network data to primary with: %s", url))
