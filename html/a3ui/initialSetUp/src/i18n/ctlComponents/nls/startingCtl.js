@@ -3,6 +3,9 @@ export let i18n ={
 	"goToAdministrationInterface": "GO TO ADMINISTRATION INTERFACE",
 	"a3ServicesAreNowStartingUp": "A3 services are now starting up …",
 	"timeToFinishTheStartup": "It will take about 10 minutes to finish starting services.",
+
+	"initialSetupComplete": "Initial setup complete!",
+	"successfullyJoinedCluster": "Successfully joined cluster!",
 	
 	
 }
