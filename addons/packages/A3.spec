@@ -484,6 +484,7 @@ done
 %{__install} -D -m0644 conf/systemd/packetfence-pfstats.service $RPM_BUILD_ROOT/usr/lib/systemd/system/packetfence-pfstats.service
 %{__install} -D -m0644 conf/systemd/a3-update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-update.service
 %{__install} -D -m0644 conf/systemd/a3-httpd.update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-httpd.update.service
+%{__install} -D -m0644 conf/systemd/a3-nodeapp.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-nodeapp.service
 
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons/AD
