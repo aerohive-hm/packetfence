@@ -55,12 +55,12 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	err = client.ClusterAuth()
 	if err != nil {
 		log.LoggerWContext(ctx).Error("ClusterAuth error: " + err.Error())
-		//ret := err.Error()
 		ret := fmt.Sprintf("It can't connect to cluster primary [%s] with adminuser [%s]", join.PrimaryServer, join.Admin)
 		a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
 	code = "ok"
 	a3config.RecordSetupStep(a3config.StepClusterNetworking, code)
+	a3config.Isclusterjoin = true
 	return crud.FormPostRely(code, ret)
 }

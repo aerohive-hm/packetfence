@@ -76,7 +76,7 @@ class networksCtl extends Component {
         let self=this;
 
         let xCsrfToken="";
-        let url= "/a3/api/v1/configurator/networks";
+        let url= "/a3/api/v1/configurator/networks?timestamp="+new Date().getTime();
          
         let param={
         }
@@ -121,7 +121,7 @@ class networksCtl extends Component {
         let self=this;
 
         let xCsrfToken="";
-        let url= "/a3/api/v1/configurator/networks";
+        let url= "/a3/api/v1/configurator/networks?timestamp="+new Date().getTime();
          
         let param={
         }
@@ -654,11 +654,23 @@ class networksCtl extends Component {
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
                 dataCopy[index].clicked="";
-                self.setState({
-                    dataTable : dataCopy,
-                    isEditing: false,
-                    loading : false,
-                }) 
+                dataCopy[index].original=dataCopy[index].name.trim();
+                if(dataCopy[index].original==="eth0"&&column==="ip_addr"){
+                    self.setState({
+                        dataTable : dataCopy,
+                        isEditing: false,
+                    },function(){
+                        setTimeout(function(){
+                            window.location.href="https://"+dataCopy[index].ip_addr.trim()+":1443/";
+                        }, 3000 )
+                    })
+                }else{
+                    self.setState({
+                        dataTable : dataCopy,
+                        isEditing: false,
+                        loading : false,
+                    })
+                }
             }else{
                 self.setState({
                     loading : false,
@@ -700,7 +712,7 @@ class networksCtl extends Component {
             ip_addr:"",
             netmask:"",
             vip:"",
-            type:"MANAGEMENT",
+            type:"REGISTRATION",
             services:["PORTAL"],
 
         })
@@ -1048,19 +1060,21 @@ class networksCtl extends Component {
             key: 'type',
             width:'122px',
             render: (text, record, index) => {
+                let optionHtml=[];
+                if(dataTable[index].original.slice(0,3)==="eth"){
+                    optionHtml.push(<Option value="MANAGEMENT">{self.state.i18n.management}</Option>);
+                }
+                optionHtml.push(<Option value="REGISTRATION">{self.state.i18n.registration}</Option>);
+                optionHtml.push(<Option value="ISOLATION">{self.state.i18n.isolation}</Option>);
+                optionHtml.push(<Option value="PORTAL">{self.state.i18n.portal}</Option>);
                 return (
                     <div>
                         <Select 
                             value={text} 
                             onChange={self.onChangeSelect.bind(self,index,"type")}
-                            style={{ width: 110 }} 
+                            style={{ width: 110 }}
                         >
-                            <Option value="MANAGEMENT">{self.state.i18n.management}</Option>
-                            <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
-                            <Option value="ISOLATION">{self.state.i18n.isolation}</Option>
-                            <Option value="PORTAL">{self.state.i18n.portal}</Option>
-                            {/*<Option value="NONE">{self.state.i18n.none}</Option>
-                            <Option value="OTHER">{self.state.i18n.other}</Option>*/}
+                            {optionHtml}
                         </Select>
                     </div>
                 );
@@ -1326,14 +1340,14 @@ class networksCtl extends Component {
                             <div className="modal-form-item-input-div-networksCtl">
                                 {getFieldDecorator('type', {
                                     rules: [],
-                                    initialValue:"MANAGEMENT",
+                                    initialValue:"REGISTRATION",
                                 })(
 
                                     <Select 
-                                        option={{initialValue:"MANAGEMENT"}}
+                                        option={{initialValue:"REGISTRATION"}}
                                         style={{ height: 32 }} 
                                     >
-                                        <Option value="MANAGEMENT" >{self.state.i18n.management}</Option>
+                                        {/*<Option value="MANAGEMENT" >{self.state.i18n.management}</Option>*/}
                                         <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
                                         <Option value="ISOLATION" >{self.state.i18n.isolation}</Option>
                                         <Option value="PORTAL">{self.state.i18n.portal}</Option>

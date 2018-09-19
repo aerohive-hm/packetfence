@@ -13,6 +13,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/database"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -46,6 +47,14 @@ func handleGetClusterInfo(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
+func restartService() {
+	//restart keepalived service
+	utils.RestartKeepAlived()
+	//notify other node sync configuration and restart keepalived
+	utils.SyncFromMaster(utils.A3Root + `/conf/pf.conf`)
+	a3share.NotifyClusterStatus(a3share.UpdateConf)
+}
+
 func handlePostClusterInfo(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	infoData := new(a3config.ClusterInfoData)
@@ -61,11 +70,12 @@ func handlePostClusterInfo(r *http.Request, d crud.HandlerData) []byte {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", infoData))
 
 	// save configuration
-	UpdateClusterInfoData(ctx, infoData)
+	err = UpdateClusterInfoData(ctx, infoData)
+	if err != nil {
+		return []byte(err.Error())
+	}
 
-	//restart keepalived service
-	utils.RestartKeepAlived()
-	//notify other node sync configuration and restart keepalived
+	go restartService()
 
 	code = "ok"
 	return crud.FormPostRely(code, retMsg)
@@ -83,10 +93,11 @@ func GetClusterInfoData(ctx context.Context, clusterdata *a3config.ClusterInfoDa
 		clusterdata.SharedKey, clusterdata.RouterId))
 
 	// Get cluster node Information
-	nodeList := a3config.FetchNodesInfo()
+	conf := a3config.ClusterNew()
+	nodeList := conf.FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 
-	clusterdata.Ifaces = a3config.ClusterNew().GetClusterVips()
+	clusterdata.Ifaces = conf.GetClusterVips()
 
 	dbClusterList := amadb.QueryDBClusterIpSet()
 
@@ -112,7 +123,7 @@ func GetClusterInfoData(ctx context.Context, clusterdata *a3config.ClusterInfoDa
 	return
 }
 
-func UpdateClusterInfoData(ctx context.Context, clusterInfo *a3config.ClusterInfoData) []byte {
+func UpdateClusterInfoData(ctx context.Context, clusterInfo *a3config.ClusterInfoData) error {
 
 	// what will we need to do when cluster/shared key change
 
@@ -124,7 +135,5 @@ func UpdateClusterInfoData(ctx context.Context, clusterInfo *a3config.ClusterInf
 			"virtual_router_id": clusterInfo.RouterId,
 		},
 	}
-	err := a3config.A3Commit("PF", section)
-
-	return []byte(err.Error())
+	return a3config.A3Commit("PF", section)
 }

@@ -8,12 +8,21 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama/cache"
+	"github.com/inverse-inc/packetfence/go/ama/report"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
 	"net/http"
 	"time"
 )
+
+const (
+	CacheTableUpLimit = 10
+)
+
+var AmacSendEventCounter int64 = 0
+var AmacSendEventSuccessCounter int64 = 0
 
 type ReportHeader struct {
 	SystemID  string `json:"systemId"`
@@ -23,7 +32,8 @@ type ReportHeader struct {
 }
 
 type ReportTable struct {
-	Data json.RawMessage `json:"data"`
+	Ah_tablename string `json:"ah_tablename"`
+	//Data json.RawMessage `json:"data"`
 }
 
 type ReportDbTableData struct {
@@ -54,9 +64,14 @@ func fillReportHeader(header *ReportHeader) {
 	header.ClusterID = utils.GetClusterId()
 }
 
-func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
+func sendReport2Cloud(ctx context.Context, reportMsg []interface{}) int {
+	if asynMsgUrl == "" {
+		log.LoggerWContext(ctx).Error("RDC URL is NULL")
+		return -1
+	}
+	log.LoggerWContext(ctx).Info("into sendReport2Cloud and print Marshal result,before marshal")
 	message, _ := json.Marshal(reportMsg)
-	log.LoggerWContext(ctx).Info(string(message))
+	log.LoggerWContext(ctx).Debug(string(message))
 
 	reader := bytes.NewReader(message)
 	for {
@@ -65,17 +80,16 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
 		}
-
+		AmacSendEventCounter++
 		//Add header option, the tokenStr is from RDC now
 		request.Header.Add("Authorization", rdcTokenStr)
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
-			log.LoggerWContext(ctx).Info("Sending report to cloud fail")
 			log.LoggerWContext(ctx).Info(err.Error())
 			return -1
 		}
-
+		AmacSendEventSuccessCounter++
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %d", resp.StatusCode))
 		log.LoggerWContext(ctx).Info(string(body))
@@ -92,6 +106,7 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 				continue
 			} else {
 				//not get the token, return and wait for the event from UI or other nodes
+				log.LoggerWContext(ctx).Error(fmt.Sprintf("get token fail"))
 				log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message faile, server(RDC) respons the code %d", statusCode))
 				return -1
 			}
@@ -105,38 +120,92 @@ func sendReport2Cloud(ctx context.Context, reportMsg interface{}) int {
 }
 
 //This function will be called by restAPI, it is public
-func ReportDbTable(ctx context.Context, data []byte) int {
+func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 	reportMsg := ReportDbTableMessage{}
 	table := ReportTable{}
+	var temp interface{}
 
-	log.LoggerWContext(ctx).Info("Into SendReport")
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Into ReportDbTable, sendFlag %t,CacheTableUpLimit %d", sendFlag, CacheTableUpLimit))
 
-	if asynMsgUrl == "" {
-		log.LoggerWContext(ctx).Error("RDC URL is NULL")
-		return -1
+	msgQue, err := cache.FetchTablesInfo(CacheTableUpLimit)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Fetch table message fail")
+		return nil, -1
 	}
-	/*
-	   To do, pop redis queue instead of inputing data
-	*/
-
-	//log.LoggerWContext(ctx).Info("print table.Data")
-	//log.LoggerWContext(ctx).Info(string(table.Data))
+	if len(msgQue) == 0 {
+		log.LoggerWContext(ctx).Info("msgQue len is 0, no DB messages")
+		return nil, 0
+	}
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("get %d messages from msgQue", len(msgQue)))
 
 	fillReportHeader(&reportMsg.Header)
 	reportMsg.Data.MsgType = "a3-report-db"
 
-	err := json.Unmarshal(data, &table.Data)
-	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
-		return -1
-	}
-	reportMsg.Data.Tables = append(reportMsg.Data.Tables, table.Data)
+	for _, singleMsg := range msgQue {
+		err := json.Unmarshal(singleMsg.([]byte), &table)
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			return nil, -1
+		}
+		switch table.Ah_tablename {
+		case "node":
+			var t report.NodeParseStruct
+			err = json.Unmarshal(singleMsg.([]byte), &t)
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			temp = t
+		case "node_category":
+			var t report.NodecategoryParseStruct
+			err = json.Unmarshal(singleMsg.([]byte), &t)
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			temp = t
+		case "violation":
+			var t report.ViolationParseStruct
+			err = json.Unmarshal(singleMsg.([]byte), &t)
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			temp = t
+		case "locationlog":
+			var t report.LocationlogParseStruct
+			err = json.Unmarshal(singleMsg.([]byte), &t)
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			temp = t
+		case "ip4log":
+			var t report.Ip4logParseStruct
+			err = json.Unmarshal(singleMsg.([]byte), &t)
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			temp = t
+		case "radius_audit_log":
+			var t report.RadauditParseStruct
+			err = json.Unmarshal(singleMsg.([]byte), &t)
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			temp = t
 
-	res := sendReport2Cloud(ctx, &reportMsg)
-	return res
+		}
+
+		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			return nil, -1
+		}
+		reportMsg.Data.Tables = append(reportMsg.Data.Tables, temp)
+	}
+
+	//sendFlag is true, means the cache table up to the limit
+	if sendFlag {
+		reportArray := make([]interface{}, 0)
+		reportArray = append(reportArray, reportMsg)
+
+		res := sendReport2Cloud(ctx, reportArray)
+		if res != 0 {
+			log.LoggerWContext(ctx).Info("Send to report messages fail when the cache table overflow")
+			return nil, -1
+		} else {
+			return nil, 0
+		}
+	} else {
+		return reportMsg, 0
+	}
 }
 
-func reportSysInfo(ctx context.Context) int {
+func reportSysInfo(ctx context.Context) (interface{}, int) {
 	reportMsg := ReportSysInfoMessage{}
 
 	fillReportHeader(&reportMsg.Header)
@@ -147,23 +216,25 @@ func reportSysInfo(ctx context.Context) int {
 	reportMsg.Data.MemoryTotal = int(system.MemTotal)
 	reportMsg.Data.MemoryUsed = int(system.MemUsed)
 
-	res := sendReport2Cloud(ctx, &reportMsg)
-	return res
+	//reportArray := make([]ReportSysInfoMessage, 0)
+	//reportArray = append(reportArray, reportMsg)
+	//_ = sendReport2Cloud(ctx, reportArray)
+	return reportMsg, 0
 }
 func reportRoutine(ctx context.Context) {
-	if reportInterval == 0 {
-		reportInterval = 30
+	if ReportInterval == 0 {
+		ReportInterval = 30
 	}
 	// create a ticker for report
-	ticker := time.NewTicker(time.Duration(reportInterval) * time.Second)
+	ticker := time.NewTicker(time.Duration(ReportInterval) * time.Second)
 	failCount := 0
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", reportInterval))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", ReportInterval))
 	for _ = range ticker.C {
 		/*
 			check if allow to the connect to cloud, if not,
 			not send the report
 		*/
-		if globalSwitch != "enable" {
+		if GlobalSwitch != "enable" {
 			failCount = 0
 			continue
 		}
@@ -172,22 +243,29 @@ func reportRoutine(ctx context.Context) {
 			failCount = 0
 			continue
 		}
-
-		res := ReportDbTable(ctx, []byte(""))
-		if res != 0 {
+		reportArray := make([]interface{}, 0)
+		dbMsg, resDb := ReportDbTable(ctx, false)
+		if resDb != 0 {
 			failCount++
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
 		} else {
-			failCount = 0
+			if dbMsg != nil {
+				reportArray = append(reportArray, dbMsg)
+			}
 		}
 
-		res = reportSysInfo(ctx)
-		if res != 0 {
+		sysMsg, resSys := reportSysInfo(ctx)
+		if resSys != 0 {
 			failCount++
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
 		} else {
-			failCount = 0
+			if sysMsg != nil {
+				reportArray = append(reportArray, sysMsg)
+			}
+		}
+		res := sendReport2Cloud(ctx, reportArray)
+		if res != 0 {
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending report data to cloud fail"))
 		}
 	}
-
 }

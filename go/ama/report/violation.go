@@ -21,21 +21,19 @@ MariaDB [A3]> desc violation;
 type ViolationParseStruct struct {
 	TableName   string `json:"ah_tablename"`
 	TimeStamp   string `json:"ah_timestamp"`
-	Id          string  `json:"id"`
-	TenantID    string  `json:"tenant_id"`
-	Mac         string  `json:"mac"`
-	Vid         string  `json:"vid"`
-	StartDate   string  `json:"start_date"`
-	ReleaseDate string  `json:"release_date"`
-	Status      string  `json:"status"`
-	TicketRef   string  `json:"ticket_ref"`
-	Notes       string  `json:"notes"`
+	Id          int    `json:"id"`
+	TenantID    string `json:"tenant_id"`
+	Mac         string `json:"mac"`
+	Vid         string `json:"vid"`
+	StartDate   string `json:"start_date"`
+	ReleaseDate string `json:"release_date"`
+	Status      string `json:"status"`
+	TicketRef   string `json:"ticket_ref"`
+	Notes       string `json:"notes"`
 }
-
 
 type ViolationReportData struct {
-       TableName string `json:"tablename"`
-       TimeStamp string `json:"timestamp"`
-       Data ViolationParseStruct  `json:"data"`
+	TableName string `json:"ah_tablename"`
+	TimeStamp string `json:"ah_timestamp"`
+	Id        int    `json:"id"`
 }
-

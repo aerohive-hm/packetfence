@@ -90,7 +90,11 @@ func (sections Section) GetClusterVips() map[string]string {
 	return vips
 }
 
-func fetchNodes(sections Section) []NodeInfo {
+func (sections Section) FetchNodesInfo() []NodeInfo {
+	if sections == nil {
+		return nil
+	}
+
 	nodes := []NodeInfo{}
 	for secName, kvpair := range sections {
 		if secName == "CLUSTER" {
@@ -107,17 +111,9 @@ func fetchNodes(sections Section) []NodeInfo {
 	return nodes
 }
 
-func FetchNodesInfo() []NodeInfo {
-	conf := A3Read("CLUSTER", "all")
-	if conf == nil {
-		return nil
-	}
-	return fetchNodes(conf)
-}
-
 func DeletePrimaryClusterconf(i Item) error {
 	isvlan := VlanInface(i.Name)
-	ifname := ChangeUiInterfacename(i.Name, i.Prefix)
+	ifname := ChangeUiIfname(i.Name, i.Prefix)
 	hostname := GetPfHostname()
 	if isvlan {
 		sectionid := []string{
@@ -139,8 +135,11 @@ func DeletePrimaryClusterconf(i Item) error {
 
 func matchHost(sectionId string, hostname []string) bool {
 	for _, host := range hostname {
-		l := len(host)
-		if sectionId[:l] == host {
+		l1, l2 := len(sectionId), len(host)
+		if l1 < l2 {
+			continue
+		}
+		if sectionId[:l2] == host {
 			return true
 		}
 	}
@@ -158,7 +157,7 @@ func RemoveClusterServer(hostname []string) {
 	}
 
 	if len(ids) > 0 {
-		log.LoggerWContext(context.Background()).Info("update cluster.conf")
+		log.LoggerWContext(context.Background()).Info("to be removed from cluster: ")
 		A3Delete("CLUSTER", ids)
 	}
 }
@@ -236,6 +235,7 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 
 func UpdateClusterFile() {
 	cmd := `echo -e "\n/usr/local/pf/conf/cloud.conf\n` +
-		`/usr/local/pf/conf/clusterid.conf" >> /usr/local/pf/conf/cluster-files.txt`
+		`/usr/local/pf/conf/clusterid.conf\n` +
+		`/usr/local/pf/conf/dbinfo.A3" >> /usr/local/pf/conf/cluster-files.txt`
 	utils.ExecShell(cmd)
 }

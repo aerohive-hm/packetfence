@@ -20,6 +20,7 @@ func init() {
 		"amaaction":     event.AMAActionNew,
 		"report":        event.ReportNew,
 		"perlevent":      event.PerlEventNew,
+		"commandstatus":  event.CommandStatusNew,
 	}
 	Register("event", sections)
 }

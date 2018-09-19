@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	"github.com/inverse-inc/packetfence/go/log"
@@ -163,24 +164,29 @@ func ClearFileContent(path string) error {
 	}
 	return nil
 }
-
-func GetDnsServer() (string, string) {
-	dns1 := ""
-	dns2 := ""
-	cmd := "cat /etc/resolv.conf | awk '{print $2}'"
-	out, err := ExecShell(cmd)
+func DeleteFile(path string) error {
+	cmd := "rm -f " + path
+	_, err := ExecShell(cmd)
 	if err != nil {
 		fmt.Println("%s:exec error", cmd)
-		return "", ""
+		return err
 	}
-	s := strings.Split(out, "\n")
-	l := len(s)
+	return nil
+}
+func GetDnsServer() []string {
+	out, err := ExecShell(`cat /etc/resolv.conf`)
+	if err != nil {
+		return []string{}
+	}
+	re := regexp.MustCompile(`\b\s*[^#]?nameserver\s*([\d\.]+)`)
+	ret := re.FindAllStringSubmatch(out, -1)
 
-	if l > 2 {
-		dns1 = s[1]
-		if l > 3 {
-			dns2 = s[2]
-		}
+	if len(ret) == 0 {
+		return []string{}
 	}
-	return dns1, dns2
+	var dns []string
+	for _, v := range ret {
+		dns = append(dns, v[1])
+	}
+	return dns
 }

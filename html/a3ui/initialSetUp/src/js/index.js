@@ -81,7 +81,7 @@ class App extends Component {
         let self=this;
 
         let xCsrfToken="";
-        let url= "/a3/api/v1/configurator/step";
+        let url= "/a3/api/v1/configurator/step?timestamp="+new Date().getTime();
          
         let param={
         }

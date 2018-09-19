@@ -32,17 +32,17 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 
 	switch msgType {
 	case NetworkChange:
-		log.LoggerWContext(ctx).Error("begin to send initerface change to RDC")
+		log.LoggerWContext(ctx).Info("begin to send initerface change to RDC")
 		nodeInfo = a3share.GetIntChgInfo(ctx)
 	case LicenseInfoChange:
-		log.LoggerWContext(ctx).Error("begin to send license update to RDC")
+		log.LoggerWContext(ctx).Info("begin to send license update to RDC")
 		nodeInfo = a3share.GetLicenseUpdateInfo(ctx)
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")
 	}
 
 	data, _ := json.Marshal(nodeInfo)
-	log.LoggerWContext(ctx).Error(string(data))
+	log.LoggerWContext(ctx).Info(string(data))
 	reader := bytes.NewReader(data)
 	for {
 		request, err := http.NewRequest("POST", asynMsgUrl, reader)
@@ -56,14 +56,13 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
-			log.LoggerWContext(ctx).Error("Update message to RDC fail")
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("receive the response %d", resp.StatusCode))
-		log.LoggerWContext(ctx).Error(string(body))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %d", resp.StatusCode))
+		log.LoggerWContext(ctx).Info(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
 		/*
@@ -89,6 +88,26 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 		return 0
 	}
 	return 0
+}
+
+func getSuccPrompt(msgType int) string {
+	switch msgType {
+	case RemoveNodeFromCluster:
+		return "Remove the link from cloud successfully"
+
+	default:
+		return ""
+	}
+}
+
+func getFailPrompt(msgType int) string {
+	switch msgType {
+	case RemoveNodeFromCluster:
+		return "Remove the link from cloud fail"
+
+	default:
+		return ""
+	}
 }
 
 /*
@@ -129,7 +148,6 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, s
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
-			log.LoggerWContext(ctx).Info("remove node message to RDC fail")
 			log.LoggerWContext(ctx).Info(err.Error())
 			return -1, SrvNoResponse
 		}
@@ -154,10 +172,10 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, s
 				return -1, InvalidToken
 			}
 		} else if statusCode == 200 {
-			return 0, UpdateMsgSuc
+			return 0, getSuccPrompt(msgType)
 		} else {
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Update message faile, server(RDC) respons the code %d", statusCode))
-			return -1, InvalidToken
+			return -1, getFailPrompt(msgType)
 		}
 	}
 	return 0, UpdateMsgSuc
@@ -168,5 +186,13 @@ func JoinCompleteEvent() {
 
 	event.MsgType = JoinClusterComplete
 	event.Data = "Join cluster complete"
+	MsgChannel <- *event
+}
+
+func EnableCloundIntegration(enableOrDisable string) {
+	event := new(MsgStru)
+
+	event.MsgType = CloudIntegrateFunction
+	event.Data = enableOrDisable
 	MsgChannel <- *event
 }

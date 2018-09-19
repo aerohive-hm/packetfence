@@ -4,30 +4,26 @@
         'admin/config/items',
         'js/node',
         'js/user',
-        ]
-    cssFiles = [
+        'admin/common.js'
         ]
 -%]
-<!-- [% MACRO list_entry(action,description) BLOCK %]
+<head>
+  <style>
+    thead tr{
+       background-color: #f4f6f9;
+    }
 
-  <li[% IF section == action %] class="active"[% END %]>
-    <a href="#[% action %]">[% l(description) %]</a>
-  </li>
-[% END -%] -->
-
-<!-- <div class="removeModal fade hide in" id="removeConfirmation" aria-hidden="false" style="display:none;">
-    <h3><i>Remove Selected Cluster Nodes?</i> <span></span></h3>
-  </div>
-  <div class="modal-body">
-    <p><span id="listOfSelectedNodes"><span> will be removed from the cluster.</p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-warning" id="close-modal" data-dismiss="removeModal">Close</button>
-    <button type="button" class="btn btn-success" id="removing-node">Remove</button>
-  </div>
-</div> -->
-
-<div class="modal" id="removeModal" tabindex="-1" role="dialog" aria-hidden="true" role="dialog">
+    .help-block {
+       margin-left: 130px;
+    }
+    #error-alert{
+        background-color: #f2dede;
+        border-color: #eed3d7;
+        color: #b94a48;
+    }
+  </style>
+</head>
+<div class="modal fade hide in" id="removeModal" tabindex="-1" role="dialog" aria-hidden="true" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -37,7 +33,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <p><span id="listOfSelectedNodes"><span> will be removed from the cluster.</p>
+        <p><span id="listOfSelectedNodes"><span></p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -49,19 +45,40 @@
 
 <div class="card">
     <div class="card-block">
-        <div id="success-alert"><div id="errorMessage"></div></div>
+      <div id="success-alert" style="display:none; background-color: #28a745; color: white;"><div style="padding: 10px;" id="successMessage"></div></div>
+      <div id="error-alert" style="display:none; background-color: #dc3545; color: white;"><div style="padding: 10px;" id="errorMessage"></div></div>
         <div class="documentation">
           <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
           <form name="newClusterInfo" id="newClusterInfo">
               <label class="form-horizontal control-label" style="float:left; width: 130px;" for="sharedKey">Shared Key</label>
-              <div class="input-append"><input class="sharedKey form-inline help-inline pf-obfuscated-text" type="text" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
-              <br/>
+              <div class="controls">
+                <div class="input-append"><input class="sharedKey form-inline help-inline pf-obfuscated-text" type="password" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
+                <p class="help-block">Shared KEY for VRRP protocol (must be the same on all members)</p>
+              </div>
               <label class="form-horizontal control-label" style="float:left; width:130px;" for="vrid">Virtual Router Id</label>
-              <input class="vrid form-inline help-inline" type="text" name="vrid" id="vrid" placeholder="50"><br>
+              <div class="controls">
+                <input class="vrid form-inline help-inline" type="text" name="vrid" id="vrid" placeholder="50"><br>
+                <p class="help-block">The virtual router id for keepalive. Leave untouched unless you have another keepalive cluster in this network. Must be between 1 and 255.</p>
+              </div>
+              <div class="card-actions form-actions">
+                  <label style="float:left; width:130px;">  </label>
+                <button class="btn btn-primary submit" id="submitNewClusterInfo">Save</button>
+                <button type="reset" class="btn">Reset</button>
+              </div>
           </form>
-          <br>
-          <label style="float:left; width:130px;">  </label>
-          <button class="btn btn-success submit" id="submitNewClusterInfo" style="width: 220px;">Submit</button>
+          <br/>
+          <br/>
+          <h6>Network Interfaces</h6>
+          <table id="items net-interfaces-table" class="table items">
+            <thead>
+              <tr>
+                <th>Interface</th>
+                <th>VIP</th>
+              </tr>
+            </thead>
+            <tbody id="net-interfaces-table-tbody">
+            </tbody>
+          </table>
 
           <br/>
           <h6>Cluster Node List</h6>

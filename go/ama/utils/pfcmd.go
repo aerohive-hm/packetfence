@@ -107,7 +107,6 @@ func InitStartService(isCluster bool) error {
 	//}
 	//ExecCmds(cmds)
 
-	UpdateCurrentlyAt()
 	return nil
 }
 
@@ -194,12 +193,15 @@ func RecoverDB() {
 }
 
 func RestartKeepAlived() {
-	ExecShell(pfservice + "keepalived restart")
+	cmds := []string{
+		pfcmd + "configreload hard",
+		pfservice + "keepalived restart",
+	}
+	ExecCmds(cmds)
 }
 
 func RemoveFromCluster() {
 	cmds := []string{
-		"rm -f " + A3Root + "/conf/cluster.pf",
 		`systemctl stop packetfence-etcd`,
 		`rm -rf /usr/local/pf/var/etcd/`,
 	}
@@ -238,4 +240,10 @@ func ServiceStatus() string {
 
 	percent := strconv.Itoa((started + 1) * 100 / toBeStarted)
 	return percent
+}
+
+func SyncFromMaster(file string) error {
+	cmd := A3Root + `/bin/cluster/sync --as-master --file=` + file
+	_, err := ExecShell(cmd)
+	return err
 }
