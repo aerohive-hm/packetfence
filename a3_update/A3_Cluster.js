@@ -27,15 +27,21 @@ const pf_mariadb = '/usr/local/pf/sbin/pf-mariadb';
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-var config = ini.parse(fs.readFileSync(pf_conf, 'utf-8'));
-var api_user = config.webservices.user;
-var api_passwd = config.webservices.pass;
+var config;
+var api_user = '';
+var api_passwd = '';
 
 function audit_log(msg) {
     var currdatetime = new Date();
     var data = '[' + currdatetime +']' + '\n' + msg + '\n'; 
     console.log(data);
     fs.appendFileSync(update_log_file, data, 'utf8');
+}
+
+function get_user_pass() {
+    config = ini.parse(fs.readFileSync(pf_conf, 'utf-8'));
+    api_user = config.webservices.user;
+    api_passwd = config.webservices.pass;
 }
 
 app.get("/node/status", function(req, res){
@@ -82,6 +88,7 @@ function system_call(cmd, opts) {
 }
 
 function verify_credential(username, passwd, res) {
+    get_user_pass();
     if ((api_user != username) || (api_passwd != passwd)) {
         console.log("failed to verify credential");
         res.status(401);
