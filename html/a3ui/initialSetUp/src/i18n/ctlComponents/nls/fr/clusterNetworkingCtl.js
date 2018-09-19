@@ -24,6 +24,8 @@ export let i18nfr ={
 	"interfaces": "interfaces",
 	"next": "SUIVANT",
 	"cancel": "ANNULER",
+	"invalidHostName": "Nom d'hôte invalide.",
+	"pleaseFinishTheEditFirst": "S’il vous plait, compléter l’édition.",
 	
 }
 

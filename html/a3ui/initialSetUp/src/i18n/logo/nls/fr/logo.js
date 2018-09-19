@@ -1,3 +1,3 @@
 export let i18nfr ={
-	'a3Setup': 'A3 Setup',
+	'a3Setup': 'Configuration A3'
 }
