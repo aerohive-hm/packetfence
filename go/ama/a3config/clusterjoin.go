@@ -6,16 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	//"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/log"
 )
-
-/*
-type ClusterEventJoinData struct {
-	Hostname string `json:"hostname"`
-	Items    []Item `json:"items"`
-}
-*/
 
 type ClusterEventRespItem struct {
 	User     string `json:"user"`
