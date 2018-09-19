@@ -103,6 +103,7 @@ function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_fi
         return uploadKeyFile;
     }, function(error){
         console.log("error on uploadCert");
+        removeCert(cert_path.filePath);
         return;
     }).then(function(key_path, cert_path){
         console.log("key_path: ");  console.log(key_path);
@@ -156,9 +157,6 @@ function uploadKey(input, sentForm){
         processData: false,
         contentType: false,
         success: function(data){
-            // console.log("uploadKey data: " );
-            // console.log(data);
-            // console.log("- - - - - - - - -");
             document.getElementById("https_key_path").value = data.filePath;
             var filePath = data.filePath;
         },
@@ -263,9 +261,6 @@ function readCert(qualifier){
         type: 'GET',
         url: base_url + '/readCert/' + "?qualifier=" + qualifier,
         success: function(data){
-            // console.log("readacert data: " );
-            // console.log(data);
-            // console.log("- - - - - - - - - - - - -");
             //https_key_view_more || https_serv_view_more,
             //eap_key_view_more || eap_serv_view_more || eap_ca_view_more
             if (qualifier == "https"){
