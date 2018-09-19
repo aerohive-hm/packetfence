@@ -17,7 +17,7 @@ func (d NodecategoryReportData) GetTableKey4Redis() string {
 }
 
 func (d LocationlogReportData) GetTableKey4Redis() string {
-	return fmt.Sprintf("%s+%d", d.TableName, d.Id)
+	return fmt.Sprintf("%s+%s", d.TableName, d.Mac)
 }
 
 func (d RadacctReportData) GetTableKey4Redis() string {
