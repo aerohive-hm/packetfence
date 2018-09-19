@@ -15,6 +15,6 @@ export let i18nfr ={
 	"password": "Mot de passe",
 	"confirmPassword": "Confirmer le mot de passe",
 	"next": "SUIVANT",
-	"cancel": "ANNULER",
+	"cancel": "RETOUR",
 	
 }
