@@ -25,7 +25,7 @@ export let i18n ={
 	"next": "NEXT",
 	"cancel": "CANCEL",
 	"invalidHostName": "Invalid Host Name.",
-	"pleaseFinishTheEditFirst": "Please finish the edit first.",
+	"pleaseFinishTheEditFirst": "Please finish editing first.",
 	
 }
 
