@@ -20,9 +20,6 @@ use pf::log;
 use pf::util;
 use Data::Dumper;
 
-use pf::api::unifiedapiclient;
-use JSON;
-use WWW::Curl::Easy;
 
 BEGIN {extends 'pfappserver::Base::Controller';}
 
@@ -65,7 +62,7 @@ sub cloud_integration :Local :Args() :AdminRole('SYSTEM_READ') {
 
     if ($c->request->method eq 'POST'){
 
-        my ($retcode, $response_body, $response_code) = _call_url('POST', $url, $input_data);
+        my ($retcode, $response_body, $response_code) = pf::util::call_url('POST', $url, $input_data);
 
         if ($retcode == 0) {
             $c->stash->{A3_data} = $response_body;
@@ -76,7 +73,7 @@ sub cloud_integration :Local :Args() :AdminRole('SYSTEM_READ') {
             $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
         }
     } elsif ($c->request->method eq 'GET') {
-        my ($retcode, $response_body, $response_code) = _call_url('GET', $url, $input_data);
+        my ($retcode, $response_body, $response_code) = pf::util::call_url('GET', $url, $input_data);
 
         if ($retcode == 0) {
             $c->stash->{A3_data} = $response_body;
@@ -108,7 +105,7 @@ sub cluster :Local :Args() :AdminRole('SYSTEM_READ') {
 
     if ($c->request->method eq 'POST'){
 
-        my ($retcode, $response_body, $response_code) = _call_url('POST', $url, $input_data);
+        my ($retcode, $response_body, $response_code) = pf::util::call_url('POST', $url, $input_data);
 
         if ($retcode == 0) {
             $c->stash->{A3_data} = $response_body;
@@ -119,7 +116,7 @@ sub cluster :Local :Args() :AdminRole('SYSTEM_READ') {
             $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
         }
     } elsif ($c->request->method eq 'GET') {
-        my ($retcode, $response_body, $response_code) = _call_url('GET', $url, $input_data);
+        my ($retcode, $response_body, $response_code) = pf::util::call_url('GET', $url, $input_data);
 
         if ($retcode == 0) {
             $c->stash->{A3_data} = $response_body;
@@ -151,7 +148,7 @@ sub cluster_remove :Local :Args() :AdminRole('SYSTEM_READ') {
 
     if ($c->request->method eq 'POST'){
 
-        my ($retcode, $response_body, $response_code) = _call_url('POST', $url, $input_data);
+        my ($retcode, $response_body, $response_code) = pf::util::call_url('POST', $url, $input_data);
 
         if ($retcode == 0) {
             $c->stash->{A3_data} = $response_body;
@@ -166,46 +163,6 @@ sub cluster_remove :Local :Args() :AdminRole('SYSTEM_READ') {
     }
 }
 
-=head2 _call_url
-
-=cut
-
-sub _call_url {
-    my ($method, $url, $input_data) = @_;
-    my $curl = WWW::Curl::Easy->new;
-    my $logger = get_logger();
-    my $json = JSON->new->allow_nonref;
-    if ($method eq 'POST') {
-        $curl->setopt(CURLOPT_POST, 1);
-        $curl->setopt(CURLOPT_POSTFIELDS, $json->encode($input_data));
-    } elsif ($method eq 'GET') {
-        $curl->setopt(CURLOPT_HTTPGET, 1);
-    } else {
-        return -1, "unsupported methods";
-    }
-
-
-    $curl->setopt(CURLOPT_URL, $url);
-
-    $curl->setopt(CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json',
-        'Accept: application/json'
-    ]);
-
-    my $response_body;
-    $curl->setopt(CURLOPT_WRITEDATA, \$response_body);
-
-    my $retcode = $curl->perform;
-    $logger->info("calling url $method: $url");
-
-    if ($retcode == 0) {
-        my $response_code = $curl->getinfo(CURLINFO_HTTP_CODE);
-        return $retcode, $response_body, $response_code;
-    }
-
-    return $retcode, undef, 500;
-
-}
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 

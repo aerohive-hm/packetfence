@@ -680,6 +680,10 @@ echo "Restarting rsyslogd"
 #Make ssl certificate
 cd /usr/local/pf
 make conf/ssl/server.pem
+if [ -e /usr/local/pf/conf/ssl/server.pem ]; then
+  chown pf.pf /usr/local/pf/conf/ssl/server.pem
+fi
+done
 
 # Create server local RADIUS secret
 if [ ! -f /usr/local/pf/conf/local_secret ]; then
