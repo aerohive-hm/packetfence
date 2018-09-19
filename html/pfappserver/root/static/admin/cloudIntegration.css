@@ -19,7 +19,7 @@
 /* for the spinner  */
 #spin-spinner{
   display: none;
-
+  padding-left: 10px;
 }
 
 .spin-spinner{

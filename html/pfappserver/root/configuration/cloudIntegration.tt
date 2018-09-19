@@ -67,7 +67,6 @@
       </div>
 
 <!--if user has a cluster and presses link account: -->
-  [% IF is_cluster_enabled %]
       <div class="linked cluster-cloud" style="display:none;">
         <h5>Linked with Aerohive Cloud Services at <a id="rdcUrl" href="#" target="_blank"></a></h5>
         <table id="cloud-info-table">
@@ -101,8 +100,9 @@
         <br/>
       </div>
   <!--if user has standalone and user presses link accounts:-->
-
+    [% IF is_cluster_enabled %]
     [% ELSE %]
+    [% END %]
         <div class="linked standalone" style="display:none;">
           <h5>Linked with Aerohive Cloud Services at <a id="rdcUrl" href="#"></a></h5>
           <table>
@@ -124,7 +124,6 @@
           <br>
           <button class="btn btn-danger" id="unlink-account">Unlink from Aerohive Cloud Account</button>
         </div>
-    [% END %]
     </div>
   </div>
 </div>
