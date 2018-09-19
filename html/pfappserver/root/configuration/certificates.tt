@@ -9,58 +9,12 @@
         ]
 -%]
 <head>
-  <!-- <link href="[% c.uri_for('/static/admin/config/certificates.css') %]" rel="stylesheet"> -->
-  <style>
-  .popover{
-    max-width: 700px;
-  }
-  .popover-content{
-    height: 75px;
-    overflow-y: auto;
-  }
-  #success-alert, #error-alert{
-    display: none;
-    color: white;
-    z-index:5;
-    position: absolute;
-    right: 35%;
-  }
-
-  #success-alert{
-    background-color: #28a745;
-  }
-
-  #error-alert{
-    background-color: #dc3545;
-  }
-  #https_serv_view_more, #eap_ca_view_more, #eap_serv_view_more{
-    height:150px;
-    width: 700px;
-    overflow-y: auto;
-    padding: 5px;
-    border: 1px solid #999;
-    border-radius: 2px;
-  }
-
-  #https_serv_view_more::-webkit-scrollbar, #eap_ca_view_more::-webkit-scrollbar, #eap_serv_view_more::-webkit-scrollbar {
-      width: 1em;
-  }
-
-  #https_serv_view_more::-webkit-scrollbar-track, #eap_ca_view_more::-webkit-scrollbar-track, #eap_serv_view_more::-webkit-scrollbar-track {
-      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-  }
-
-  #https_serv_view_more::-webkit-scrollbar-thumb, #eap_ca_view_more::-webkit-scrollbar-thumb, #eap_serv_view_more::-webkit-scrollbar-thumb {
-    background-color: darkgrey;
-    outline: 1px solid slategrey;
-  }
-
-</style>
+  <link href="[% c.uri_for('/static/admin/certificates.css') %]" rel="stylesheet">
 </head>
+<div id="success-alert" style="display:none; background-color: #28a745; color: white;"><div style="padding: 10px;" id="successMessage"></div></div>
+<div id="error-alert" style="display:none; background-color: #dc3545; color: white;"><div style="padding: 10px;" id="errorMessage"></div></div>
 <div class="card">
     <div class="card-block">
-      <div id="success-alert" style="display:none; background-color: #28a745; color: white;"><div style="padding: 10px;" id="successMessage"></div></div>
-      <div id="error-alert" style="display:none; background-color: #dc3545; color: white;"><div style="padding: 10px;" id="errorMessage"></div></div>
         <h2>[% l('Certificates') %]</h2>
           <ul class="nav nav-tabs">
             <li class="active">
@@ -76,7 +30,7 @@
             <div id="https" class="tab-pane fade in active">
                <div style="padding-left: 50px;">
                    <form class="https_form" name="https_form" id="https_form">
-                      <label style="cursor:;"><h4>HTTPS</h4></label>
+                      <label><h4>HTTPS</h4></label>
                       <div class="server">
                         <h6>Server Certificate and Key Upload</h6>
                         <span>A server key and server certificate are required.
@@ -84,17 +38,22 @@
                         <br><br>
                         <h5>Current Server Certificate <a class="btn" id="download_button_https" style="margin-left: 447px;"> Download </a></h5>
                         <div id="https_serv_view_more"></div>
-                        <br>
+                        <br><br>
                         <input id="https_key_path" name="https_key_path" type="hidden" value="">
-                        <label><h5>Key (file type:  .key)</h5></label>
-                        <input class="https_serverKey_upload btn btn-primary" id="https_serverKey_upload" type="file">
-                        <br>
+                        <label class="form-horizontal control-label"><h5>Key</h5></label>
+                        <div class="controls">
+                            <input class="https_serverKey_upload btn" id="https_serverKey_upload" type="file">
+                            <p class="help-block">When uploading, make sure the file is under 0.008MB (8000 bytes) and in .key format.</p>
+                        </div>
                         <input id="https_cert_path" name="https_cert_path" type="hidden" value="">
-                        <label><h5>Server Certificate (file type:  .pem/.crt/.cer)</h5></label>
-                        <input class="https_serverCert_upload btn btn-primary" id="https_serverCert_upload" type="file">
+                        <label class="form-horizontal control-label"><h5>Server Certificate</h5></label>
+                        <div class="controls">
+                            <input class="https_serverCert_upload btn" id="https_serverCert_upload" type="file">
+                            <p class="help-block">When uploading, make sure the file is under 0.008MB (8000 bytes) and in .crt/.pem/.cer format.</p>
+                        </div>
                       </div>
                       <br>
-                      <button id="https-upload" class="btn btn-success" style="float:left; width: 260px;">Submit</button>
+                      <button id="https-upload" class="btn btn-success">Submit</button>
                       <br>
                    </form>
                </div>
@@ -116,21 +75,30 @@
                       <h5>Current CA Certificate <a class="btn" id="download_button_eap_ca" style="margin-left: 471px;">Download</a></h5>
                       <div id="eap_ca_view_more"></div>
                     </div>
-                    <br>
-                    <input id="eap_key_path" name="eap_key_path" type="hidden" value="">
-                    <label><h5>Key (file type:  .key)</h5></label>
-                    <input id="serverKey_upload" name="serverKey_upload" class="serverKey_upload btn btn-primary" type="file"/>
-                    <br>
-                    <input id="eap_cert_path" name="eap_cert_path" type="hidden" value="">
-                    <label><h5>Server Certificate (file type:  .pem/.crt/.cer)</h5></label>
-                    <input id="serverCert_upload" name="serverCert_upload" class="serverCert_upload btn btn-primary" type="file"/>
                     <br><br>
+                    <input id="eap_key_path" name="eap_key_path" type="hidden" value="">
+                    <label class="form-horizontal control-label"><h5>Key</h5></label>
+                    <div class="controls">
+                        <input id="serverKey_upload" name="serverKey_upload" class="serverKey_upload btn" type="file"/>
+                        <p class="help-block">When uploading, make sure the file is under 0.008MB (8000 bytes) and in .key format.</p>
+                    </div>
+
+                    <input id="eap_cert_path" name="eap_cert_path" type="hidden" value="">
+                    <label class="form-horizontal control-label"><h5>Server Certificate</h5></label>
+                    <div>
+                        <input id="serverCert_upload" name="serverCert_upload" class="serverCert_upload btn" type="file"/>
+                        <p class="help-block">When uploading, make sure the file is under 1MB (1000000 bytes) and in .crt/.pem/.cer format.</p>
+                    </div>
+                    <br>
                     <input id="eap_cacert_path" name="eap_cacert_path" type="hidden" value="">
-                    <label><h5>CA Certificate Upload (file type:  .pem/.crt/.cer)</h5></label>
-                    <input id="caCert_upload" name="caCert_upload" class="caCert_upload btn btn-primary" type="file"/>
+                    <label class="form-horizontal control-label"><h5>CA Certificate</h5></label>
+                    <div>
+                        <input id="caCert_upload" name="caCert_upload" class="caCert_upload btn" type="file"/>
+                        <p class="help-block">(Optional) When uploading, make sure the file is under 1MB (1000000 bytes) and in .crt/.pem/.cer format.</p>
+                    </div>
                   </div>
                   <br>
-                  <button id="eap-upload" class="btn btn-success"  style="float:left; width: 260px;">Submit</button>
+                  <button id="eap-upload" class="btn btn-success">Submit</button>
                   <br>
                 </form>
               </div>

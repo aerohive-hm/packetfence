@@ -307,7 +307,6 @@ sub certificates :Local {
 
 sub cloudIntegration :Local {
     my ($self, $c) = @_;
-
     $c->stash->{template} = "configuration/cloudIntegration.tt";
 }
 
