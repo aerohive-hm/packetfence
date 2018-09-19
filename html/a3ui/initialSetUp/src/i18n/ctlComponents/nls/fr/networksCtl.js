@@ -42,6 +42,8 @@ export let i18nfr ={
 	"modalNetmask": "Masque de réseau",
 	"modalType": "Type",
 	"modalServices": "Services",
+	"save": "SAUVEGARDER",
+    "pleaseFinishTheEditFirst": "S’il vous plait, compléter l’édition.",
 	
 }
 

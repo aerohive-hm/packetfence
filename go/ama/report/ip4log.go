@@ -30,3 +30,4 @@ type Ip4logReportData struct {
 	TenantID  int    `json:"tenant_id"`
 	Ip        string `json:"ip"`
 }
+

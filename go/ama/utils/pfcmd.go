@@ -193,7 +193,11 @@ func RecoverDB() {
 }
 
 func RestartKeepAlived() {
-	ExecShell(pfservice + "keepalived restart")
+	cmds := []string{
+		pfcmd + "configreload hard",
+		pfservice + "keepalived restart",
+	}
+	ExecCmds(cmds)
 }
 
 func RemoveFromCluster() {

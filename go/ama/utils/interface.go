@@ -56,7 +56,7 @@ func CreateVlanIface(ifname string, vlan string) error {
 	return nil
 }
 
-func isIfaceActive(ifname string) bool {
+func IsIfaceActive(ifname string) bool {
 	iface, _ := GetIfaceList(ifname)
 	if len(iface) > 0 {
 		return iface[0].Active == "UP"
@@ -112,7 +112,7 @@ func SetIfaceDown(ifname string) int {
 		return -1
 	}
 
-	if !isIfaceActive(ifname) {
+	if !IsIfaceActive(ifname) {
 		return 0
 	}
 
@@ -133,13 +133,18 @@ func IfaceExists(ifname string) bool {
 	return true
 }
 
-func IsIpExists(ip string) bool {
-	cmd := fmt.Sprintf("sudo ping -c 1 -r %s -w 1", ip)
-	_, err := ExecShell(cmd)
+func IsIpExists(ifname, ip string) bool {
+	cmd := fmt.Sprintf("sudo arping -c 3 -w 1 -f -I %s -D %s", ifname, ip)
+	out, err := ExecShell(cmd)
+	fmt.Println("cmd", cmd)
+
 	if err != nil {
-		return false
+		return true
 	}
-	return true
+	if strings.Contains(out, "Unicast reply from") {
+		return true
+	}
+	return false
 }
 
 func GetIfaceList(ifname string) ([]Iface, int) {
@@ -327,8 +332,13 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 			info := fmt.Sprintf("UpdateVlanIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
 			fmt.Println(info)
 			log.LoggerWContext(context.Background()).Info(info)
-
-			if oldip != ip && IsIpExists(ip) {
+			if !IsIfaceActive(ifname) {
+				err = SetIfaceUp(ifname)
+				if err != nil {
+					return err
+				}
+			}
+			if oldip != ip && IsIpExists(ifname, ip) {
 				msg := fmt.Sprintf("%s is exsit in net", ip)
 				return errors.New(msg)
 			}
@@ -340,31 +350,27 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 			if err != nil {
 				return err
 			}
-			if !isIfaceActive(ifname) {
-				err = SetIfaceUp(ifname)
-				if err != nil {
-					return err
-				}
-			}
 		}
 
 	} else {
-		/*check ip if is exsit*/
-		if IsIpExists(ip) {
-			msg := fmt.Sprintf("%s is exsit in net", ip)
-			return errors.New(msg)
-		}
 		CreateVlanIface(prefix, vlan)
-		err = SetIfaceIIpAddr(ifname, ip, mask)
-		if err != nil {
-			return err
-		}
-		if !isIfaceActive(ifname) {
+		if !IsIfaceActive(ifname) {
 			err = SetIfaceUp(ifname)
 			if err != nil {
 				return err
 			}
 		}
+		/*check ip if is exsit*/
+		if IsIpExists(ifname, ip) {
+			msg := fmt.Sprintf("%s is exsit in net", ip)
+			DelVlanIface(ifname)
+			return errors.New(msg)
+		}
+		err = SetIfaceIIpAddr(ifname, ip, mask)
+		if err != nil {
+			return err
+		}
+
 	}
 	return nil
 }
@@ -383,7 +389,7 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 			return errors.New(msg)
 		}
 		/*check ip if is exsit*/
-		if oldip != ip && IsIpExists(ip) {
+		if oldip != ip && IsIpExists(ifname, ip) {
 			msg := fmt.Sprintf("%s is exsit in net", ip)
 			return errors.New(msg)
 		}
@@ -409,7 +415,7 @@ func doUpdateEthIface(ifname, ip, oldip, mask, gateway string) error {
 		return err
 	}
 	log.LoggerWContext(context.Background()).Info("setInterfaceGateway OK:")
-	if !isIfaceActive(ifname) {
+	if !IsIfaceActive(ifname) {
 		err = SetIfaceUp(ifname)
 		if err != nil {
 			return err

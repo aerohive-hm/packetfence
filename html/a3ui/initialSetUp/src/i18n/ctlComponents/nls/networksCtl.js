@@ -43,7 +43,7 @@ export let i18n ={
 	"modalType": "Type",
 	"modalServices": "Services",
 	"save": "SAVE",
-	"pleaseFinishTheEditFirst": "Please finish the edit first.",
+	"pleaseFinishTheEditFirst": "Please finish editing first.",
 	
 }
 
