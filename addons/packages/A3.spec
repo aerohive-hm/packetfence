@@ -742,6 +742,9 @@ net.ipv4.ip_nonlocal_bind = 1
 # Allowed local port range
 net.ipv4.ip_local_port_range = 1025 65534
 
+# Reserved local port for server
+net.ipv4.ip_local_reserved_ports = 9999
+
 # Increase number of incoming connections
 net.core.somaxconn = 65534
 
