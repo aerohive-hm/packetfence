@@ -15,6 +15,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
+	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
@@ -46,7 +47,7 @@ func prepareClusterNodeJoin() {
 
 func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-	clusterData := new(a3config.ClusterEventJoinData)
+	clusterData := new(a3config.ClusterNetworksData)
 	var respdata a3config.ClusterEventRespData
 	var resp []byte
 
@@ -69,6 +70,12 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 
 	err, respdata = a3config.UpdateEventClusterJoinData(ctx, *clusterData)
 	if err != nil {
+		goto END
+	}
+	/*TODO: write sysid to db*/
+	err = amadb.AddSysIdbyHost(clusterData.SysId, clusterData.Hostname)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("AddSysIdbyHost error:" + err.Error())
 		goto END
 	}
 	resp, _ = json.Marshal(respdata)

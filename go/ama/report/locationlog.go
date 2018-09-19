@@ -28,11 +28,10 @@ MariaDB [A3]> desc locationlog;
 19 rows in set (0.00 sec)
 */
 
-
 type LocationlogParseStruct struct {
 	TableName        string `json:"ah_tablename"`
 	TimeStamp        string `json:"ah_timestamp"`
-	Id               string `json:"id"`
+	Id               int    `json:"id"`
 	TenantID         string `json:"tenant_id"`
 	Mac              string `json:"mac"`
 	Switch           string `json:"switch"`
@@ -56,5 +55,5 @@ type LocationlogParseStruct struct {
 type LocationlogReportData struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
-	Id         int   `json:"id"`
+	Id        int    `json:"id"`
 }

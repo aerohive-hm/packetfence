@@ -76,7 +76,7 @@ class networksCtl extends Component {
         let self=this;
 
         let xCsrfToken="";
-        let url= "/a3/api/v1/configurator/networks";
+        let url= "/a3/api/v1/configurator/networks?timestamp="+new Date().getTime();
          
         let param={
         }
@@ -121,7 +121,7 @@ class networksCtl extends Component {
         let self=this;
 
         let xCsrfToken="";
-        let url= "/a3/api/v1/configurator/networks";
+        let url= "/a3/api/v1/configurator/networks?timestamp="+new Date().getTime();
          
         let param={
         }
@@ -654,7 +654,8 @@ class networksCtl extends Component {
         new RequestApi('post',url,JSON.stringify(param),xCsrfToken,(data)=>{
             if(data.code==="ok"){
                 dataCopy[index].clicked="";
-                if(dataCopy[index].original==="eth0"){
+                dataCopy[index].original=dataCopy[index].name.trim();
+                if(dataCopy[index].original==="eth0"&&column==="ip_addr"){
                     self.setState({
                         dataTable : dataCopy,
                         isEditing: false,
@@ -1059,25 +1060,22 @@ class networksCtl extends Component {
             key: 'type',
             width:'122px',
             render: (text, record, index) => {
+                let optionHtml=[];
+                if(dataTable[index].original.slice(0,3)==="eth"){
+                    optionHtml.push(<Option value="MANAGEMENT">{self.state.i18n.management}</Option>);
+                }
+                optionHtml.push(<Option value="REGISTRATION">{self.state.i18n.registration}</Option>);
+                optionHtml.push(<Option value="ISOLATION">{self.state.i18n.isolation}</Option>);
+                optionHtml.push(<Option value="PORTAL">{self.state.i18n.portal}</Option>);
                 return (
                     <div>
-                        {
-                            dataTable[index].original==="eth0"?
-                            self.state.i18n.management
-                            :
-                            <Select 
-                                value={text} 
-                                onChange={self.onChangeSelect.bind(self,index,"type")}
-                                style={{ width: 110 }}
-                            >
-                                {/*<Option value="MANAGEMENT">{self.state.i18n.management}</Option>*/}
-                                <Option value="REGISTRATION">{self.state.i18n.registration}</Option>
-                                <Option value="ISOLATION">{self.state.i18n.isolation}</Option>
-                                <Option value="PORTAL">{self.state.i18n.portal}</Option>
-                                {/*<Option value="NONE">{self.state.i18n.none}</Option>
-                                <Option value="OTHER">{self.state.i18n.other}</Option>*/}
-                            </Select>
-                        }
+                        <Select 
+                            value={text} 
+                            onChange={self.onChangeSelect.bind(self,index,"type")}
+                            style={{ width: 110 }}
+                        >
+                            {optionHtml}
+                        </Select>
                     </div>
                 );
             } 

@@ -14,6 +14,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/event"
 	"github.com/inverse-inc/packetfence/go/ama/share"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -65,9 +66,8 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 		ret = err.Error()
 		return crud.FormPostRely(code, ret)
 	}
-
+	clusternetdata.SysId = utils.GetA3SysId()
 	// update primary node networks data
-	a3config.Isclusterjoin = true
 	err, clusterRespData := a3share.UpdatePrimaryNetworksData(ctx, *clusternetdata)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update Primary Node Networks Data error:" + err.Error())

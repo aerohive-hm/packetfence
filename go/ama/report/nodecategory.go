@@ -16,16 +16,15 @@ MariaDB [A3]> desc node_category;
 type NodecategoryParseStruct struct {
 	TableName      string `json:"ah_tablename"`
 	TimeStamp      string `json:"ah_timestamp"`
-	CategoryID     string  `json:"category_id"`
-	Name           string  `json:"name"`
-	MaxNodesPerPid string  `json:"max_nodes_per_pid"`
-	Notes          string  `json:"notes"`
+	CategoryID     int    `json:"category_id"`
+	Name           string `json:"name"`
+	MaxNodesPerPid string `json:"max_nodes_per_pid"`
+	Notes          string `json:"notes"`
 }
 
-
 type NodecategoryReportData struct {
-	TableName string `json:"ah_tablename"`
-	TimeStamp string `json:"ah_timestamp"`
-	CategoryID int `json:"category_id"`
-	Name       string  `json:"name"`
+	TableName  string `json:"ah_tablename"`
+	TimeStamp  string `json:"ah_timestamp"`
+	CategoryID int    `json:"category_id"`
+	Name       string `json:"name"`
 }

@@ -62,8 +62,12 @@ func GetItemsValue(ctx context.Context) []Item {
 }
 
 func UpdateItemsValue(ctx context.Context, enable bool, items []Item) error {
-	var err error
 
+	err := DeleteIfcfgFile(ctx)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("DeleteIfcfgFile error:" + err.Error())
+		return err
+	}
 	for _, item := range items {
 		err = UpdateInterface(item)
 		if err != nil {
@@ -211,17 +215,24 @@ func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	for _, i := range items {
 		/*eth0 must contain management, other can not contian management*/
 		if i.Name == "eth0" {
-			if !strings.Contains(i.Type, "MANAGEMENT") {
-				msg = fmt.Sprintf("the interface eth0  must contain management type")
+			if i.Type != "MANAGEMENT" {
+				msg = fmt.Sprintf("the interface eth0  must be management type")
 				return errors.New(msg)
 			}
 		} else {
-			if strings.Contains(i.Type, "MANAGEMENT") {
+			/*vlan can not allowed to contain management*/
+			if i.Type == "MANAGEMENT" {
 				msg = fmt.Sprintf("the %s does not allow to contain management type", i.Name)
 				return errors.New(msg)
 			}
+			/*if vlan type is portal ,the service must contian portal*/
+			if i.Type == "PORTAL" {
+				if !strings.Contains(i.Services, "PORTAL") {
+					msg = fmt.Sprintf("the %s must contain portal service if the type is portal", i.Name)
+					return errors.New(msg)
+				}
+			}
 		}
-
 	}
 	return nil
 }
@@ -327,16 +338,11 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("writeOneNetworkConfig: ifname=%s, "+
 		"ip =%s, netmask =%s", ifname, ip, netmask))
 
-	// write to /usr/local/pf/var/ifcfg- firstly
+	// ifcfgfile: /usr/local/pf/var/ifcfg-
 	ifcfgFile := varDir + interfaceConfFile + ifname
-	// write to /etc/sysconfig/network-scripts/ifcfg-
+	// sysifCfgFile: /etc/sysconfig/network-scripts
 	sysifCfgFile := networtConfDir + interfaceConfDir + interfaceConfFile + ifname
 
-	err := utils.ClearFileContent(sysifCfgFile)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error:" + err.Error() + ifcfgFile)
-		return err
-	}
 	//eth0, eth0.xx
 	if utils.IsVlanIface(ifname) {
 		section = Section{
@@ -360,28 +366,32 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 	section[""]["IPADDR"] = ip
 	section[""]["NETMASK"] = netmask
 
-	err = A3CommitPath(ifcfgFile, section)
+	err := A3CommitPath(ifcfgFile, section)
 
 	if err != nil {
 		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() + ifcfgFile)
 		return err
 	}
 
-	// don't need write gateway
-	if utils.IsVlanIface(ifname) {
-		goto END
+	if !utils.IsVlanIface(ifname) {
+		/* write dns to sysifcfgfile for eth0*/
+		dns = utils.GetDnsServer()
+		for i, l = range dns {
+			section[""]["DNS"+strconv.Itoa(i)] = l
+		}
+	}
+	err = A3CommitPath(sysifCfgFile, section)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
+			sysifCfgFile)
+	}
+	//write gateway to etc/sysconfig/network
+	section = Section{
+		"": {
+			"GATEWAY": utils.GetA3DefaultGW(),
+		},
 	}
 
-	/* write dns to sysifcfgfile for eth0*/
-	dns = utils.GetDnsServer()
-	for i, l = range dns {
-		section[""]["DNS"+strconv.Itoa(i)] = l
-	}
-
-	//write gateway
-	section[""]["GATEWAY"] = utils.GetA3DefaultGW()
-
-	// /etc/sysconfig/network
 	sysGatewayCfgFile = networtConfDir + networkConfFile
 
 	err = A3CommitPath(sysGatewayCfgFile, section)
@@ -390,12 +400,19 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 			sysGatewayCfgFile)
 		return err
 	}
+	return nil
+}
 
-END:
-	err = A3CommitPath(sysifCfgFile, section)
+func DeleteIfcfgFile(ctx context.Context) error {
+	err := utils.DeleteFile("/usr/local/pf/var/ifcfg-eth*")
 	if err != nil {
-		log.LoggerWContext(ctx).Error("SetNetworkInterface error: " + err.Error() +
-			sysifCfgFile)
+		log.LoggerWContext(ctx).Error("DeleteIfcfgFile  error")
+		return err
+	}
+	err = utils.DeleteFile("/etc/sysconfig/network-scripts/ifcfg-eth*")
+	if err != nil {
+		log.LoggerWContext(ctx).Error("DeleteIfcfgFile error")
+		return err
 	}
 	return nil
 }

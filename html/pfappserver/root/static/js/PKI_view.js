@@ -11,7 +11,6 @@ $(document).ready(function(){
       servNewlabel.innerHTML = "Choose File...";
     $("#server_cert_path_upload").after(servNewlabel);
 
-
     document.getElementById("ca_cert_path_upload").onchange = function(){
       showCaCertFileInfo();
     };
@@ -318,8 +317,4 @@ function processFiles(input, pki_provider_name, qualifier){
           }
         }
     }); //end of ajax
-}
-
-function processFilesFinal(){
-
 }

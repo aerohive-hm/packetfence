@@ -9,8 +9,8 @@ export let i18nfr ={
 	"clusterPrimary": "Grappe primaire",
 	"clusterAdmin": "Administrateur de grappe",
 	"adminPassword": "Mot de passe d'administrateur",
-	"next": "SUIVANT",
-	"cancel": "ANNULER",
+	"next": "JOINDRE",
+	"cancel": "RETOUR",
 	
 }
 

@@ -172,7 +172,15 @@ func ClearFileContent(path string) error {
 	}
 	return nil
 }
-
+func DeleteFile(path string) error {
+	cmd := "rm -f " + path
+	_, err := ExecShell(cmd)
+	if err != nil {
+		fmt.Println("%s:exec error", cmd)
+		return err
+	}
+	return nil
+}
 func GetDnsServer() []string {
 	out, err := ExecShell(`cat /etc/resolv.conf`)
 	if err != nil {

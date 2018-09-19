@@ -1,6 +1,5 @@
 package report
 
-
 /*
 MariaDB [A3]> show columns from node;
 +-------------------+------------------+------+-----+---------------------+-------+
@@ -44,7 +43,7 @@ MariaDB [A3]> show columns from node;
 type NodeParseStruct struct {
 	TableName        string `json:"ah_tablename"`
 	TimeStamp        string `json:"ah_timestamp"`
-	TenantId         string `json:"tenant_id"`
+	TenantId         int    `json:"tenant_id"`
 	Mac              string `json:"mac"`
 	Pid              string `json:"pid"`
 	CategoryId       string `json:"category_id"`
@@ -80,8 +79,6 @@ type NodeParseStruct struct {
 type NodeReportData struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
-	TenantId  string `json:"tenant_id"`
+	TenantId     int `json:"tenant_id"`
 	Mac       string `json:"mac"`
 }
-
-
