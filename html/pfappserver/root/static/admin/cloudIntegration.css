@@ -8,9 +8,7 @@
 }
 
 .link-account{
-  float:right;
   width: 220px;
-  margin-right: 50px;
 }
 
 /* table style */
@@ -21,6 +19,7 @@
 /* for the spinner  */
 #spin-spinner{
   display: none;
+
 }
 
 .spin-spinner{
@@ -87,9 +86,30 @@
   }
 
 @keyframes spinner {
-  100% { transform: rotate(405deg); }
+    100% { transform: rotate(405deg); }
 }
 
 @keyframes changeColors {
-  100% { opacity:1; }
+    100% { opacity:1; }
+}
+
+#error-alert{
+    background-color: #f2dede;
+    border-color: #eed3d7;
+    color: #b94a48;
+    display:none;
+}
+
+#success-alert{
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    color: #468847;
+    display: none;
+}
+
+.help-block {
+    display: block;
+    margin-bottom: 10px;
+    margin-left: 130px;
+    margin-top: -7px;
 }
