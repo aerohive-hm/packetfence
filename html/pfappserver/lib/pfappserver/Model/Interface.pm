@@ -893,7 +893,9 @@ sub notify_ama {
     eval {
             # NetworkChange = 2
             my $msgtype = 2;
-            pf::api::unifiedapiclient->default_client->call("POST", "/a3/api/v1/event/perlevent", {msgtype => $msgtype,});
+            my $url = "http://127.0.0.1:10000/api/v1/event/perlevent";
+            $self->logger->info("send NetworkChange update event to AMA:");
+            pf::util::call_url("POST", $url, {msgtype => $msgtype,});
     };
     if ($@) {
         $self->logger->error("Error send NetworkChange data to AMA : $@");

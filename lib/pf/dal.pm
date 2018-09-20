@@ -24,6 +24,8 @@ use pf::error qw(is_error is_success);
 use pf::SQL::Abstract;
 use pf::dal::iterator;
 use pf::constants qw($TRUE $FALSE $DEFAULT_TENANT_ID);
+use Data::Dumper;
+use pf::util;
 
 use Class::XSAccessor {
     accessors => [qw(__from_table __old_data)],
@@ -104,52 +106,6 @@ sub db_execute {
     my $logger = $self->logger;
     my $status = $STATUS::INTERNAL_SERVER_ERROR;
 
-    my $table = $self->table;
-    if (($table eq 'node') ||
-       ($table eq 'node_category') ||
-       ($table eq 'violation') ||
-       ($table eq 'locationlog') ||
-       ($table eq 'radacct') ||
-       ($table eq 'class') ||
-       ($table eq 'radius_audit_log') ||
-       ($table eq 'ip4log')) {
-		
-		my @fieldarray;
-    	#$logger->error("db_execute ${table} sql:" .Dumper($sql));
-
-    	if ($sql =~/INSERT INTO/) {
-        	$sql =~ m/.*?\((.*?)\)/;
- 			#$logger->error("db_execute: $1");
- 			my $mystr = $1;
- 
-			$mystr =~ s/^ +//;
-			@fieldarray = split(/\s+/, $mystr);
-			foreach(@fieldarray){
-				#$logger->error("db_execute ${table}: $_");
-                $_ =~  s/[`,]//g;
-			}			
-			my %ama_data;
-			for (0..$#fieldarray){
-				$ama_data{$fieldarray[$_]}=$bind[$_];
-			}
-
-    		#$logger->error("db_execute ama data:" .Dumper(\%ama_data));
-    		#$logger->error("db_execute ${table} bind:" .Dumper(\@bind));
-
-    		# Send tables contents to AMA for Aerohive reporting
-
-
-			eval {
-    			my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
-  				my $timestamp = $seconds * 1000 * 1000 + $microseconds;
-   				pf::api::unifiedapiclient->default_client->call("POST", "/a3/api/v1/event/report",
-            		{ah_tablename => $table, ah_timestamp => "$timestamp", %ama_data,});
-			};
-			if ($@) {
-				$logger->error("Error send DB update data to AMA : $@");
-			}
-		}
-    }
   
     while ($attempts) {
         my $dbh = $self->get_dbh;
@@ -548,6 +504,61 @@ sub _insert_data {
         }
         $data{$field} = $new_value;
     }
+
+
+    # Send tables contents to AMA for Aerohive reporting
+    my $sendtable = $self->table;
+    my %ama_data = %data;
+    if ((${sendtable} eq 'node') ||
+       (${sendtable} eq 'node_category') ||
+       (${sendtable} eq 'violation') ||
+       (${sendtable} eq 'locationlog') ||
+       (${sendtable} eq 'class') ||
+       (${sendtable} eq 'ip4log')) {
+
+        $self->logger->info("DB table ${sendtable} changing data:" .Dumper(\%ama_data));
+
+        # the datetime field may use a ref to send DB like \NOW(), but json cant handle it
+        # just use time string to replace that
+        if (${sendtable} eq 'ip4log') {
+             $ama_data{'end_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time + 120));
+             $ama_data{'start_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
+        }
+
+        if (${sendtable} eq 'locationlog') {
+             if ($ama_data{'start_time'} !~ ':') {
+                 $ama_data{'start_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
+             }
+
+             if ($ama_data{'end_time'} !~ ':') {
+             	 $ama_data{'end_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
+             }
+        } 
+
+        if (${sendtable} eq 'node') {
+             if ($ama_data{'last_seen'} !~ ':') {
+             	  $ama_data{'last_seen'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
+             }
+        } 
+       	if (${sendtable} eq 'violation') {
+             if ($ama_data{'release_date'} !~ ':') {
+             	  $ama_data{'release_date'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
+             }
+        }        
+        
+        eval {
+            my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
+            my $timestamp = $seconds * 1000 * 1000 + $microseconds;
+            my $url = "http://127.0.0.1:10000/api/v1/event/report";
+            $self->logger->info("send DB table ${sendtable} insert or update data to AMA:" .Dumper(\%ama_data));
+            pf::util::call_url("POST", $url, {ah_tablename => ${sendtable}, ah_timestamp => "$timestamp", %ama_data,});
+        };
+        if ($@) {
+            $self->logger->error("Error send DB update data to AMA : $@");
+        }
+    }
+    
+
     return $STATUS::OK, \%data;
 }
 
@@ -574,7 +585,7 @@ sub _update_data {
             next;
         }
         $data{$field} = $new_value;
-    }
+    }   
     return $STATUS::OK, \%data;
 }
 
@@ -1139,6 +1150,7 @@ sub update_params_for_upsert {
     return %new_args;
 }
 
+
 =head2 do_insert
 
 Wrap call to pf::SQL::Abstract->insert and db_execute
@@ -1149,7 +1161,7 @@ sub do_insert {
     my ($proto, @args) = @_;
     my $sqla          = $proto->get_sql_abstract;
     @args = $proto->update_params_for_insert(@args);
-    my ($stmt, @bind) = $sqla->insert(@args);
+    my ($stmt, @bind) = $sqla->insert(@args); 
     return $proto->db_execute($stmt, @bind);
 }
 
@@ -1163,7 +1175,7 @@ sub do_upsert {
     my ($proto, @args) = @_;
     my $sqla          = $proto->get_sql_abstract;
     @args = $proto->update_params_for_upsert(@args);
-    my ($stmt, @bind) = $sqla->upsert(@args);
+    my ($stmt, @bind) = $sqla->upsert(@args); 
     return $proto->db_execute($stmt, @bind);
 }
 
@@ -1177,7 +1189,7 @@ sub do_update {
     my ($proto, @args) = @_;
     my $sqla          = $proto->get_sql_abstract;
     @args = $proto->update_params_for_update(@args);
-    my ($stmt, @bind) = $sqla->update(@args);
+    my ($stmt, @bind) = $sqla->update(@args);  
     return $proto->db_execute($stmt, @bind);
 }
 

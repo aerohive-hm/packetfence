@@ -19,8 +19,10 @@ func init() {
 		"amastatus":     event.AMAStatusNew,
 		"amaaction":     event.AMAActionNew,
 		"report":        event.ReportNew,
-		"perlevent":      event.PerlEventNew,
-		"commandstatus":  event.CommandStatusNew,
+		"perlevent":     event.PerlEventNew,
+		"commandstatus": event.CommandStatusNew,
+		"radiusauth":    event.RadAuthNew,
+		"radiusacct":    event.RadAcctNew,
 	}
 	Register("event", sections)
 }

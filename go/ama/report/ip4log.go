@@ -17,7 +17,7 @@ MariaDB [A3]> desc ip4log;
 type Ip4logParseStruct struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
-	TenantID  int    `json:"tenant_id"`
+	TenantID  interface{}    `json:"tenant_id"`
 	Mac       string `json:"mac"`
 	Ip        string `json:"ip"`
 	StartTime string `json:"start_time"`
@@ -27,7 +27,7 @@ type Ip4logParseStruct struct {
 type Ip4logReportData struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
-	TenantID  int    `json:"tenant_id"`
+	TenantID  interface{} `json:"tenant_id"`
 	Ip        string `json:"ip"`
 }
 

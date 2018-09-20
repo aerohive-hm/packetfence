@@ -47,46 +47,45 @@ function getNodeInfo(){
             if (data.msgtype == "nodesInfo"){
                 $('#rdcUrl').html(data.body.header.rdcUrl);
                 document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
-            if (data.body.header.region == ""){
-                $('#region').html("unknown");
-            } else {
-                $('#region').html(data.body.header.region);
-            }
-            $('#ownerId').html(data.body.header.ownerId);
-             //if the field lastContactTime exists on the tt file
-            if ($( "#lastContactTime" ).length){
-                if (typeof data.body.data[0].lastContactTime === "undefined"){
-                $('#lastContactTime').html("unknown");
+                if (data.body.header.region == ""){
+                    $('#region').html("unknown");
                 } else {
-                    $('#lastContactTime').html(data.body.data[0].lastContactTime);
+                    $('#region').html(data.body.header.region);
                 }
-            }
-            $('#vhmId').html(data.body.header.vhmId);
-
-            $(".disconnected").hide();
-            $(".linked").show();
-            $.each(data.body.data, function(i, items){
-                console.log(items);
-                //convert time stamp here
-                $("#cloud-cluster-table-tbody").append("<tr><td id='connectedIcon'>" + items.status + "</td><td>" + items.hostname + "</td><td>" +  items.lastContactTime + "</td></tr>");
-            });
-            $('#cloud-cluster-table-tbody td:nth-child(1)').each(function() {
-                console.log($(this));
-                console.log("hi");
-                if ($(this).text() == "connected"){
-                    $(this).html('<i class="icon-circle icon" style="color:#28a745; font-size:15px; margin: 0 auto;"></i>');
-                } else if ($(this).text() == "connecting") {
-                    $(this).html('<i class="icon-circle icon" style="color:#ffc107; font-size:15px; margin: 0 auto;"></i>');
-                } else if ($(this).text() == "disconnect") {
-                    $(this).html('<i class="icon-circle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
-                } else {
-                    $(this).html('<i class="icon-exclamation-triangle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
+                $('#ownerId').html(data.body.header.ownerId);
+                 //if the field lastContactTime exists on the tt file
+                if ($( "#lastContactTime" ).length){
+                    if (typeof data.body.data[0].lastContactTime === "undefined"){
+                    $('#lastContactTime').html("unknown");
+                    } else {
+                        $('#lastContactTime').html(data.body.data[0].lastContactTime);
+                    }
                 }
-            });
-            $('#cloud-cluster-table-tbody tr:nth-child(even) td').each(function(){
-                $(this).css('background-color', '#f4f6f9');
-            });
-
+                $('#vhmId').html(data.body.header.vhmId);
+                $(".disconnected").hide();
+                if (data.body.header.mode === "cluster"){ //if it's a cluster
+                    $.each(data.body.data, function(i, items){
+                        console.log("each item: ");
+                        console.log(items);
+                        $("#cloud-cluster-table-tbody").append("<tr><td id='connectedIcon'>" + items.status + "</td><td>" + items.hostname + "</td><td>" +  items.lastContactTime + "</td></tr>");
+                    });
+                    $('#cloud-cluster-table-tbody td:nth-child(1)').each(function() {
+                        if ($(this).text() == "connected"){
+                            $(this).html('<i class="icon-circle icon" style="color:#28a745; font-size:15px; margin: 0 auto;"></i>');
+                        } else if ($(this).text() == "connecting") {
+                            $(this).html('<i class="icon-circle icon" style="color:#ffc107; font-size:15px; margin: 0 auto;"></i>');
+                        } else if ($(this).text() == "disconnect") {
+                            $(this).html('<i class="icon-circle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
+                        } else {
+                            $(this).html('<i class="icon-exclamation-triangle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
+                        }
+                    });
+                    $('#cloud-cluster-table-tbody tr:nth-child(even) td').each(function(){
+                        $(this).css('background-color', '#f4f6f9');
+                    });
+                }
+                $(".linked").show();
+                $(".disconnected").hide();
             //unlinked
             } else if (data.msgtype == "cloudConf"){
                 $(".linked").hide();
@@ -170,7 +169,7 @@ function linkAerohiveAccount(){
             data = jQuery.parseJSON(data.A3_data);
             console.log("went through");
             console.log(data);
-            $('.spin-spinner').hide();
+            $('#spin-spinner').hide();
 
             if (data.code == "fail"){
                 document.getElementById('errorMessage').innerHTML = data.msg;

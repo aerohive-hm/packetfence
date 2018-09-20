@@ -49,9 +49,9 @@ MariaDB [A3]> desc radius_audit_log;
 */
 
 type RadauditParseStruct struct {
-	TableName        string `json:"ah_tablename"`
-	TimeStamp        string `json:"ah_timestamp"`
-	Id               int    `json:"id"`
+	TableName string `json:"ah_tablename"`
+	TimeStamp string `json:"ah_timestamp"`
+	//Id               int    `json:"id"`
 	TenantId         int    `json:"tenant_id"`
 	CreateAt         string `json:"created_at"`
 	Mac              string `json:"mac"`
@@ -96,4 +96,30 @@ type RadauditReportData struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
 	Id        int    `json:"id"`
+}
+
+type StringExtend struct {
+	Value []string `json:"value"`
+}
+
+type IntExtend struct {
+	Value []int `json:"value"`
+}
+
+type RadauditOriData struct {
+	UserName                  StringExtend `json:"User-Name"`
+	NasIpAddress              StringExtend `json:"NAS-IP-Address"`
+	NasPort                   IntExtend    `json:"NAS-Port"`
+	ServiceType               IntExtend    `json:"Service-Type"`
+	CalledStationId           StringExtend `json:"Called-Station-Id"`
+	CallingStationId          StringExtend `json:"Calling-Station-Id"`
+	NasIdentifier             StringExtend `json:"NAS-Identifier"`
+	NasPortType               IntExtend    `json:"NAS-Port-Type"`
+	AcctSessionId             StringExtend `json:"Acct-Session-Id"`
+	AcctMultiSessionId        StringExtend `json:"Acct-Multi-Session-Id"`
+	EventTimestamp            StringExtend `json:"Event-Timestamp"`
+	StrippedUserName          StringExtend `json:"Stripped-User-Name"`
+	Realm                     StringExtend `json:"Realm"`
+	CalledStationSsid         StringExtend `json:"Called-Station-SSID"`
+	FreeRadiusClientIpAddress StringExtend `json:"FreeRADIUS-Client-IP-Address"`
 }

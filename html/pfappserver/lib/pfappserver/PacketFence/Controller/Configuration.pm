@@ -307,7 +307,9 @@ sub certificates :Local {
 
 sub cloudIntegration :Local {
     my ($self, $c) = @_;
-    $c->stash->{template} = "configuration/cloudIntegration.tt";
+        $c->stash->{template} = "configuration/cloudIntegration.tt";
+    if (!$pf::cluster::cluster_enabled || pf::cluster::is_management()){
+    }
 }
 
 

@@ -16,7 +16,7 @@ MariaDB [A3]> desc node_category;
 type NodecategoryParseStruct struct {
 	TableName      string `json:"ah_tablename"`
 	TimeStamp      string `json:"ah_timestamp"`
-	CategoryID     int    `json:"category_id"`
+	CategoryID     interface{}    `json:"category_id"`
 	Name           string `json:"name"`
 	MaxNodesPerPid string `json:"max_nodes_per_pid"`
 	Notes          string `json:"notes"`
@@ -25,6 +25,6 @@ type NodecategoryParseStruct struct {
 type NodecategoryReportData struct {
 	TableName  string `json:"ah_tablename"`
 	TimeStamp  string `json:"ah_timestamp"`
-	CategoryID int    `json:"category_id"`
+	CategoryID interface{}    `json:"category_id"`
 	Name       string `json:"name"`
 }
