@@ -297,6 +297,7 @@ rest rest-ama {
         uri = "${..connect_uri}api/v1/event/radius/acct"
         method = 'post'
         body = 'json'
+		data = data = '{"ah_tablename":"radacct","acctstatustype":"%{Acct-Status-Type}","calledstationid":"%{Called-Station-Id}","callingstationid":"%{Calling-Station-Id}","acctstoptime":"%{integer:Event-Timestamp}"}'
         tls = ${..tls}
     }
     post-auth {
