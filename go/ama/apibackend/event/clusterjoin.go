@@ -50,6 +50,8 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	clusterData := new(a3config.ClusterNetworksData)
 	var respdata a3config.ClusterEventRespData
 	var resp []byte
+	PrimarySysId := utils.GetA3SysId()
+	PrimaryHostname := utils.GetHostname()
 
 	err := json.Unmarshal(d.ReqData, clusterData)
 	if err != nil {
@@ -72,7 +74,14 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		goto END
 	}
-	/*TODO: write sysid to db*/
+	/*write primary sysid to db*/
+	err = amadb.AddSysIdbyHost(PrimarySysId, PrimaryHostname)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("AddSysIdbyHost error:" + err.Error())
+		goto END
+	}
+
+	/*write cluster sysid to db*/
 	err = amadb.AddSysIdbyHost(clusterData.SysId, clusterData.Hostname)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("AddSysIdbyHost error:" + err.Error())
@@ -90,7 +99,6 @@ END:
 	}
 	return resp
 }
-
 func waitPrimarySync(ip string) error {
 	ctx := context.Background()
 	var msg a3share.SyncData
