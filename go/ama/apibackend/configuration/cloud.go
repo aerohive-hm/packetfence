@@ -20,6 +20,7 @@ import (
 	innerClient "github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -230,13 +231,43 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 
 	//This case means disable the cloud integration
 	if postInfo.Url == "" {
+		var sysIDs []string
+		nodeList := a3config.ClusterNew().FetchNodesInfo()
+		if a3config.ClusterNew().CheckClusterEnable() == false {
+			sysIDs = append(sysIDs, utils.GetA3SysId())
+		} else {
+			tmpDB := new(amadb.A3Db)
+			err := tmpDB.DbInit()
+			if err != nil {
+				log.LoggerWContext(ctx).Error("Open database error: " + err.Error())
+				goto END
+			}
+			db := tmpDB.Db
+			defer db.Close()
+			for _, node := range nodeList{
+				var sysId string
+				err = db.QueryRow(fmt.Sprintf("SELECT system_id FROM a3_cluster_member WHERE hostname='%s'", node.Hostname)).Scan(&sysId)
+				if err != nil {
+					log.LoggerWContext(ctx).Error(fmt.Sprintf("Fetch systemID from mysql for hostname %s failed.", node.Hostname))
+					continue
+				}
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("Fetch systemID succeddfully: %s:%s.", node.Hostname, sysId))
+				sysIDs = append(sysIDs, sysId)
+			}
+		}
+
+		result, msg := amac.UpdateMsgToRdcSyn(ctx, amac.RemoveNodeFromCluster, sysIDs)
+		if result < 0 {
+			log.LoggerWContext(ctx).Error("UpdateMsgToRdcSyn failed:" + msg)
+			goto END
+		}
+	
 		event.MsgType = amac.CloudIntegrateFunction
 		event.Data = "disable"
 		amac.MsgChannel <- *event
 		code = "ok"
 		ret = "disable cloud integration successfully"
 
-		nodeList := a3config.ClusterNew().FetchNodesInfo()
 		ownMgtIp := utils.GetOwnMGTIp()
 		for _, node := range nodeList {
 			if node.IpAddr == ownMgtIp {

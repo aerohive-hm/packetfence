@@ -23,7 +23,7 @@ type LicenseUpdateInfo struct {
 
 type RemoveNodeData struct {
 	Msgtype       string   `json:"msgType"`
-	SystemIdArray []string `json:"removedClusterMemberSystemIDs"`
+	SystemIdArray []string `json:"nodeSystemIDs"`
 }
 
 type removeNodeFromCluster struct {
@@ -58,8 +58,8 @@ func FillRemoveNodeInfo(ctx context.Context, systemIdArray []string) removeNodeF
 	rmNodeInfo := removeNodeFromCluster{}
 
 	rmNodeInfo.Header.GetValue(ctx)
-	rmNodeInfo.Data.Msgtype = "cluster-member-removal"
-	rmNodeInfo.Data.SystemIdArray = systemIdArray
+	rmNodeInfo.Data.Msgtype = "unlink"
+	rmNodeInfo.Data.SystemIdArray = append(rmNodeInfo.Data.SystemIdArray, systemIdArray...)
 
 	return rmNodeInfo
 }
