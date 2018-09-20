@@ -1,5 +1,13 @@
 package report
 
+import (
+	"context"
+	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/inverse-inc/packetfence/go/ama/database"
+	"github.com/inverse-inc/packetfence/go/log"
+)
+
 /*
 MariaDB [A3]> desc node_category;
 +-------------------+--------------+------+-----+---------+----------------+
@@ -16,7 +24,7 @@ MariaDB [A3]> desc node_category;
 type NodecategoryParseStruct struct {
 	TableName      string `json:"ah_tablename"`
 	TimeStamp      string `json:"ah_timestamp"`
-	CategoryID     interface{}    `json:"category_id"`
+	CategoryID     int    `json:"category_id"`
 	Name           string `json:"name"`
 	MaxNodesPerPid string `json:"max_nodes_per_pid"`
 	Notes          string `json:"notes"`
@@ -25,6 +33,27 @@ type NodecategoryParseStruct struct {
 type NodecategoryReportData struct {
 	TableName  string `json:"ah_tablename"`
 	TimeStamp  string `json:"ah_timestamp"`
-	CategoryID interface{}    `json:"category_id"`
+	CategoryID int    `json:"category_id"`
 	Name       string `json:"name"`
+}
+
+func GetNodeCateId(ctx context.Context, role_name string) int {
+	tmpDB := new(amadb.A3Db)
+	err := tmpDB.DbInit()
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Open database error: " + err.Error())
+		return -1
+	}
+	db := tmpDB.Db
+	defer db.Close()
+
+	var cate_id int
+	row := db.QueryRow(fmt.Sprintf("SELECT category_id FROM node_category WHERE name = '%s'", role_name))
+	err = row.Scan(&cate_id)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Query database error: " + err.Error())
+	} else {
+		return cate_id
+	}
+	return -1
 }
