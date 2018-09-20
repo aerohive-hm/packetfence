@@ -337,7 +337,6 @@ post-auth {
 	#}
 
 	rest
-	rest-ama
 	if (updated || ok || noop) {
 		request-timing
 		-sql
@@ -348,6 +347,7 @@ post-auth {
 
 	attr_filter.packetfence_post_auth
 	linelog
+	rest-ama
 	#
 	#  Access-Reject packets are sent through the REJECT sub-section of the
 	#  post-auth section.

@@ -6,6 +6,7 @@ package configurator
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -116,6 +117,11 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 	err := json.Unmarshal(d.ReqData, admin)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("unmarshal error: " + err.Error())
+		goto END
+	}
+
+	if utils.IsFileZero(utils.A3Root + "/conf/pf.conf") {
+		err = errors.New("System is starting up, please wait a moment.")
 		goto END
 	}
 

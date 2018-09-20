@@ -255,7 +255,6 @@ session {
 post-auth {
 	packetfence-set-tenant-id
 	rest
-	rest-ama
 	update {
 		&request:User-Password := "******"
 	}
@@ -265,6 +264,7 @@ post-auth {
 	} else {
 		packetfence-audit-log-accept
 	}
+    rest-ama
 
 	#
 	#  Un-comment the following if you have set
@@ -598,7 +598,6 @@ session {
 post-auth {
 	packetfence-set-tenant-id
 	rest
-	rest-ama
 	update {
 		&request:User-Password := "******"
 	}
@@ -608,6 +607,7 @@ post-auth {
 	} else {
 		packetfence-audit-log-accept
 	}
+    rest-ama
 
 	#
 	#  Un-comment the following if you have set
