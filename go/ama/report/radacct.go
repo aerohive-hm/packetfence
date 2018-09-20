@@ -38,32 +38,32 @@ MariaDB [A3]> desc radacct;
 type RadacctParseStruct struct {
 	TableName       string `json:"ah_tablename"`
 	TimeStamp       string `json:"ah_timestamp"`
-	RadacctID       string  `json:"radacctid"`
-	TenantID        string  `json:"tenant_id"`
-	AcctSessionID   string  `json:"acctsessionid"`
-	AcctUniqueID    string  `json:"acctuniqueid"`
-	UserName        string  `json:"username"`
-	GroupName       string  `json:"groupname"`
-	Realm           string  `json:"realm"`
-	NasIpAddress    string  `json:"nasipaddress"`
-	NasPortID       string  `json:"nasportid"`
-	NasPortType     string  `json:"nasporttype"`
-	AcctStartTime   string  `json:"acctstarttime"`
-	AcctUpdateTime  string  `json:"acctupdatetime"`
-	AcctStopTime    string  `json:"acctstoptime"`
-	AcctInterval    string  `json:"acctinterval"`
-	AcctSessionTime string  `json:"acctsessiontime"`
-	AcctAuthentic   string  `json:"acctauthentic"`
-	ConnInfoStart   string  `json:"connectinfo_start"`
-	ConnInfoStop    string  `json:"connectinfo_stop"`
-	AcctInputOcts   string  `json:"acctinputoctets"`
-	AcctOutputOcts  string  `json:"acctoutputoctets"`
-	CalledStaID     string  `json:"calledstationid"`
-	CallingStaID    string  `json:"callingstationid"`
-	AcctTermCause   string  `json:"acctterminatecause"`
-	ServiceType     string  `json:"servicetype"`
-	FramedProtocol  string  `json:"framedprotocol"`
-	FramedIpAddr    string  `json:"framedipaddress"`
+	RadacctID       string `json:"radacctid"`
+	TenantID        string `json:"tenant_id"`
+	AcctSessionID   string `json:"acctsessionid"`
+	AcctUniqueID    string `json:"acctuniqueid"`
+	UserName        string `json:"username"`
+	GroupName       string `json:"groupname"`
+	Realm           string `json:"realm"`
+	NasIpAddress    string `json:"nasipaddress"`
+	NasPortID       string `json:"nasportid"`
+	NasPortType     string `json:"nasporttype"`
+	AcctStartTime   string `json:"acctstarttime"`
+	AcctUpdateTime  string `json:"acctupdatetime"`
+	AcctStopTime    string `json:"acctstoptime"`
+	AcctInterval    string `json:"acctinterval"`
+	AcctSessionTime string `json:"acctsessiontime"`
+	AcctAuthentic   string `json:"acctauthentic"`
+	ConnInfoStart   string `json:"connectinfo_start"`
+	ConnInfoStop    string `json:"connectinfo_stop"`
+	AcctInputOcts   string `json:"acctinputoctets"`
+	AcctOutputOcts  string `json:"acctoutputoctets"`
+	CalledStaID     string `json:"calledstationid"`
+	CallingStaID    string `json:"callingstationid"`
+	AcctTermCause   string `json:"acctterminatecause"`
+	ServiceType     string `json:"servicetype"`
+	FramedProtocol  string `json:"framedprotocol"`
+	FramedIpAddr    string `json:"framedipaddress"`
 }
 
 type RadacctReportData struct {
@@ -72,4 +72,22 @@ type RadacctReportData struct {
 	RadacctID int64  `json:"radacctid"`
 }
 
-
+type RadacctOriData struct {
+	UserName         StringExtend `json:"User-Name"`
+	NasIpAddr        StringExtend `json:"NAS-IP-Address"`
+	NasPort          IntExtend    `json:"NAS-Port"`
+	ServiceType      IntExtend    `json:"Service-Type"`
+	FramedIpAddress  StringExtend `json:"Framed-IP-Address"`
+	CalledStationId  StringExtend `json:"Called-Station-Id"`
+	CallingStationId StringExtend `json:"Calling-Station-Id"`
+	NasIdentifier    StringExtend `json:"NAS-Identifier"`
+	NasPortType      IntExtend    `json:"NAS-Port-Type"`
+	AcctStatusType   IntExtend    `json:"NAS-Port-Type"`
+	//AcctSessionId             StringExtend `json:"Acct-Session-Id"`
+	AcctMultiSessionId        StringExtend `json:"Acct-Multi-Session-Id"`
+	EventTimestamp            StringExtend `json:"Event-Timestamp"`
+	StrippedUserName          StringExtend `json:"Stripped-User-Name"`
+	Realm                     StringExtend `json:"Realm"`
+	CalledStationSsid         StringExtend `json:"Called-Station-SSID"`
+	FreeRadiusClientIpAddress StringExtend `json:"FreeRADIUS-Client-IP-Address"`
+}

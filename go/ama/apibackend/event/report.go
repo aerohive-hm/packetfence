@@ -17,15 +17,15 @@ import (
 )
 
 type ReportDBCounter struct {
-	recvCounter           int64
-	recvCounterNode       int64
-	recvCounterLoationlog int64
+	recvCounter             int64
+	recvCounterNode         int64
+	recvCounterLoationlog   int64
 	recvCounterNodeCategory int64
-	recvCounterRadacct int64
-	recvCounterIp4log int64
-	recvCounterViolation int64
-	recvCounterClass int64
-	recvCounterRadaudit int64
+	recvCounterRadacct      int64
+	recvCounterIp4log       int64
+	recvCounterViolation    int64
+	recvCounterClass        int64
+	recvCounterRadaudit     int64
 }
 
 var ReportCounter ReportDBCounter
@@ -41,15 +41,13 @@ func ReportNew(ctx context.Context) crud.SectionCmd {
 	return newreport
 }
 
-
-
 // Get a key for database table entry
 // Thus the updating same table entry will be overwrite, don't send too much duplicate data to cloud
-func GetkeyfromPostReport(r *http.Request, d crud.HandlerData) string {
+func GetkeyfromPostReport(r *http.Request, reqData []byte) string {
 	ctx := r.Context()
 
 	reportData := new(report.ReportData)
-	err := json.Unmarshal(d.ReqData, reportData)
+	err := json.Unmarshal(reqData, reportData)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Unmarshal error:" + err.Error())
 		return ""
@@ -87,7 +85,7 @@ func GetkeyfromPostReport(r *http.Request, d crud.HandlerData) string {
 		return reportData.TableName
 	}
 
-	err = json.Unmarshal(d.ReqData, parseReportData)
+	err = json.Unmarshal(reqData, parseReportData)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Unmarshal error:" + err.Error())
 		return ""
@@ -98,7 +96,6 @@ func GetkeyfromPostReport(r *http.Request, d crud.HandlerData) string {
 	return parseReportData.GetTableKey4Redis()
 }
 
-
 func handlePostReport(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 
@@ -107,7 +104,7 @@ func handlePostReport(r *http.Request, d crud.HandlerData) []byte {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive DB report event data count: %d", ReportCounter.recvCounter))
 	log.LoggerWContext(ctx).Info(string(d.ReqData))
 
-	redisKey := GetkeyfromPostReport(r, d)
+	redisKey := GetkeyfromPostReport(r, d.ReqData)
 	if redisKey == "" {
 		redisKey = "amaReportData"
 	}
