@@ -318,8 +318,8 @@ rest rest-ama {
 		"eap_type":"%{request:EAP-Type}","role":"%{%{control:PacketFence-Role}:-N/A}","node_status":"%{%{control:PacketFence-Status}:-N/A}",\
 		"profile":"%{%{control:PacketFence-Profile}:-N/A}","source":"%{%{control:PacketFence-Source}:-N/A}",\
 		"auto_reg":"%{%{control:PacketFence-AutoReg}:-0}","is_phone":"%{%{control:PacketFence-IsPhone}:-0}",\
-		"pf_domain":"%{request:PacketFence-Domain}","uuid":"","radius_request","%{pairs:&request:[*]}",\
-		"radius_reply":"%{pairs:&reply:[*]}","request_time":"%{%{control:PacketFence-Request-Time}:-N/A}",\
+		"pf_domain":"%{request:PacketFence-Domain}","uuid":"",\
+		"request_time":"%{%{control:PacketFence-Request-Time}:-N/A}",\
 		"tenant_id":"%{control:PacketFence-Tenant-Id}"}'
         tls = ${..tls}
     }
