@@ -21,6 +21,33 @@ $(document).ready(function(){
     var eap_server_path   = document.getElementById('eap_cert_path');
     var eap_ca_path       = document.getElementById('eap_cacert_path');
 
+    https_key.onchange = function(){
+      if (!keyTypeValidation(https_key) || !keySizeValidation(https_key)){
+        $(https_key).val('');
+      }
+    };
+    https_server_cert.onchange = function(){
+      if (!certTypeValidation(https_server_cert) || !certSizeValidation(https_server_cert)){
+        $(https_server_cert).val('');
+      }
+    };
+    eap_key.onchange = function(){
+      if (!keyTypeValidation(eap_key) || !keySizeValidation(eap_key)){
+        $(eap_key).val('');
+      }
+    };
+    eap_server_cert.onchange = function(){
+      if (!certTypeValidation(eap_server_cert) || !certSizeValidation(eap_server_cert)){
+        $(eap_server_cert).val('');
+      }
+    };
+    eap_ca_cert.onchange = function(){
+      if (!certTypeValidation(eap_ca_cert) || !certSizeValidation(eap_ca_cert)){
+        $(eap_ca_cert).val('');
+      }
+    };
+
+    //if https form button click
     document.getElementById("https-upload").onclick = function(e){
         e.preventDefault();
 
@@ -34,7 +61,7 @@ $(document).ready(function(){
             }, 3000);
         }
     }
-
+    //if eap form button click
     document.getElementById("eap-upload").onclick = function(e){
         e.preventDefault();
         if (eap_ca_cert.value == ""){
@@ -51,7 +78,8 @@ $(document).ready(function(){
         } else {
             console.log("ca is not empty");
             if(eap_key.files.length != 0 && eap_server_cert.files.length != 0){
-            uploadCertAndKey(eap_server_cert, eap_key, "eap_tls_form", "eap", document.getElementById('caCert_upload'));
+                uploadCertAndKey(eap_server_cert, eap_key, "eap_tls_form", "eap", document.getElementById('caCert_upload'));
+                console.log(" ca file " + document.getElementById('caCert_upload'));
             } else {
             document.getElementById('errorMessage').innerHTML = "Upload both a key and certificate file.";
             $("#error-alert").show();
@@ -92,18 +120,17 @@ function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_fi
     uploadCert(server_cert_upload, form).then(function(cert_path){
         console.log("server_cert_upload: "); console.log(server_cert_upload);
         console.log("cert_path: "); console.log(cert_path); //gets cert path
+        var uploadKeyFile;
         if (qualifier == "https"){
             https_server_path = cert_path;
+            uploadKeyFile = uploadKey(key_upload, form, https_server_path.filePath);
         } else {
             eap_server_path = cert_path;
+            uploadKeyFile = uploadKey(key_upload, form, eap_server_path.filePath);
         }
-        var uploadKeyFile  = uploadKey(key_upload, form);
-        console.log("key_upload: "); console.log(key_upload);
-        console.log("uploadKeyFile: "); console.log(uploadKeyFile);
         return uploadKeyFile;
     }, function(error){
         console.log("error on uploadCert");
-        removeCert(cert_path.filePath);
         return;
     }).then(function(key_path, cert_path){
         console.log("key_path: ");  console.log(key_path);
@@ -115,35 +142,39 @@ function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_fi
         return verifyCertFile;
     }, function(error){
         console.log("error on uploadKey");
-        removeCert(cert_path.filePath);
+        if (cert_path === "undefined"){
+            return;
+        } else {
+            removeCert(cert_path.filePath);
+        }
         return;
     }).then(function(verified){
         console.log("verified"); console.log(verified);
         //if ca file caFileExists --> uploadCA Cert --> get path
         if (ca_file_upload.files.length != 0){
-        console.log("ca_file_upload: "); console.log(ca_file_upload);
+            console.log("ca_file_upload: "); console.log(ca_file_upload);
             return uploadCACert(ca_file_upload, form);
         } else {
             return;
         }
         //else don't even call upload CA Cert-- > return some error messages
     }, function(error){
+        $('input').val('');
         console.log("error on verifyCert");
         return;
     }).then(function(eap_ca_cert_path){
-        console.log("eap_ca_cert_path: "); console.log(eap_ca_cert_path);
+        // console.log("eap_ca_cert_path: "); console.log(eap_ca_cert_path);
         readCert("eap");
+        $('input').val('');
     },function(error){
-        console.log("ERROOORRR");
+      $('input').val('');
     });
 }
 
 //upload key
-function uploadKey(input, sentForm){
+function uploadKey(input, sentForm, cert_path){
     console.log("in upload key");
-    // console.log("key input" + input.files[0]);
-    var https_server_path = https_server_path;
-    // console.log("in upload key https_server_path: " + https_server_path);
+    console.log("in upload key cert_path: " + cert_path);
     var base_url = window.location.origin;
     var form = document.forms.namedItem(sentForm);
     var fd = new FormData(form[0]);
@@ -161,6 +192,8 @@ function uploadKey(input, sentForm){
             var filePath = data.filePath;
         },
         error: function(data){
+            removeCert(cert_path);
+            $('input').val('');
             // alert("did not go through");
             console.log("File for key is incorrect. Upload key file again.");
             console.log(data);
@@ -210,21 +243,29 @@ function uploadCert(input, sentForm){
 
 // for eap only
 function uploadCACert(input, sentForm){
-    console.log("in upload ca cert");
-    console.log("input"); console.log(input.value);
     var base_url = window.location.origin;
     var form = document.forms.namedItem(sentForm);
     var fd = new FormData(form[0]);
     fd.append("file", input.files[0]);
 
     var xhr = new XMLHttpRequest;
+    xhr.onreadystatechange = function(){
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+            var caErrorMsg = jQuery.parseJSON(xhr.responseText);
+            document.getElementById('errorMessage').innerHTML = caErrorMsg.status_msg;
+            $("#error-alert").show();
+            setTimeout(function(){
+                $("#error-alert").slideUp(500);
+            }, 4000);
+        }
+    }
     xhr.open('POST', base_url + '/uploadCACert' , true);
     xhr.send(fd);
+
 }
 
 //verify if the server cert and key are matching
 function verifyCert(https_cert_path, https_key_path, qualifier){
-    console.log("in verify cert");
     var base_url = window.location.origin;
     return $.ajax({
       type: 'POST',
@@ -333,4 +374,74 @@ function downloadCert(qualifier){
             }, 3000);
         }
     });
+}
+
+//test file types
+function certTypeValidation(input){
+    var filePath = input.value;
+    var certAllowedExtensions = /(\.pem|\.crt|\.cer)$/i;
+    if(!certAllowedExtensions.exec(filePath)){
+        // input.value = '';
+        document.getElementById('errorMessage').innerHTML = "Upload a file with the extension: .pem/.crt/.cer .";
+        $("#error-alert").show();
+        setTimeout(function(){
+            $("#error-alert").slideUp(500);
+        }, 3000);
+        return false;
+    }else{
+        return true;
+    }
+}
+
+function keyTypeValidation(input){
+    var filePath = input.value;
+    var keyAllowedExtensions = /(\.key)$/i;
+    if(!keyAllowedExtensions.exec(filePath)){
+      console.log("key type is incorrect");
+        // input.value = '';
+        document.getElementById('errorMessage').innerHTML = "Upload a file with the extension: .key ";
+        $("#error-alert").show();
+        setTimeout(function(){
+            $("#error-alert").slideUp(500);
+        }, 3000);
+        return false;
+    }else{
+        return true;
+    }
+}
+
+//test file size
+function certSizeValidation(input){
+    var fileSize = input.size/1024/1024;
+    if (fileSize > 1){
+        // $(input).val('');
+        document.getElementById('errorMessage').innerHTML = "File size is bigger than 1MB.";
+        $("#error-alert").show();
+        setTimeout(function(){
+            $("#error-alert").slideUp(500);
+        }, 3000);
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+function keySizeValidation(input){
+   console.log("in key size validation");
+    var fileSize = input.files[0].size/1024/1024;
+    console.log(fileSize);
+    if (fileSize > 0.008){
+        console.log("key size is incorrect");
+        // $(input).val('');
+        document.getElementById('errorMessage').innerHTML = "File size is bigger than 0.008MB.";
+        $("#error-alert").show();
+        setTimeout(function(){
+            $("#error-alert").slideUp(500);
+        }, 3000);
+        return false;
+    }
+    else {
+        return true;
+    }
 }

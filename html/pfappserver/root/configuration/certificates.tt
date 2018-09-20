@@ -11,10 +11,10 @@
 <head>
   <link href="[% c.uri_for('/static/admin/certificates.css') %]" rel="stylesheet">
 </head>
-<div id="success-alert" style="display:none; background-color: #28a745; color: white;"><div style="padding: 10px;" id="successMessage"></div></div>
-<div id="error-alert" style="display:none; background-color: #dc3545; color: white;"><div style="padding: 10px;" id="errorMessage"></div></div>
 <div class="card">
     <div class="card-block">
+      <div id="success-alert" style="display:none;"><div style="padding: 10px;" id="successMessage"></div></div>
+      <div id="error-alert" style="display:none;"><div style="padding: 10px;" id="errorMessage"></div></div>
         <h2>[% l('Certificates') %]</h2>
           <ul class="nav nav-tabs">
             <li class="active">
@@ -49,7 +49,7 @@
                         <label class="form-horizontal control-label"><h5>Server Certificate</h5></label>
                         <div class="controls">
                             <input class="https_serverCert_upload btn" id="https_serverCert_upload" type="file">
-                            <p class="help-block">When uploading, make sure the file is under 0.008MB (8000 bytes) and in .crt/.pem/.cer format.</p>
+                            <p class="help-block">When uploading, make sure the file is under 1MB (1000000 bytes) and in .crt/.pem/.cer format.</p>
                         </div>
                       </div>
                       <br>

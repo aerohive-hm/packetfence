@@ -64,8 +64,6 @@ function getNodeInfo(){
                 $('#vhmId').html(data.body.header.vhmId);
                 $(".disconnected").hide();
                 if (data.body.header.mode === "cluster"){ //if it's a cluster
-                    $(".standalone").hide();
-                    $(".cluster-cloud").show();
                     $.each(data.body.data, function(i, items){
                         console.log("each item: ");
                         console.log(items);
@@ -85,11 +83,9 @@ function getNodeInfo(){
                     $('#cloud-cluster-table-tbody tr:nth-child(even) td').each(function(){
                         $(this).css('background-color', '#f4f6f9');
                     });
-                } else { //it's a standalone
-                    $(".cluster-cloud").hide();
-                    $(".standalone").show();
                 }
-
+                $(".linked").show();
+                $(".disconnected").hide();
             //unlinked
             } else if (data.msgtype == "cloudConf"){
                 $(".linked").hide();

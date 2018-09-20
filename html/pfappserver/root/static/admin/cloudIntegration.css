@@ -93,18 +93,23 @@
     100% { opacity:1; }
 }
 
-#error-alert{
-    background-color: #f2dede;
-    border-color: #eed3d7;
-    color: #b94a48;
-    display:none;
+#success-alert, #error-alert{
+  display: none;
+  z-index: 15;
+  position: fixed;
+  top: 60px;
 }
 
 #success-alert{
-    background-color: #dff0d8;
-    border-color: #d6e9c6;
-    color: #468847;
-    display: none;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+  color: #468847;
+}
+
+#error-alert{
+  background-color: #f2dede;
+  border-color: #eed3d7;
+  color: #b94a48;
 }
 
 .help-block {

@@ -10,19 +10,23 @@
 }
 #success-alert, #error-alert{
   display: none;
-  color: white;
-  z-index:5;
-  position: absolute;
-  right: 35%;
+  z-index: 15;
+  position: fixed;
+  top: 60px;
 }
 
 #success-alert{
-  background-color: #28a745;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+  color: #468847;
 }
 
 #error-alert{
-  background-color: #dc3545;
+  background-color: #f2dede;
+  border-color: #eed3d7;
+  color: #b94a48;
 }
+
 #https_serv_view_more, #eap_ca_view_more, #eap_serv_view_more{
   height:150px;
   width: 700px;
@@ -47,7 +51,7 @@
 
 #https-upload, #eap-upload{
   width: 260px;
-  margin-left: 170px;
+  margin-left: 160px;
 }
 
 .control-label{
