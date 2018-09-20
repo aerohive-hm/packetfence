@@ -66,6 +66,11 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive sync %s from %s", sync.Status, sync.SendIp))
 	switch {
+	case sync.Status == a3share.NotifySync:
+		//primary check myself alive or not 
+		//just return OK or do something check if I am ready for join
+		code = "ok"
+		ret = ""
 	case sync.Status == a3share.StopService:
 		//primary tell slave node to stop service
 		//but POST from primary to slave node is not work

@@ -41,8 +41,18 @@ func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 |-send event/cluster/sync start
 */
 func prepareClusterNodeJoin() {
+	err := a3share.NotifyClusterStatus(a3share.StopService)
+	if err != nil {		
+		return
+	}
+	
 	utils.ForceNewCluster()
 	a3share.NotifyClusterStatus(a3share.StartSync)
+}
+
+
+func StartClusterNodejoining() {
+
 }
 
 func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
@@ -62,9 +72,10 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	}
 	ama.InitClusterStatus("primary")
 
-	err = a3share.NotifyClusterStatus(a3share.StopService)
+	//check cluster node alive or not
+	err = a3share.CheckClusterNodeStatus(a3share.NotifySync)
 	if err != nil {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("post event sync to stopService failed"))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("post event sync to NotifySync failed, someone offline"))
 		goto END
 	}
 
@@ -72,12 +83,13 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		goto END
 	}
-	/*write cluster sysid to db*/
+	/* write cluster sysid to db */
 	err = amadb.AddSysIdbyHost(clusterData.SysId, clusterData.Hostname)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("AddSysIdbyHost error:" + err.Error())
 		goto END
 	}
+
 	resp, _ = json.Marshal(respdata)
 
 	// Prepare for cluster node sync
