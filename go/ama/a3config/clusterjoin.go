@@ -14,8 +14,9 @@ type ClusterEventRespItem struct {
 	Password string `json:"pass"`
 }
 type ClusterEventRespData struct {
-	Code  string                 `json:"code"`
-	Items []ClusterEventRespItem `json:"items"`
+	Code       string                 `json:"code"`
+	DbPassword string                 `json"dbpass"`
+	Items      []ClusterEventRespItem `json:"items"`
 }
 
 func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterNetworksData) (error, ClusterEventRespData) {
@@ -40,6 +41,7 @@ func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterNetworks
 	}
 
 	clusterRespData.Code = "ok"
+	clusterRespData.DbPassword = GetDbRootPassword()
 	item := new(ClusterEventRespItem)
 	Section := GetWebServices()
 	item.User = Section["webservices"]["user"]
