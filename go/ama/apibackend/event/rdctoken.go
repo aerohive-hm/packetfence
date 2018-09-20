@@ -50,9 +50,14 @@ func handleGetToken(r *http.Request, d crud.HandlerData) []byte {
 		return nil
 	}
 	node.Hostname = para[0]
-	token := amac.ReqTokenForOtherNode(ctx, node)
+	tokenRegion := amac.ReqTokenForOtherNode(ctx, node)
 
-	return []byte(token)
+	jsonData, err := json.Marshal(tokenRegion)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
+		return []byte(err.Error())
+	}
+	return jsonData
 }
 
 /*

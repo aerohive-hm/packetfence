@@ -60,11 +60,13 @@ type CloudInfo struct {
 	OrgID   string `json:"orgId"`
 	Token   string `json:"rdctoken"`
 	PriNode string `json:"primarynode"`
+	Region	string `json:"region"`
 }
 
 type tokenResData struct {
 	MsgType string `json:"msgType"`
-	Data    string `json:"token"`
+	Token   string `json:"token"`
+	Region  string `json:"region"`
 }
 
 type A3TokenResFromRdc struct {
@@ -166,9 +168,9 @@ func GetRdcRegin(rdcUrl string) string {
 	for the other nodes, this func will be called by webUI
 	it is public
 */
-func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
+func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) tokenResData {
 	//	var url string
-	res := ""
+	var res tokenResData
 	tokenRes := A3TokenResFromRdc{}
 
 	nodeInfo := fillRdcTokenReqHeader(&node)
@@ -210,7 +212,10 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 			return res
 		}
 
-		return tokenRes.Data.Data
+		res.MsgType = "amac_token"
+		res.Token = tokenRes.Data.Token
+		res.Region = tokenRes.Data.Region
+		return res
 	} else {
 		log.LoggerWContext(ctx).Error(fmt.Sprintf("Request RDC token fail, receive the response %s", resp.Status))
 		return res
@@ -218,7 +223,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) string {
 }
 
 //This API was used by nodes without GDC and RDC token.
-func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
+func reqTokenFromSingleNode(ctx context.Context, mem MemberList) []byte {
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/rdctoken?systemID=%s&hostname=%s", mem.IpAddr, utils.GetA3SysId(), utils.GetHostname())
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to get token from %s", url))
 
@@ -227,13 +232,13 @@ func reqTokenFromSingleNode(ctx context.Context, mem MemberList) string {
 	err := node.ClusterSend("GET", url, "")
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
-		return ""
+		return nil
 	}
 
 	//The body content is token
 	body := node.RespData
 
-	return string(body)
+	return body
 }
 
 /*
@@ -251,20 +256,30 @@ func ReqTokenFromOtherNodes(ctx context.Context, node *MemberList) int {
 		memList = append(memList, *node)
 	}
 	nodeNum := 0
-	token := ""
+	var tokenRegion tokenResData
 
 	log.LoggerWContext(ctx).Info("begin to request RDC token from other nodes")
 
 	for _, mem := range memList {
 		nodeNum++
-		token = reqTokenFromSingleNode(ctx, mem)
-		if len(token) > 0 {
-			dst := fmt.Sprintf("Bearer %s", token)
+		jsonData := reqTokenFromSingleNode(ctx, mem)
+		err := json.Unmarshal(jsonData, &tokenRegion)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Unmarshal failed: " + err.Error())
+			continue
+		}
+		if len(tokenRegion.Token) > 0 {
+			dst := fmt.Sprintf("Bearer %s", tokenRegion.Token)
 			UpdateRdcToken(ctx, dst, true)
+			err = a3config.UpdateCloudConf(a3config.Region, tokenRegion.Region)
+			if err != nil {
+				log.LoggerWContext(ctx).Error("Save region error: " + err.Error())
+				continue
+			}
 			return 0
 		}
 	}
-	if nodeNum >= 1 && token == "" {
+	if nodeNum >= 1 && tokenRegion.Token == "" {
 		log.LoggerWContext(ctx).Error("Requeting token from other nodes fail")
 	}
 	return -1
@@ -278,7 +293,9 @@ func FetchSysIDForNode(node MemberList) string {
 func distributeToSingleNode(ctx context.Context, mem a3config.NodeInfo, selfRenew bool) {
 	cloudInfo := CloudInfo{}
 	if selfRenew == false {
-		cloudInfo.Token = ReqTokenForOtherNode(ctx, NodeInfo{})
+		tokenUrl := ReqTokenForOtherNode(ctx, NodeInfo{})
+		cloudInfo.Token = tokenUrl.Token
+		cloudInfo.Region = tokenUrl.Region
 	} else {
 		cloudInfo.RdcUrl = rdcUrl
 		cloudInfo.Switch = GlobalSwitch
@@ -402,9 +419,16 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 			log.LoggerWContext(ctx).Error("Incorrect message type")
 			return "", ErrorMsgFromSrv
 		}
-		dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Data)
+		dst := fmt.Sprintf("Bearer %s", tokenRes.Data.Token)
 		//RDC token need to write file, if process restart we can read it
 		UpdateRdcToken(ctx, dst, false)
+
+		//save region
+		err = a3config.UpdateCloudConf(a3config.Region, tokenRes.Data.Region)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save region error: " + err.Error())
+		}
+		
 		//Save RDC url and VHM to config file if get the RDC token
 		//To do, inform the BE to synchronize the config file
 		err = a3config.UpdateCloudConf(a3config.RDCUrl, rdcUrl)
