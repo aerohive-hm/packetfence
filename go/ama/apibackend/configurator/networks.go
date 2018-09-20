@@ -11,6 +11,8 @@ import (
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/database"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -57,6 +59,16 @@ func handleUpdateNetwork(r *http.Request, d crud.HandlerData) []byte {
 
 	if len(net.Items) != 0 {
 		a3config.RecordSetupStep(a3config.StepLicensing, code)
+		writeSysidToDb()
 	}
 	return crud.FormPostRely(code, ret)
+}
+
+func writeSysidToDb() {
+	PrimarySysId := utils.GetA3SysId()
+	PrimaryHostname := utils.GetHostname()
+	err := amadb.AddSysIdbyHost(PrimarySysId, PrimaryHostname)
+	if err != nil {
+		log.LoggerWContext(context.Background()).Error("AddSysIdbyHost error:" + err.Error())
+	}
 }
