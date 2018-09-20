@@ -12,11 +12,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
-/*
-const (
-	StdTimeFormat = "2006-01-02 15:04:05"
-)
-*/
 
 type SqlCmd struct {
 	Sql  string
