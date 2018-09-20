@@ -69,8 +69,8 @@ func sendReport2Cloud(ctx context.Context, reportMsg []interface{}) int {
 		log.LoggerWContext(ctx).Error("RDC URL is NULL")
 		return -1
 	}
-	log.LoggerWContext(ctx).Info("into sendReport2Cloud and print Marshal result,before marshal")
 	message, _ := json.Marshal(reportMsg)
+	log.LoggerWContext(ctx).Debug("into sendReport2Cloud and print Marshal result")
 	log.LoggerWContext(ctx).Debug(string(message))
 
 	reader := bytes.NewReader(message)
