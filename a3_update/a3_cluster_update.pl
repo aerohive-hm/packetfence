@@ -90,27 +90,29 @@ sub a3_app_update {
   }
 }
 
+sub rejoin_node_to_cluster {
+  pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/rollback_app', {});
+  for my $hostname (@remains_nodes_hostname) {
+    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/node', {'opts'=>["$hostname", 'enable']});
+  }
+  pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/db', {'opts'=>['join']});
+  for my $ip (@remains_nodes_ip_to_update) {
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/node', {'opts'=>["$first_node_hostname", 'enable']});
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['haproxy-db', 'restart']});
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['keepalived', 'restart']});
+  }
+  #pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/db', {'opts'=>['restart']});
+}
+
 
 #apply db migration schema 
 sub apply_db_schema {
   my $ret = pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/apply_db_schema', {});
   if ($ret != 0) {
-    commit_cluster_update_log("start rollback for app and db on node $first_node_ip_to_update");
-    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/rollback_app', {});
-    #pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/rollback_db', {});
-    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/db', {'opts'=>['join']});
-    
-    #rejoin the cluster
-    for my $ip (@remains_nodes_ip_to_update) {
-      pf::a3_cluster_update::remote_api_call_post($ip, 'a3/node', {'opts'=>["$first_node_hostname", 'enable']});
-      pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['haproxy-db', 'restart']});
-      pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['keepalived', 'restart']});
-    }
-    for my $hostname (@remains_nodes_hostname) {
-      pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/node', {'opts'=>["$hostname", 'enable']});
-    }
-    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/db', {'opts'=>['restart']});
-    commit_cluster_update_log("end rollback for app and db on node $first_node_ip_to_update");
+    #once failure on this, we rejoin first node to cluster
+    commit_cluster_update_log("start rejoin node $first_node_ip_to_update");
+    rejoin_node_to_cluster();
+    commit_cluster_update_log("end rejoin node $first_node_ip_to_update");
     exit 1;
   }
 }
