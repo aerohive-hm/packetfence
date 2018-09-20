@@ -508,45 +508,50 @@ sub _insert_data {
 
     # Send tables contents to AMA for Aerohive reporting
     my $sendtable = $self->table;
+    my %ama_data = %data;
     if ((${sendtable} eq 'node') ||
        (${sendtable} eq 'node_category') ||
        (${sendtable} eq 'violation') ||
        (${sendtable} eq 'locationlog') ||
+       (${sendtable} eq 'class') ||
        (${sendtable} eq 'ip4log')) {
 
+        $self->logger->info("DB table ${sendtable} changing data:" .Dumper(\%ama_data));
 
+        # the datetime field may use a ref to send DB like \NOW(), but json cant handle it
+        # just use time string to replace that
         if (${sendtable} eq 'ip4log') {
-             $data{'end_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time + 120));
-             $data{'start_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
+             $ama_data{'end_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time + 120));
+             $ama_data{'start_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
         }
 
-
         if (${sendtable} eq 'locationlog') {
-             if ($data{'start_time'} !~ ':') {
-                 $data{'start_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
+             if ($ama_data{'start_time'} !~ ':') {
+                 $ama_data{'start_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
              }
 
-             if ($data{'end_time'} ne '0000-00-00 00:00:00') {
-             	 $data{'end_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
+             if ($ama_data{'end_time'} !~ ':') {
+             	 $ama_data{'end_time'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
              }
         } 
 
         if (${sendtable} eq 'node') {
-             if ($data{'last_seen'} !~ ':') {
-             	  $data{'last_seen'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
+             if ($ama_data{'last_seen'} !~ ':') {
+             	  $ama_data{'last_seen'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
              }
         } 
-
-
-        
+       	if (${sendtable} eq 'violation') {
+             if ($ama_data{'release_date'} !~ ':') {
+             	  $ama_data{'release_date'} = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time));
+             }
+        }        
         
         eval {
-            my $sendtable = $self->table;
             my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
             my $timestamp = $seconds * 1000 * 1000 + $microseconds;
             my $url = "http://127.0.0.1:10000/api/v1/event/report";
-            $self->logger->error("send DB ${sendtable} insert data to AMA" .Dumper(\%data));
-            pf::util::call_url("POST", $url, {ah_tablename => ${sendtable}, ah_timestamp => "$timestamp", %data,});
+            $self->logger->info("send DB table ${sendtable} insert or update data to AMA:" .Dumper(\%ama_data));
+            pf::util::call_url("POST", $url, {ah_tablename => ${sendtable}, ah_timestamp => "$timestamp", %ama_data,});
         };
         if ($@) {
             $self->logger->error("Error send DB update data to AMA : $@");
