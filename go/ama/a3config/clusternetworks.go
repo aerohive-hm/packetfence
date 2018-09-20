@@ -72,6 +72,12 @@ func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworks
 		log.LoggerWContext(ctx).Error("Update Webservices account error:" + err.Error())
 		return err
 	}
+	// update Db root password
+	err = UpdateDbRootPassword(respData.DbPassword)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("UpdateDbRootPassword error:" + err.Error())
+		return err
+	}
 
 	// update hostname to system and pf.conf
 	err = UpdateHostname(networksData.Hostname)
