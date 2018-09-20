@@ -727,7 +727,7 @@ sub roll_back_db {
     A3_Die("Database backup file does not exist, unable to restore!!");
   }
   my $db_passwd = _get_db_password();
-  if (call_system_cmd "$MYSQL_BIN -u root -p$db_passwd $a3_db < $A3_UPDATE_DB_DUMP" != 0) {
+  if (call_system_cmd("$MYSQL_BIN -u root -p$db_passwd $a3_db < $A3_UPDATE_DB_DUMP | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE") != 0) {
      _commit_cluster_update_log("Database restore has failed, please investigate!!");
      exit $fail_code;
   }
@@ -749,10 +749,10 @@ sub roll_back_app {
   #2)old rpm is partially removed, and new rpm is not installed(probabyl we will not get there per rpm update mechanism)
   #3)new rpm is partially installed
   my ($prev_version, $to_version) = get_versions();
-  _commit_update_log("RPM version is $rpm_version and previous version before update is $prev_version");
+  _commit_cluster_update_log("RPM version is $rpm_version and previous version before update is $prev_version");
   if (! $rpm_version) {
     if (call_system_cmd("$YUM_BIN install $a3_pkg."-".$prev_version -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE}") != 0) {
-      A3_Die("Failed to roll back application, really Die!!");
+      A3_Die("Failed to roll back application, using VMWARE SNAPSHOT to rollback!!!!");
     }
     #restore conf
     restore_conf_file();
