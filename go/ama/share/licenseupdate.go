@@ -59,7 +59,7 @@ func FillRemoveNodeInfo(ctx context.Context, systemIdArray []string) removeNodeF
 
 	rmNodeInfo.Header.GetValue(ctx)
 	rmNodeInfo.Data.Msgtype = "cluster-member-removal"
-	rmNodeInfo.Data.SystemIdArray = systemIdArray
+	rmNodeInfo.Data.SystemIdArray = append(rmNodeInfo.Data.SystemIdArray, systemIdArray...)
 
 	return rmNodeInfo
 }
