@@ -162,7 +162,8 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		case "node_category":
 			var t report.NodecategoryParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			t.CategoryID = report.GetNodeCateId(ctx, t.Name)
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "violation":
 			var t report.ViolationParseStruct

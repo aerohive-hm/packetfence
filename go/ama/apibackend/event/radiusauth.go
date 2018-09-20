@@ -65,6 +65,21 @@ func handlePostRadAuth(r *http.Request, d crud.HandlerData) []byte {
 
 	log.LoggerWContext(ctx).Error(fmt.Sprintf("print the data :%+v", radReq))
 	_ = fillRadAuditTable(&radReq)
+	/*
+		redisKey := GetkeyfromPostReport(r, dst)
+		if redisKey == "" {
+			redisKey = "amaReportData"
+		}
+
+		log.LoggerWContext(ctx).Debug(fmt.Sprintf("fetch redis key=%s for event data", redisKey))
+
+		count, err := cache.CacheTableInfo(redisKey, dst)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("cache data to queue fail")
+			return []byte(crud.PostOK)
+		}
+		log.LoggerWContext(ctx).Debug(fmt.Sprintf("%d messages in queue", count))
+	*/
 
 	amac.ReportDbTable(ctx, true)
 
