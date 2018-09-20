@@ -24,7 +24,7 @@ type RadAuth struct {
 func RadAuthNew(ctx context.Context) crud.SectionCmd {
 	radauth := new(RadAuth)
 	radauth.New()
-	radauth.Add("POST", handlePostRadAuth)
+	radauth.Add("POST", handlePostRadAuthRes)
 	return radauth
 }
 
@@ -52,12 +52,12 @@ func fillRadAuditTableBasedAuthReq(src *report.RadauditOriData) interface{} {
 }
 
 /* This function will hanle the JSON data from the radius process */
-func handlePostRadAuth(r *http.Request, d crud.HandlerData) []byte {
+func handlePostRadAuthReq(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	radReq := report.RadauditOriData{}
 
 	ReportCounter.recvCounter++
-	log.LoggerWContext(ctx).Error("into handlePostRadAuth")
+	log.LoggerWContext(ctx).Error("into handlePostRadAuthReq")
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive radius_audit_log report: %d", ReportCounter.recvCounter))
 	log.LoggerWContext(ctx).Info(string(d.ReqData))
@@ -81,6 +81,35 @@ func handlePostRadAuth(r *http.Request, d crud.HandlerData) []byte {
 
 	log.LoggerWContext(ctx).Debug(fmt.Sprintf("fetch redis key=%s for event data", redisKey))
 	count, err := cache.CacheTableInfo(redisKey, message)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("cache data to queue fail")
+		return []byte(crud.PostOK)
+	}
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("%d messages in queue", count))
+
+	if count >= amac.CacheTableUpLimit {
+		amac.ReportDbTable(ctx, true)
+	}
+
+	return []byte("")
+}
+
+func handlePostRadAuthRes(r *http.Request, d crud.HandlerData) []byte {
+	ctx := r.Context()
+
+	ReportCounter.recvCounter++
+	log.LoggerWContext(ctx).Error("into handlePostRadAuthRes")
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive radius_audit_log report: %d", ReportCounter.recvCounter))
+	log.LoggerWContext(ctx).Info(string(d.ReqData))
+
+	redisKey := GetkeyfromPostReport(r, d.ReqData)
+	if redisKey == "" {
+		redisKey = "amaReportData"
+	}
+
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("fetch redis key=%s for event data", redisKey))
+	count, err := cache.CacheTableInfo(redisKey, d.ReqData)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("cache data to queue fail")
 		return []byte(crud.PostOK)

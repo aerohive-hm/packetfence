@@ -52,7 +52,7 @@ type RadauditParseStruct struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
 	//Id               int    `json:"id"`
-	TenantId         int    `json:"tenant_id"`
+	TenantId         string `json:"tenant_id"`
 	CreateAt         string `json:"created_at"`
 	Mac              string `json:"mac"`
 	Ip               string `json:"ip"`
@@ -89,7 +89,7 @@ type RadauditParseStruct struct {
 	UUID             string `json:"uuid"`
 	RadRequest       string `json:"radius_request"`
 	RadReply         string `json:"radius_reply"`
-	RequestTime      int    `json:"request_time"`
+	RequestTime      string `json:"request_time"`
 }
 
 type RadauditReportData struct {
