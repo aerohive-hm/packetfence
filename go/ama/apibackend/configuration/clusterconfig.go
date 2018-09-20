@@ -64,20 +64,26 @@ func handlePostClusterInfo(r *http.Request, d crud.HandlerData) []byte {
 	err := json.Unmarshal(d.ReqData, infoData)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Unmarshal error: " + err.Error())
-		return []byte(err.Error())
+		retMsg = err.Error()
+		goto END
 	}
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("%v", infoData))
-
+	if infoData.RouterId == "" || infoData.SharedKey == "" {
+		retMsg = "wrong post data!"
+		goto END
+	}
 	// save configuration
 	err = UpdateClusterInfoData(ctx, infoData)
 	if err != nil {
-		return []byte(err.Error())
+		retMsg = err.Error()
+		goto END
 	}
 
 	go restartService()
 
 	code = "ok"
+END:
 	return crud.FormPostRely(code, retMsg)
 }
 
