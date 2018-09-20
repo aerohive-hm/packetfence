@@ -15,8 +15,10 @@ type A3IntChgHeader struct {
 }
 
 type A3IntChgData struct {
-	MsgType    string        `json:"msgType"`
-	Interfaces []A3Interface `json:"interfaces"`
+	MsgType    	string        	`json:"msgType"`
+	IpMode	   	string        	`json:"ipMode"`
+	DefaultGateway  string     	`json:"defaultGateway"`
+	Interfaces 	[]A3Interface 	`json:"interfaces"`
 }
 
 type A3IntChgInfo struct {
@@ -49,6 +51,8 @@ func (intChgData *A3IntChgData) GetValue() {
 	}
 
 	intChgData.MsgType = "interface-update"
+	intChgData.IpMode = "STATIC"
+	intChgData.DefaultGateway = utils.GetA3DefaultGW()
 }
 
 var contextIntChg = log.LoggerNewContext(context.Background())
