@@ -151,7 +151,7 @@ func handlePostLicenseConf(r *http.Request, d crud.HandlerData) []byte {
 
 	if license.EulaAccept {
 		log.LoggerWContext(ctx).Info("record Eula accept.")
-		timestamp := utils.AhNowUtcFormated()
+		timestamp := utils.AhNowUtcFormated4License()
 		resp, err := apibackclient.RecordEula(timestamp)
 		if err != nil {
 			goto END

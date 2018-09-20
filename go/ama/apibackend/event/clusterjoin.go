@@ -72,7 +72,7 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		goto END
 	}
-	/*TODO: write sysid to db*/
+	/*write cluster sysid to db*/
 	err = amadb.AddSysIdbyHost(clusterData.SysId, clusterData.Hostname)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("AddSysIdbyHost error:" + err.Error())
@@ -90,7 +90,6 @@ END:
 	}
 	return resp
 }
-
 func waitPrimarySync(ip string) error {
 	ctx := context.Background()
 	var msg a3share.SyncData

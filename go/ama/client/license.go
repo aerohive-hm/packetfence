@@ -8,7 +8,6 @@ import (
 	//	"github.com/inverse-inc/packetfence/go/log"
 )
 
-const StdTimeiTFormat = "2006-01-02T15:04:05"
 
 func VerifyLicense(key string) ([]byte, error) {
 	a3Cfg := a3config.A3ReadFull("PF", "A3")["A3"]
