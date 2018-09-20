@@ -121,6 +121,13 @@ class startingCtl extends Component {
         message.config({
             duration: 10,
         });
+        let titleHtml;
+        if(title==="startingManagement"){
+            titleHtml=self.state.i18n.initialSetupComplete;
+        }else
+        if(title==="startingRegistration"){
+            titleHtml=self.state.i18n.successfullyJoinedCluster;
+        }
      
         let contentHtml;
         if(loading===false){
@@ -163,7 +170,7 @@ class startingCtl extends Component {
                 </div>
                 <div className="right-div-startingCtl">
                     <div className="right-title-div-startingCtl">
-                        {title}
+                        {titleHtml}
                     </div>
                     {contentHtml}
 

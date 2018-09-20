@@ -6,14 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	//"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
-
-type ClusterEventJoinData struct {
-	Hostname string `json:"hostname"`
-	Items    []Item `json:"items"`
-}
 
 type ClusterEventRespItem struct {
 	User     string `json:"user"`
@@ -24,7 +18,7 @@ type ClusterEventRespData struct {
 	Items []ClusterEventRespItem `json:"items"`
 }
 
-func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterEventJoinData) (error, ClusterEventRespData) {
+func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterNetworksData) (error, ClusterEventRespData) {
 	/*write data to cluster conf*/
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("ClusterEventJoinData %v", clusterData))
 	var err error
@@ -44,6 +38,7 @@ func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterEventJoi
 			return err, clusterRespData
 		}
 	}
+
 	clusterRespData.Code = "ok"
 	item := new(ClusterEventRespItem)
 	Section := GetWebServices()

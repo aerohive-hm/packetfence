@@ -23,6 +23,7 @@ use pf::constants qw($TRUE $FALSE);
 use pf::a3_entitlement;
 use pf::accounting;
 use pf::node;
+use pf::util;
 
 extends 'Catalyst::Model';
 
@@ -88,7 +89,9 @@ sub apply_entitlement_key {
                 eval {
                     # LicenseChange = 3
                     my $msgtype = 3;
-                    pf::api::unifiedapiclient->default_client->call("POST", "/a3/api/v1/event/perlevent", {msgtype => $msgtype,});
+                    my $url = "http://127.0.0.1:10000/api/v1/event/perlevent";
+                    $logger->info("send LicenseChange update event to AMA:");
+                    pf::util::call_url("POST", $url, {msgtype => $msgtype,});
                 };
                 if ($@) {
                     $self->logger->error("Error send LicenseInfoChange data to AMA : $@");

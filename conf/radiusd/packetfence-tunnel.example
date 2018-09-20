@@ -255,6 +255,7 @@ session {
 post-auth {
 	packetfence-set-tenant-id
 	rest
+	rest-ama
 	update {
 		&request:User-Password := "******"
 	}
@@ -597,6 +598,7 @@ session {
 post-auth {
 	packetfence-set-tenant-id
 	rest
+	rest-ama
 	update {
 		&request:User-Password := "******"
 	}

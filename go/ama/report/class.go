@@ -30,7 +30,7 @@ MariaDB [A3]> desc class;
 type ClassParseStruct struct {
 	TableName           string `json:"ah_tablename"`
 	TimeStamp           string `json:"ah_timestamp"`
-	Vid                 string `json:"vid"`
+	Vid                 interface{} `json:"vid"`
 	Description         string `json:"description"`
 	AutoEnable          string `json:"auto_enable"`
 	MaxEnables          string `json:"max_enables"`
@@ -53,5 +53,5 @@ type ClassParseStruct struct {
 type ClassReportData struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
-	Vid          int `json:"vid"`
+	Vid       interface{} `json:"vid"`
 }

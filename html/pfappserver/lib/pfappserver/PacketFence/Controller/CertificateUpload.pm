@@ -286,7 +286,10 @@ sub verifyCert :Chained('/') :PathPart('verifyCert') :Args(0) :AdminRole('CERTIF
                 }
 
                 $cn_server = pf::util::get_cert_subject_cn($server_cert);
-                system("cat $server_cert $server_key > $server_pem");
+                my $ret = system("/usr/bin/cat $server_cert $server_key > $server_pem");
+                if (($ret >> 8) != 0) {
+                    $logger->error("Failed to cat $server_cert and $server_key to $server_pem $!");
+                }
                 $c->stash->{CN_Server} = pf::util::get_cert_subject_cn($server_cert);
                 $c->stash->{status_msg} = $c->loc("Successfully verified and saved the uploaded certificate and the private key.");
                 $c->response->status($STATUS::OK);

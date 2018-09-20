@@ -6,6 +6,7 @@ $(document).ready(function(){
     //submitClusterInfo()
     //removeClusterNode(nodeArray)
 
+    //to change submit info
     document.getElementById("submitNewClusterInfo").onclick = function(){
         if( $("#sharedKey").val().length === 0 || $("#vrid").val().length === 0 ) {
             document.getElementById('errorMessage').innerHTML = "Enter values in all fields.";
@@ -52,14 +53,15 @@ function getCheckedNodes(inputTbody){
     var nodeArray = [];
     var getInputFields = inputTbody.getElementsByTagName('input');
     var numberOfInputs = getInputFields.length;
-    console.log("number selected: " + numberOfInputs);
+    console.log("number of Inputs: " + numberOfInputs);
 
     for(var i = 0; i < numberOfInputs; i++) {
         if(getInputFields[i].type == 'checkbox' && getInputFields[i].checked == true){
             nodeArray.push(getInputFields[i].value);
         }
+        console.log(nodeArray);
     }
-    $("#listOfSelectedNodes").text(nodeArray + " will be removed from the cluster");
+    $("#listOfSelectedNodes").text(nodeArray + " will be removed from the cluster.");
     return nodeArray;
 }
 
@@ -79,7 +81,7 @@ function submitClusterInfo(){
     $.ajax({
         type: 'POST',
         url: base_url + '/ama/cluster',
-        data:object,
+        data: object,
         dataType: 'json',
         processData: false,
         contentType: false,
@@ -102,12 +104,11 @@ function submitClusterInfo(){
 function removeClusterNode(nodeArray){
     var base_url = window.location.origin;
     var dataJson = {"hostname":nodeArray};
-
     $.ajax({
         type: 'POST',
         url: base_url + '/ama/cluster_remove',
-        dataType: 'json',
         data: dataJson,
+        dataType: 'json',
         processData: false,
         contentType: false,
         success: function(data){
@@ -146,7 +147,7 @@ function getClusterStatusInfo(){
             $("#net-interfaces-table-tbody tr").remove();
             //cluster management table
             $.each(data.nodes, function(i, members){
-                if (members.type == "master"){
+                if (members.type === "Master"){
                     $("#cluster-management-table-tbody").append("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
                 } else {
                     $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' value='"+ members.hostname +"'/>" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");

@@ -127,6 +127,11 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Into ReportDbTable, sendFlag %t,CacheTableUpLimit %d", sendFlag, CacheTableUpLimit))
 
+	//Check the connect status, if not connected, do nothing
+	if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
+		return nil, 0
+	}
+
 	msgQue, err := cache.FetchTablesInfo(CacheTableUpLimit)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Fetch table message fail")
@@ -142,6 +147,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 	reportMsg.Data.MsgType = "a3-report-db"
 
 	for _, singleMsg := range msgQue {
+		table.Ah_tablename = ""
 		err := json.Unmarshal(singleMsg.([]byte), &table)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
@@ -156,7 +162,8 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		case "node_category":
 			var t report.NodecategoryParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			t.CategoryID = report.GetNodeCateId(ctx, t.Name)
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "violation":
 			var t report.ViolationParseStruct
@@ -178,7 +185,9 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 			err = json.Unmarshal(singleMsg.([]byte), &t)
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
-
+		default:
+			log.LoggerWContext(ctx).Error("unknown table, skip")
+			continue
 		}
 
 		if err != nil {

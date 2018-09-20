@@ -21,7 +21,7 @@ MariaDB [A3]> desc violation;
 type ViolationParseStruct struct {
 	TableName   string `json:"ah_tablename"`
 	TimeStamp   string `json:"ah_timestamp"`
-	Id          int    `json:"id"`
+	Id          interface{}    `json:"id"`
 	TenantID    string `json:"tenant_id"`
 	Mac         string `json:"mac"`
 	Vid         string `json:"vid"`
@@ -35,5 +35,5 @@ type ViolationParseStruct struct {
 type ViolationReportData struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
-	Id        int    `json:"id"`
+	Id        interface{}    `json:"id"`
 }

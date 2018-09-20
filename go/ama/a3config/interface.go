@@ -35,15 +35,15 @@ func GetIfaceType(ifname string) string {
 				return s[0]
 			}
 		}
-	} else {
-		iftype := GetIfaceElementVlaue(ifname, "type")
-		if iftype == "" {
-			return ""
-		}
-		s := strings.Split(strings.ToUpper(iftype), ",")
-		return s[0]
 	}
-	return ""
+	/*if vlan  type is portal ,should get type form pf.conf*/
+	iftype := GetIfaceElementVlaue(ifname, "type")
+	if iftype == "" {
+		return ""
+	}
+	s := strings.Split(strings.ToUpper(iftype), ",")
+	return s[0]
+
 }
 
 func GetIfaceServices(ifname string) []string {

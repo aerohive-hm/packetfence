@@ -283,3 +283,36 @@ rest rest-cli {
 		idle_timeout = 60
 	}
 }
+
+rest rest-ama {
+    tls {
+    }
+
+    connect_uri = "http://127.0.0.1:10000/"
+    authorize {
+    }
+    authenticate {
+    }
+    accounting {
+        uri = "${..connect_uri}api/v1/event/radius/acct"
+        method = 'post'
+        body = 'json'
+        tls = ${..tls}
+    }
+    post-auth {
+        uri = "${..connect_uri}api/v1/event/radius/auth"
+        method = 'post'
+        body = 'json'
+        tls = ${..tls}
+    }
+    pool {
+        start = ${thread[pool].start_servers}
+        min = ${thread[pool].min_spare_servers}
+        max = ${thread[pool].max_servers}
+        spare = ${thread[pool].max_spare_servers}
+        uses = 0
+        retry_delay = 30
+        lifetime = 0
+        idle_timeout = 60
+    }
+}
