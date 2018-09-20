@@ -7,14 +7,15 @@ $(document).ready(function(){
     //removeClusterNode(nodeArray)
 
     //to change submit info
-    document.getElementById("submitNewClusterInfo").onclick = function(){
+    document.getElementById("submitNewClusterInfo").onclick = function(e){
+        e.preventDefault();
         if( $("#sharedKey").val().length === 0 || $("#vrid").val().length === 0 ) {
             document.getElementById('errorMessage').innerHTML = "Enter values in all fields.";
             $("#error-alert").show();
             setTimeout(function(){
                 $("#error-alert").slideUp(500);
             }, 3000);
-        } else if ($("#vrid").val() < 1 || $("#vrid").val() > 255){
+        } else if (($("#sharedKey").val().length !== 0  && $("#vrid").val().length !== 0) && ($("#vrid").val() < 1 || $("#vrid").val() > 255)){
             document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must be between 1 to 255.";
             $("#error-alert").show();
             setTimeout(function(){
@@ -33,7 +34,6 @@ $(document).ready(function(){
     document.getElementById('remove-node').onclick = function(){
         getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
-        console.log("get List of nodes: "); console.log(getListOfNodes);
 
         $('.removeModal').show();
 
@@ -76,22 +76,24 @@ function submitClusterInfo(){
     formData.forEach(function(value, key){
         object[key] = value;
     });
-    console.log("object: " + object);
 
     $.ajax({
         type: 'POST',
         url: base_url + '/ama/cluster',
-        data: object,
         dataType: 'json',
-        processData: false,
-        contentType: false,
+        data: object,
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log(data);
+            $('input').val('');
+            document.getElementById('successMessage').innerHTML = "Successfully updated the cluster info.";
+            $("#success-alert").show();
+            setTimeout(function(){
+                $("#success-alert").slideUp(500);
+            }, 3000);
         },
         error: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            document.getElementById('errorMessage').innerHTML = "Unsuccessful update of the cluster info";
+            document.getElementById('errorMessage').innerHTML = "Unsuccessful update of the cluster info.";
             $("#error-alert").show();
             setTimeout(function(){
                 $("#error-alert").slideUp(500);
@@ -104,13 +106,16 @@ function submitClusterInfo(){
 function removeClusterNode(nodeArray){
     var base_url = window.location.origin;
     var dataJson = {"hostname":nodeArray};
+    console.log("dataJson: ");
+    console.log(dataJson);
+
     $.ajax({
         type: 'POST',
         url: base_url + '/ama/cluster_remove',
         data: dataJson,
         dataType: 'json',
-        processData: false,
-        contentType: false,
+        // processData: false,
+        // contentType: false,
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
             getClusterStatusInfo();
