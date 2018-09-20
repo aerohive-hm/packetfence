@@ -97,7 +97,9 @@ sub apply_db_schema {
   if ($ret != 0) {
     commit_cluster_update_log("start rollback for app and db on node $first_node_ip_to_update");
     pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/rollback_app', {});
-    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/rollback_db', {});
+    #pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/rollback_db', {});
+    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/db', {'opts'=>['join']});
+    
     #rejoin the cluster
     for my $ip (@remains_nodes_ip_to_update) {
       pf::a3_cluster_update::remote_api_call_post($ip, 'a3/node', {'opts'=>["$first_node_hostname", 'enable']});
