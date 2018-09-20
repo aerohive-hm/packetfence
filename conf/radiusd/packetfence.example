@@ -335,7 +335,6 @@ post-auth {
 	# send it to packetfence
 	if (! EAP-Type || (EAP-Type != TTLS  && EAP-Type != PEAP) ) {
 		rest
-		rest-ama
 		update {
 			&request:User-Password := "******"
 		}
@@ -345,6 +344,7 @@ post-auth {
 		} else {
 			packetfence-audit-log-accept
 		}
+		rest-ama
 	}
 
 	attr_filter.packetfence_post_auth
