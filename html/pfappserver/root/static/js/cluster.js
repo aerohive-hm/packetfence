@@ -103,7 +103,7 @@ function submitClusterInfo(){
 //function to remove the cluster node child
 function removeClusterNode(nodeArray){
     var base_url = window.location.origin;
-    var object = {"hostname":nodeArray};
+    var object = {"hostname":nodeArray.join(",")};
 
     $.ajax({
         type: 'POST',

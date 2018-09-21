@@ -145,10 +145,12 @@ sub cluster_remove :Local :Args() :AdminRole('SYSTEM_READ') {
     my $logger = get_logger();
     my $url = "http://127.0.0.1:10000/api/v1/configuration/cluster/remove";
     my $input_data = $c->request->{parameters};
+    my @host_name_arr = split(/,/, $input_data->{hostname});
+    my $host_name_hash = {hostname => \@host_name_arr};
 
     if ($c->request->method eq 'POST'){
 
-        my ($retcode, $response_body, $response_code) = pf::util::call_url('POST', $url, $input_data);
+        my ($retcode, $response_body, $response_code) = pf::util::call_url('POST', $url, $host_name_hash);
 
         if ($retcode == 0) {
             $c->stash->{A3_data} = $response_body;
