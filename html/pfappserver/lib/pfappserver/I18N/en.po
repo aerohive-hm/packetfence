@@ -117,6 +117,18 @@ msgstr ""
 msgid "A role will allow A3 to grant different network access to endpoints connecting to your network. For example, employee vs. guest."
 msgstr ""
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "A server key and server certificate are required."
+msgstr ""
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "A server key and server certificate are required. Uploading a CA certificate is optional."
+msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Aerohive Cloud"
+msgstr "Aerohive Cloud"
+
 # html/pfappserver/root/admin/reports.tt
 msgid "ACCOUNTING"
 msgstr ""
@@ -1099,6 +1111,7 @@ msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+# html/pfappserver/root/admin/cloudIntegration.tt
 msgid "CA Certificate"
 msgstr ""
 
@@ -1111,12 +1124,40 @@ msgstr ""
 msgid "Capacity"
 msgstr ""
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "Certificates"
+msgstr ""
+
 # html/pfappserver/root/config/switch/view.tt
 msgid "CLI"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
 msgid "CLI Access Enabled"
+msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Cloud Integration"
+msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Cloud Host"
+msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Cloud Admin"
+msgstr ""
+
+# html/pfappserver/root/admin/cluster.tt
+msgid "Cluster"
+msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Cluster Link Status"
+msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Cluster Member"
 msgstr ""
 
 # pf::admin_roles (Actions groups)
@@ -1513,6 +1554,10 @@ msgstr ""
 msgid "Cluster state"
 msgstr ""
 
+# html/pfappserver/root/admin/cluster.tt
+msgid "Cluster Node List"
+msgstr ""
+
 # html/pfappserver/root/configuration/system_config.tt
 msgid "Cluster:"
 msgstr ""
@@ -1861,6 +1906,10 @@ msgstr ""
 
 # html/pfappserver/root/admin/reports.tt
 msgid "Custom reports"
+msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Data Center"
 msgstr ""
 
 # pf::admin_roles (Actions groups)
@@ -3173,6 +3222,10 @@ msgstr ""
 msgid "Host in activation link"
 msgstr ""
 
+# html/pfappserver/root/admin/cluster.tt
+msgid "HOST NAME"
+msgstr ""
+
 # /usr/local/fingerbank/conf/fingerbank.conf.doc (proxy.host)
 msgid "Host the proxy is listening on"
 msgstr ""
@@ -3265,6 +3318,10 @@ msgstr ""
 # pf::admin_roles (Actions groups)
 msgid "INTERFACES"
 msgstr "Interfaces"
+
+# html/pfappserver/root/admin/cluster.tt
+msgid "INTERFACE"
+msgstr "Interface"
 
 # pf::admin_roles (Actions)
 msgid "INTERFACES_CREATE"
@@ -3555,6 +3612,10 @@ msgstr ""
 msgid "Keep The Same"
 msgstr ""
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "Key"
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Kickbox.pm
 msgid "Kickbox.io API key."
 msgstr ""
@@ -3611,6 +3672,10 @@ msgstr ""
 msgid "Lastname"
 msgstr ""
 
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Last Contact"
+msgstr ""
+
 # html/pfappserver/root/config/wrix/search_form.tt
 msgid "Latitude"
 msgstr ""
@@ -3655,6 +3720,19 @@ msgstr ""
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid "Limit the number of login attempts. A value of 0 disables the limit."
 msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Link Status"
+msgstr "État du lien"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Link with Aerohive Cloud Account"
+msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Linked with Aerohive Cloud Services at"
+msgstr ""
+
 
 # html/pfappserver/root/config/portal_module/index.tt
 msgid "List View"
@@ -4113,6 +4191,10 @@ msgstr ""
 
 # html/pfappserver/root/configurator/services.tt
 msgid "More Details"
+msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "More information about the Cloud"
 msgstr ""
 
 # html/pfappserver/root/user/create.tt
@@ -5585,6 +5667,10 @@ msgstr ""
 msgid "Priv Protocol Write"
 msgstr ""
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "Private key size is too big. Try again."
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Config/Switch.pm
 msgid "Problem with importation: %1"
 msgstr ""
@@ -6085,6 +6171,19 @@ msgstr ""
 # html/pfappserver/root/interface/create.tt
 # html/pfappserver/root/interface/view.tt
 msgid "Remember to enable ip_forward on your operating system for the inline mode to work."
+msgstr ""
+
+# pf::Authentication::Source::ADSource (available_attributes)
+# pf::Authentication::Source::LDAPSource (available_attributes)
+msgid "Removed the certificate file from the server!"
+msgstr ""
+
+# html/pfappserver/root/admin/cluster.tt
+msgid "Remove Selected Cluster Nodes?"
+msgstr ""
+
+# html/pfappserver/root/admin/cluster.tt
+msgid "Remove"
 msgstr ""
 
 # html/pfappserver/root/config/profile/edit.tt
@@ -6736,7 +6835,12 @@ msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+# html/pfappserver/root/admin/certificates.tt
 msgid "Server Certificate"
+msgstr ""
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "Server Certificate and Key Upload"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
@@ -6815,6 +6919,10 @@ msgstr ""
 # conf/documentation.conf (active_active.password)
 msgid "Shared KEY for VRRP protocol (must be the same on all members)."
 msgstr ""
+
+# html/pfappserver/root/admin/cluster.tt
+msgid "Shared Key"
+msgstr "Clé partagée"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Mirapay.pm
 msgid "Shared Secret"
@@ -7203,6 +7311,7 @@ msgstr ""
 # html/pfappserver/root/service/status.tt
 # html/pfappserver/root/user/nodes.tt
 # html/pfappserver/root/user/violations.tt
+# html/pfappserver/root/admin/cluster.tt
 msgid "Status"
 msgstr ""
 
@@ -8331,6 +8440,7 @@ msgstr ""
 # html/pfappserver/root/config/switch/list.tt
 # html/pfappserver/root/interface/list.tt
 # html/pfappserver/root/node/view.tt
+# html/pfappserver/root/admin/cluster.tt
 msgid "Type"
 msgstr ""
 
@@ -8344,6 +8454,10 @@ msgstr ""
 
 # html/pfappserver/root/admin/licenseKeys.tt
 msgid "Unlimited"
+msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Unlink from Aerohive Cloud Account"
 msgstr ""
 
 # html/pfappserver/root/admin/wrapper.tt
@@ -8700,6 +8814,10 @@ msgstr ""
 msgid "Valid Until"
 msgstr ""
 
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "VHM Name"
+msgstr ""
+
 # pf::admin_roles (Actions groups)
 msgid "VIOLATIONS"
 msgstr "Violations"
@@ -8817,6 +8935,10 @@ msgstr ""
 msgid "Virtual LAN ID"
 msgstr ""
 
+# html/pfappserver/root/admin/cluster.tt
+msgid "Virtual Router Id"
+msgstr ""
+
 # html/pfappserver/root/configurator/services.tt
 msgid "Visit Administration Interface Now!"
 msgstr ""
@@ -8861,6 +8983,10 @@ msgstr ""
 
 # html/pfappserver/root/config/wrix/search_form.tt
 msgid "WEP Key Size"
+msgstr ""
+
+# html/pfappserver/root/admin/cluster.tt
+msgid "will be removed from the cluster."
 msgstr ""
 
 # pf::admin_roles (Actions groups)
@@ -9718,6 +9844,14 @@ msgstr "Current time period"
 msgid "currentlyTracked"
 msgstr "Currently Tracked"
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "Current Server Certificate"
+msgstr ""
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "Current CA Certificate"
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/User.pm
 # html/pfappserver/root/admin/users.tt
 msgid "custom_field_1"
@@ -10287,6 +10421,10 @@ msgstr "IBM"
 # pf::radius_audit_log (RADIUS Audit Log)
 msgid "ifindex"
 msgstr "IfIndex"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select,"
+msgstr ""
 
 # pf::Authentication::constants (Conditions)
 msgid "in_time_period"
@@ -11481,6 +11619,10 @@ msgstr "Stripped User Name"
 msgid "subtract"
 msgstr ""
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "Successfully uploaded the CA certificate!"
+msgstr ""
+
 # pf::dhcp_option82 (DHCP Option 82)
 # pf::radius_audit_log (RADIUS Audit Log)
 msgid "switch_id"
@@ -11528,6 +11670,14 @@ msgstr ""
 msgid "uid"
 msgstr ""
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "Unable to verify the certificate. Try again."
+msgstr ""
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "Unable to download the certificate"
+msgstr ""
+
 # html/pfappserver/root/admin/nodes.tt
 # pfappserver::Model::Node (availableStatus)
 msgid "unreg"
@@ -11552,6 +11702,14 @@ msgstr "Update ip6log by IP and MAC"
 # pf::api (Allowed actions)
 msgid "update_role_configuration"
 msgstr "Update role configuration"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Uploading certificate files requires a restart of all httpd services."
+msgstr ""
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Uploading cert files requires a restart of radiusd service."
+msgstr ""
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc
 msgid "upstream"
