@@ -102,7 +102,7 @@
       [% ELSE %]
   <!--if user has standalone and user presses link accounts:-->
       <div class="linked standalone" style="display:none;">
-        <h5>[% l('Linked with Aerohive Cloud Services at') %] <a id="rdcUrl" href="#"></a></h5>
+        <h5>[% l('Linked with Aerohive Cloud Services at') %] <a id="rdcUrl" href="#" target="_blank"></a></h5>
         <table>
           <tbody>
             <tr>
