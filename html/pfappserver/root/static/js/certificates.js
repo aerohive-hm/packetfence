@@ -120,6 +120,7 @@ function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_fi
     uploadCert(server_cert_upload, form).then(function(cert_path){
         console.log("server_cert_upload: "); console.log(server_cert_upload);
         console.log("cert_path: "); console.log(cert_path); //gets cert path
+        console.log("- - - - - - - - - -");
         var uploadKeyFile;
         if (qualifier == "https"){
             https_server_path = cert_path;
@@ -128,6 +129,8 @@ function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_fi
             eap_server_path = cert_path;
             uploadKeyFile = uploadKey(key_upload, form, eap_server_path.filePath);
         }
+        // console.log("key_upload: "); console.log(key_upload);
+        // console.log("uploadKeyFile: "); console.log(uploadKeyFile);
         return uploadKeyFile;
     }, function(error){
         console.log("error on uploadCert");
@@ -152,7 +155,7 @@ function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_fi
         console.log("verified"); console.log(verified);
         //if ca file caFileExists --> uploadCA Cert --> get path
         if (ca_file_upload.files.length != 0){
-            console.log("ca_file_upload: "); console.log(ca_file_upload);
+        console.log("ca_file_upload: "); console.log(ca_file_upload);
             return uploadCACert(ca_file_upload, form);
         } else {
             return;
@@ -168,6 +171,7 @@ function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_fi
         $('input').val('');
     },function(error){
       $('input').val('');
+        console.log("ERROOORRR");
     });
 }
 
@@ -243,6 +247,8 @@ function uploadCert(input, sentForm){
 
 // for eap only
 function uploadCACert(input, sentForm){
+    console.log("in upload ca cert");
+    console.log("input"); console.log(input.value);
     var base_url = window.location.origin;
     var form = document.forms.namedItem(sentForm);
     var fd = new FormData(form[0]);
@@ -252,6 +258,8 @@ function uploadCACert(input, sentForm){
     xhr.onreadystatechange = function(){
         if (xhr.readyState == XMLHttpRequest.DONE) {
             var caErrorMsg = jQuery.parseJSON(xhr.responseText);
+            console.log(caErrorMsg);
+            console.log(caErrorMsg.status_msg);
             document.getElementById('errorMessage').innerHTML = caErrorMsg.status_msg;
             $("#error-alert").show();
             setTimeout(function(){
@@ -266,6 +274,7 @@ function uploadCACert(input, sentForm){
 
 //verify if the server cert and key are matching
 function verifyCert(https_cert_path, https_key_path, qualifier){
+    console.log("in verify cert");
     var base_url = window.location.origin;
     return $.ajax({
       type: 'POST',
