@@ -97,9 +97,28 @@ export function isPositiveInteger(data){
 
 }
 
-export function isEmail(data){　
+export function isEmailStrict(data){　
   var r = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/;
   return r.test(data.toString().trim());
+
+}
+
+export function isEmail(data){　
+    let dataTrim=data.toString().trim();
+    let count=0;
+    for(let i=0;i<dataTrim.length;i++){
+        if(dataTrim[i]==="@"){
+            count=count+1;
+        }
+    }
+    if(count!==1){
+        return false;
+    }
+    let leftRightPart=dataTrim.split("@");
+    if(leftRightPart[0]===""||leftRightPart[1]===""){
+        return false;
+    }
+    return true;
 
 }
 
