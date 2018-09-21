@@ -35,6 +35,7 @@ const (
 	RemoveNodeFromCluster  = 6
 	JoinClusterComplete    = 7
 	ClusterStatusUpdate    = 8
+	UpdateBasicInfo        = 9
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 

@@ -15,19 +15,18 @@ MariaDB [A3]> desc ip4log;
 */
 
 type Ip4logParseStruct struct {
-	TableName string `json:"ah_tablename"`
-	TimeStamp string `json:"ah_timestamp"`
-	TenantID  interface{}    `json:"tenant_id"`
-	Mac       string `json:"mac"`
-	Ip        string `json:"ip"`
-	StartTime string `json:"start_time"`
-	EndTime   string `json:"end_time"`
+	TableName string      `json:"ah_tablename"`
+	TimeStamp string      `json:"ah_timestamp"`
+	TenantID  interface{} `json:"tenant_id,omitempty"`
+	Mac       string      `json:"mac,omitempty"`
+	Ip        string      `json:"ip,omitempty"`
+	StartTime string      `json:"start_time,omitempty"`
+	EndTime   string      `json:"end_time,omitempty"`
 }
 
 type Ip4logReportData struct {
-	TableName string `json:"ah_tablename"`
-	TimeStamp string `json:"ah_timestamp"`
+	TableName string      `json:"ah_tablename"`
+	TimeStamp string      `json:"ah_timestamp"`
 	TenantID  interface{} `json:"tenant_id"`
-	Ip        string `json:"ip"`
+	Ip        string      `json:"ip"`
 }
-
