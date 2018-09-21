@@ -52,7 +52,6 @@ func fillPrimaryUpdateMsg() []PrimaryUpdate {
 func UpdateMsgToRdcAsyn(ctx context.Context, msgType int, in interface{}) int {
 	var nodeInfo interface{}
 
-	log.LoggerWContext(ctx).Error("into UpdateMsgToRdcAsyn")
 	if asynMsgUrl == "" {
 		log.LoggerWContext(ctx).Error("RDC URL is NULL")
 		return -1
@@ -72,10 +71,7 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int, in interface{}) int {
 		log.LoggerWContext(ctx).Error("unexpected message")
 	}
 
-	data, err := json.Marshal(nodeInfo)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("marshal fail")
-	}
+	data, _ := json.Marshal(nodeInfo)
 
 	log.LoggerWContext(ctx).Error(string(data))
 	reader := bytes.NewReader(data)
