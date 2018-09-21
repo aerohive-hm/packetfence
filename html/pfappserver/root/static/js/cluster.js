@@ -196,7 +196,3 @@ function getClusterStatusInfo(){
         }
     });
 }
-
-function sortTable(){
-
-}

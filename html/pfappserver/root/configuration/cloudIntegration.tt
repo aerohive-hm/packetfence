@@ -16,7 +16,7 @@
   <div class="card-block">
     <div id="success-alert"><div style="padding: 10px;" id="successMessage"></div></div>
     <div id="error-alert"><div style="padding: 10px;" id="errorMessage"></div></div>
-    <h2>[% l('Cloud Integration') %]  is_cluster_enabled [% is_cluster_enabled %]</h2>
+    <h2>[% l('Cloud Integration') %]</h2>
     <br/>
 <!--initial page disconnected-->
 <!--need to change -->
@@ -25,27 +25,27 @@
         <div id="form-messages"></div>
         <div class="cloud-form">
           <form enctype="multipart/form-data" method="post" id="cloudForm" name="cloudForm">
-              <label class="form-horizontal control-label" style="float:left; width: 130px;" for="url">Cloud Host</label>
+              <label class="form-horizontal control-label" style="float:left; width: 130px;" for="url">[% l('Cloud Host') %]</label>
               <div class="controls">
                   <input class="cloud-host form-inline help-inline" type="text" name="url" id="url" placeholder="https://cloud.aerohive.com" data-required="required">
-                  <p class="help-block">The URL of the Cloud host</p>
+                  <p class="help-block">[% l('The URL of the Cloud host') %]</p>
               </div>
-              <label class="form-horizontal control-label" style="float:left; width:130px;" for="user">Cloud Admin</label>
+              <label class="form-horizontal control-label" style="float:left; width:130px;" for="user">[% l('Cloud Admin') %]</label>
               <div class="controls">
                   <input class="cloud-admin form-inline help-inline" type="text" name="user" id="user" placeholder="admin@example.com" data-required="required">
-                  <p class="help-block">Email of the Cloud user</p>
+                  <p class="help-block">[% l('Email of the Cloud user') %]</p>
               </div>
-              <label class="form-horizontal control-label" style="float:left; width:130px;" for="pass">Password</label>
+              <label class="form-horizontal control-label" style="float:left; width:130px;" for="pass">[% l('Password') %]</label>
               <div class="controls">
                   <div class="input-append"><input class="cloud-pw form-inline help-inline pf-obfuscated-text" type="password" name="pass" id="pass" placeholder="*********" data-required="required">
                     <button type="button" class="btn"><i class="icon-eye"></i></button>
                   </div>
-                  <p class="help-block">Password of the Cloud user</p>
+                  <p class="help-block">[% l('Password of the Cloud user') %]</p>
               </div>
               <br/>
               <label style="float:left; width:130px;"> </label>
               <div style="display:inline;">
-                <button class="btn btn-primary link-account" id="link-account">Link with Aerohive Account</button>
+                <button class="btn btn-primary link-account" id="link-account">[% l('Link with Aerohive Cloud Account') %]</button>
                 <div class="spin-spinner spin-spinner-spinning" id="spin-spinner">
                   <span class="spinner-circle spinner-dot-spin">
                       <i></i>
@@ -59,8 +59,8 @@
         </div>
 
         <div class="aero-cloud-info" style="margin-left: 100px; margin-top: -10px; padding: 0px 10px 0px 10px; text-align: left; width: 350px;">
-          <h4>Aerohive Cloud</h4>
-          <h6>More information about the Cloud</h6>
+          <h4>[% l('Aerohive Cloud') %]</h4>
+          <h6>[% l('More information about the Cloud') %]</h6>
           <br>
           <p>[% l('If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select,') %] <b>[% l('"Link with Aerohive Cloud Account') %]</b>[% l(' ." ') %]</p>
         </div>
@@ -68,29 +68,29 @@
       [% IF is_cluster_enabled %]
 <!--if user has a cluster and presses link account: -->
       <div class="linked cluster-cloud" style="display:none;">
-        <h5>Linked with Aerohive Cloud Services at <a id="rdcUrl" href="#" target="_blank"></a></h5>
+        <h5>[% l('Linked with Aerohive Cloud Services at') %] <a id="rdcUrl" href="#" target="_blank"></a></h5>
         <table id="cloud-info-table">
           <tbody>
             <tr>
-              <td class="td-title"><h6>VHM Name</h6></td>
+              <td class="td-title"><h6>[% l('VHM Name') %]</h6></td>
               <td><span id="vhmId"></span> (<span id="ownerId"> </span>)</td>
             </tr>
             <tr>
-              <td class="td-title"><h6>Data Center</h6></td>
+              <td class="td-title"><h6>[% l('Data Center') %]</h6></td>
               <td id="region"></td>
             </tr>
           </tbody>
         </table>
         <br/>
-        <button class="btn btn-danger" id="unlink-account">Unlink from Aerohive Cloud Account</button>
+        <button class="btn btn-danger" id="unlink-account">[% l('Unlink from Aerohive Cloud Account') %]</button>
         <br/><br/>
-        <h6>Cluster Link Status</h6>
+        <h6>[% l('Cluster Link Status') %]</h6>
         <table id="items cloud-cluster-table" class="table items">
           <thead>
             <tr style="background-color: #f4f6f9">
-              <th>Link Status</th>
-              <th>Cluster Member</th>
-              <th>Last Contact</th>
+              <th>[% l('Link Status') %]</th>
+              <th>[% l('Cluster Member') %]</th>
+              <th>[% l('Last Contact') %]</th>
             </tr>
           </thead>
           <tbody id="cloud-cluster-table-tbody">
@@ -102,25 +102,25 @@
       [% ELSE %]
   <!--if user has standalone and user presses link accounts:-->
       <div class="linked standalone" style="display:none;">
-        <h5>Linked with Aerohive Cloud Services at <a id="rdcUrl" href="#"></a></h5>
+        <h5>[% l('Linked with Aerohive Cloud Services at') %] <a id="rdcUrl" href="#"></a></h5>
         <table>
           <tbody>
             <tr>
-              <td class="td-title"><h6>VHM Name</h6></td>
+              <td class="td-title"><h6>[% l('VHM Name') %]</h6></td>
               <b><td><span id="vhmId"></span> (<span id="ownerId"></span>)</td></b>
             </tr>
             <tr>
-              <td class="td-title"><h6>Data Center</h6></td>
+              <td class="td-title"><h6>[% l('Data Center') %]</h6></td>
               <td id="region"></td>
             </tr>
             <tr>
-              <td class="td-title"><h6>Last Contact</h6></td>
+              <td class="td-title"><h6>[% l('Last Contact') %]</h6></td>
               <td id="lastContactTime"></td>
             </tr>
           </tbody>
         </table>
         <br>
-        <button class="btn btn-danger" id="unlink-account">Unlink from Aerohive Cloud Account</button>
+        <button class="btn btn-danger" id="unlink-account">[% l('Unlink from Aerohive Cloud Account') %]</button>
       </div>
       [% END %]
     </div>
