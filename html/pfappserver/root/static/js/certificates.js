@@ -118,9 +118,6 @@ $(document).ready(function(){
 //API call to run server cert and key together first before ca file upload if ca exist
 function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_file_upload){
     uploadCert(server_cert_upload, form).then(function(cert_path){
-        console.log("server_cert_upload: "); console.log(server_cert_upload);
-        console.log("cert_path: "); console.log(cert_path); //gets cert path
-        console.log("- - - - - - - - - -");
         var uploadKeyFile;
         if (qualifier == "https"){
             https_server_path = cert_path;
@@ -129,8 +126,6 @@ function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_fi
             eap_server_path = cert_path;
             uploadKeyFile = uploadKey(key_upload, form, eap_server_path.filePath);
         }
-        // console.log("key_upload: "); console.log(key_upload);
-        // console.log("uploadKeyFile: "); console.log(uploadKeyFile);
         return uploadKeyFile;
     }, function(error){
         console.log("error on uploadCert");
