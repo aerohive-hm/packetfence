@@ -101,10 +101,8 @@ func installRdcUrl(ctx context.Context, rdcUrl string) {
 	synMsgUrl = domain + "/amac/rest/v1/report/syn/" + systemId
 	asynMsgUrl = domain + "/amac/rest/v1/report/" + systemId
 	onboardingUrl = domain + "/amac/rest/v1/onboarding/" + systemId
-	fetchRdcTokenUrl = domain + "/amac/rest/token/apply/" + systemId
-	fetchRdcTokenUrlForOthers = domain + "/amac/rest/v1/token/" + systemId
-	//fetchRdcTokenUrl = domain + "/amac/rest/token/apply/" + systemId + "?domain=" + a2
-	//fetchRdcTokenUrlForOthers = domain + "/amac/rest/v1/token/" + systemId + "?domain=" + a2
+	fetchRdcTokenUrl = domain + "/amac/rest/token/apply/" + systemId + "?domain=" +  a2
+	fetchRdcTokenUrlForOthers = domain + "/amac/rest/v1/token/" + systemId + "?domain=" +  a2
 	keepAliveUrl = domain + "/amac/rest/v1/poll/" + systemId
 	synGdcTokenUrl = fmt.Sprintf("%shm-webapp/security/csrftoken", rdcUrl)
 

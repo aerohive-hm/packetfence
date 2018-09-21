@@ -52,44 +52,44 @@ type RadauditParseStruct struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
 	//Id               int    `json:"id"`
-	TenantId         string `json:"tenant_id"`
-	CreateAt         string `json:"created_at"`
-	Mac              string `json:"mac"`
-	Ip               string `json:"ip"`
-	ComputerName     string `json:"computer_name"`
-	UserName         string `json:"user_name"`
-	StripUserName    string `json:"stripped_user_name"`
-	Realm            string `json:"realm"`
-	EventType        string `json:"event_type"`
-	APId             string `json:"switch_id"`
-	APMac            string `json:"switch_mac"`
-	APIpAddr         string `json:"switch_ip_address"`
-	RadSrcIpAddr     string `json:"radius_source_ip_address"`
-	CalledStationID  string `json:"called_station_id"`
-	CallingStationID string `json:"calling_station_id"`
-	NasPortType      string `json:"nas_port_type"`
-	SSID             string `json:"ssid"`
-	NasPortID        string `json:"nas_port_id"`
-	Ifindex          string `json:"ifindex"`
-	NasPort          string `json:" nas_port"`
-	ConnectionType   string `json:"connection_type"`
-	NasIpAddr        string `json:"nas_ip_address"`
-	NasIdentifier    string `json:"nas_identifier"`
-	AuthStatus       string `json:"auth_status"`
-	Reason           string `json:"reason"`
-	AuthType         string `json:"auth_type"`
-	EapType          string `json:"eap_type"`
-	Role             string `json:"role"`
-	NodeStatus       string `json:"node_status"`
-	Profile          string `json:"profile"`
-	Source           string `json:"source"`
-	AutoReg          string `json:"auto_reg"`
-	IsPhone          string `json:"is_phone"`
-	PfDomain         string `json:"pf_domain"`
-	UUID             string `json:"uuid"`
-	RadRequest       string `json:"radius_request"`
-	RadReply         string `json:"radius_reply"`
-	RequestTime      string `json:"request_time"`
+	TenantId         string `json:"tenant_id,omitempty"`
+	CreateAt         string `json:"created_at,omitempty"`
+	Mac              string `json:"mac,omitempty"`
+	Ip               string `json:"ip,omitempty"`
+	ComputerName     string `json:"computer_name,omitempty"`
+	UserName         string `json:"user_name,omitempty"`
+	StripUserName    string `json:"stripped_user_name,omitempty"`
+	Realm            string `json:"realm,omitempty"`
+	EventType        string `json:"event_type,omitempty"`
+	APId             string `json:"switch_id,omitempty"`
+	APMac            string `json:"switch_mac,omitempty"`
+	APIpAddr         string `json:"switch_ip_address,omitempty"`
+	RadSrcIpAddr     string `json:"radius_source_ip_address,omitempty"`
+	CalledStationID  string `json:"called_station_id,omitempty"`
+	CallingStationID string `json:"calling_station_id,omitempty"`
+	NasPortType      string `json:"nas_port_type,omitempty"`
+	SSID             string `json:"ssid,omitempty"`
+	NasPortID        string `json:"nas_port_id,omitempty"`
+	Ifindex          string `json:"ifindex,omitempty"`
+	NasPort          string `json:" nas_port,omitempty"`
+	ConnectionType   string `json:"connection_type,omitempty"`
+	NasIpAddr        string `json:"nas_ip_address,omitempty"`
+	NasIdentifier    string `json:"nas_identifier,omitempty"`
+	AuthStatus       string `json:"auth_status,omitempty"`
+	Reason           string `json:"reason,omitempty"`
+	AuthType         string `json:"auth_type,omitempty"`
+	EapType          string `json:"eap_type,omitempty"`
+	Role             string `json:"role,omitempty"`
+	NodeStatus       string `json:"node_status,omitempty"`
+	Profile          string `json:"profile,omitempty"`
+	Source           string `json:"source,omitempty"`
+	AutoReg          string `json:"auto_reg,omitempty"`
+	IsPhone          string `json:"is_phone,omitempty"`
+	PfDomain         string `json:"pf_domain,omitempty"`
+	UUID             string `json:"uuid,omitempty"`
+	RadRequest       string `json:"radius_request,omitempty"`
+	RadReply         string `json:"radius_reply,omitempty"`
+	RequestTime      string `json:"request_time,omitempty"`
 }
 
 type RadauditReportData struct {

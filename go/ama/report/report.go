@@ -21,7 +21,7 @@ func (d LocationlogReportData) GetTableKey4Redis() string {
 }
 
 func (d RadacctReportData) GetTableKey4Redis() string {
-	return fmt.Sprintf("%s+%d", d.TableName, d.RadacctID)
+	return fmt.Sprintf("%s+%s", d.TableName, d.AcctStatusType)
 }
 
 func (d Ip4logReportData) GetTableKey4Redis() string {
@@ -44,5 +44,3 @@ type ReportData struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
 }
-
-
