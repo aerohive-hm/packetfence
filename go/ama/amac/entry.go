@@ -13,6 +13,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/log"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"io/ioutil"
 	"net/http"
 	"sync"
@@ -34,6 +36,8 @@ const (
 	RdcTokenUpdate         = 5
 	RemoveNodeFromCluster  = 6
 	JoinClusterComplete    = 7
+	ClusterStatusUpdate    = 8
+	UpdateBasicInfo        = 9
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -218,6 +222,20 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 	}
 }
 
+//if we are changed to vip owner
+func IsManagementChange() func() bool {
+       var isMaster = false
+
+       return func() bool {
+               s := utils.IsManagement(a3config.ClusterNew().GetPrimaryClusterVip("eth0"))
+               if s == true && s != isMaster {
+                       isMaster = s
+                       return true
+               }
+               return false
+       }
+}
+
 //Sending keepalive packets after onboarding successfully
 func keepaliveToRdc(ctx context.Context) {
 	// create a ticker for heartbeat
@@ -227,6 +245,8 @@ func keepaliveToRdc(ctx context.Context) {
 	ticker := time.NewTicker(time.Duration(KeepaliveInterval) * time.Second)
 	timeoutCount = 0
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the keepalive interval %d seconds", KeepaliveInterval))
+
+	f := IsManagementChange()
 	for _ = range ticker.C {
 		/*
 			check if allow to the connect to cloud, if not,
@@ -256,6 +276,10 @@ func keepaliveToRdc(ctx context.Context) {
 		//Check the connect status, if not connected, do nothing
 		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
 			continue
+		}
+
+		if f() == true {
+			_ = UpdateMsgToRdcAsyn(ctx, ClusterStatusUpdate, nil)
 		}
 
 		log.LoggerWContext(ctx).Info("sending the keepalive")

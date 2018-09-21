@@ -107,9 +107,7 @@ function submitClusterInfo(){
 function removeClusterNode(nodeArray){
     console.log("in removeClusterNode");
     var base_url = window.location.origin;
-    var object = {"hostname":"["+nodeArray+"]"};
-    console.log("object: ");
-    console.log(object);
+    var object = {"hostname":nodeArray.join(",")};
 
     $.ajax({
         type: 'POST',

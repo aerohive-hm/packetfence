@@ -516,7 +516,7 @@ sub _insert_data {
        (${sendtable} eq 'class') ||
        (${sendtable} eq 'ip4log')) {
 
-        $self->logger->info("DB table ${sendtable} changing data:" .Dumper(\%ama_data));
+        $self->logger->debug("DB table ${sendtable} changing data:" .Dumper(\%ama_data));
 
         # the datetime field may use a ref to send DB like \NOW(), but json cant handle it
         # just use time string to replace that
@@ -550,7 +550,7 @@ sub _insert_data {
             my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
             my $timestamp = $seconds * 1000 * 1000 + $microseconds;
             my $url = "http://127.0.0.1:10000/api/v1/event/report";
-            $self->logger->info("send DB table ${sendtable} insert or update data to AMA:" .Dumper(\%ama_data));
+            $self->logger->debug("send DB table ${sendtable} insert or update data to AMA:" .Dumper(\%ama_data));
             pf::util::call_url("POST", $url, {ah_tablename => ${sendtable}, ah_timestamp => "$timestamp", %ama_data,});
         };
         if ($@) {
