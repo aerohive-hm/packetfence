@@ -46,11 +46,10 @@
     </div>
   </div>
 </div>
-
+<div id="success-alert" style="display:none; background-color: #dff0d8; border-color: #d6e9c6; color: #468847;"><div style="padding: 10px;" id="successMessage"></div></div>
+<div id="error-alert" style="display:none; background-color: #f2dede; border-color: #eed3d7; color: #b94a48;"><div style="padding: 10px;" id="errorMessage"></div></div>
 <div class="card">
     <div class="card-block">
-      <div id="success-alert" style="display:none; background-color: #dff0d8; border-color: #d6e9c6; color: #468847;"><div style="padding: 10px;" id="successMessage"></div></div>
-      <div id="error-alert" style="display:none; background-color: #f2dede; border-color: #eed3d7; color: #b94a48;"><div style="padding: 10px;" id="errorMessage"></div></div>
         <div class="documentation">
           <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
           <form name="newClusterInfo" id="newClusterInfo">

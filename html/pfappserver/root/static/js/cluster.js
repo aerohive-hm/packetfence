@@ -42,7 +42,7 @@ $(document).ready(function(){
         });
         $('#removing-node').on('click', function() {
             removeClusterNode(getListOfNodes);
-            $('#removing-modal').hide();
+            $('.removeModal').modal('hide');
         });
     }
 
@@ -106,27 +106,35 @@ function submitClusterInfo(){
 function removeClusterNode(nodeArray){
     var base_url = window.location.origin;
     console.log("nodeArray 1"); console.log(nodeArray);
-    var hostname = "hostname";
-    var dataJson = {hostname:nodeArray};
-    console.log("dataJson: "); console.log(dataJson);
+    var dataJson = {hostname:""};
+    Object.assign(dataJson,{hostname:nodeArray});
+    // dataJson["hostname"] = nodeArray;
+    console.log("dataJson: "); console.log(JSON.stringify(dataJson));
+    console.log(dataJson);
 
     $.ajax({
         type: 'POST',
         url: base_url + '/ama/cluster_remove',
         data: dataJson,
         dataType: 'json',
-        // processData: false,
-        // contentType: false,
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
             getClusterStatusInfo();
             $("#cluster-management-table").load("#cluster-management-table-tbody");
                         //let user know 7 - 15 minutes restarting services
-            document.getElementById('successMessage').innerHTML = "Wait for 7 - 15 minutes for the node to completely remove.";
-            $("#success-alert").show();
-            setTimeout(function(){
-                $("#success-alert").slideUp(500);
-            }, 3000);
+            if (data.code === "fail"){
+              document.getElementById('errorMessage').innerHTML = data.msg;
+              $("#error-alert").show();
+              setTimeout(function(){
+                  $("#error-alert").slideUp(500);
+              }, 3000);
+            } else {
+              document.getElementById('successMessage').innerHTML = data.msg;
+              $("#success-alert").show();
+              setTimeout(function(){
+                  $("#success-alert").slideUp(500);
+              }, 3000);
+            }
 
         },
         error: function(data){
