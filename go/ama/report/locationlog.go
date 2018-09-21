@@ -29,27 +29,27 @@ MariaDB [A3]> desc locationlog;
 */
 
 type LocationlogParseStruct struct {
-	TableName        string `json:"ah_tablename"`
-	TimeStamp        string `json:"ah_timestamp"`
-	Id               interface{}    `json:"id"`
-	TenantID         interface{} `json:"tenant_id"`
-	Mac              string `json:"mac"`
-	Switch           string `json:"switch"`
-	Port             string `json:"port"`
-	Vlan             string `json:"vlan"`
-	Role             string `json:"role"`
-	ConnType         string `json:"connection_type"`
-	connSubType      string `json:"connection_sub_type"`
-	Dot1xUserName    string `json:"dot1x_username"`
-	Ssid             string `json:"ssid"`
-	StartTime        string `json:"start_time"`
-	EndTime          string `json:"end_time"`
-	SwitchIp         string `json:"switch_ip"`
-	SwitchMac        string `json:"switch_mac"`
-	StrippedUserName string `json:"stripped_user_name"`
-	Realm            string `json:"realm"`
-	SessionId        string `json:"session_id"`
-	IfDesc           string `json:"ifDesc"`
+	TableName        string      `json:"ah_tablename"`
+	TimeStamp        string      `json:"ah_timestamp"`
+	Id               interface{} `json:"id,omitempty"`
+	TenantID         interface{} `json:"tenant_id,omitempty"`
+	Mac              string      `json:"mac,omitempty"`
+	Switch           string      `json:"switch,omitempty"`
+	Port             interface{} `json:"port,omitempty"`
+	Vlan             string      `json:"vlan,omitempty"`
+	Role             string      `json:"role,omitempty"`
+	ConnType         string      `json:"connection_type,omitempty"`
+	connSubType      string      `json:"connection_sub_type,omitempty"`
+	Dot1xUserName    string      `json:"dot1x_username,omitempty"`
+	Ssid             string      `json:"ssid,omitempty"`
+	StartTime        string      `json:"start_time,omitempty"`
+	EndTime          string      `json:"end_time,omitempty"`
+	SwitchIp         string      `json:"switch_ip,omitempty"`
+	SwitchMac        string      `json:"switch_mac,omitempty"`
+	StrippedUserName string      `json:"stripped_user_name,omitempty"`
+	Realm            string      `json:"realm,omitempty"`
+	SessionId        string      `json:"session_id,omitempty"`
+	IfDesc           string      `json:"ifDesc,omitempty"`
 }
 
 type LocationlogReportData struct {
