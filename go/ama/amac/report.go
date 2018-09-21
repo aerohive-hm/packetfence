@@ -120,6 +120,28 @@ func sendReport2Cloud(ctx context.Context, reportMsg []interface{}) int {
 	}
 }
 
+func radAcctFieldHandle(t *report.RadacctParseStruct) report.RadacctParseStruct {
+	t.TimeStamp = fmt.Sprintf("%d", time.Now().UTC().UnixNano()/(int64(time.Millisecond)*1000))
+	t.AcctInputOcts = t.AcctInputOcts + t.Acctinputgigawords<<32
+	t.Acctinputgigawords = 0
+	t.AcctOutputOcts = t.AcctOutputOcts + t.Acctoutputgigawords<<32
+	t.Acctoutputgigawords = 0
+	switch t.AcctStatusType {
+	case "Start":
+		t.AcctStopTime = ""
+		t.AcctUpdateTime = ""
+	case "Interim-Update":
+		t.AcctStartTime = ""
+		t.AcctStopTime = ""
+	case "Stop":
+		t.AcctStartTime = ""
+		t.AcctUpdateTime = ""
+	}
+	t.AcctStatusType = ""
+
+	return *t
+}
+
 //This function will be called by restAPI, it is public
 func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 	reportMsg := ReportDbTableMessage{}
@@ -191,9 +213,10 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		case "radacct":
 			var t report.RadacctParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			//accStopTime, _ := strconv.ParseUint(t.AcctStopTime, 10, 64)
-			//t.AcctStopTime = time.Unix(accStopTime, 0)
-			t.TimeStamp = fmt.Sprintf("%d", time.Now().UTC().UnixNano()/(int64(time.Millisecond)*1000))
+			if t.AcctStatusType == "Stop" || t.AcctStatusType == "Start" {
+				log.LoggerWContext(ctx).Error("8888888888Receiving STOP/Start message")
+			}
+			t = radAcctFieldHandle(&t)
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		default:

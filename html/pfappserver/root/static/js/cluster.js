@@ -105,21 +105,14 @@ function submitClusterInfo(){
 //function to remove the cluster node child
 function removeClusterNode(nodeArray){
     var base_url = window.location.origin;
-    console.log("nodeArray 1"); console.log(nodeArray);
-    var dataJson = {"hostname":nodeArray};
-    // var dataJson = {hostname:""};
-    // Object.assign(dataJson,{hostname:nodeArray});
-    // dataJson["hostname"] = nodeArray;
-    // console.log("dataJson: "); console.log(JSON.stringify(dataJson));
-    console.log(dataJson);
+    var object = {"hostname":nodeArray};
 
     $.ajax({
         type: 'POST',
         url: base_url + '/ama/cluster_remove',
         dataType: 'json',
-        data: dataJson,
-        processData:false,
-        contentType:false,
+        data: object,
+        traditional: true,
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
             getClusterStatusInfo();
