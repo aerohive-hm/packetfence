@@ -293,9 +293,9 @@ func FetchSysIDForNode(node MemberList) string {
 func distributeToSingleNode(ctx context.Context, mem a3config.NodeInfo, selfRenew bool) {
 	cloudInfo := CloudInfo{}
 	if selfRenew == false {
-		tokenUrl := ReqTokenForOtherNode(ctx, NodeInfo{})
-		cloudInfo.Token = tokenUrl.Token
-		cloudInfo.Region = tokenUrl.Region
+		tokenRegion := ReqTokenForOtherNode(ctx, NodeInfo{})
+		cloudInfo.Token = tokenRegion.Token
+		cloudInfo.Region = tokenRegion.Region
 	} else {
 		cloudInfo.RdcUrl = rdcUrl
 		cloudInfo.Switch = GlobalSwitch
