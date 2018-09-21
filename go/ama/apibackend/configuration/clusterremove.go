@@ -12,8 +12,9 @@ import (
 
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
-	//"github.com/inverse-inc/packetfence/go/ama/amac"
+	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
+	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
@@ -57,6 +58,8 @@ func removeServerOnLocal(hostname []string) bool {
 			return false
 		}
 		ips = append(ips, ip)
+		/*delete sysid by hostname in db*/
+		amadb.DeleteSysIdbyHost(h)
 	}
 
 	for _, ip := range ips {
@@ -64,11 +67,12 @@ func removeServerOnLocal(hostname []string) bool {
 	}
 	//remove node configuration from cluster.conf
 	a3config.RemoveClusterServer(hostname)
+
 	return true
 }
 
 // sync cluster remove to members
-func syncRemove2Other(ctx context.Context) {
+func syncRemove2Other(ctx context.Context, sysids []string) {
 	//remove other nodes
 	//notify other nodes to stopService
 	err := a3share.NotifyClusterStatus(a3share.StopService)
@@ -84,7 +88,7 @@ func syncRemove2Other(ctx context.Context) {
 	a3share.NotifyClusterStatus(a3share.StartSync)
 
 	//notify cloud server removed in cluster
-	//amac.UpdateMsgToRdcSyn(ctx, amac.RemoveNodeFromCluster)
+	amac.UpdateMsgToRdcSyn(ctx, amac.RemoveNodeFromCluster, sysids)
 
 	ama.ClearClusterStatus()
 }
@@ -102,6 +106,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	retMsg := ""
 	var rc bool
 	var hostname string
+	var sysids []string
 
 	err := json.Unmarshal(d.ReqData, removeData)
 	if err != nil {
@@ -119,12 +124,15 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	hostname = utils.GetHostname()
 	for _, h := range removeData.Hostname {
 		if h != hostname {
+			/*fetch sysid from db by hostname*/
+			id := amadb.QuerySysIdbyHost(h)
+			sysids = append(sysids, id)
 			continue
 		}
 
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("Try to remove myself, " +
-			"logon another server to do remove."))
-		retMsg = "Try to remove self, logon another server to do remove."
+			"login another server to do remove."))
+		retMsg = "Try to remove self, login another server to do remove."
 		goto END
 	}
 
@@ -134,7 +142,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 		retMsg = "invalid hostname"
 		goto END
 	}
-	go syncRemove2Other(ctx)
+	go syncRemove2Other(ctx, sysids)
 	code = "ok"
 END:
 	return crud.FormPostRely(code, retMsg)
