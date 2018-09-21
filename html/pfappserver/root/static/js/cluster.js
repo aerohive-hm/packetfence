@@ -53,13 +53,11 @@ function getCheckedNodes(inputTbody){
     var nodeArray = [];
     var getInputFields = inputTbody.getElementsByTagName('input');
     var numberOfInputs = getInputFields.length;
-    console.log("number of Inputs: " + numberOfInputs);
 
     for(var i = 0; i < numberOfInputs; i++) {
         if(getInputFields[i].type == 'checkbox' && getInputFields[i].checked == true){
             nodeArray.push(getInputFields[i].value);
         }
-        console.log(nodeArray);
     }
     $("#listOfSelectedNodes").text(nodeArray + " will be removed from the cluster.");
     return nodeArray;
@@ -117,7 +115,6 @@ function removeClusterNode(nodeArray){
             data = jQuery.parseJSON(data.A3_data);
             getClusterStatusInfo();
             $("#cluster-management-table").load("#cluster-management-table-tbody");
-                        //let user know 7 - 15 minutes restarting services
             if (data.code === "fail"){
               document.getElementById('errorMessage').innerHTML = data.msg;
               $("#error-alert").show();
@@ -135,8 +132,6 @@ function removeClusterNode(nodeArray){
         },
         error: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log("error");
-            console.log(data);
             document.getElementById('errorMessage').innerHTML = data.msg;
             $("#error-alert").show();
             setTimeout(function(){
