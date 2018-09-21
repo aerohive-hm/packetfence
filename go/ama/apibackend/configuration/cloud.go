@@ -112,7 +112,7 @@ func (nodes *GetNodesInfo) getValue(ctx context.Context) {
 	nodes.Body.Head.OwnerId = a3config.ReadCloudConf(a3config.OwnerId)
 	nodes.Body.Head.VhmId = a3config.ReadCloudConf(a3config.Vhm)
 	nodes.Body.Head.Mode = getRunMode()
-	nodes.Body.Head.Region = amac.GetRdcRegin(nodes.Body.Head.RdcUrl)
+	nodes.Body.Head.Region = a3config.ReadCloudConf(a3config.Region)
 
 	self.Hostname = utils.GetHostname()
 	self.Status = amac.GetAMAConnStatus()
