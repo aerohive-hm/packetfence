@@ -15,6 +15,7 @@ import (
 )
 
 const (
+    NotifySync      = "NotifySync"
 	StopService      = "StopServices"
 	StartSync        = "StartSync"
 	FinishSync       = "FinishSync"
@@ -56,6 +57,29 @@ func SendClusterSync(ip, Status string) error {
 
 	return err
 }
+
+
+func CheckClusterNodeStatus(status string) error {
+	ctx := context.Background()
+	nodeList := a3config.ClusterNew().FetchNodesInfo()
+	ownMgtIp := utils.GetOwnMGTIp()
+
+	for _, node := range nodeList {
+		if node.IpAddr == ownMgtIp {
+			continue
+		}
+
+		err := SendClusterSync(node.IpAddr, status)
+		if err != nil {
+			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
+			return err;
+		}
+	}
+
+	return nil
+}
+
+
 
 func NotifyClusterStatus(status string) error {
 	ctx := context.Background()

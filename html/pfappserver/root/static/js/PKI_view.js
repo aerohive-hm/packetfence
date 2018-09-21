@@ -33,8 +33,6 @@ $(document).ready(function(){
 
     caSubjNewlabel.innerHTML = caSubjectVal;
     servSubjNewlabel.innerHTML = servSubjectVal;
-    document.getElementById('ca_cert_label_upload').after(caSubjNewlabel);
-    document.getElementById('server_cert_label_upload').after(servSubjNewlabel);
 
     var caLength = $("#caSubjNewlabel").width();
     var caTextLength = $("#ca_cert_subject").width();
@@ -53,6 +51,9 @@ $(document).ready(function(){
       servSubjNewlabel.setAttribute("data-placement", "top");
       servSubjNewlabel.setAttribute("title", servSubjectVal);
     }
+
+    document.getElementById('ca_cert_label_upload').after(caSubjNewlabel);
+    document.getElementById('server_cert_label_upload').after(servSubjNewlabel);
 
 //*****************save button press pki********************//
     document.getElementById("savePKI").onclick = function(e){
@@ -305,6 +306,7 @@ function processFiles(input, pki_provider_name, qualifier){
         processData: false,
         contentType: false,
         success: function(data){
+          console.log("processfiles data: " + data);
         },
         error: function(data){
           var errMsg = data.status_msg;

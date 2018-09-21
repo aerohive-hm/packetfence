@@ -370,7 +370,7 @@ class aerohiveCloudCtl extends Component {
                                 <Input 
                                 style={{height:"32px"}}
                                 onBlur={self.onBlurCheckUser.bind(self)}
-                                maxLength={1000}
+                                maxLength={254}
                                 placeholder="admin@example.com"
                                 />
                             )}

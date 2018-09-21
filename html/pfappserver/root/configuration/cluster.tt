@@ -14,12 +14,16 @@
     }
 
     .help-block {
-       margin-left: 130px;
+        margin-left: 160px;
     }
-    #error-alert{
-        background-color: #f2dede;
-        border-color: #eed3d7;
-        color: #b94a48;
+
+    thead th{
+        width: 178px;
+    }
+
+    .networkInterfaces, .cluster-node{
+        float:left;
+        width:160px;
     }
   </style>
 </head>
@@ -42,59 +46,59 @@
     </div>
   </div>
 </div>
-
+<div id="success-alert" style="display:none; background-color: #dff0d8; border-color: #d6e9c6; color: #468847;"><div style="padding: 10px;" id="successMessage"></div></div>
+<div id="error-alert" style="display:none; background-color: #f2dede; border-color: #eed3d7; color: #b94a48;"><div style="padding: 10px;" id="errorMessage"></div></div>
 <div class="card">
     <div class="card-block">
-      <div id="success-alert" style="display:none; background-color: #28a745; color: white;"><div style="padding: 10px;" id="successMessage"></div></div>
-      <div id="error-alert" style="display:none; background-color: #dc3545; color: white;"><div style="padding: 10px;" id="errorMessage"></div></div>
         <div class="documentation">
           <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
           <form name="newClusterInfo" id="newClusterInfo">
-              <label class="form-horizontal control-label" style="float:left; width: 130px;" for="sharedKey">Shared Key</label>
+              <label class="form-horizontal control-label" style="float:left; width: 160px;" for="sharedKey">Shared Key</label>
               <div class="controls">
                 <div class="input-append"><input class="sharedKey form-inline help-inline pf-obfuscated-text" type="password" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
                 <p class="help-block">Shared KEY for VRRP protocol (must be the same on all members)</p>
               </div>
-              <label class="form-horizontal control-label" style="float:left; width:130px;" for="vrid">Virtual Router Id</label>
+              <label class="form-horizontal control-label" style="float:left; width:160px;" for="vrid">Virtual Router Id</label>
               <div class="controls">
                 <input class="vrid form-inline help-inline" type="text" name="vrid" id="vrid" placeholder="50"><br>
                 <p class="help-block">The virtual router id for keepalive. Leave untouched unless you have another keepalive cluster in this network. Must be between 1 and 255.</p>
               </div>
-              <div class="card-actions form-actions">
-                  <label style="float:left; width:130px;">  </label>
-                <button class="btn btn-primary submit" id="submitNewClusterInfo">Save</button>
-                <button type="reset" class="btn">Reset</button>
-              </div>
+              <label style="float:left; width:160px;"> </label>
+              <button class="btn btn-primary submit" id="submitNewClusterInfo">Save</button>
+              <button type="reset" class="btn">Reset</button>
           </form>
           <br/>
           <br/>
-          <h6>Network Interfaces</h6>
-          <table id="items net-interfaces-table" class="table items">
-            <thead>
-              <tr>
-                <th>Interface</th>
-                <th>VIP</th>
-              </tr>
-            </thead>
-            <tbody id="net-interfaces-table-tbody">
-            </tbody>
-          </table>
-
+            <div class="network-interfaces-list">
+              <label class="form-horizontal control-label networkInterfaces"><h5>Network Interfaces</h5></label>
+              <table id="items net-interfaces-table" class="table items" style="display: inline;">
+                <thead>
+                  <tr>
+                    <th style="width: 178px;">[% l('INTERFACE') %]</th>
+                    <th style="width: 595px;">[% l('VIP') %]</th>
+                  </tr>
+                </thead>
+                <tbody id="net-interfaces-table-tbody">
+                </tbody>
+              </table>
+            </div>
           <br/>
-          <h6>Cluster Node List</h6>
-          <table id="items cluster-management-table" class="table items">
-            <thead>
-              <tr>
-                <th><a id="remove-node" data-toggle="modal" data-target="#removeModal" style="padding-left:1px;"><i class="icon-trash-o"></i></a></th>
-                <th>Host Name</th>
-                <th>IP Address</th>
-                <th>Type</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="cluster-management-table-tbody">
-            </tbody>
-          </table>
+          <div class="cluster-node-list">
+              <label class="form-horizontal control-label cluster-node"><h5>[% l('Cluster Node List') %]</h5></label>
+              <table id="items cluster-management-table" class="table items" style="display: inline;">
+                <thead>
+                  <tr>
+                    <th style="width: 15px;"><a id="remove-node" data-toggle="modal" data-target="#removeModal" style="padding-left:1px;"><i class="icon-trash-o"></i></a></th>
+                    <th style="width: 178px;">[% l('HOST NAME') %]</th>
+                    <th style="width: 178px;">[% l('IP ADDRESS') %]</th>
+                    <th style="width: 178px;">[% l('TYPE') %]</th>
+                    <th style="width: 178px;">[% l('STATUS') %]</th>
+                  </tr>
+                </thead>
+                <tbody id="cluster-management-table-tbody">
+                </tbody>
+              </table>
+           </div>
         </div>
     </div>
 </div>
