@@ -307,3 +307,12 @@ func UpdateWebservices(user, password string) error {
 	return A3Commit("PF", section)
 
 }
+
+func UpdateDbRootPassword(password string) error {
+	section := Section{
+		"": {
+			"dbroot_pass": password,
+		},
+	}
+	return A3Commit("A3DB", section)
+}

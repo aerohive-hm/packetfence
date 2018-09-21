@@ -62,3 +62,12 @@ func GetPrimaryHostname() string {
 	return section["Cluster Primary"]["hostname"]
 
 }
+
+func GetDbRootPassword() string {
+
+	section := A3Read("A3DB", "")
+	if section == nil {
+		return ""
+	}
+	return section[""]["dbroot_pass"]
+}

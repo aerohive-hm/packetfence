@@ -16,7 +16,7 @@
   <div class="card-block">
     <div id="success-alert"><div style="padding: 10px;" id="successMessage"></div></div>
     <div id="error-alert"><div style="padding: 10px;" id="errorMessage"></div></div>
-    <h2>[% l('Cloud Integration') %]</h2>
+    <h2>[% l('Cloud Integration') %]  is_cluster_enabled [% is_cluster_enabled %]</h2>
     <br/>
 <!--initial page disconnected-->
 <!--need to change -->
@@ -54,8 +54,8 @@
                       <i></i>
                   </span>
                 </div>
-            </div>
-          </form>
+              </div>
+            </form>
         </div>
 
         <div class="aero-cloud-info" style="margin-left: 100px; margin-top: -10px; padding: 0px 10px 0px 10px; text-align: left; width: 350px;">

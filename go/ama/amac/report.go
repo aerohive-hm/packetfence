@@ -15,6 +15,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+	//"strconv"
 )
 
 const (
@@ -69,8 +70,8 @@ func sendReport2Cloud(ctx context.Context, reportMsg []interface{}) int {
 		log.LoggerWContext(ctx).Error("RDC URL is NULL")
 		return -1
 	}
-	log.LoggerWContext(ctx).Info("into sendReport2Cloud and print Marshal result,before marshal")
 	message, _ := json.Marshal(reportMsg)
+	log.LoggerWContext(ctx).Debug("into sendReport2Cloud and print Marshal result")
 	log.LoggerWContext(ctx).Debug(string(message))
 
 	reader := bytes.NewReader(message)
@@ -183,6 +184,16 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		case "radius_audit_log":
 			var t report.RadauditParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
+			t.AuthStatus = t.AuthType
+			t.TimeStamp = fmt.Sprintf("%d", time.Now().UTC().UnixNano()/(int64(time.Millisecond)*1000))
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			temp = t
+		case "radacct":
+			var t report.RadacctParseStruct
+			err = json.Unmarshal(singleMsg.([]byte), &t)
+			//accStopTime, _ := strconv.ParseUint(t.AcctStopTime, 10, 64)
+			//t.AcctStopTime = time.Unix(accStopTime, 0)
+			t.TimeStamp = fmt.Sprintf("%d", time.Now().UTC().UnixNano()/(int64(time.Millisecond)*1000))
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		default:

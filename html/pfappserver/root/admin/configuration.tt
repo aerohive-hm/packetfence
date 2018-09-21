@@ -216,7 +216,7 @@
               <!-- <span>[% subsection_tab.main %]</span> -->
               <!-- [% END %] -->
               [%- END %]
-              [% IF is_cluster_enabled and is_master_node %]
+              [% IF is_master_node %]
               <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('clustering'),clustering) %]">Cluster</a></li>
               [% END %]
               [% pf_section_entry( 'radius_authentication_methods', 'Authentication Methods') | none %]
@@ -229,6 +229,7 @@
               <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('cloudIntegration'),cloudIntegration) %]">Cloud Integration</a></li>
                 [% END %]
               [%- END %]
+
             </ul>
           </div><!--/span-->
         </div><!--/.row-fluid-->
