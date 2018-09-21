@@ -297,31 +297,38 @@ rest rest-ama {
         uri = "${..connect_uri}api/v1/event/radius/acct"
         method = 'post'
         body = 'json'
-		data = data = '{"ah_tablename":"radacct","acctstatustype":"%{Acct-Status-Type}","calledstationid":"%{Called-Station-Id}","callingstationid":"%{Calling-Station-Id}","acctstoptime":"%{integer:Event-Timestamp}"}'
-        tls = ${..tls}
+        data = '{"ah_tablename":"radacct","acctstatustype":"%{Acct-Status-Type}","calledstationid":"%{Called-Station-Id}",\
+        "callingstationid":"%{Calling-Station-Id}","acctsessionid":"%{Acct-Session-Id}",\
+        "acctuniqueid":"%{Acct-Unique-Session-Id}","acctstarttime":"%{integer:Event-Timestamp}",\
+        "acctupdatetime":"%{integer:Event-Timestamp}","acctstoptime":"%{integer:Event-Timestamp}",\
+        "acctsessiontime":"%{%{Acct-Session-Time}:-0}","acctauthentic":"%{Acct-Authentic}",\
+        "connectinfo":"%{Connect-Info}","acctinputgigawords":%{%{Acct-Input-Gigawords}:-0},"acctinputoctets":%{%{Acct-Input-Octets}:-0},\
+        "acctoutputgigawords":%{%{Acct-Output-Octets}:-0},"acctoutputoctets":%{%{Acct-Output-Octets}:-0},\
+        "acctterminatecause":"%{%{Acct-Terminate-Cause}:-N/A}","servicetype":"%{Service-Type}"}'
+		tls = ${..tls}
     }
     post-auth {
         uri = "${..connect_uri}api/v1/event/radius/auth"
         method = 'post'
         body = 'json'
-		data = '{"mac":"%{request:Calling-Station-Id}","ip":"%{request:Framed-IP-Address}",\
-		"computer_name":"%{%{control:PacketFence-Computer-Name}:-N/A}","user_name":"%{request:User-Name}",\
-		"stripped_user_name":"%{request:Stripped-User-Name}","realm":"%{request:Realm}","event_type":"Radius-Access-Request",\
+        data = '{"mac":"%{request:Calling-Station-Id}","ip":"%{request:Framed-IP-Address}",\
+        "computer_name":"%{%{control:PacketFence-Computer-Name}:-N/A}","user_name":"%{request:User-Name}",\
+        "stripped_user_name":"%{request:Stripped-User-Name}","realm":"%{request:Realm}","event_type":"Radius-Access-Request",\
         "switch_id":"%{%{control:PacketFence-Switch-Id}:-N/A}","switch_mac":"%{%{control:PacketFence-Switch-Mac}:-N/A}",\
-		"switch_ip_address":"%{%{control:PacketFence-Switch-Ip-Address}:-N/A}",\
-		"radius_source_ip_address":"%{Packet-Src-IP-Address}","called_station_id":"%{request:Called-Station-Id}",\
-		"calling_station_id":"%{request:Calling-Station-Id}","nas_port_type":"%{request:NAS-Port-Type}",\
-		"ssid":"%{request:Called-Station-SSID}","nas_port_id":"%{request:NAS-Port-Id}",\
+        "switch_ip_address":"%{%{control:PacketFence-Switch-Ip-Address}:-N/A}",\
+        "radius_source_ip_address":"%{Packet-Src-IP-Address}","called_station_id":"%{request:Called-Station-Id}",\
+        "calling_station_id":"%{request:Calling-Station-Id}","nas_port_type":"%{request:NAS-Port-Type}",\
+        "ssid":"%{request:Called-Station-SSID}","nas_port_id":"%{request:NAS-Port-Id}",\
         "ifindex":"%{%{control:PacketFence-IfIndex}:-N/A}","nas_port":"%{request:NAS-Port}",\
-		"connection_type":"%{%{control:PacketFence-Connection-Type}:-N/A}",\
-		"nas_ip_address":"%{request:NAS-IP-Address}","nas_identifier":"%{request:NAS-Identifier}",\
-		"auth_status":"Reject","reason":"%{request:Module-Failure-Message}","auth_type":"%{control:Auth-Type}",\ 
-		"eap_type":"%{request:EAP-Type}","role":"%{%{control:PacketFence-Role}:-N/A}","node_status":"%{%{control:PacketFence-Status}:-N/A}",\
-		"profile":"%{%{control:PacketFence-Profile}:-N/A}","source":"%{%{control:PacketFence-Source}:-N/A}",\
-		"auto_reg":"%{%{control:PacketFence-AutoReg}:-0}","is_phone":"%{%{control:PacketFence-IsPhone}:-0}",\
-		"pf_domain":"%{request:PacketFence-Domain}","uuid":"",\
-		"request_time":"%{%{control:PacketFence-Request-Time}:-N/A}",\
-		"tenant_id":"%{control:PacketFence-Tenant-Id}"}'
+        "connection_type":"%{%{control:PacketFence-Connection-Type}:-N/A}",\
+        "nas_ip_address":"%{request:NAS-IP-Address}","nas_identifier":"%{request:NAS-Identifier}",\
+        "auth_status":"Reject","reason":"%{request:Module-Failure-Message}","auth_type":"%{control:Auth-Type}",\ 
+        "eap_type":"%{request:EAP-Type}","role":"%{%{control:PacketFence-Role}:-N/A}","node_status":"%{%{control:PacketFence-Status}:-N/A}",\
+        "profile":"%{%{control:PacketFence-Profile}:-N/A}","source":"%{%{control:PacketFence-Source}:-N/A}",\
+        "auto_reg":"%{%{control:PacketFence-AutoReg}:-0}","is_phone":"%{%{control:PacketFence-IsPhone}:-0}",\
+        "pf_domain":"%{request:PacketFence-Domain}","uuid":"",\
+        "request_time":"%{%{control:PacketFence-Request-Time}:-N/A}",\
+        "tenant_id":"%{control:PacketFence-Tenant-Id}"}'
         tls = ${..tls}
     }
     pool {
