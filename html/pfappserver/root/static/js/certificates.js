@@ -125,7 +125,7 @@ function uploadCertAndKey(server_cert_upload, key_upload, form, qualifier, ca_fi
         } else {
             eap_server_path = cert_path;
             uploadKeyFile = uploadKey(key_upload, form, eap_server_path.filePath);
-        }xww
+        }
         return uploadKeyFile;
     }, function(error){
         console.log("error on uploadCert");
