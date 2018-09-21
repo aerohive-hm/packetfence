@@ -59,7 +59,6 @@ function getCheckedNodes(inputTbody){
     for(var i = 0; i < numberOfInputs; i++) {
         if(getInputFields[i].type == 'checkbox' && getInputFields[i].checked == true){
             nodeArray.push(getInputFields[i].value);
-            nodeArray.push("hello");
         }
     }
     $("#listOfSelectedNodes").text(nodeArray + " will be removed from the cluster.");
