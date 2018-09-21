@@ -50,6 +50,12 @@ func fillPrimaryUpdateMsg() []PrimaryUpdate {
 	be aware: asynchronous mode
 */
 func UpdateMsgToRdcAsyn(ctx context.Context, msgType int, in interface{}) int {
+	//Check the connect status, if not connected, ignore updating
+	if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
+		log.LoggerWContext(ctx).Info("Ingore updating for connection status be not onboarding")
+		return 0
+	}
+	
 	var nodeInfo interface{}
 
 	if asynMsgUrl == "" {
@@ -147,6 +153,12 @@ func getFailPrompt(msgType int) string {
 	result
 */
 func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, string) {
+	//Check the connect status, if not connected, ignore updating
+	if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
+		log.LoggerWContext(ctx).Info("Ingore updating for connection status be not onboarding")
+		return 0, ""
+	}
+	
 	var nodeInfo interface{}
 
 	if synMsgUrl == "" {
