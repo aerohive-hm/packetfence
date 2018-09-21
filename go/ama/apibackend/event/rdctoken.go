@@ -50,9 +50,14 @@ func handleGetToken(r *http.Request, d crud.HandlerData) []byte {
 		return nil
 	}
 	node.Hostname = para[0]
-	token := amac.ReqTokenForOtherNode(ctx, node)
+	tokenRegion := amac.ReqTokenForOtherNode(ctx, node)
 
-	return []byte(token)
+	jsonData, err := json.Marshal(tokenRegion)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
+		return []byte(err.Error())
+	}
+	return jsonData
 }
 
 /*
@@ -74,6 +79,12 @@ func handlePostToken(r *http.Request, d crud.HandlerData) []byte {
 
 	if len(cloudInfo.Token) != 0 {
 		amac.UpdateRdcToken(ctx, cloudInfo.Token, true)
+
+		//save region
+		err = a3config.UpdateCloudConf(a3config.Region, cloudInfo.Region)
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Save region error: " + err.Error())
+		}
 	} else if (len(cloudInfo.RdcUrl) != 0 && len(cloudInfo.VhmID) != 0) {
 		//update switch
 		err = a3config.UpdateCloudConf(a3config.Switch, cloudInfo.Switch)
