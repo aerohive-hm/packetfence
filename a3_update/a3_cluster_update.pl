@@ -130,6 +130,9 @@ sub galera_db_sync {
     pf::a3_cluster_update::remote_api_call_post($ip, 'a3/db', {'opts'=>['join']});
   }
 
+  # wait for mysqld process is fully up on the one node cluster env, then kill it for belowing step  
+  sleep 10
+
   #kill force cluster process
    pf::a3_cluster_update::remote_api_call_post($first_node_ip_to_update, 'a3/kill_force_cluster', {});
 
