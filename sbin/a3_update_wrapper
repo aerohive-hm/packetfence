@@ -8,7 +8,23 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-/usr/local/pf/sbin/a3_update $TMPDIR
+# Determine whether the current system is clustered
+/usr/bin/perl <<EOF >/dev/null 2>&1
+use lib '/usr/local/pf/lib';
+use pf::cluster;
+
+if (\$pf::cluster::cluster_enabled) {
+    exit 0;
+}
+
+exit 1;
+EOF
+
+if [ $? -eq 0 ]; then
+    /usr/local/pf/a3_update/a3_cluster_update.pl
+else
+    /usr/local/pf/sbin/a3_update $TMPDIR
+fi
 
 # Be sure to remove tmpdir
 /usr/bin/rm -rf $TMPDIR

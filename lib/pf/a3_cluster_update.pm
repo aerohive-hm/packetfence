@@ -37,14 +37,14 @@ Readonly::Scalar my $A3_BIN_DIR                   => "$A3_BASE_DIR/bin";
 Readonly::Scalar my $A3_CONF_DIR                  => "$A3_BASE_DIR/conf";
 Readonly::Scalar my $A3_VAR_CONF_DIR              => "$A3_BASE_DIR/var/conf";
 Readonly::Scalar my $PF_MON_CONF                  => "$A3_CONF_DIR/pfmon.conf";
-Readonly::Scalar my $PF_CONF_FILE		  => "$A3_CONF_DIR/pf.conf";
+Readonly::Scalar my $PF_CONF_FILE                 => "$A3_CONF_DIR/pf.conf";
 Readonly::Scalar my $PF_CLUSTER_CONF              => "$A3_CONF_DIR/cluster.conf";
 Readonly::Scalar my $A3_DBINFO_FILE               => "$A3_CONF_DIR/dbinfo.A3";
 Readonly::Scalar my $A3_LOG_DIR                   => "$A3_BASE_DIR/logs";
 Readonly::Scalar my $A3_CLUSTER_UPDATE_LOG_FILE   => "$A3_LOG_DIR/a3_cluster_update.log";
-Readonly::Scalar my $NODE_BIN 			  => "$A3_BASE_DIR/bin/cluster/node";
+Readonly::Scalar my $NODE_BIN                     => "$A3_BASE_DIR/bin/cluster/node";
 Readonly::Scalar my $A3_UPDATE_PATH_FILE          => "$A3_DB_DIR/a3-update-path";
-Readonly::Scalar my $TMP_DIR			  => "/tmp";
+Readonly::Scalar my $TMP_DIR                      => "/tmp";
 Readonly::Scalar my $A3_BK_VER_FILE               => "$TMP_DIR/a3_bk_ver_file";
 Readonly::Scalar my $A3_UPDATE_DB_DUMP            => "$TMP_DIR/A3_db.sql";
 Readonly::Scalar my $A3_UPDATE_APP_DUMP           => "$TMP_DIR/A3_app.tar.gz";
@@ -52,9 +52,9 @@ Readonly::Scalar my $PFCMD_BIN                    => "$A3_BIN_DIR/pfcmd";
 Readonly::Scalar my $SYSTEMCTL_BIN                => "$BIN_DIR/systemctl";
 Readonly::Scalar my $MYSQL_BIN                    => "$BIN_DIR/mysql";
 Readonly::Scalar my $MYSQLDUMP_BIN                => "$BIN_DIR/mysqldump";
-Readonly::Scalar my $AWK_BIN              	  => "$BIN_DIR/awk";
-Readonly::Scalar my $SED_BIN              	  => "$BIN_DIR/sed";
-Readonly::Scalar my $TEE_BIN              	  => "$BIN_DIR/tee";
+Readonly::Scalar my $AWK_BIN                      => "$BIN_DIR/awk";
+Readonly::Scalar my $SED_BIN                      => "$BIN_DIR/sed";
+Readonly::Scalar my $TEE_BIN                      => "$BIN_DIR/tee";
 Readonly::Scalar my $CAT_BIN                      => "$BIN_DIR/cat";
 Readonly::Scalar my $CP_BIN                       => "$BIN_DIR/cp";
 Readonly::Scalar my $CURL_BIN                     => "$BIN_DIR/curl";
@@ -65,7 +65,6 @@ Readonly::Scalar my $RM_BIN                       => "$BIN_DIR/rm";
 Readonly::Scalar my $SORT_BIN                     => "$BIN_DIR/sort";
 Readonly::Scalar my $UNIQ_BIN                     => "$BIN_DIR/uniq";
 Readonly::Scalar my $TAR_BIN                      => "$BIN_DIR/tar";
-
 
 Readonly::Scalar my $CENTOS_BASE                  => 'mirrorlist.centos.org';
 
@@ -580,7 +579,7 @@ sub get_all_nodes_ip_update {
     }
   }
   close $fh;
-  # shift the lfirst one(it is management IP) as it will be the first node to be updated
+  # shift the first one(it is management IP) as it will be the first node to be updated
   shift @nodes_ip;
   _commit_cluster_update_log("The remaining nodes to be update are @nodes_ip\n");
   return @nodes_ip;
@@ -625,7 +624,7 @@ delete mysql db files
 
 sub delete_mysql_db_files {
   my $db_folder = "/var/lib/mysql/";
-  call_system_cmd("rm -rf $db_folder/*");
+  call_system_cmd("/bin/rm -rf $db_folder/*");
 }
 
 
@@ -637,7 +636,7 @@ kill mysqld process
 
 sub kill_force_cluster {
    my $process = 'mysqld';
-   call_system_cmd("pkill -9 $process");
+   call_system_cmd("/usr/bin/pkill -9 $process");
 }
 
 
