@@ -42,7 +42,7 @@ $(document).ready(function(){
         });
         $('#removing-node').on('click', function() {
             removeClusterNode(getListOfNodes);
-            $('modal').hide();
+            $('#removing-modal').hide();
         });
     }
 
@@ -105,9 +105,10 @@ function submitClusterInfo(){
 //function to remove the cluster node child
 function removeClusterNode(nodeArray){
     var base_url = window.location.origin;
-    var dataJson = {"hostname":nodeArray};
-    console.log("dataJson: ");
-    console.log(dataJson);
+    console.log("nodeArray 1"); console.log(nodeArray);
+    var hostname = "hostname";
+    var dataJson = {hostname:nodeArray};
+    console.log("dataJson: "); console.log(dataJson);
 
     $.ajax({
         type: 'POST',
@@ -126,6 +127,7 @@ function removeClusterNode(nodeArray){
             setTimeout(function(){
                 $("#success-alert").slideUp(500);
             }, 3000);
+
         },
         error: function(data){
             data = jQuery.parseJSON(data.A3_data);
@@ -153,7 +155,7 @@ function getClusterStatusInfo(){
             //cluster management table
             $.each(data.nodes, function(i, members){
                 if (members.type === "Master"){
-                    $("#cluster-management-table-tbody").append("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
+                    $("#cluster-management-table-tbody").prepend("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
                 } else {
                     $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' value='"+ members.hostname +"'/>" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
                 }
@@ -182,4 +184,8 @@ function getClusterStatusInfo(){
             }, 3000);
         }
     });
+}
+
+function sortTable(){
+
 }

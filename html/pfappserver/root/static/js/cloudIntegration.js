@@ -155,10 +155,14 @@ function linkAerohiveAccount(){
     var base_url = window.location.origin;
     var form = document.forms.namedItem("cloudForm");
     var formData = new FormData(form);
+
     var object = {};
     formData.forEach(function(value, key){
         object[key] = value;
     });
+    console.log("cloud inte object: "); console.log(object);
+    console.log("cloud inte formData: "); console.log(formData);
+
     document.getElementById("link-account").disabled = true;
     $.ajax({
         type: 'POST',
@@ -167,7 +171,6 @@ function linkAerohiveAccount(){
         data: object,
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log("went through");
             console.log(data);
             $('#spin-spinner').hide();
 
