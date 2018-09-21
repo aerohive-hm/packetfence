@@ -14,7 +14,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
-
 type PerlEventH struct {
 	crud.Crud
 }
@@ -27,12 +26,11 @@ func PerlEventNew(ctx context.Context) crud.SectionCmd {
 }
 
 type PerlEventData struct {
-	MsgType      int `json:"msgtype"`
+	MsgType int `json:"msgtype"`
 }
 
 func handlePostPerlEvent(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
-
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive perl event data: %s", string(d.ReqData)))
 
@@ -43,8 +41,7 @@ func handlePostPerlEvent(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(err.Error())
 	}
 
-	
-	result := amac.UpdateMsgToRdcAsyn(ctx, eventData.MsgType)
+	result := amac.UpdateMsgToRdcAsyn(ctx, eventData.MsgType, nil)
 	if result != 0 {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("update message type %d failed", eventData.MsgType))
 	}

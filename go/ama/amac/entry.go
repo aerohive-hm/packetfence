@@ -12,6 +12,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
 	"net/http"
@@ -34,6 +35,7 @@ const (
 	RdcTokenUpdate         = 5
 	RemoveNodeFromCluster  = 6
 	JoinClusterComplete    = 7
+	ClusterStatusUpdate    = 8
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 

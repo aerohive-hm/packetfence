@@ -13,18 +13,46 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/ama/share"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
 	"net/http"
 )
 
+type primaryUpdateData struct {
+	MsgType            string `json:"msgType"`
+	MasterNodeSystemID string `json:"masterNodeSystemID"`
+}
+
+type PrimaryUpdate struct {
+	Header tokenCommonHeader `json:"header"`
+	Data   primaryUpdateData `json:"data"`
+}
+
+func fillPrimaryUpdateMsg() []PrimaryUpdate {
+	var msgArray []PrimaryUpdate
+	msg := PrimaryUpdate{}
+
+	msg.Header.SystemID = utils.GetA3SysId()
+	msg.Header.Hostname = utils.GetHostname()
+	msg.Header.ClusterID = utils.GetClusterId()
+
+	msg.Data.MsgType = "cluster-status-update"
+	msg.Data.MasterNodeSystemID = utils.GetA3SysId()
+
+	msgArray = append(msgArray, msg)
+
+	return msgArray
+}
+
 /*
 	This function is used to send update message if network/license changes
 	be aware: asynchronous mode
 */
-func UpdateMsgToRdcAsyn(ctx context.Context, msgType int) int {
+func UpdateMsgToRdcAsyn(ctx context.Context, msgType int, in interface{}) int {
 	var nodeInfo interface{}
 
+	log.LoggerWContext(ctx).Error("into UpdateMsgToRdcAsyn")
 	if asynMsgUrl == "" {
 		log.LoggerWContext(ctx).Error("RDC URL is NULL")
 		return -1
@@ -37,12 +65,19 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int) int {
 	case LicenseInfoChange:
 		log.LoggerWContext(ctx).Info("begin to send license update to RDC")
 		nodeInfo = a3share.GetLicenseUpdateInfo(ctx)
+	case ClusterStatusUpdate:
+		log.LoggerWContext(ctx).Info("begin to send cluster status update to RDC")
+		nodeInfo = fillPrimaryUpdateMsg()
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")
 	}
 
-	data, _ := json.Marshal(nodeInfo)
-	log.LoggerWContext(ctx).Info(string(data))
+	data, err := json.Marshal(nodeInfo)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("marshal fail")
+	}
+
+	log.LoggerWContext(ctx).Error(string(data))
 	reader := bytes.NewReader(data)
 	for {
 		request, err := http.NewRequest("POST", asynMsgUrl, reader)
