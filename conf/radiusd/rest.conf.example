@@ -303,7 +303,7 @@ rest rest-ama {
         "acctupdatetime":"%{integer:Event-Timestamp}","acctstoptime":"%{integer:Event-Timestamp}",\
         "acctsessiontime":"%{%{Acct-Session-Time}:-0}","acctauthentic":"%{Acct-Authentic}",\
         "connectinfo":"%{Connect-Info}","acctinputgigawords":%{%{Acct-Input-Gigawords}:-0},"acctinputoctets":%{%{Acct-Input-Octets}:-0},\
-        "acctoutputgigawords":%{%{Acct-Output-Octets}:-0},"acctoutputoctets":%{%{Acct-Output-Octets}:-0},\
+        "acctoutputgigawords":%{%{Acct-Output-Gigawords}:-0},"acctoutputoctets":%{%{Acct-Output-Octets}:-0},\
         "acctterminatecause":"%{%{Acct-Terminate-Cause}:-N/A}","servicetype":"%{Service-Type}"}'
 		tls = ${..tls}
     }
@@ -322,7 +322,7 @@ rest rest-ama {
         "ifindex":"%{%{control:PacketFence-IfIndex}:-N/A}","nas_port":"%{request:NAS-Port}",\
         "connection_type":"%{%{control:PacketFence-Connection-Type}:-N/A}",\
         "nas_ip_address":"%{request:NAS-IP-Address}","nas_identifier":"%{request:NAS-Identifier}",\
-        "auth_status":"Reject","reason":"%{request:Module-Failure-Message}","auth_type":"%{control:Auth-Type}",\ 
+        "auth_status":"Reject","reason":"%{request:Module-Failure-Message}","auth_type":"%{control:Auth-Type}",\
         "eap_type":"%{request:EAP-Type}","role":"%{%{control:PacketFence-Role}:-N/A}","node_status":"%{%{control:PacketFence-Status}:-N/A}",\
         "profile":"%{%{control:PacketFence-Profile}:-N/A}","source":"%{%{control:PacketFence-Source}:-N/A}",\
         "auto_reg":"%{%{control:PacketFence-AutoReg}:-0}","is_phone":"%{%{control:PacketFence-IsPhone}:-0}",\

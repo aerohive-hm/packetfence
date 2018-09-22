@@ -115,6 +115,11 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
+	if len(removeData.Hostname) == 0 {
+		retMsg = "no hostname specified!."
+		goto END
+	}
+
 	if ama.IsClusterJoinMode() {
 		retMsg = "another server is joining the cluster."
 		goto END
