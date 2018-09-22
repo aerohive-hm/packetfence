@@ -335,6 +335,8 @@ Requires: haproxy >= 1.6, keepalived >= 1.3.6
 # CAUTION: we need to require the version we want for Fingerbank and ensure we don't want anything equal or above the next major release as it can add breaking changes
 Requires: fingerbank >= 4.0.0, fingerbank < 5.0.0
 Requires: perl(File::Tempdir)
+Requires: perl(REST::Client)
+Requires: nodejs
 
 # etcd
 Requires: etcd >= 3.1
