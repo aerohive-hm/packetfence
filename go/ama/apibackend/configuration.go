@@ -12,6 +12,7 @@ func init() {
 		"license":       configuration.LicenseNew,
 		"cluster":       configuration.ClusterNew,
 		"clusterremove": configuration.ClusterRemoveNew,
+		"clusterstatus": configuration.StatusNew,
 	}
 	Register("configuration", sections)
 }
