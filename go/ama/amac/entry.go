@@ -38,6 +38,7 @@ const (
 	JoinClusterComplete    = 7
 	ClusterStatusUpdate    = 8
 	UpdateBasicInfo        = 9
+	SyncBasicInfo          = 10
 )
 const KEEPALIVE_TIMEOUT_COUNT_MAX = 3
 
@@ -143,6 +144,9 @@ func Entry(ctx context.Context) {
 
 	//start a goroutine, sending the report only when the status is connected
 	go reportRoutine(ctx)
+
+	//start a goroutine, sync basic info to RDC when the status is connected
+	go syncBasicInfoToRdc(ctx)
 
 	/*
 		Read the channel to monitor the configuration change from UI
