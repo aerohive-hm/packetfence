@@ -132,6 +132,7 @@ func ForceNewCluster() {
 		pfservice + "pf restart",
 	}
 	ExecCmds(cmds)
+	ama.IsManagement = false
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintln("ForceNewCluster tasks done"))
 
@@ -198,6 +199,7 @@ func RestartKeepAlived() {
 		pfservice + "keepalived restart",
 	}
 	ExecCmds(cmds)
+	ama.IsManagement = false
 }
 
 func RemoveFromCluster() {

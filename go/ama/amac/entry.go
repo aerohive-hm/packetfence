@@ -12,9 +12,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/inverse-inc/packetfence/go/log"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
 	"net/http"
 	"sync"
@@ -223,17 +224,13 @@ func handleMsgFromUi(ctx context.Context, message MsgStru) {
 }
 
 //if we are changed to vip owner
-func IsManagementChange() func() bool {
-       var isMaster = false
-
-       return func() bool {
-               s := utils.IsManagement(a3config.ClusterNew().GetPrimaryClusterVip("eth0"))
-               if s == true && s != isMaster {
-                       isMaster = s
-                       return true
-               }
-               return false
-       }
+func IsManagementChange() bool {
+	s := utils.IsManagement(a3config.ClusterNew().GetPrimaryClusterVip("eth0"))
+	if s == true && s != ama.IsManagement {
+		ama.IsManagement = s
+		return true
+	}
+	return false
 }
 
 //Sending keepalive packets after onboarding successfully
@@ -246,7 +243,6 @@ func keepaliveToRdc(ctx context.Context) {
 	timeoutCount = 0
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the keepalive interval %d seconds", KeepaliveInterval))
 
-	f := IsManagementChange()
 	for _ = range ticker.C {
 		/*
 			check if allow to the connect to cloud, if not,
@@ -278,7 +274,7 @@ func keepaliveToRdc(ctx context.Context) {
 			continue
 		}
 
-		if f() == true {
+		if IsManagementChange() == true {
 			_ = UpdateMsgToRdcAsyn(ctx, ClusterStatusUpdate, nil)
 		}
 
