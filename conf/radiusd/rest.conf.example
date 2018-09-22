@@ -311,7 +311,7 @@ rest rest-ama {
         uri = "${..connect_uri}api/v1/event/radius/auth"
         method = 'post'
         body = 'json'
-        data = '{"mac":"%{request:Calling-Station-Id}","ip":"%{request:Framed-IP-Address}",\
+        data = '{"ah_tablename":"radius_audit_log","mac":"%{request:Calling-Station-Id}","ip":"%{request:Framed-IP-Address}",\
         "computer_name":"%{%{control:PacketFence-Computer-Name}:-N/A}","user_name":"%{request:User-Name}",\
         "stripped_user_name":"%{request:Stripped-User-Name}","realm":"%{request:Realm}","event_type":"Radius-Access-Request",\
         "switch_id":"%{%{control:PacketFence-Switch-Id}:-N/A}","switch_mac":"%{%{control:PacketFence-Switch-Mac}:-N/A}",\
@@ -322,7 +322,7 @@ rest rest-ama {
         "ifindex":"%{%{control:PacketFence-IfIndex}:-N/A}","nas_port":"%{request:NAS-Port}",\
         "connection_type":"%{%{control:PacketFence-Connection-Type}:-N/A}",\
         "nas_ip_address":"%{request:NAS-IP-Address}","nas_identifier":"%{request:NAS-Identifier}",\
-        "auth_status":"Reject","reason":"%{request:Module-Failure-Message}","auth_type":"%{control:Auth-Type}",\ 
+        "auth_status":"Reject","reason":"%{request:Module-Failure-Message}","auth_type":"%{control:Auth-Type}",\
         "eap_type":"%{request:EAP-Type}","role":"%{%{control:PacketFence-Role}:-N/A}","node_status":"%{%{control:PacketFence-Status}:-N/A}",\
         "profile":"%{%{control:PacketFence-Profile}:-N/A}","source":"%{%{control:PacketFence-Source}:-N/A}",\
         "auto_reg":"%{%{control:PacketFence-AutoReg}:-0}","is_phone":"%{%{control:PacketFence-IsPhone}:-0}",\

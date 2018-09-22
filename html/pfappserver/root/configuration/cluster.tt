@@ -31,7 +31,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h3><i>Remove Selected Cluster Nodes?</i> <span></span></h3>
+        <h3><i>[% l('Remove Selected Cluster Nodes?') %]</i> <span></span></h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -40,8 +40,8 @@
         <p><span id="listOfSelectedNodes"><span></p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="removing-node">Remove</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">[% l('Close') %]</button>
+        <button type="button" class="btn btn-primary" id="removing-node">[% l('Remove') %]</button>
       </div>
     </div>
   </div>
@@ -53,24 +53,24 @@
         <div class="documentation">
           <h2 style="padding-bottom:25px;">[% l('Cluster') %]</h2>
           <form name="newClusterInfo" id="newClusterInfo">
-              <label class="form-horizontal control-label" style="float:left; width: 160px;" for="sharedKey">Shared Key</label>
+              <label class="form-horizontal control-label" style="float:left; width: 160px;" for="sharedKey">[% l('Shared Key') %]</label>
               <div class="controls">
                 <div class="input-append"><input class="sharedKey form-inline help-inline pf-obfuscated-text" type="password" name="sharedKey" id="sharedKey" placeholder="*********"><button type="button" class="btn"><i class="icon-eye"></i></button></div><br>
-                <p class="help-block">Shared KEY for VRRP protocol (must be the same on all members)</p>
+                <p class="help-block">[% l('Shared KEY for VRRP protocol (must be the same on all members)') %]</p>
               </div>
-              <label class="form-horizontal control-label" style="float:left; width:160px;" for="vrid">Virtual Router Id</label>
+              <label class="form-horizontal control-label" style="float:left; width:160px;" for="vrid">[% l('Virtual Router Id') %]</label>
               <div class="controls">
                 <input class="vrid form-inline help-inline" type="text" name="vrid" id="vrid" placeholder="50"><br>
-                <p class="help-block">The virtual router id for keepalive. Leave untouched unless you have another keepalive cluster in this network. Must be between 1 and 255.</p>
+                <p class="help-block">[% l('The virtual router id for keepalive. Leave untouched unless you have another keepalive cluster in this network. Must be between 1 and 255.') %]</p>
               </div>
               <label style="float:left; width:160px;"> </label>
-              <button class="btn btn-primary submit" id="submitNewClusterInfo">Save</button>
-              <button type="reset" class="btn">Reset</button>
+              <button class="btn btn-primary submit" id="submitNewClusterInfo">[% l('Save') %]</button>
+              <button type="reset" class="btn">[% l('Reset') %]</button>
           </form>
           <br/>
           <br/>
             <div class="network-interfaces-list">
-              <label class="form-horizontal control-label networkInterfaces"><h5>Network Interfaces</h5></label>
+              <label class="form-horizontal control-label networkInterfaces"><h5>[% l('Network Interfaces') %]</h5></label>
               <table id="items net-interfaces-table" class="table items" style="display: inline;">
                 <thead>
                   <tr>

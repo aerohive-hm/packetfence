@@ -377,7 +377,7 @@ func writeOneNetworkConfig(ctx context.Context, item Item) error {
 		/* write dns to sysifcfgfile for eth0*/
 		dns = utils.GetDnsServer()
 		for i, l = range dns {
-			section[""]["DNS"+strconv.Itoa(i)] = l
+			section[""]["DNS"+strconv.Itoa(i+1)] = l
 		}
 	}
 	err = A3CommitPath(sysifCfgFile, section)

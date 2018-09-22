@@ -102,7 +102,7 @@ func handlePostReport(r *http.Request, d crud.HandlerData) []byte {
 	ReportCounter.recvCounter++
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive DB report event data count: %d", ReportCounter.recvCounter))
-	log.LoggerWContext(ctx).Info(string(d.ReqData))
+	log.LoggerWContext(ctx).Debug(string(d.ReqData))
 
 	redisKey := GetkeyfromPostReport(r, d.ReqData)
 	if redisKey == "" {
