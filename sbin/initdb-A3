@@ -44,6 +44,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+#Update default user password
+DB_DEFAULT_ADMIN_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
+/usr/bin/mysql -u root -p$DB_ROOT_PW -e "UPDATE password SET password='${DB_DEFAULT_USER_PW}' WHERE pid='admin';"
+DB_DEFAULT_DEMO_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
+/usr/bin/mysql -u root -p$DB_ROOT_PW -e "UPDATE password SET password='${DB_DEFAULT_DEMO_USER_PW}' WHERE pid='demouser';"
+
+
 #Create replication user
 DB_CLUSTER_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
 /usr/bin/mysql -u root -p$DB_ROOT_PW -e "CREATE USER 'aerohivecluster'@'%' IDENTIFIED BY '${DB_CLUSTER_USER_PW}';"
