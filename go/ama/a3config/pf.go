@@ -16,6 +16,7 @@ const (
 	OrgId          = "orgId"
 	ReportInterval = "report_interval"
 	Region         = "region"
+	SyncInterval   = "sync_interval"
 )
 
 func UpdateCloudConf(key string, value string) error {
