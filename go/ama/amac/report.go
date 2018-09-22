@@ -148,7 +148,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 	table := ReportTable{}
 	var temp interface{}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Into ReportDbTable, sendFlag %t,CacheTableUpLimit %d", sendFlag, CacheTableUpLimit))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("Into ReportDbTable, sendFlag %t,CacheTableUpLimit %d", sendFlag, CacheTableUpLimit))
 
 	//Check the connect status, if not connected, do nothing
 	if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
@@ -164,7 +164,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		log.LoggerWContext(ctx).Info("msgQue len is 0, no DB messages")
 		return nil, 0
 	}
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("get %d messages from msgQue", len(msgQue)))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("get %d messages from msgQue", len(msgQue)))
 
 	fillReportHeader(&reportMsg.Header)
 	reportMsg.Data.MsgType = "a3-report-db"

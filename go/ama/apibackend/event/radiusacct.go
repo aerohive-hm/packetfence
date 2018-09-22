@@ -59,8 +59,8 @@ func handlePostRadAcct(r *http.Request, d crud.HandlerData) []byte {
 
 	ReportCounter.recvCounter++
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive radacct report: %d", ReportCounter.recvCounter))
-	log.LoggerWContext(ctx).Info(string(d.ReqData))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("receive radacct report: %d", ReportCounter.recvCounter))
+	log.LoggerWContext(ctx).Debug(string(d.ReqData))
 
 	redisKey := GetkeyfromPostReport(r, d.ReqData)
 	if redisKey == "" {
