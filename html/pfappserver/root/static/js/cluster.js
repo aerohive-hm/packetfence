@@ -31,7 +31,9 @@ $(document).ready(function(){
     getClusterStatusInfo();
 
     //button press on trashcan, array, removeClusterNode(), removeClusterNode(nodeArray)
-    document.getElementById('remove-node').onclick = function(){
+    document.getElementById('remove-node').onclick = function(e){
+        e.preventDefault();
+
         getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
 
@@ -40,10 +42,10 @@ $(document).ready(function(){
         $('#close-modal').on('click', function() {
             $('modal').hide();
         });
-        $('#removing-node').on('click', function() {
+        document.getElementById("removing-node").onclick =  function(){
             removeClusterNode(getListOfNodes);
-            $('.removeModal').modal('hide');
-        });
+            $('.modal.in').modal('hide');
+        }
     }
 
 });
@@ -53,13 +55,11 @@ function getCheckedNodes(inputTbody){
     var nodeArray = [];
     var getInputFields = inputTbody.getElementsByTagName('input');
     var numberOfInputs = getInputFields.length;
-    console.log("number of Inputs: " + numberOfInputs);
 
     for(var i = 0; i < numberOfInputs; i++) {
         if(getInputFields[i].type == 'checkbox' && getInputFields[i].checked == true){
             nodeArray.push(getInputFields[i].value);
         }
-        console.log(nodeArray);
     }
     $("#listOfSelectedNodes").text(nodeArray + " will be removed from the cluster.");
     return nodeArray;
@@ -104,27 +104,20 @@ function submitClusterInfo(){
 
 //function to remove the cluster node child
 function removeClusterNode(nodeArray){
+    console.log("in removeClusterNode");
     var base_url = window.location.origin;
-    console.log("nodeArray 1"); console.log(nodeArray);
-    var dataJson = {"hostname":nodeArray};
-    // var dataJson = {hostname:""};
-    // Object.assign(dataJson,{hostname:nodeArray});
-    // dataJson["hostname"] = nodeArray;
-    // console.log("dataJson: "); console.log(JSON.stringify(dataJson));
-    console.log(dataJson);
+    var object = {"hostname":nodeArray.join(",")};
 
     $.ajax({
         type: 'POST',
         url: base_url + '/ama/cluster_remove',
         dataType: 'json',
-        data: dataJson,
-        processData:false,
-        contentType:false,
+        data: object,
+        traditional: true,
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
             getClusterStatusInfo();
             $("#cluster-management-table").load("#cluster-management-table-tbody");
-                        //let user know 7 - 15 minutes restarting services
             if (data.code === "fail"){
               document.getElementById('errorMessage').innerHTML = data.msg;
               $("#error-alert").show();
@@ -142,8 +135,6 @@ function removeClusterNode(nodeArray){
         },
         error: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log("error");
-            console.log(data);
             document.getElementById('errorMessage').innerHTML = data.msg;
             $("#error-alert").show();
             setTimeout(function(){
@@ -195,8 +186,4 @@ function getClusterStatusInfo(){
             }, 3000);
         }
     });
-}
-
-function sortTable(){
-
 }
