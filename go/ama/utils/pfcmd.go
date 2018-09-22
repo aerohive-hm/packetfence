@@ -139,6 +139,22 @@ func ForceNewCluster() {
 	ama.SetClusterStatus(ama.Ready4Sync)
 }
 
+func UpdateDB() {
+	cmds := []string{
+		pfcmd + "configreload hard",
+		pfcmd + "checkup",
+		"systemctl stop packetfence-mariadb",
+	}
+	ExecCmds(cmds)
+	waitProcStop("mysqld")
+
+	cmds = []string{
+		pfcmd + "generatemariadbconfig",
+		"systemctl stop packetfence-mariadb",
+	}
+	ExecCmds(cmds)
+}
+
 // prepare for the new cluster mode
 func StopService() {
 	cmds := []string{
