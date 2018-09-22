@@ -100,8 +100,8 @@ func handlePostRadAuthRes(r *http.Request, d crud.HandlerData) []byte {
 	ReportCounter.recvCounter++
 	log.LoggerWContext(ctx).Error("into handlePostRadAuthRes")
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive radius_audit_log report: %d", ReportCounter.recvCounter))
-	log.LoggerWContext(ctx).Info(string(d.ReqData))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("receive radius_audit_log report: %d", ReportCounter.recvCounter))
+	log.LoggerWContext(ctx).Debug(string(d.ReqData))
 
 	redisKey := GetkeyfromPostReport(r, d.ReqData)
 	if redisKey == "" {

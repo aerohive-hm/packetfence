@@ -11,9 +11,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"time"
 	"fmt"
+	"strconv"
 	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
 	"net/http"
@@ -29,6 +32,70 @@ type PrimaryUpdate struct {
 	Data   primaryUpdateData `json:"data"`
 }
 
+type BasicSyncData struct {
+	MsgType            string `json:"msgType"`
+	ClusterHostName	   string `json:"clusterHostName"`
+	License	a3share.A3License `json:"license"`
+}
+
+type BasicSyncInfo struct {
+	Header	a3share.A3OnboardingHeader	`json:"header"`
+	Data	BasicSyncData				`json:"data"`
+}
+
+//Sync basic A3 info to RDC after onboarding successfully
+func syncBasicInfoToRdc(ctx context.Context) {
+	const syncInterval = 3600
+	var interval int
+
+    intervalStr := a3config.ReadCloudConf(a3config.SyncInterval)
+	if intervalStr == "" {
+		interval = syncInterval
+	}else {
+		interval, _ = strconv.Atoi(intervalStr)
+	}
+    
+	ticker := time.NewTicker(time.Duration(interval) * time.Second)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Sync basic A3 info to RDC with interval %d seconds", interval))
+
+	for _ = range ticker.C {
+		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
+			log.LoggerWContext(ctx).Info("Ingore sync basic A3 info for connection status be not onboarding")
+			continue
+		}
+		
+		basicSyncInfo := fillBasicA3InfoMsg(ctx)
+		ret := UpdateMsgToRdcAsyn(ctx, SyncBasicInfo, basicSyncInfo)
+		if ret < 0 {
+			log.LoggerWContext(ctx).Error("Sync basic A3 info to RDC failed")
+		}
+	}
+}
+
+func fillBasicA3InfoMsg(ctx context.Context) []BasicSyncInfo {
+	var basicInfo BasicSyncInfo
+	var slice []BasicSyncInfo
+
+	basicInfo.Header.GetValue(ctx)
+	basicInfo.Data.License.GetValue(ctx)
+
+	basicInfo.Data.MsgType = "basic-info-sync"
+
+	managementIface, errint := utils.GetIfaceList("eth0")
+	if errint < 0 {
+		fmt.Errorf("Get ETH0 interfaces infomation failed")
+		basicInfo.Data.ClusterHostName = ""
+	} else {
+		for _, iface := range managementIface {
+			basicInfo.Data.ClusterHostName = a3config.ClusterNew().GetPrimaryClusterVip(iface.Name)
+			break
+		}
+	}
+
+	slice = append(slice, basicInfo)
+	return slice
+}
+	
 func fillPrimaryUpdateMsg() []PrimaryUpdate {
 	var msgArray []PrimaryUpdate
 	msg := PrimaryUpdate{}
@@ -73,13 +140,15 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int, in interface{}) int {
 	case ClusterStatusUpdate:
 		log.LoggerWContext(ctx).Info("begin to send cluster status update to RDC")
 		nodeInfo = fillPrimaryUpdateMsg()
+	case SyncBasicInfo:
+		log.LoggerWContext(ctx).Info("Sync basic A3 info to RDC")
+		nodeInfo = fillBasicA3InfoMsg(ctx)
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")
 	}
 
 	data, _ := json.Marshal(nodeInfo)
 
-	log.LoggerWContext(ctx).Error(string(data))
 	reader := bytes.NewReader(data)
 	for {
 		request, err := http.NewRequest("POST", asynMsgUrl, reader)
