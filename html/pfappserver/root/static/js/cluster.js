@@ -31,7 +31,9 @@ $(document).ready(function(){
     getClusterStatusInfo();
 
     //button press on trashcan, array, removeClusterNode(), removeClusterNode(nodeArray)
-    document.getElementById('remove-node').onclick = function(){
+    document.getElementById('remove-node').onclick = function(e){
+        e.preventDefault();
+
         getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
 
@@ -40,10 +42,10 @@ $(document).ready(function(){
         $('#close-modal').on('click', function() {
             $('modal').hide();
         });
-        $('#removing-node').on('click', function() {
+        document.getElementById("removing-node").onclick =  function(){
             removeClusterNode(getListOfNodes);
-            $('.removeModal').modal('hide');
-        });
+            $('.modal.in').modal('hide');
+        }
     }
 
 });
@@ -102,6 +104,7 @@ function submitClusterInfo(){
 
 //function to remove the cluster node child
 function removeClusterNode(nodeArray){
+    console.log("in removeClusterNode");
     var base_url = window.location.origin;
     var object = {"hostname":nodeArray.join(",")};
 
