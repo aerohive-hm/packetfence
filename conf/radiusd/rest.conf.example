@@ -311,7 +311,7 @@ rest rest-ama {
         uri = "${..connect_uri}api/v1/event/radius/auth"
         method = 'post'
         body = 'json'
-        data = '{"mac":"%{request:Calling-Station-Id}","ip":"%{request:Framed-IP-Address}",\
+        data = '{"ah_tablename":"radius_audit_log","mac":"%{request:Calling-Station-Id}","ip":"%{request:Framed-IP-Address}",\
         "computer_name":"%{%{control:PacketFence-Computer-Name}:-N/A}","user_name":"%{request:User-Name}",\
         "stripped_user_name":"%{request:Stripped-User-Name}","realm":"%{request:Realm}","event_type":"Radius-Access-Request",\
         "switch_id":"%{%{control:PacketFence-Switch-Id}:-N/A}","switch_mac":"%{%{control:PacketFence-Switch-Mac}:-N/A}",\
