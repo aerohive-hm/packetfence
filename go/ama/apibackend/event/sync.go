@@ -10,8 +10,8 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/packetfence/go/ama"
-	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
+	"github.com/inverse-inc/packetfence/go/ama/amac"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -67,7 +67,7 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive sync %s from %s", sync.Status, sync.SendIp))
 	switch {
 	case sync.Status == a3share.NotifySync:
-		//primary check myself alive or not 
+		//primary check myself alive or not
 		//just return OK or do something check if I am ready for join
 		code = "ok"
 		ret = ""
@@ -77,7 +77,7 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		if ama.IsClusterJoinMode() {
 			code = "fail"
 			ret = "already in cluster join"
-		} else {		
+		} else {
 			utils.StopService()
 			ama.SetClusterStatus(ama.PrepareSync)
 		}
@@ -87,6 +87,7 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		web := a3config.GetWebServices()["webservices"]
 		utils.SyncFromPrimary(ip, web["user"], web["pass"])
 		utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf restart")
+		ama.IsManagement = false
 
 		a3share.SendClusterSync(ip, a3share.FinishSync)
 		ama.ClearClusterStatus()

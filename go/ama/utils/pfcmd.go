@@ -132,10 +132,27 @@ func ForceNewCluster() {
 		pfservice + "pf restart",
 	}
 	ExecCmds(cmds)
+	ama.IsManagement = false
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintln("ForceNewCluster tasks done"))
 
 	ama.SetClusterStatus(ama.Ready4Sync)
+}
+
+func UpdateDB() {
+	cmds := []string{
+		pfcmd + "configreload hard",
+		pfcmd + "checkup",
+		"systemctl stop packetfence-mariadb",
+	}
+	ExecCmds(cmds)
+	waitProcStop("mysqld")
+
+	cmds = []string{
+		pfcmd + "generatemariadbconfig",
+		"systemctl stop packetfence-mariadb",
+	}
+	ExecCmds(cmds)
 }
 
 // prepare for the new cluster mode
@@ -198,6 +215,7 @@ func RestartKeepAlived() {
 		pfservice + "keepalived restart",
 	}
 	ExecCmds(cmds)
+	ama.IsManagement = false
 }
 
 func RemoveFromCluster() {
