@@ -186,7 +186,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 			var t report.NodecategoryParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
 			t.CategoryID = report.GetNodeCateId(ctx, t.Name)
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "violation":
 			var t report.ViolationParseStruct
@@ -196,28 +196,30 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		case "locationlog":
 			var t report.LocationlogParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "ip4log":
 			var t report.Ip4logParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "radius_audit_log":
 			var t report.RadauditParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
 			t.AuthStatus = t.AuthType
 			t.TimeStamp = fmt.Sprintf("%d", time.Now().UTC().UnixNano()/(int64(time.Millisecond)*1000))
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "radacct":
 			var t report.RadacctParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			if t.AcctStatusType == "Stop" || t.AcctStatusType == "Start" {
-				log.LoggerWContext(ctx).Error("8888888888Receiving STOP/Start message")
-			}
+			/*
+				if t.AcctStatusType == "Stop" || t.AcctStatusType == "Start" {
+					log.LoggerWContext(ctx).Error("8888888888Receiving STOP/Start message")
+				}
+			*/
 			t = radAcctFieldHandle(&t)
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		default:
 			log.LoggerWContext(ctx).Error("unknown table, skip")

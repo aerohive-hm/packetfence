@@ -56,26 +56,12 @@ func fillRadAcctTableBasedAcctReq(src *report.RadacctOriData) report.RadacctPars
 func handlePostRadAcct(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	//radAcct := report.RadacctParseStruct{}
-	log.LoggerWContext(ctx).Error("into handlePostRadAcct")
 
 	ReportCounter.recvCounter++
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive radacct report: %d", ReportCounter.recvCounter))
 	log.LoggerWContext(ctx).Info(string(d.ReqData))
-	/*
-		err := json.Unmarshal(d.ReqData, &radAcct)
-		if err != nil {
-			log.LoggerWContext(ctx).Error(err.Error())
-			return []byte("")
-		}
-		log.LoggerWContext(ctx).Info("before invoke fillRadAcctTableBasedAcctReq")
 
-		dst := fillRadAcctTableBasedAcctReq(&radAcct)
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("print the data after reform :%+v", dst))
-		message, _ := json.Marshal(dst)
-		log.LoggerWContext(ctx).Error("print the data after marshal: ")
-		log.LoggerWContext(ctx).Debug(string(message))
-	*/
 	redisKey := GetkeyfromPostReport(r, d.ReqData)
 	if redisKey == "" {
 		redisKey = "amaReportData"
