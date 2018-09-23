@@ -1619,7 +1619,7 @@ msgstr "Violations fermées"
 # html/pfappserver/root/admin/configuration.tt
 # html/pfappserver/root/pfqueue/cluster.tt
 msgid "Cluster"
-msgstr "Cluster:"
+msgstr "Cluster"
 
 # html/pfappserver/root/admin/status.tt
 msgid "Cluster Queue"

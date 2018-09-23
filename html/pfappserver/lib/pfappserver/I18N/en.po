@@ -85,6 +85,10 @@ msgstr ""
 msgid "90 days"
 msgstr ""
 
+# html/pfappserver/root/configuration/system_config.tt
+msgid "A3 can be monitored from the cloud. You can configure your connectivity to Aerohive’s Cloud from this module."
+msgstr "La surveillance du serveur A3 peut être effectuée à partir du cloud. Vous pouvez configurer votre connectivité au Aerohive Cloud à partir de ce module."
+
 # html/pfappserver/lib/pfappserver/Form/Config/Source/AdminProxy.pm
 msgid "A comma-separated list of IP addresses"
 msgstr ""
@@ -3723,7 +3727,7 @@ msgstr ""
 
 # html/pfappserver/root/admin/cloudIntegration.tt
 msgid "Link Status"
-msgstr "État du lien"
+msgstr ""
 
 # html/pfappserver/root/admin/cloudIntegration.tt
 msgid "Link with Aerohive Cloud Account"
@@ -6922,7 +6926,7 @@ msgstr ""
 
 # html/pfappserver/root/admin/cluster.tt
 msgid "Shared Key"
-msgstr "Clé partagée"
+msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Mirapay.pm
 msgid "Shared Secret"

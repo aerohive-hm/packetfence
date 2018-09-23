@@ -165,7 +165,7 @@ function getClusterStatusInfo(){
             //interfaces table
             $.each(data.interfaces, function(ethr, vip) {
                 if(ethr.indexOf('.') !== -1){ //if there is period in eth0
-                    ethr = "VLAN" + ethr.split(".").pop();
+                    ethr = "VLAN " + ethr.split(".").pop();
                     $("#net-interfaces-table-tbody").append("<tr><td style='padding-left:25px;'>" + ethr + "</td><td>" + vip + "</td></tr>");
                 } else {
                     ethr = ethr;
