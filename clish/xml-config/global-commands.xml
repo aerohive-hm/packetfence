@@ -11,7 +11,7 @@
     <!--=======================================================-->
     <COMMAND name="reboot"
              help="Reboot the system">
-        <ACTION>sudo /aerohive_app/scripts/reboot_system</ACTION>
+        <ACTION>sudo /usr/local/pf/clish/reboot_system</ACTION>
     </COMMAND>
     <!--=======================================================-->
     <!--=======================================================-->
@@ -21,11 +21,11 @@
             help="show system related details"/>
     <COMMAND name="show network"
             help="show network related details">
-       <ACTION>sudo /aerohive_app/scripts/get_network_settings.sh</ACTION>
+       <ACTION>sudo /usr/local/pf/clish/get_network_settings.sh</ACTION>
     </COMMAND>
      <COMMAND name="logout"
             help="logout console">
-        <ACTION>sudo /aerohive_app/scripts/logout_console.sh</ACTION>
+        <ACTION>sudo /usr/local/pf/clish/logout_console.sh</ACTION>
     </COMMAND>
 	<!--=======================================================-->
 </CLISH_MODULE>

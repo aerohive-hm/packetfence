@@ -20,21 +20,21 @@
        <PARAM name="netmask"
               help="network netmask"
               ptype="NETMASK_PATTERN"/>
-       <ACTION>sudo /aerohive_app/scripts/change_ip.sh -m ${netmask}</ACTION>
+       <ACTION>sudo /usr/local/pf/clish/change_ip.sh -m ${netmask}</ACTION>
    </COMMAND>
    <COMMAND name="network ip"
             help="Set network IP address">
        <PARAM name="IP"
               help="IP Address"
               ptype="IP_PATTERN"/>
-       <ACTION>sudo /aerohive_app/scripts/change_ip.sh -i ${IP}</ACTION>
+       <ACTION>sudo /usr/local/pf/clish/change_ip.sh -i ${IP}</ACTION>
    </COMMAND>
    <COMMAND name="network gateway"
             help="Set network gateway">
        <PARAM name="gateway"
               help="network gateway"
               ptype="IP_PATTERN"/>
-       <ACTION>sudo /aerohive_app/scripts/change_ip.sh -g ${gateway}</ACTION>
+       <ACTION>sudo /usr/local/pf/clish/change_ip.sh -g ${gateway}</ACTION>
    </COMMAND>
    <!--=======================================================-->    
 </CLISH_MODULE>
