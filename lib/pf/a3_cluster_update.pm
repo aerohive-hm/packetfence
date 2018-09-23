@@ -750,7 +750,7 @@ sub roll_back_app {
   my ($prev_version, $to_version) = get_versions();
   _commit_cluster_update_log("RPM version is $rpm_version and previous version before update is $prev_version");
   if (! $rpm_version) {
-    if (call_system_cmd("$YUM_BIN install $a3_pkg."-".$prev_version -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE}") != 0) {
+    if (call_system_cmd("$YUM_BIN install $a3_pkg."-".$prev_version -y | $TEE_BIN -a $A3_CLUSTER_UPDATE_LOG_FILE") != 0) {
       A3_Die("Failed to roll back application, using VMWARE SNAPSHOT to rollback!!!!");
     }
     #restore conf
