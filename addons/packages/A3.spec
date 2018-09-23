@@ -337,6 +337,7 @@ Requires: fingerbank >= 4.0.0, fingerbank < 5.0.0
 Requires: perl(File::Tempdir)
 Requires: perl(REST::Client)
 Requires: nodejs
+Requires: a3-node-modules
 
 # etcd
 Requires: etcd >= 3.1
