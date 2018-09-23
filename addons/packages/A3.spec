@@ -1386,10 +1386,12 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update_wrapper
 %dir                    /usr/local/pf/clish
 %attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish_wrapper
 %attr(0755, netcfg, netcfg)     /usr/local/pf/clish/change_ip.sh
 %attr(0755, netcfg, netcfg)     /usr/local/pf/clish/reboot_system
 %attr(0755, netcfg, netcfg)     /usr/local/pf/clish/get_network_settings.sh
 %attr(0755, netcfg, netcfg)     /usr/local/pf/clish/logout_console.sh
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/xml-config/*
 %dir                    /usr/local/pf/var
 %dir                    /usr/local/pf/var/conf
 %dir                    /usr/local/pf/raddb
