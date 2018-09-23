@@ -264,9 +264,10 @@ SetEnvIf Request_URI "netdata" is_netdata
       ProxyPassReverse /portal_preview/ https://[% server_name %]/
       ProxyPassReverse /portal_preview/ http://[% server_name %]/
       #A3_MODIFICATION
-      ProxyPass /a3/ http://127.0.0.1:10000/
-      ProxyPassReverse /a3/ http://127.0.0.1:10000/
-      ProxyPassReverse /a3/ https://127.0.0.1:10000/
+      ProxyPass /a3/configurator/ http://127.0.0.1:10000/configurator/
+      ProxyPass /a3/api/v1/configurator/ http://127.0.0.1:10000/api/v1/configurator/
+      ProxyPassReverse /a3/configurator/ http://127.0.0.1:10000/configurator/
+      ProxyPassReverse /a3/api/v1/configurator/ http://127.0.0.1:10000/api/v1/configurator/
       #LogLevel debug
 
       # Proxy to netdata
