@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CLISH_MODULE xmlns="http://clish.sourceforge.net/XMLSchema" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ xsi:schemaLocation="http://clish.sourceforge.net/XMLSchema
+                     http://clish.sourceforge.net/XMLSchema/clish.xsd">
+
+    <PTYPE name="IP_PATTERN"
+        pattern="(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))"
+          help="Network IP Address"/>
+    <!--=======================================================-->
+    <PTYPE name="NETMASK_PATTERN"
+        pattern="(^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)"
+          help="Network Netmask"/>
+    <!--=======================================================-->
+   <COMMAND name="network"
+            help="some utility commands for network related details"/>
+   <!--=======================================================-->
+   <COMMAND name="network netmask"
+            help="Set network netmask">
+       <PARAM name="netmask"
+              help="network netmask"
+              ptype="NETMASK_PATTERN"/>
+       <ACTION>sudo /aerohive_app/scripts/change_ip.sh -m ${netmask}</ACTION>
+   </COMMAND>
+   <COMMAND name="network ip"
+            help="Set network IP address">
+       <PARAM name="IP"
+              help="IP Address"
+              ptype="IP_PATTERN"/>
+       <ACTION>sudo /aerohive_app/scripts/change_ip.sh -i ${IP}</ACTION>
+   </COMMAND>
+   <COMMAND name="network gateway"
+            help="Set network gateway">
+       <PARAM name="gateway"
+              help="network gateway"
+              ptype="IP_PATTERN"/>
+       <ACTION>sudo /aerohive_app/scripts/change_ip.sh -g ${gateway}</ACTION>
+   </COMMAND>
+   <!--=======================================================-->    
+</CLISH_MODULE>

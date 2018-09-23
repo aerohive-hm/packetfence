@@ -1,0 +1,10 @@
+#!/bin/sh
+echo -e "Are you sure you want to reboot the system?[Y/N]\c"
+read ans
+ans=`echo  "$ans" | cut -c1 | tr "[a-z]" "[A-Z]"`
+if [ $ans = 'Y' ]; then
+  sleep 5
+  /usr/sbin/reboot
+else
+  exit 0
+fi
