@@ -11232,7 +11232,7 @@ msgid "ifindex"
 msgstr "IfIndex"
 
 # html/pfappserver/root/admin/cloudIntegration.tt
-msgid "If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select,"
+msgid 'If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select, "Link with Aerohive Cloud Account ."'
 msgstr "Si vous ou votre organisation avez déjà un compte Aerohive Cloud pour gérer votre réseau, vous pouvez entrer vos données de connexion et sélectionner"
 
 # pf::Authentication::constants (Conditions)
