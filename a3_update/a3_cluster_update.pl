@@ -131,8 +131,8 @@ sub a3_app_update {
     if ($ip ne $first_node_ip_to_update) {
       remove_nodes_from_cluster();
       commit_progress_log("error at $ip");
-      exit_failure();
     }
+    exit_failure();
   }
 
   commit_progress_log("done!");
