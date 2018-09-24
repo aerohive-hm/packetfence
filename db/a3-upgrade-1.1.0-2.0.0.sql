@@ -45,11 +45,4 @@ END
 DELIMITER ;
 call ValidateVersion;
 
-CREATE TABLE a3_daily_avg (
-    daily_date   date NOT NULL,
-    daily_avg    int  NOT NULL,
-    moving_avg   int  NOT NULL,
-    PRIMARY KEY (daily_date)
-) ENGINE=InnoDB;
-
 INSERT INTO pf_version (id, version) VALUES (@VERSION_INT, CONCAT_WS('.', @MAJOR_VERSION, @MINOR_VERSION, @SUBMINOR_VERSION));
