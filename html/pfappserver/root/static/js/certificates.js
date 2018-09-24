@@ -232,7 +232,8 @@ function uploadCACert(input, sentForm, qualifier){
             // var filePath = data.filePath;
         },
         error: function(data){
-            document.getElementById('errorMessage').innerHTML = data.status_msg;
+          console.log(data);
+            document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
             $("#error-alert").show();
             setTimeout(function(){
                 $("#error-alert").slideUp(500);
