@@ -148,7 +148,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 	table := ReportTable{}
 	var temp interface{}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Into ReportDbTable, sendFlag %t,CacheTableUpLimit %d", sendFlag, CacheTableUpLimit))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("Into ReportDbTable, sendFlag %t,CacheTableUpLimit %d", sendFlag, CacheTableUpLimit))
 
 	//Check the connect status, if not connected, do nothing
 	if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
@@ -164,7 +164,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		log.LoggerWContext(ctx).Info("msgQue len is 0, no DB messages")
 		return nil, 0
 	}
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("get %d messages from msgQue", len(msgQue)))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("get %d messages from msgQue", len(msgQue)))
 
 	fillReportHeader(&reportMsg.Header)
 	reportMsg.Data.MsgType = "a3-report-db"
@@ -186,7 +186,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 			var t report.NodecategoryParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
 			t.CategoryID = report.GetNodeCateId(ctx, t.Name)
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "violation":
 			var t report.ViolationParseStruct
@@ -208,16 +208,18 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 			err = json.Unmarshal(singleMsg.([]byte), &t)
 			t.AuthStatus = t.AuthType
 			t.TimeStamp = fmt.Sprintf("%d", time.Now().UTC().UnixNano()/(int64(time.Millisecond)*1000))
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "radacct":
 			var t report.RadacctParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			if t.AcctStatusType == "Stop" || t.AcctStatusType == "Start" {
-				log.LoggerWContext(ctx).Error("8888888888Receiving STOP/Start message")
-			}
+			/*
+				if t.AcctStatusType == "Stop" || t.AcctStatusType == "Start" {
+					log.LoggerWContext(ctx).Error("8888888888Receiving STOP/Start message")
+				}
+			*/
 			t = radAcctFieldHandle(&t)
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		default:
 			log.LoggerWContext(ctx).Error("unknown table, skip")

@@ -94,7 +94,7 @@ sub apply_entitlement_key {
                     pf::util::call_url("POST", $url, {msgtype => $msgtype,});
                 };
                 if ($@) {
-                    $self->logger->error("Error send LicenseInfoChange data to AMA : $@");
+                    $logger->error("Error send LicenseInfoChange data to AMA : $@");
                 }
                 return pf::a3_entitlement::find_one($key);
             }

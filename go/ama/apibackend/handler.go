@@ -67,6 +67,12 @@ func Handle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		return
 	}
 
+	if d.Cmd == "configurator" &&
+		utils.IsFileExist(utils.A3CurrentlyAt) {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	section, ok := mHandler[d.Cmd]
 	if !ok {
 		log.LoggerWContext(ctx).Error(fmt.Sprintf("Can not find subCmd of %s",
@@ -91,13 +97,13 @@ func HandleRedirect(w http.ResponseWriter, r *http.Request) string {
 	ctx := r.Context()
 
 	//redirect to admin page when initial setup done
-    if utils.IsFileExist(utils.A3CurrentlyAt) {
-               newURL := "https://" + r.Host + "/"
-               w.Header().Set("Location", newURL)
-               w.WriteHeader(http.StatusFound)
-               http.Redirect(w, r, newURL, http.StatusFound)
-               log.LoggerWContext(ctx).Error(fmt.Sprintf("initial setup already done, redirect to %s", newURL))
-               return "redirect"
+	if utils.IsFileExist(utils.A3CurrentlyAt) {
+		newURL := "https://" + r.Host + "/"
+		w.Header().Set("Location", newURL)
+		w.WriteHeader(http.StatusFound)
+		http.Redirect(w, r, newURL, http.StatusFound)
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("initial setup already done, redirect to %s", newURL))
+		return "redirect"
 	}
 
 	return ""

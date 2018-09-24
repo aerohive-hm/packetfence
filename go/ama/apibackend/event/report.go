@@ -91,7 +91,7 @@ func GetkeyfromPostReport(r *http.Request, reqData []byte) string {
 		return ""
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive DB report data for table %s data:%#v", reportData.TableName, parseReportData))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("receive DB report data for table %s data:%#v", reportData.TableName, parseReportData))
 
 	return parseReportData.GetTableKey4Redis()
 }
@@ -101,8 +101,8 @@ func handlePostReport(r *http.Request, d crud.HandlerData) []byte {
 
 	ReportCounter.recvCounter++
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive DB report event data count: %d", ReportCounter.recvCounter))
-	log.LoggerWContext(ctx).Info(string(d.ReqData))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("receive DB report event data count: %d", ReportCounter.recvCounter))
+	log.LoggerWContext(ctx).Debug(string(d.ReqData))
 
 	redisKey := GetkeyfromPostReport(r, d.ReqData)
 	if redisKey == "" {

@@ -82,10 +82,14 @@ func syncRemove2Other(ctx context.Context, sysids []string) {
 	}
 
 	// force-new-cluster process
-	utils.ForceNewCluster()
-
-	//notify other nodes to startSync
-	a3share.NotifyClusterStatus(a3share.StartSync)
+	nodes := a3config.ClusterNew().FetchNodesInfo()
+	if len(nodes) > 1 {
+		utils.ForceNewCluster()
+		//notify other nodes to startSync
+		a3share.NotifyClusterStatus(a3share.StartSync)
+	} else {
+		utils.UpdateDB()
+	}
 
 	//notify cloud server removed in cluster
 	amac.UpdateMsgToRdcSyn(ctx, amac.RemoveNodeFromCluster, sysids)

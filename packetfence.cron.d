@@ -18,4 +18,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 0     0  1   *   *   pf  /usr/local/pf/bin/a3ec
 30    *  *   *   *   pf  /usr/local/pf/bin/a3us
 45    0  *   *   *   pf  /usr/local/pf/bin/a3ma
-*/5     *  *   *   *   pf  /usr/local/pf/bin/a3cs
+*/5   *  *   *   *   pf  /usr/local/pf/bin/a3cs
