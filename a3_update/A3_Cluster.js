@@ -251,6 +251,16 @@ app.post("/a3/apply_db_schema", function(req, res){
     }
 });
 
+app.post("/a3/apply_conf_migration", function(req, res){
+    var params = get_post_params(req);
+    var opts = assemble_opts('pf::a3_cluster_update::apply_conf_migration()');
+    audit_log("the cmd to run is "+perl+" "+opts);
+    var ret = verify_credential(params[0], params[1], res);
+    if (ret == 0) {
+	simple_promise_chain_call(perl, opts, res);
+    }
+});
+
 app.post("/a3/kill_force_cluster", function(req, res){
     var params = get_post_params(req);
     var opts = assemble_opts('pf::a3_cluster_update::kill_force_cluster()');

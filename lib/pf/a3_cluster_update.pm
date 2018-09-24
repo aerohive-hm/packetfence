@@ -327,6 +327,28 @@ sub _check_db_schema_file {
 }
 
 
+=head2 _check_conf_migration_file
+
+check the exist of conf migration files
+
+=cut
+
+sub _check_conf_migration_file {
+  my @update_path_list = @_;
+  my @conf_migration_files;
+  for (0..$#update_path_list-1) {
+    push @conf_migration_files, "conf_migration-".$update_path_list[$_]."-".$update_path_list[$_+1];
+  }
+  _commit_cluster_update_log('The configuration migration files that need to be applied are ' . join(',',@conf_migration_files));
+  foreach (@conf_migration_files) {
+    if (! -e $A3_MIGRATION_DIR."/".$_) {
+      _commit_cluster_update_log("The conf migration script for $_ does not exist, fatal!!");
+      exit $fail_code;
+    }
+  }
+  return @conf_migration_files;
+}
+
 =head2 get_versions
 
 get from and to version from backup file
@@ -408,7 +430,6 @@ sub _get_db_password {
   return $password;
 }
 
-
 =head2 apply_db_update_schema
 
 apply db schemas
@@ -429,6 +450,24 @@ sub apply_db_update_schema {
   _commit_cluster_update_log("Finished applying database schema updates!");
 }
 
+=head2 apply_conf_migration
+
+apply apply conf migration 
+
+=cut
+
+sub apply_conf_migration {
+  my @update_path_list = _generate_update_patch_list();
+  my @conf_migration_files = _check_conf_migration_file(@update_path_list);
+  
+  foreach my $mig_file (@conf_migration_files) {
+    if (call_system_cmd("$A3_MIGRATION_DIR/$_") !=0) {
+      A3_Warn("Call $mig_file step with exit code non 0, please investigate!");
+    }
+  }
+
+  _commit_cluster_update_log("Finished applying conf migration!");
+}
 
 =head2 post_update
 

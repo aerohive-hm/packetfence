@@ -171,6 +171,15 @@ sub apply_db_schema {
   commit_progress_log("done!");
 }
 
+sub apply_conf_migration {
+  my $ip = shift @_;
+  commit_progress_log_action_start("Applying conf migration");
+
+  my $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'a3/apply_conf_migration', {});
+
+  commit_progress_log("done!");
+}
+
 sub sync_files_from_master {
   commit_progress_log_action_start("Synchronizing cluster files");
 
@@ -316,6 +325,7 @@ a3_app_update($first_node_ip_to_update);
 disable_misc_services();
 
 apply_db_schema();
+apply_conf_migration($first_node_ip_to_update);
 
 #stop pf service and db service on remaining nodes
 for my $ip (@remains_nodes_ip_to_update) {
@@ -338,6 +348,11 @@ sync_files_from_master();
 
 enable_nodes_after_update();
 galera_db_sync();
+
+# run conf migration on remaining nodes 
+for my $ip (@remains_nodes_ip_to_update) {
+  apply_conf_migration($ip);
+}
 
 # post action, like fix permission, write current-at file
 for my $ip (@remains_nodes_ip_to_update) {
