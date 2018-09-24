@@ -164,21 +164,6 @@ $(document).ready(function(){
             }, 3000);
         }
     }; //end of save click button
-
-    //
-    // var downloadBtn = document.createElement("BUTTON");
-    // var text = document.createTextNode("DOWNLOAD");
-    // downloadBtn.appendChild(text);
-    // downloadBtn.setAttribute("id", "download_button_ca");
-    // downloadBtn.setAttribute("class", "btn btn-primary");
-    // $('#caSubjNewlabel').after(downloadBtn);
-    //
-    // var downloadBtn = document.createElement("BUTTON");
-    // var text = document.createTextNode("DOWNLOAD");
-    // downloadBtn.appendChild(text);
-    // downloadBtn.setAttribute("id", "download_button_server");
-    // downloadBtn.setAttribute("class", "btn btn-primary");
-    // $('#servSubjNewlabel').after(downloadBtn);
 });
 
 
@@ -214,12 +199,12 @@ function showServerFileInfo(){
               document.getElementById("server_cert_label_upload").innerHTML = fileName;
               return true;
             } else {
-              document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
+              document.getElementById("server_cert_label_upload").innerHTML = 'Choose File...';
               alert("File size is greater than 1MB. Upload again.");
               return false;
             }
         } else {
-            document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
+            document.getElementById("server_cert_label_upload").innerHTML = 'Choose File...';
             alert("Incorrect file type. Upload again.");
             return false;
         }
