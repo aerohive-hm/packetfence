@@ -115,6 +115,8 @@ class App extends Component {
         const {i18n,show,loading,navigatorLanguage} = this.state;
         let self=this;
 
+        document.title = i18n.a3Setup;
+
         let contentHtml;
         if(show==="getStart"){
             contentHtml=<div>
