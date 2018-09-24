@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    applyKeyButton();
+    // applyKeyButton();
   $('.agreeToEula').click(function() {
       //changes checkbox to submit button
       $(".agree").slideUp();
@@ -9,14 +9,13 @@ $(document).ready(function(){
   $('.submitAgreement').click(function(){
       userSubmitEula();
   });
-});
 
-// apply button press
-function applyKeyButton(){
-  var applyKeyButton2 = $("#applyKey");
-  applyKeyButton2.click(function(){
+  $("#applyKey").click(function(e){
+    e.preventDefault();
+    document.getElementById("applyKey").disabled = false;
     var userKeyInput = document.getElementById('keyInput').value;
-    if (checkKeyInput(userKeyInput)){
+    var keyCorrectRegex = checkKeyInput(userKeyInput);
+    if (keyCorrectRegex == true){
         $(".errMsg").css('display', 'none');
         $("#keyInput").css('border','1px solid #dfdfdf');
         updateKeyTable(userKeyInput);
@@ -24,15 +23,19 @@ function applyKeyButton(){
         return true;
     } else {
         document.getElementById('keyInput').value = userKeyInput;
+        document.getElementById('errorMessage').innerHTML = "The key entered needs to be in format XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX";
+        $(".alert-danger").show(); // use slide down for animation
+        setTimeout(function (){
+          $(".alert-danger").slideUp(500);
+        }, 3000);
         return false;
     }
   });
-}
+});
 
 // update table after checking regex
 function updateKeyTable(userKeyInput) {
   console.log("inside updateKeyTable");
-    // var applyKeyButton2 = $("#applyKey");
     var base_url = window.location.origin;
     $.ajax({
         url : base_url + '/entitlement/key/' + userKeyInput,
@@ -63,7 +66,6 @@ function updateKeyTable(userKeyInput) {
 function checkKeyInput(userKeyInput){
     console.log("inside checkKeyInput");
     var checkKeyRegex = RegExp("^[\\s]*([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})-([A-Z0-9]{5})[\\s]*$");
-     var applyKeyButton2 = $("#applyKey");
     //TRUE OR FALSE
     if (checkKeyRegex.test(userKeyInput)){
         $("#keyInput").css('border','1px solid #dfdfdf');
