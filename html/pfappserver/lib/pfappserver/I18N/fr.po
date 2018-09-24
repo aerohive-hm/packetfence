@@ -110,6 +110,10 @@ msgstr "Une liste des durées d’accès disponibles pour l’utilisateur admin 
 msgid "A description of the billing tier"
 msgstr "Description du plan de facturation"
 
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "After connecting to your Aerohive Cloud Account, allow a few minutes for all the cluster nodes to finish the joining process. Refresh this page to check the status of the cluster members."
+msgstr "Après vous être connecté à votre compte Aerohive Cloud, attendez quelques minutes que tous les nœuds du cluster terminent le processus de jointure. Actualisez cette page pour vérifier le statut des membres du cluster."
+
 # html/pfappserver/root/admin/cloudIntegration.tt
 msgid "Aerohive Cloud"
 msgstr "Aerohive Cloud"
@@ -12668,6 +12672,7 @@ msgstr "semaines"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_scep.pm
+# html/pfappserver/root/configuration/certificates.tt
 msgid "When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format."
 msgstr "Lors du téléchargement, assurez-vous que le fichier est sous 1 Mo (1 mégaoctet ou 1000000 octets) et au format PEM."
 

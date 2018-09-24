@@ -101,6 +101,10 @@ msgstr ""
 msgid "A description of the billing tier"
 msgstr ""
 
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "After connecting to your Aerohive Cloud Account, allow a few minutes for all the cluster nodes to finish the joining process. Refresh this page to check the status of the cluster members."
+msgstr ""
+
 # html/pfappserver/root/service/status.tt
 msgid "A manual start from the command line will be required. Are you sure you want to continue?"
 msgstr ""

@@ -63,7 +63,7 @@
           <h6>[% l('More information about the Cloud') %]</h6>
           <br>
           <p>[% l('If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select,') %] <b>[% l(' " ') %] [% l('Link with Aerohive Cloud Account') %][% l(' ." ') %]</b></p>
-          <p>[% l('Allow time for the ') %]</p>
+          <p>[% l('After connecting to your Aerohive Cloud Account, allow a few minutes for all the cluster nodes to finish the joining process. Refresh this page to check the status of the cluster members.') %]</p>
         </div>
       </div>
       [% IF is_cluster_enabled %]
