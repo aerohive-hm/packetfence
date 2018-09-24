@@ -43,7 +43,6 @@ function getNodeInfo(){
             //determine which page to show if linked or unlinked
             //linked
             data = jQuery.parseJSON(data.A3_data);
-            console.log(data);
             if (data.msgtype == "nodesInfo"){
                 $('#rdcUrl').html(data.body.header.rdcUrl);
                 document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
@@ -65,8 +64,6 @@ function getNodeInfo(){
                 $(".disconnected").hide();
                 if (data.body.header.mode === "cluster"){ //if it's a cluster
                     $.each(data.body.data, function(i, items){
-                        console.log("each item: ");
-                        console.log(items);
                         $("#cloud-cluster-table-tbody").append("<tr><td id='connectedIcon'>" + items.status + "</td><td>" + items.hostname + "</td><td>" +  items.lastContactTime + "</td></tr>");
                     });
                     $('#cloud-cluster-table-tbody td:nth-child(1)').each(function() {
@@ -106,7 +103,6 @@ function getNodeInfo(){
 
 //function unlink account
 function unlinkAerohiveAccount(){
-    console.log("inside unlink aerohive account");
     var base_url = window.location.origin;
     var data = {url: ""};
 
@@ -117,8 +113,6 @@ function unlinkAerohiveAccount(){
         data: data,
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log("went through");
-            console.log(data);
             if (data.code == "fail"){
                 document.getElementById('errorMessage').innerHTML = data.msg;
                 $("#error-alert").show();
@@ -137,7 +131,6 @@ function unlinkAerohiveAccount(){
         },
         error: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log(data);
             document.getElementById('errorMessage').innerHTML = data.msg;
             $("#error-alert").show();
             setTimeout(function (){
@@ -151,7 +144,6 @@ function unlinkAerohiveAccount(){
 //function to link account
 function linkAerohiveAccount(){
     $('#spin-spinner').show();
-    console.log("inside link aerohive account");
     var base_url = window.location.origin;
     var form = document.forms.namedItem("cloudForm");
     var formData = new FormData(form);
@@ -160,8 +152,6 @@ function linkAerohiveAccount(){
     formData.forEach(function(value, key){
         object[key] = value;
     });
-    console.log("cloud inte object: "); console.log(object);
-    console.log("cloud inte formData: "); console.log(formData);
 
     document.getElementById("link-account").disabled = true;
     $.ajax({
@@ -171,7 +161,6 @@ function linkAerohiveAccount(){
         data: object,
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log(data);
             $('#spin-spinner').hide();
 
             if (data.code == "fail"){
@@ -194,7 +183,6 @@ function linkAerohiveAccount(){
         },
         error: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log(data);
             document.getElementById('errorMessage').innerHTML = data.msg;
             $("#error-alert").show();
             setTimeout(function (){
