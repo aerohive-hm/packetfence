@@ -17,7 +17,7 @@ use Moose;
 use namespace::autoclean;
 use pf::db;
 use pf::a3_entitlement qw(is_usage_over_capacity is_entitlement_expired get_trial_status);
-use pf::a3_eula_acceptance qw(is_eula_accepted);
+use pf::a3_eula_acceptance qw(a3_is_eula_accepted);
 use pf::config qw(%Config);
 use pf::file_paths qw($conf_dir);
 use pf::util;
@@ -53,7 +53,7 @@ sub auto :Private {
     if (-e "$conf_dir/currently-at") {
         $c->stash->{is_usage_over_capacity} = pf::a3_entitlement::is_usage_over_capacity();
         $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
-        $c->stash->{is_eula_accepted} = pf::a3_eula_acceptance::is_eula_accepted();
+        $c->stash->{is_eula_accepted} = pf::a3_eula_acceptance::a3_is_eula_accepted();
         $c->stash->{get_trial_status} = pf::a3_entitlement::get_trial_status();
         my ($cluster_enabled, $is_management) = pf::a3_util::a3_cluster_status();
         $c->stash->{is_cluster_enabled} = $cluster_enabled;
