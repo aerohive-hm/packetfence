@@ -23,7 +23,7 @@ const node = '/usr/local/pf/bin/cluster/node';
 const systemctl = '/usr/bin/systemctl';
 const sync = '/usr/local/pf/bin/cluster/sync';
 const pf_mariadb = '/usr/local/pf/sbin/pf-mariadb';
-const a3_post_mortem = '/usr/local/pf/a3_update/post_mortem.sh';
+const a3_post_process = '/usr/local/pf/a3_update/post_process.sh';
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
@@ -301,13 +301,13 @@ app.post("/a3/rollback_db", function(req, res){
     }
 });
 
-app.post("/a3/post_mortem", function(req, res){
+app.post("/a3/post_process", function(req, res){
     var params = get_post_params(req);
     var opts = [];
-    audit_log("the cmd to run is "+a3_post_mortem);
+    audit_log("the cmd to run is "+a3_post_process);
     var ret = verify_credential(params[0], params[1], res);
     if (ret == 0) {
-	simple_promise_chain_call(a3_post_mortem, opts, res);
+	simple_promise_chain_call(a3_post_process, opts, res);
     }
 });
 
