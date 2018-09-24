@@ -839,6 +839,7 @@ sub roll_back_app {
     restore_conf_file();
   }
   elsif ($rpm_version eq $prev_version) {
+    #This could be missing some dependency, so update is not happens indeed
     _commit_cluster_update_log("To be done more");
     restore_conf_file();
   }
