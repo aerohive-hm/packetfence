@@ -15,6 +15,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "Your computer was not found in the PacketFence database."
+msgstr "Your computer was not found in the A3 database."
+
 # html/pfappserver/root/user/list.tt
 msgid "# nodes"
 msgstr ""

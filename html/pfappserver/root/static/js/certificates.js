@@ -166,8 +166,6 @@ function uploadKey(input, sentForm, cert_path){
         error: function(data){
             removeCert(cert_path);
             $('input').val('');
-            console.log("File for key is incorrect. Upload key file again.");
-            console.log(data);
             document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
             $("#error-alert").show();
             setTimeout(function(){
@@ -179,8 +177,6 @@ function uploadKey(input, sentForm, cert_path){
 
 //upload server cert
 function uploadCert(input, sentForm){
-    console.log("in upload cert");
-    console.log("input"); console.log(input.value);
     var base_url = window.location.origin;
     var form = document.forms.namedItem(sentForm);
     var fd = new FormData(form[0]);
@@ -232,7 +228,7 @@ function uploadCACert(input, sentForm, qualifier){
             // var filePath = data.filePath;
         },
         error: function(data){
-            document.getElementById('errorMessage').innerHTML = data.status_msg;
+            document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
             $("#error-alert").show();
             setTimeout(function(){
                 $("#error-alert").slideUp(500);
@@ -312,10 +308,8 @@ function removeCert(path){
         data: filePath,
         dataType: 'json',
         success: function(data){
-            console.log("removed files");
         },
         error: function(data){
-            console.log("couldn't remove files");
         }
     })
 }

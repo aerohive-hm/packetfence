@@ -15,6 +15,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+# html/captive-portal/lib/captiveportal/
+msgid "Your computer was not found in the PacketFence database."
+msgstr "Your computer was not found in the A3 database."
+
 # html/captive-portal/lib/captiveportal/PacketFence/DynamicRouting/Module/Root.pm
 msgid " with bandwidth balance : %s,"
 msgstr ""
