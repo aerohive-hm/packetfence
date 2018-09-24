@@ -462,7 +462,7 @@ sub apply_conf_migration {
   my @conf_migration_files = _check_conf_migration_file(@update_path_list);
   
   foreach my $mig_file (@conf_migration_files) {
-    if (call_system_cmd("$A3_MIGRATION_DIR/$_") !=0) {
+    if (call_system_cmd("$A3_MIGRATION_DIR/$mig_file") !=0) {
       A3_Warn("Call $mig_file step with exit code non 0, please investigate!");
     }
   }
