@@ -44,7 +44,7 @@
               </div>
               <br/>
               <label style="float:left; width:130px;"> </label>
-              <div style="display:inline;">
+              <div>
                 <button class="btn btn-primary link-account" id="link-account">[% l('Link with Aerohive Cloud Account') %]</button>
                 <div class="spin-spinner spin-spinner-spinning" id="spin-spinner">
                   <span class="spinner-circle spinner-dot-spin">
