@@ -72,7 +72,6 @@ $(document).ready(function(){
             if (caFile.value.length != 0 && serverFile.value.length != 0){
               if (showCaCertFileInfo() || showServerFileInfo()){
                   $.when(processCAFile2, processServFile2).done(function(caFilePath, servFilePath){
-                      console.log(caFilePath[0].filePath); console.log(servFilePath[0].filePath);
                       if (caFilePath[1] == "success" || servFilePath[1] == "success"){
                           var ca_path = document.getElementById("ca_cert_path");
                           ca_path.value = caFilePath[0].filePath;
