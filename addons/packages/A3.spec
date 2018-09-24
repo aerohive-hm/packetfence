@@ -336,7 +336,7 @@ Requires: haproxy >= 1.6, keepalived >= 1.3.6
 Requires: fingerbank >= 4.0.0, fingerbank < 5.0.0
 Requires: perl(File::Tempdir)
 Requires: perl(REST::Client)
-Requires: nodejs = 6.11
+Requires: nodejs = 6.11.0
 Requires: a3-node-modules
 
 # etcd
