@@ -33,11 +33,16 @@ $(document).ready(function(){
     //button press on trashcan, array, removeClusterNode(), removeClusterNode(nodeArray)
     document.getElementById('remove-node').onclick = function(e){
         e.preventDefault();
-
-        getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
-
-        $('.removeModal').show();
+        // if (getListOfNodes.length == 0){
+        //   // $('.modal.in').modal('hide');
+        //   document.getElementById('errorMessage').innerHTML = "No node selected.";
+        //   $("#error-alert").show();
+        //   setTimeout(function(){
+        //       $("#error-alert").slideUp(500);
+        //   }, 3000);
+        // } else {
+        $('#removeModal').modal('show');
 
         $('#close-modal').on('click', function() {
             $('modal').hide();
@@ -47,7 +52,6 @@ $(document).ready(function(){
             $('.modal.in').modal('hide');
         }
     }
-
 });
 
 //function to get the number of cluster nodes checked in table
@@ -117,17 +121,15 @@ function removeClusterNode(nodeArray){
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
             getClusterStatusInfo();
-            console.log("removed!!");
-            console.log(data);
             $("#cluster-management-table").load("#cluster-management-table-tbody");
             if (data.code === "fail"){
-              document.getElementById('errorMessage').innerHTML = data.msg;
+              document.getElementById('errorMessage').innerHTML = "Failed to remove nodes(s)";
               $("#error-alert").show();
               setTimeout(function(){
                   $("#error-alert").slideUp(500);
               }, 3000);
             } else {
-              document.getElementById('successMessage').innerHTML = data.msg;
+              document.getElementById('successMessage').innerHTML = "Successfully removed nodes(s)";
               $("#success-alert").show();
               setTimeout(function(){
                   $("#success-alert").slideUp(500);
@@ -137,7 +139,6 @@ function removeClusterNode(nodeArray){
         },
         error: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log(data);
             document.getElementById('errorMessage').innerHTML = data.msg;
             $("#error-alert").show();
             setTimeout(function(){
@@ -155,7 +156,6 @@ function getClusterStatusInfo(){
         url: base_url + '/ama/cluster',
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log(data);
             $("#cluster-management-table-tbody tr").remove();
             $("#net-interfaces-table-tbody tr").remove();
             //cluster management table

@@ -57,7 +57,6 @@ $(document).ready(function(){
 
 //*****************save button press pki********************//
     document.getElementById("savePKI").onclick = function(e){
-        console.log("clicked on save");
         e.preventDefault();
         var caFile = document.getElementById('ca_cert_path_upload');
         var caFileExists = document.getElementById('ca_cert_path');
@@ -65,11 +64,9 @@ $(document).ready(function(){
         var serverFileExists = document.getElementById('server_cert_path');
         var pki_provider_name = document.getElementById("id");
         var pki_provider_id = $("input[name=id]").val();
-        console.log(pki_provider_id);
 
         if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name != null) {
             //clone
-            console.log("inside clone");
             var processCAFile2 = processFiles(caFile, pki_provider_name.value, 'CA');
             var processServFile2 = processFiles(serverFile, pki_provider_name.value, 'Server');
             if (caFile.value.length != 0 && serverFile.value.length != 0){
@@ -88,7 +85,6 @@ $(document).ready(function(){
             } else { $('form').submit(); }
         } else if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name == null) {
             //updates
-            console.log("inside update");
 
             //if only ca file update
             if (caFile.value.length != 0 && serverFile.value.length == 0){
@@ -146,7 +142,6 @@ $(document).ready(function(){
             var processServFile2 = processFiles(serverFile, pki_provider_name.value, 'Server');
             if (showCaCertFileInfo() && showServerFileInfo()){
                 $.when(processCAFile2, processServFile2).done(function(caFilePath, servFilePath){
-                    console.log(caFilePath[0].filePath); console.log(servFilePath[0].filePath);
                     if (caFilePath[1] == "success" && servFilePath[1] == "success"){
                         var ca_path = document.getElementById("ca_cert_path");
                         ca_path.value = caFilePath[0].filePath;
@@ -164,21 +159,6 @@ $(document).ready(function(){
             }, 3000);
         }
     }; //end of save click button
-
-    //
-    // var downloadBtn = document.createElement("BUTTON");
-    // var text = document.createTextNode("DOWNLOAD");
-    // downloadBtn.appendChild(text);
-    // downloadBtn.setAttribute("id", "download_button_ca");
-    // downloadBtn.setAttribute("class", "btn btn-primary");
-    // $('#caSubjNewlabel').after(downloadBtn);
-    //
-    // var downloadBtn = document.createElement("BUTTON");
-    // var text = document.createTextNode("DOWNLOAD");
-    // downloadBtn.appendChild(text);
-    // downloadBtn.setAttribute("id", "download_button_server");
-    // downloadBtn.setAttribute("class", "btn btn-primary");
-    // $('#servSubjNewlabel').after(downloadBtn);
 });
 
 
@@ -187,42 +167,25 @@ function showServerFileInfo(){
     var file2;
     var fileType2, fileSize2;
 
-    if (!window.FileReader) {
-        alert("The File API isn't supported on this browser please change to Google Chrome.");
-        return;
-    }
-
-    input2 = document.getElementById('server_cert_path_upload');
-    if (!input2) {
-        alert("Couldn't find the file input element.");
-    }
-    else if (!input2.files) {
-        alert("This browser doesn't support the `files` property of file inputs.");
-    }
-    else if (!input2.files[0]) {
-        // alert("Please select a file before clicking 'Save'");
-    }
-    else {
-        file2 = input2.files[0];
-        fileType2 = file2.type;
-        fileSize2 = file2.size/1024;
-        if (fileTypeValidation(input2)){
-            if (fileSizeValidation(input2)){
-              // append file name
-              var fileName = '';
-              fileName = input2.files[0].name;
-              document.getElementById("server_cert_label_upload").innerHTML = fileName;
-              return true;
-            } else {
-              document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
-              alert("File size is greater than 1MB. Upload again.");
-              return false;
-            }
+    file2 = input2.files[0];
+    fileType2 = file2.type;
+    fileSize2 = file2.size/1024;
+    if (fileTypeValidation(input2)){
+        if (fileSizeValidation(input2)){
+          // append file name
+          var fileName = '';
+          fileName = input2.files[0].name;
+          document.getElementById("server_cert_label_upload").innerHTML = fileName;
+          return true;
         } else {
-            document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
-            alert("Incorrect file type. Upload again.");
-            return false;
+          document.getElementById("server_cert_label_upload").innerHTML = 'Choose File...';
+          alert("File size is greater than 1MB. Upload again.");
+          return false;
         }
+    } else {
+        document.getElementById("server_cert_label_upload").innerHTML = 'Choose File...';
+        alert("Incorrect file type. Upload again.");
+        return false;
     }
 }
 
@@ -231,39 +194,22 @@ function showCaCertFileInfo() {
     var file;
     var fileType,fileSize;
 
-    if (!window.FileReader) {
-        alert("The File API isn't supported on this browser please change to Google Chrome.");
-        return;
-    }
-
     input = document.getElementById('ca_cert_path_upload');
-
-    if (!input) {
-        alert("Couldn't find the file input element.");
-    }
-    else if (!input.files) {
-        alert("This browser doesn't support the `files` property of file inputs.");
-    }
-    else if (!input.files[0]) {
-        // alert("Please select a file before clicking 'Save'");
-    }
-    else {
-        if (fileTypeValidation(input)){
-            if (fileSizeValidation(input)){
-              var fileName = '';
-              fileName = input.files[0].name;
-              document.getElementById("ca_cert_label_upload").innerHTML = fileName;
-              return true;
-            } else {
-              document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
-              alert("File size is greater than 1MB. Upload again.");
-              return false;
-            }
+    if (fileTypeValidation(input)){
+        if (fileSizeValidation(input)){
+          var fileName = '';
+          fileName = input.files[0].name;
+          document.getElementById("ca_cert_label_upload").innerHTML = fileName;
+          return true;
         } else {
-            alert("Incorrect file type. Upload again.");
-            document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
-            return false;
+          document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
+          alert("File size is greater than 1MB. Upload again.");
+          return false;
         }
+    } else {
+        alert("Incorrect file type. Upload again.");
+        document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
+        return false;
     }
 }
 
@@ -306,7 +252,6 @@ function processFiles(input, pki_provider_name, qualifier){
         processData: false,
         contentType: false,
         success: function(data){
-          console.log("processfiles data: " + data);
         },
         error: function(data){
           var errMsg = data.status_msg;
