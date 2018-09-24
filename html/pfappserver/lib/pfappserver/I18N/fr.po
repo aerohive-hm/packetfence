@@ -98,6 +98,10 @@ msgstr "Nom d’utilisateur 802.1X"
 msgid "90 days"
 msgstr "90 jours"
 
+# html/pfappserver/root/configuration/system_config.tt
+msgid "A3 can be monitored from the cloud. You can configure your connectivity to Aerohive Cloud from this module."
+msgstr "La surveillance du serveur A3 peut être effectuée à partir du cloud. Vous pouvez configurer votre connectivité au Aerohive Cloud à partir de ce module."
+
 # html/pfappserver/lib/pfappserver/Form/Config/Source/AdminProxy.pm
 msgid "A comma-separated list of IP addresses"
 msgstr "Liste d’adresses IP séparées par des virgules"
