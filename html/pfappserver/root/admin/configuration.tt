@@ -222,7 +222,9 @@
               <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('clustering'),clustering) %]">[% l('Cluster') %]</a></li>
               [% END %]
               [% pf_section_entry( 'radius_authentication_methods', 'Authentication Methods') | none %]
+                [% IF !is_cluster_enabled or is_master_node %]
               <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('certificates'),certificates) %]">[% l('Certificates') %]</a></li>
+                [% END %]
               [% pf_section_entry( 'node_import', 'Node Import') | none %]
               [%- END %]
               [%- IF can_access("ADMIN_ROLES_READ") %]
