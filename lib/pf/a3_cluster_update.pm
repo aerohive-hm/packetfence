@@ -36,6 +36,7 @@ Readonly::Scalar my $A3_DB_DIR                    => "$A3_BASE_DIR/db";
 Readonly::Scalar my $A3_BIN_DIR                   => "$A3_BASE_DIR/bin";
 Readonly::Scalar my $A3_CONF_DIR                  => "$A3_BASE_DIR/conf";
 Readonly::Scalar my $A3_MIGRATION_DIR     	  => "$A3_BASE_DIR/conf_migration";
+Readonly::Scalar my $A3_POST_PROCESS_DIR     	  => "$A3_BASE_DIR/a3_update/post_process";
 Readonly::Scalar my $A3_VAR_CONF_DIR              => "$A3_BASE_DIR/var/conf";
 Readonly::Scalar my $PF_MON_CONF                  => "$A3_CONF_DIR/pfmon.conf";
 Readonly::Scalar my $PF_CONF_FILE                 => "$A3_CONF_DIR/pf.conf";
@@ -350,6 +351,28 @@ sub _check_conf_migration_file {
   return @conf_migration_files;
 }
 
+=head2 _check_post_process_file
+
+check the exist of post process files
+
+=cut
+
+sub _check_post_process_file {
+  my @update_path_list = @_;
+  my @post_process_files;
+  for (0..$#update_path_list-1) {
+    push @post_process_files, "post_process-".$update_path_list[$_]."-".$update_path_list[$_+1];
+  }
+  _commit_cluster_update_log('The post process files that need to be applied are ' . join(',',@post_process_files));
+  foreach (@post_process_files) {
+    if (! -e $A3_POST_PROCESS_DIR."/".$_) {
+      _commit_cluster_update_log("The post process script for $_ does not exist, fatal!!");
+      exit $fail_code;
+    }
+  }
+  return @post_process_files;
+}
+
 =head2 get_versions
 
 get from and to version from backup file
@@ -453,7 +476,7 @@ sub apply_db_update_schema {
 
 =head2 apply_conf_migration
 
-apply apply conf migration 
+apply conf migration 
 
 =cut
 
@@ -468,6 +491,25 @@ sub apply_conf_migration {
   }
 
   _commit_cluster_update_log("Finished applying conf migration!");
+}
+
+=head2 post_process
+
+apply post process 
+
+=cut
+
+sub post_process {
+  my @update_path_list = _generate_update_patch_list();
+  my @post_process_files = _check_post_process_file(@update_path_list);
+  
+  foreach my $post_file (@post_process_files) {
+    if (call_system_cmd("$A3_POST_PROCESS_DIR/$post_file") !=0) {
+      A3_Warn("Call $post_file step with exit code non 0, please investigate!");
+    }
+  }
+
+  _commit_cluster_update_log("Finished applying post process step!");
 }
 
 =head2 post_update
