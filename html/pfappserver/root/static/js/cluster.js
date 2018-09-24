@@ -32,22 +32,31 @@ $(document).ready(function(){
 
     //button press on trashcan, array, removeClusterNode(), removeClusterNode(nodeArray)
     document.getElementById('remove-node').onclick = function(e){
+        var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
+        if (getListOfNodes.length == 0){
+          // $('.modal.in').modal('hide');
+          document.getElementById('errorMessage').innerHTML = "No node selected.";
+          $("#error-alert").show();
+          setTimeout(function(){
+              $("#error-alert").slideUp(500);
+          }, 3000);
+        } else {
+          $('.modal.in').modal('show');
+
+          $('#close-modal').on('click', function() {
+              $('modal').hide();
+          });
+          document.getElementById("removing-node").onclick =  function(){
+              removeClusterNode(getListOfNodes);
+              $('.modal.in').modal('hide');
+          }
+
+        }
         e.preventDefault();
 
-        getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
-        var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
+        // getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
 
-        $('.removeModal').show();
-
-        $('#close-modal').on('click', function() {
-            $('modal').hide();
-        });
-        document.getElementById("removing-node").onclick =  function(){
-            removeClusterNode(getListOfNodes);
-            $('.modal.in').modal('hide');
-        }
     }
-
 });
 
 //function to get the number of cluster nodes checked in table
@@ -121,13 +130,13 @@ function removeClusterNode(nodeArray){
             console.log(data);
             $("#cluster-management-table").load("#cluster-management-table-tbody");
             if (data.code === "fail"){
-              document.getElementById('errorMessage').innerHTML = data.msg;
+              document.getElementById('errorMessage').innerHTML = "Failed to remove nodes(s)";
               $("#error-alert").show();
               setTimeout(function(){
                   $("#error-alert").slideUp(500);
               }, 3000);
             } else {
-              document.getElementById('successMessage').innerHTML = data.msg;
+              document.getElementById('successMessage').innerHTML = "Successfully removed nodes(s)";
               $("#success-alert").show();
               setTimeout(function(){
                   $("#success-alert").slideUp(500);
