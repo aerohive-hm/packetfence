@@ -110,6 +110,10 @@ msgstr "Une liste des durées d’accès disponibles pour l’utilisateur admin 
 msgid "A description of the billing tier"
 msgstr "Description du plan de facturation"
 
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "After connecting to your Aerohive Cloud Account, allow a few minutes for all the cluster nodes to finish the joining process. Refresh this page to check the status of the cluster members."
+msgstr "Après vous être connecté à votre compte Aerohive Cloud, attendez quelques minutes que tous les nœuds du cluster terminent le processus de jointure. Actualisez cette page pour vérifier le statut des membres du cluster."
+
 # html/pfappserver/root/admin/cloudIntegration.tt
 msgid "Aerohive Cloud"
 msgstr "Aerohive Cloud"
@@ -1619,7 +1623,7 @@ msgstr "Violations fermées"
 # html/pfappserver/root/admin/configuration.tt
 # html/pfappserver/root/pfqueue/cluster.tt
 msgid "Cluster"
-msgstr "Cluster:"
+msgstr "Cluster"
 
 # html/pfappserver/root/admin/status.tt
 msgid "Cluster Queue"
@@ -2893,6 +2897,10 @@ msgstr "Courriel"
 # html/pfappserver/lib/pfappserver/Form/Config/Source/SponsorEmail.pm
 msgid "Email Activation Timeout"
 msgstr "Délais d’activation courriel"
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "Email of the Cloud user"
+msgstr "Email de l'utilisateur du Cloud"
 
 # html/pfappserver/root/user/print.tt
 msgid "Email address"
@@ -5551,6 +5559,10 @@ msgstr "Appareil parent"
 # html/pfappserver/root/user/view.tt
 msgid "Password"
 msgstr "Mot de passe"
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "Password of the Cloud user"
+msgstr "Mot de passe de l'utilisateur Cloud"
 
 # html/pfappserver/root/user/view.tt
 msgid "Password Reminder"
@@ -8291,6 +8303,10 @@ msgstr "Le moteur SNMP de PacetFence peut être configure ici."
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/URL.pm
 msgid "The URL on which the user should be redirected."
 msgstr "L’URL sur laquelle l’utilisateur doit être redirigé."
+
+# /html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "The URL of the Cloud host"
+msgstr "URL de l'hôte Cloud"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Provisioning/mobileconfig.pm
 msgid "The Wi-Fi key to join the SSID"
@@ -11232,7 +11248,7 @@ msgid "ifindex"
 msgstr "IfIndex"
 
 # html/pfappserver/root/admin/cloudIntegration.tt
-msgid "If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select,"
+msgid 'If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select, "Link with Aerohive Cloud Account ."'
 msgstr "Si vous ou votre organisation avez déjà un compte Aerohive Cloud pour gérer votre réseau, vous pouvez entrer vos données de connexion et sélectionner"
 
 # pf::Authentication::constants (Conditions)
@@ -12656,6 +12672,7 @@ msgstr "semaines"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_scep.pm
+# html/pfappserver/root/configuration/certificates.tt
 msgid "When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format."
 msgstr "Lors du téléchargement, assurez-vous que le fichier est sous 1 Mo (1 mégaoctet ou 1000000 octets) et au format PEM."
 

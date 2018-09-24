@@ -165,7 +165,9 @@
               [% list_entry('Config::BillingTiers', 'index', 'Billing Tiers') | none %]
               [%- END %]
               [%- IF can_access("PKI_PROVIDER_READ") %]
+                  [% IF !is_cluster_enabled or is_master_node %]
               [% list_entry('Config::PKI_Provider', 'index', 'PKI Providers') | none %]
+                  [% END %]
               [%- END %]
               [%- IF can_access("PROVISIONING_READ") %]
               [% list_entry('Config::Provisioning', 'index', 'Provisioners') | none %]
@@ -217,16 +219,16 @@
               <!-- [% END %] -->
               [%- END %]
               [% IF is_master_node %]
-              <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('clustering'),clustering) %]">Cluster</a></li>
+              <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('clustering'),clustering) %]">[% l('Cluster') %]</a></li>
               [% END %]
               [% pf_section_entry( 'radius_authentication_methods', 'Authentication Methods') | none %]
-              <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('certificates'),certificates) %]">Certificates</a></li>
+              <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('certificates'),certificates) %]">[% l('Certificates') %]</a></li>
               [% pf_section_entry( 'node_import', 'Node Import') | none %]
               [%- END %]
               [%- IF can_access("ADMIN_ROLES_READ") %]
               [% list_entry('Config::AdminRoles', 'index', 'Admin Access') | none %]
                 [% IF !is_cluster_enabled or is_master_node %]
-              <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('cloudIntegration'),cloudIntegration) %]">Cloud Integration</a></li>
+              <li><a href="[% c.pf_hash_for(c.controller('Configuration').action_for('cloudIntegration'),cloudIntegration) %]">[% l('Cloud Integration') %]</a></li>
                 [% END %]
               [%- END %]
 

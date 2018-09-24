@@ -34,9 +34,9 @@
                       <div class="server">
                         <h6>[% l('Server Certificate and Key Upload') %]</h6>
                         <span>[% l('A server key and server certificate are required.') %]
-                          [% l('Uploading certificate files requires a restart of all httpd services. ') %]</span>
+                          [% l('Uploading certificate files requires a restart of all httpd services.') %]</span>
                         <br><br>
-                        <h5>[% l('Current Server Certificate <a class="btn" id="download_button_https" style="margin-left: 447px;"> [% l('Download') %]</a></h5>
+                        <h5>[% l('Current Server Certificate') %] <a class="btn" id="download_button_https" style="margin-left: 447px;"> [% l('Download') %]</a></h5>
                         <div id="https_serv_view_more"></div>
                         <br><br>
                         <input id="https_key_path" name="https_key_path" type="hidden" value="">

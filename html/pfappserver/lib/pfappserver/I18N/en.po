@@ -85,6 +85,10 @@ msgstr ""
 msgid "90 days"
 msgstr ""
 
+# html/pfappserver/root/configuration/system_config.tt
+msgid "A3 can be monitored from the cloud. You can configure your connectivity to Aerohive’s Cloud from this module."
+msgstr "La surveillance du serveur A3 peut être effectuée à partir du cloud. Vous pouvez configurer votre connectivité au Aerohive Cloud à partir de ce module."
+
 # html/pfappserver/lib/pfappserver/Form/Config/Source/AdminProxy.pm
 msgid "A comma-separated list of IP addresses"
 msgstr ""
@@ -95,6 +99,10 @@ msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/BillingTiers.pm
 msgid "A description of the billing tier"
+msgstr ""
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "After connecting to your Aerohive Cloud Account, allow a few minutes for all the cluster nodes to finish the joining process. Refresh this page to check the status of the cluster members."
 msgstr ""
 
 # html/pfappserver/root/service/status.tt
@@ -3723,7 +3731,7 @@ msgstr ""
 
 # html/pfappserver/root/admin/cloudIntegration.tt
 msgid "Link Status"
-msgstr "État du lien"
+msgstr ""
 
 # html/pfappserver/root/admin/cloudIntegration.tt
 msgid "Link with Aerohive Cloud Account"
@@ -5133,6 +5141,10 @@ msgstr ""
 # html/pfappserver/root/user/print.tt
 # html/pfappserver/root/user/view.tt
 msgid "Password"
+msgstr ""
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "Password of the Cloud user"
 msgstr ""
 
 # html/pfappserver/root/user/view.tt
@@ -6922,7 +6934,7 @@ msgstr ""
 
 # html/pfappserver/root/admin/cluster.tt
 msgid "Shared Key"
-msgstr "Clé partagée"
+msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Mirapay.pm
 msgid "Shared Secret"
@@ -7751,6 +7763,10 @@ msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/URL.pm
 msgid "The URL on which the user should be redirected."
+msgstr ""
+
+# /html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "The URL of the Cloud host"
 msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Provisioning/mobileconfig.pm
@@ -10136,6 +10152,10 @@ msgstr "Email violation to administrator"
 # pf::action (VIOLATION_ACTIONS)
 msgid "email_user_action"
 msgstr "Email violation to user"
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "Email of the Cloud user"
+msgstr ""
 
 # conf/documentation.conf (advanced.language options)
 msgid "en_US"
