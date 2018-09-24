@@ -5139,6 +5139,10 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "Password of the Cloud user"
+msgstr ""
+
 # html/pfappserver/root/user/view.tt
 msgid "Password Reminder"
 msgstr ""
@@ -7757,6 +7761,10 @@ msgstr ""
 msgid "The URL on which the user should be redirected."
 msgstr ""
 
+# /html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "The URL of the Cloud host"
+msgstr ""
+
 # html/pfappserver/lib/pfappserver/Form/Config/Provisioning/mobileconfig.pm
 msgid "The Wi-Fi key to join the SSID"
 msgstr ""
@@ -10140,6 +10148,10 @@ msgstr "Email violation to administrator"
 # pf::action (VIOLATION_ACTIONS)
 msgid "email_user_action"
 msgstr "Email violation to user"
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "Email of the Cloud user"
+msgstr ""
 
 # conf/documentation.conf (advanced.language options)
 msgid "en_US"

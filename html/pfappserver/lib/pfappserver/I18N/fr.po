@@ -2894,6 +2894,10 @@ msgstr "Courriel"
 msgid "Email Activation Timeout"
 msgstr "Délais d’activation courriel"
 
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "Email of the Cloud user"
+msgstr "Email de l'utilisateur du Cloud"
+
 # html/pfappserver/root/user/print.tt
 msgid "Email address"
 msgstr "Adresse courriel"
@@ -5551,6 +5555,10 @@ msgstr "Appareil parent"
 # html/pfappserver/root/user/view.tt
 msgid "Password"
 msgstr "Mot de passe"
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "Password of the Cloud user"
+msgstr "Mot de passe de l'utilisateur Cloud"
 
 # html/pfappserver/root/user/view.tt
 msgid "Password Reminder"
@@ -8291,6 +8299,10 @@ msgstr "Le moteur SNMP de PacetFence peut être configure ici."
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/URL.pm
 msgid "The URL on which the user should be redirected."
 msgstr "L’URL sur laquelle l’utilisateur doit être redirigé."
+
+# /html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "The URL of the Cloud host"
+msgstr "URL de l'hôte Cloud"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Provisioning/mobileconfig.pm
 msgid "The Wi-Fi key to join the SSID"
