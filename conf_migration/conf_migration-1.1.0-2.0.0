@@ -1,2 +1,3 @@
 #!/bin/sh
-echo "Dummy 1.1.0 to 2.0.0"
+update_log_file=/usr/local/pf/logs/a3_cluster_update.log
+echo "Dummy 1.1.0 to 2.0.0" >> $update_log_file
