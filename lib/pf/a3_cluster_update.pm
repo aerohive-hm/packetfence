@@ -35,6 +35,7 @@ Readonly::Scalar my $A3_BASE_DIR                  => '/usr/local/pf';
 Readonly::Scalar my $A3_DB_DIR                    => "$A3_BASE_DIR/db";
 Readonly::Scalar my $A3_BIN_DIR                   => "$A3_BASE_DIR/bin";
 Readonly::Scalar my $A3_CONF_DIR                  => "$A3_BASE_DIR/conf";
+Readonly::Scalar my $A3_MIGRATION_DIR     	  => "$A3_BASE_DIR/conf_migration";
 Readonly::Scalar my $A3_VAR_CONF_DIR              => "$A3_BASE_DIR/var/conf";
 Readonly::Scalar my $PF_MON_CONF                  => "$A3_CONF_DIR/pfmon.conf";
 Readonly::Scalar my $PF_CONF_FILE                 => "$A3_CONF_DIR/pf.conf";
