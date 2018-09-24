@@ -57,7 +57,6 @@ $(document).ready(function(){
 
 //*****************save button press pki********************//
     document.getElementById("savePKI").onclick = function(e){
-        console.log("clicked on save");
         e.preventDefault();
         var caFile = document.getElementById('ca_cert_path_upload');
         var caFileExists = document.getElementById('ca_cert_path');
@@ -65,11 +64,9 @@ $(document).ready(function(){
         var serverFileExists = document.getElementById('server_cert_path');
         var pki_provider_name = document.getElementById("id");
         var pki_provider_id = $("input[name=id]").val();
-        console.log(pki_provider_id);
 
         if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name != null) {
             //clone
-            console.log("inside clone");
             var processCAFile2 = processFiles(caFile, pki_provider_name.value, 'CA');
             var processServFile2 = processFiles(serverFile, pki_provider_name.value, 'Server');
             if (caFile.value.length != 0 && serverFile.value.length != 0){
@@ -88,7 +85,6 @@ $(document).ready(function(){
             } else { $('form').submit(); }
         } else if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name == null) {
             //updates
-            console.log("inside update");
 
             //if only ca file update
             if (caFile.value.length != 0 && serverFile.value.length == 0){
@@ -146,7 +142,6 @@ $(document).ready(function(){
             var processServFile2 = processFiles(serverFile, pki_provider_name.value, 'Server');
             if (showCaCertFileInfo() && showServerFileInfo()){
                 $.when(processCAFile2, processServFile2).done(function(caFilePath, servFilePath){
-                    console.log(caFilePath[0].filePath); console.log(servFilePath[0].filePath);
                     if (caFilePath[1] == "success" && servFilePath[1] == "success"){
                         var ca_path = document.getElementById("ca_cert_path");
                         ca_path.value = caFilePath[0].filePath;
@@ -291,7 +286,6 @@ function processFiles(input, pki_provider_name, qualifier){
         processData: false,
         contentType: false,
         success: function(data){
-          console.log("processfiles data: " + data);
         },
         error: function(data){
           var errMsg = data.status_msg;
