@@ -185,7 +185,7 @@ sub call_url {
     $curl->setopt(CURLOPT_WRITEDATA, \$response_body);
 
     my $retcode = $curl->perform;
-    $logger->info("calling url $method: $url");
+    $logger->debug("calling url $method: $url");
 
     if ($retcode == 0) {
         my $response_code = $curl->getinfo(CURLINFO_HTTP_CODE);
