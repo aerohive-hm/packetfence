@@ -32,30 +32,25 @@ $(document).ready(function(){
 
     //button press on trashcan, array, removeClusterNode(), removeClusterNode(nodeArray)
     document.getElementById('remove-node').onclick = function(e){
-        var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
-        if (getListOfNodes.length == 0){
-          // $('.modal.in').modal('hide');
-          document.getElementById('errorMessage').innerHTML = "No node selected.";
-          $("#error-alert").show();
-          setTimeout(function(){
-              $("#error-alert").slideUp(500);
-          }, 3000);
-        } else {
-          $('.modal.in').modal('show');
-
-          $('#close-modal').on('click', function() {
-              $('modal').hide();
-          });
-          document.getElementById("removing-node").onclick =  function(){
-              removeClusterNode(getListOfNodes);
-              $('.modal.in').modal('hide');
-          }
-
-        }
         e.preventDefault();
+        var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
+        // if (getListOfNodes.length == 0){
+        //   // $('.modal.in').modal('hide');
+        //   document.getElementById('errorMessage').innerHTML = "No node selected.";
+        //   $("#error-alert").show();
+        //   setTimeout(function(){
+        //       $("#error-alert").slideUp(500);
+        //   }, 3000);
+        // } else {
+        $('#removeModal').modal('show');
 
-        // getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
-
+        $('#close-modal').on('click', function() {
+            $('modal').hide();
+        });
+        document.getElementById("removing-node").onclick =  function(){
+            removeClusterNode(getListOfNodes);
+            $('.modal.in').modal('hide');
+        }
     }
 });
 
