@@ -1371,7 +1371,7 @@ fi
 %attr(0755, root, root) /usr/local/pf/a3_update/A3_Cluster.js
 %attr(0755, root, root) /usr/local/pf/a3_update/a3_cluster_update.pl
 %attr(0644, root, root) /usr/local/pf/a3_update/package.json
-%attr(0755, root, root) /usr/local/pf/a3_update/post_mortem.sh
+%attr(0755, root, root) /usr/local/pf/a3_update/post_process/*
 %dir                    /usr/local/pf/var
 %dir                    /usr/local/pf/var/conf
 %dir                    /usr/local/pf/raddb
