@@ -366,7 +366,6 @@ for my $node_ip (@all_nodes_ip) {
       commit_cluster_update_log("Post mortem on node $node_ip, please check detail log on peer node");
       commit_progress_log("error at $node_ip");
     }
-  }
 }
 
 restart_pf_all_services();
