@@ -26,7 +26,7 @@ BEGIN {
     use Exporter ();
     our ( @ISA, @EXPORT );
     @ISA    = qw(Exporter);
-    @EXPORT = qw(is_eula_accepted);
+    @EXPORT = qw(a3_is_eula_accepted);
 }
 
 =head2 record_local
@@ -127,7 +127,7 @@ Returns whether the EULA has been accepted already
 
 =cut
 
-sub is_eula_accepted {
+sub a3_is_eula_accepted {
     return pf::dal::a3_eula_acceptance->count() > 0;
 }
 
