@@ -8845,9 +8845,13 @@ msgstr "Permet aux utilisateurs déjà enregistrés d’enregistrer à nouveau l
 
 # html/pfappserver/root/configuration/system_config.tt
 msgid ""
-"This allows you set the DNS name, SMTP information for alerts, default "
+"This allows you to set the DNS name, SMTP information for alerts, default "
 "language and more."
 msgstr "Ceci vous permet de configurer le nom DNS, les informations SMTP pour les alertes, le language par defaut et plus encore."
+
+# html/pfappserver/root/configuration/system_config.tt
+msgid "This allows you to upload HTTPS and EAP-TLS certificates and keys."
+msgstr "Ceci vous permet de configurer les certificats et les cles HTTPS et EAP-TLS."
 
 # html/pfappserver/root/configuration/network_conf.tt
 msgid ""

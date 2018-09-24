@@ -121,8 +121,6 @@ function removeClusterNode(nodeArray){
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
             getClusterStatusInfo();
-            console.log("removed!!");
-            console.log(data);
             $("#cluster-management-table").load("#cluster-management-table-tbody");
             if (data.code === "fail"){
               document.getElementById('errorMessage').innerHTML = "Failed to remove nodes(s)";
@@ -141,7 +139,6 @@ function removeClusterNode(nodeArray){
         },
         error: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log(data);
             document.getElementById('errorMessage').innerHTML = data.msg;
             $("#error-alert").show();
             setTimeout(function(){
@@ -159,7 +156,6 @@ function getClusterStatusInfo(){
         url: base_url + '/ama/cluster',
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            console.log(data);
             $("#cluster-management-table-tbody tr").remove();
             $("#net-interfaces-table-tbody tr").remove();
             //cluster management table

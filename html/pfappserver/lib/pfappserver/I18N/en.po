@@ -8203,7 +8203,11 @@ msgid "This allows already registered users to be able to re-register their devi
 msgstr ""
 
 # html/pfappserver/root/configuration/system_config.tt
-msgid "This allows you set the DNS name, SMTP information for alerts, default language and more."
+msgid "This allows you to set the DNS name, SMTP information for alerts, default language and more."
+msgstr ""
+
+# html/pfappserver/root/configuration/system_config.tt
+msgid "This allows you to upload HTTPS and EAP-TLS certificates and keys."
 msgstr ""
 
 # html/pfappserver/root/configuration/network_conf.tt
@@ -11731,7 +11735,7 @@ msgid "Uploading certificate files requires a restart of all httpd services."
 msgstr ""
 
 # html/pfappserver/root/admin/cloudIntegration.tt
-msgid "Uploading cert files requires a restart of radiusd service."
+msgid "Uploading certificate files requires a restart of radiusd service."
 msgstr ""
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc
