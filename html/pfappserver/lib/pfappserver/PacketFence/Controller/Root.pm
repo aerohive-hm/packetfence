@@ -21,6 +21,7 @@ use pf::a3_eula_acceptance qw(is_eula_accepted);
 use pf::config qw(%Config);
 use pf::file_paths qw($conf_dir);
 use pf::util;
+use pf::a3_util;
 use pf::log;
 use pf::cluster;
 use Data::Dumper;
@@ -54,8 +55,9 @@ sub auto :Private {
         $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
         $c->stash->{is_eula_accepted} = pf::a3_eula_acceptance::is_eula_accepted();
         $c->stash->{get_trial_status} = pf::a3_entitlement::get_trial_status();
-        $c->stash->{is_cluster_enabled} = $pf::cluster::cluster_enabled;
-        $c->stash->{is_master_node} = pf::cluster::is_management();
+        my ($cluster_enabled, $is_management) = pf::a3_util::a3_cluster_status();
+        $c->stash->{is_cluster_enabled} = $cluster_enabled;
+        $c->stash->{is_master_node} = $is_management;
     }
 
     return 1;
