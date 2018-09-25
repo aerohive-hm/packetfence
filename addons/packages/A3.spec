@@ -335,6 +335,9 @@ Requires: haproxy >= 1.6, keepalived >= 1.3.6
 # CAUTION: we need to require the version we want for Fingerbank and ensure we don't want anything equal or above the next major release as it can add breaking changes
 Requires: fingerbank >= 4.0.0, fingerbank < 5.0.0
 Requires: perl(File::Tempdir)
+Requires: perl(REST::Client)
+Requires: nodejs = 2:6.11.0
+Requires: a3-node-modules
 
 # etcd
 Requires: etcd >= 3.1
@@ -485,6 +488,7 @@ done
 %{__install} -D -m0644 conf/systemd/a3-update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-update.service
 %{__install} -D -m0644 conf/systemd/a3-httpd.update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-httpd.update.service
 %{__install} -D -m0644 conf/systemd/a3-api-backend.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-api-backend.service
+%{__install} -D -m0644 conf/systemd/a3-nodeapp.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-nodeapp.service
 
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons/AD
@@ -529,6 +533,7 @@ cp addons/*.sh $RPM_BUILD_ROOT/usr/local/pf/addons/
 %{__install} -D packetfence.journald $RPM_BUILD_ROOT/usr/lib/systemd/journald.conf.d/01-packetfence.conf
 cp -r sbin $RPM_BUILD_ROOT/usr/local/pf/
 cp -r conf $RPM_BUILD_ROOT/usr/local/pf/
+cp -r a3_update $RPM_BUILD_ROOT/usr/local/pf/
 mv -f $RPM_BUILD_ROOT/usr/local/pf/conf/a3-release $RPM_BUILD_ROOT/usr/local/pf/conf/pf-release
 cp -r raddb $RPM_BUILD_ROOT/usr/local/pf/
 mv packetfence.sudoers $RPM_BUILD_ROOT/etc/sudoers.d/A3
@@ -865,6 +870,7 @@ rm -rf /usr/local/pf/var/cache/
 /bin/systemctl isolate packetfence-base
 /bin/systemctl enable packetfence-httpd.admin
 /bin/systemctl enable a3-api-backend
+/bin/systemctl enable a3-nodeapp
 
 /usr/local/pf/bin/pfcmd configreload
 # Don't launch it during image building stage, otherwise all image has same DB root password
@@ -1382,6 +1388,11 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/sbin/radsniff-wrapper
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update_wrapper
+%dir                    /usr/local/pf/a3_update
+%attr(0755, root, root) /usr/local/pf/a3_update/A3_Cluster.js
+%attr(0755, root, root) /usr/local/pf/a3_update/a3_cluster_update.pl
+%attr(0644, root, root) /usr/local/pf/a3_update/package.json
+%attr(0755, root, root) /usr/local/pf/a3_update/post_process/*
 %dir                    /usr/local/pf/var
 %dir                    /usr/local/pf/var/conf
 %dir                    /usr/local/pf/raddb

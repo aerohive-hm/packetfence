@@ -1,0 +1,14 @@
+[Unit]
+Description=A3 node app
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/bin/sh -c '/usr/bin/node A3_Cluster.js'
+WorkingDirectory=/usr/local/pf/a3_update
+Restart=on-failure
+RestartSec=20s
+
+[Install]
+WantedBy=multi-user.target
