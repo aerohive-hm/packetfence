@@ -8,14 +8,18 @@
   height: 75px;
   overflow-y: auto;
 }
-#success-alert, #error-alert{
-  display: none;
+
+.alert-container{
   z-index: 15;
   position: fixed;
   top: 60px;
 }
 
-#success-alert{
+#success-alert, #error-alert, #success-alert-ca{
+  display: none;
+}
+
+#success-alert, #success-alert-ca{
   background-color: #dff0d8;
   border-color: #d6e9c6;
   color: #468847;
