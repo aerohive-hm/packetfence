@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	CacheTableUpLimit = 10
+	CacheTableUpLimit = 30
 )
 
 var AmacSendEventCounter int64 = 0
@@ -120,8 +120,28 @@ func sendReport2Cloud(ctx context.Context, reportMsg []interface{}) int {
 	}
 }
 
+func pushNodeCateActively(ctx context.Context) {
+	reportArray := make([]interface{}, 0)
+	reportMsg := ReportDbTableMessage{}
+
+	fillReportHeader(&reportMsg.Header)
+	reportMsg.Data.MsgType = "a3-report-db"
+
+	reportMsg.Data.Tables = report.PopAllNodeCategary(ctx)
+
+	reportArray = append(reportArray, reportMsg)
+	log.LoggerWContext(ctx).Info("Push node category table to cloud after onboarding successfully")
+	res := sendReport2Cloud(ctx, reportArray)
+	if res != 0 {
+		log.LoggerWContext(ctx).Error("Push node category table to cloud fail")
+		return
+	} else {
+		return
+	}
+}
+
 func radAcctFieldHandle(t *report.RadacctParseStruct) report.RadacctParseStruct {
-	t.TimeStamp = fmt.Sprintf("%d", time.Now().UTC().UnixNano()/(int64(time.Millisecond)*1000))
+	t.TimeStamp = fmt.Sprintf("%d", time.Now().UTC().UnixNano()*1000/(int64(time.Millisecond)))
 	t.AcctInputOcts = t.AcctInputOcts + t.Acctinputgigawords<<32
 	t.Acctinputgigawords = 0
 	t.AcctOutputOcts = t.AcctOutputOcts + t.Acctoutputgigawords<<32
