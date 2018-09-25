@@ -531,6 +531,7 @@ cp -r sbin $RPM_BUILD_ROOT/usr/local/pf/
 cp -r conf $RPM_BUILD_ROOT/usr/local/pf/
 mv -f $RPM_BUILD_ROOT/usr/local/pf/conf/a3-release $RPM_BUILD_ROOT/usr/local/pf/conf/pf-release
 cp -r raddb $RPM_BUILD_ROOT/usr/local/pf/
+cp -r clish $RPM_BUILD_ROOT/usr/local/pf/
 mv packetfence.sudoers $RPM_BUILD_ROOT/etc/sudoers.d/A3
 mv packetfence.cron.d $RPM_BUILD_ROOT/etc/cron.d/A3
 %if %{release_build}
@@ -1382,6 +1383,14 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/sbin/radsniff-wrapper
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update_wrapper
+%dir                    /usr/local/pf/clish
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish_wrapper
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/change_ip.sh
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/reboot_system
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/get_network_settings.sh
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/logout_console.sh
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/xml-config/*
 %dir                    /usr/local/pf/var
 %dir                    /usr/local/pf/var/conf
 %dir                    /usr/local/pf/raddb

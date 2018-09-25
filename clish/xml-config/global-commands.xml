@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CLISH_MODULE xmlns="http://clish.sourceforge.net/XMLSchema" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ xsi:schemaLocation="http://clish.sourceforge.net/XMLSchema
+                     http://clish.sourceforge.net/XMLSchema/clish.xsd">
+    <!--=======================================================-->
+    <COMMAND name="help"
+             help="Display an overview of the CLI syntax">
+        <ACTION builtin="clish_overview"/>
+    </COMMAND>
+    <!--=======================================================-->
+    <COMMAND name="reboot"
+             help="Reboot the system">
+        <ACTION>sudo /usr/local/pf/clish/reboot_system</ACTION>
+    </COMMAND>
+    <!--=======================================================-->
+    <!--=======================================================-->
+    <!--=======================================================-->
+    <!--=======================================================-->
+    <COMMAND name="show"
+            help="show system related details"/>
+    <COMMAND name="show network"
+            help="show network related details">
+       <ACTION>sudo /usr/local/pf/clish/get_network_settings.sh</ACTION>
+    </COMMAND>
+     <COMMAND name="logout"
+            help="logout console">
+        <ACTION>sudo /usr/local/pf/clish/logout_console.sh</ACTION>
+    </COMMAND>
+	<!--=======================================================-->
+</CLISH_MODULE>
