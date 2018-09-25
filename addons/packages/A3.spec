@@ -876,7 +876,7 @@ rm -rf /usr/local/pf/var/cache/
 # Don't launch it during image building stage, otherwise all image has same DB root password
 if [ "$1" = "2" ]; then
   /bin/systemctl start packetfence-httpd.admin
-  /bin/systemctl restart a3-api-backend
+  #/bin/systemctl restart a3-api-backend
 fi
 
 echo Installation complete
