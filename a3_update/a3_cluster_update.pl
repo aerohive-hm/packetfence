@@ -349,10 +349,6 @@ sync_files_from_master();
 
 enable_nodes_after_update();
 
-#somehow db is up again after pkg upgrade, need investigate the reason for that
-for my $ip (@remains_nodes_ip_to_update) {
-  pf::a3_cluster_update::remote_api_call_post($ip, 'a3/db', {'opts'=>['stop']});
-}
 galera_db_sync();
 
 # run conf migration on remaining nodes 
