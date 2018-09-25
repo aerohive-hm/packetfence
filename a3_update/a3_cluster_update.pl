@@ -82,7 +82,7 @@ sub health_check {
     if ($ret != 0) {
       commit_cluster_update_log("Health check failed on node $node_ip, please check detail log on peer node");
       commit_progress_log("error at $node_ip");
-      exit_failure();
+      exit_failure(1);
     }
   }
 
@@ -98,7 +98,7 @@ sub data_backup {
     if ($ret != 0) {
       commit_cluster_update_log("Unable to backup on node $node_ip");
       commit_progress_log("error at $node_ip");
-      exit_failure();
+      exit_failure(1);
     }
   }
 
@@ -132,7 +132,7 @@ sub a3_app_update {
       remove_nodes_from_cluster();
       commit_progress_log("error at $ip");
     }
-    exit_failure();
+    exit_failure(1);
   }
 
   commit_progress_log("done!");
@@ -165,7 +165,7 @@ sub apply_db_schema {
     rejoin_node_to_cluster();
     commit_cluster_update_log("end rejoin node $first_node_ip_to_update");
 
-    exit_failure();
+    exit_failure(1);
   }
 
   commit_progress_log("done!");
@@ -221,7 +221,7 @@ sub restart_pf_all_services {
     if ($ret != 0) {
       commit_progress_log("error at $ip");
       commit_cluster_update_log("Service restart failed, please use join cluster process to continue!");
-      exit_failure();
+      exit_failure(1);
     }
   }
 
