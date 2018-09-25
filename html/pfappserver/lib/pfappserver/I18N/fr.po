@@ -1230,6 +1230,10 @@ msgid "Cluster Link Status"
 msgstr "État du lien de la grappe"
 
 # html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Link Status"
+msgstr "État du lien"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
 msgid "Cluster Member"
 msgstr "Membre de la grappe"
 
@@ -4044,7 +4048,7 @@ msgid "Link with Aerohive Cloud Account"
 msgstr "Lier avec un compte Aerohive Cloud"
 
 # html/pfappserver/root/admin/cloudIntegration.tt
-msgid "Linked with Aerohive Cloud Services at "
+msgid "Linked with Aerohive Cloud Services at"
 msgstr "Lier avec un compte Aerohive Cloud"
 
 # html/pfappserver/root/config/portal_module/index.tt
@@ -11256,7 +11260,7 @@ msgid "ifindex"
 msgstr "IfIndex"
 
 # html/pfappserver/root/admin/cloudIntegration.tt
-msgid 'If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select, "Link with Aerohive Cloud Account ."'
+msgid "If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select,"
 msgstr "Si vous ou votre organisation avez déjà un compte Aerohive Cloud pour gérer votre réseau, vous pouvez entrer vos données de connexion et sélectionner"
 
 # pf::Authentication::constants (Conditions)
