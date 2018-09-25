@@ -136,8 +136,10 @@ func radAcctFieldHandle(t *report.RadacctParseStruct) report.RadacctParseStruct 
 	case "Stop":
 		t.AcctStartTime = ""
 		t.AcctUpdateTime = ""
+	case "Interim-Update-Username":
+		//do nothing
 	}
-	t.AcctStatusType = ""
+	//t.AcctStatusType = ""
 
 	return *t
 }

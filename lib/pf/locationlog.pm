@@ -365,7 +365,9 @@ sub locationlog_synchronize {
         ah_tablename => "radacct", 
         ah_timestamp => "$timestamp",
         username => $user_name,
-        acctstatustype => "Interim-Update"
+        acctstatustype => "Interim-Update-Username",
+        callingstationid => $mac,
+        acctupdatetime => "$seconds",
     );
 
 
