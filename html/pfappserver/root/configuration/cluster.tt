@@ -31,7 +31,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h3><i>[% l('Remove Selected Cluster Nodes?') %]</i> <span></span></h3>
+        <h3 id="modalheader">[% l('Remove Selected Cluster Nodes?') %]</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
