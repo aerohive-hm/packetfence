@@ -68,7 +68,8 @@ func Handle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	}
 
 	if d.Cmd == "configurator" &&
-		utils.IsFileExist(utils.A3CurrentlyAt) {
+		utils.IsFileExist(utils.A3CurrentlyAt) &&
+		d.SubCmd != "networks" {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
