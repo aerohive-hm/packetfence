@@ -218,12 +218,12 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		case "locationlog":
 			var t report.LocationlogParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "ip4log":
 			var t report.Ip4logParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
+			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "radius_audit_log":
 			var t report.RadauditParseStruct
