@@ -1242,7 +1242,6 @@ fi
                         /usr/local/pf/conf/report.conf.example
 %config(noreplace)      /usr/local/pf/conf/traffic_shaping.conf
                         /usr/local/pf/conf/traffic_shaping.conf.example
-                        /usr/local/pf/conf/rdc_region.conf
 %dir                    /usr/local/pf/conf_migration
 %attr(0755, pf, pf)     /usr/local/pf/conf_migration/*
 %dir                    /usr/local/pf/db
