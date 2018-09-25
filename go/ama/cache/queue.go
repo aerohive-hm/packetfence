@@ -49,3 +49,4 @@ func (r *RedisPool) QueueCount(queueName string) (int, error) {
 	return int(count), nil
 }
 
+

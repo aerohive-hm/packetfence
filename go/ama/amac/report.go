@@ -177,7 +177,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		return nil, 0
 	}
 
-	msgQue, err := cache.FetchTablesInfo(CacheTableUpLimit)
+	msgQue, err := cache.FetchTablesInfoInOrder(CacheTableUpLimit)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Fetch table message fail")
 		return nil, -1
