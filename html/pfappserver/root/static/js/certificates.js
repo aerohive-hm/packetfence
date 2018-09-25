@@ -53,7 +53,6 @@ $(document).ready(function(){
 
         if(https_key.files.length != 0 && https_server_cert.files.length != 0){
             uploadCertAndKey(https_server_cert, https_key, "https_form", "https", document.getElementById('caCert_upload'));
-            // uploadCACert(document.getElementById('caCert_upload'));
         } else {
             document.getElementById('errorMessage').innerHTML = "Upload both a key and certificate file.";
             $("#error-alert").show();
@@ -219,13 +218,12 @@ function uploadCACert(input, sentForm, qualifier){
         contentType: false,
         success: function(data){
             readCert(qualifier);
-            document.getElementById('successMessage').innerHTML = data.status_msg;
-            $("#success-alert").show();
+
+            document.getElementById('successMessage-ca').innerHTML = data.status_msg;
+            $("#success-alert-ca").show();
             setTimeout(function(){
-                $("#success-alert").slideUp(500);
+                $("#success-alert-ca").slideUp(500);
             }, 3000);
-            // document.getElementById("https_cert_path").value = data.filePath;
-            // var filePath = data.filePath;
         },
         error: function(data){
             document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
