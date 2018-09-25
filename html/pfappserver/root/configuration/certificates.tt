@@ -70,7 +70,7 @@
                   <div class="server">
                     <h6>[% l('Server Certificate and Key Upload') %]</h6>
                     <span>[% l('A server key and server certificate are required. Uploading a CA certificate is optional.') %]</span>
-                    <span>[% l('Uploading certificate files requires a restart of radiusd service.') %]</span>
+                    <span>[% l('Uploading certificate files requires a restart of radiusd.') %]</span>
                     <br><br>
                     <div class="certificate-info">
                       <h5>[% l('Current Server Certificate') %] <a class="btn" id="download_button_eap_serv" style="margin-left: 447px;">[% l('Download') %]</a></h5>

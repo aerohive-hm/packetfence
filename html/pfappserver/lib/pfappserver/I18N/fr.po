@@ -1229,9 +1229,6 @@ msgstr "Administrateur Cloud"
 msgid "Cluster Link Status"
 msgstr "État du lien de la grappe"
 
-# html/pfappserver/root/admin/cloudIntegration.tt
-msgid "Link Status"
-msgstr "État du lien"
 
 # html/pfappserver/root/admin/cloudIntegration.tt
 msgid "Cluster Member"
@@ -3610,6 +3607,10 @@ msgstr "IP <i class=\"icon-exchange\"></i> MAC"
 msgid "IP Address"
 msgstr "Adresse IP"
 
+# html/pfappserver/root/configuration/cluster.tt
+msgid "IP ADDRESS"
+msgstr "Adresse IP"
+
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
 msgid "IP Address/MAC Address/Range (CIDR)"
 msgstr "Adresse IP/ Adresse MAC/masque (CIDR)"
@@ -4048,8 +4049,12 @@ msgid "Link with Aerohive Cloud Account"
 msgstr "Lier avec un compte Aerohive Cloud"
 
 # html/pfappserver/root/admin/cloudIntegration.tt
-msgid "Linked with Aerohive Cloud Services at"
+msgid "Linked with Aerohive Cloud Services at "
 msgstr "Lier avec un compte Aerohive Cloud"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Link Status"
+msgstr "État du lien"
 
 # html/pfappserver/root/config/portal_module/index.tt
 msgid "List View"
@@ -7394,7 +7399,7 @@ msgid "Share Unknown Fingerprints"
 msgstr "Partager les Fingerprints inconnues"
 
 # conf/documentation.conf (active_active.password)
-msgid "Shared KEY for VRRP protocol (must be the same on all members)."
+msgid "Shared KEY for VRRP protocol (must be the same on all members)"
 msgstr "Clé partagée pour le protocole VRRP (doit être identique sur tous les membres)"
 
 # html/pfappserver/root/admin/cluster.tt
@@ -7849,6 +7854,10 @@ msgstr "État du certificat"
 # html/pfappserver/root/user/violations.tt
 # html/pfappserver/root/admin/cluster.tt
 msgid "Status"
+msgstr "Statut"
+
+# html/pfappserver/root/configurator/cluster.tt
+msgid "STATUS"
 msgstr "Statut"
 
 # html/pfappserver/root/configurator/admin.tt
@@ -9185,8 +9194,8 @@ msgstr "Numéro de téléphone appelant qui sera utiliser pour envoyer un SMS"
 # html/pfappserver/root/interface/list.tt
 # html/pfappserver/root/node/view.tt
 # html/pfappserver/root/admin/cluster.tt
-msgid "Type"
-msgstr "Type"
+msgid "TYPE"
+msgstr "TYPE"
 
 # html/pfappserver/root/admin/reports.tt
 msgid "Types"
@@ -11259,7 +11268,15 @@ msgstr "IBM"
 msgid "ifindex"
 msgstr "IfIndex"
 
-# html/pfappserver/root/admin/cloudIntegration.tt
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "If you or your organization already has an Aerohive Cloud Account for managing your network"
+msgstr "Si vous ou votre organisation avez déjà un compte Aerohive Cloud pour gérer votre réseau"
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid " you may enter your credentials and select"
+msgstr " vous pouvez entrer vos données de connexion et sélectionner"
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
 msgid "If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select,"
 msgstr "Si vous ou votre organisation avez déjà un compte Aerohive Cloud pour gérer votre réseau, vous pouvez entrer vos données de connexion et sélectionner"
 
@@ -12553,8 +12570,8 @@ msgid "Uploading certificate files requires a restart of all httpd services."
 msgstr "Le téléchargement des fichiers de certificat nécessite un redémarrage de tous les services ‘httpd’."
 
 # html/pfappserver/root/admin/cloudIntegration.tt
-msgid "Uploading cert files requires a restart of radiusd service."
-msgstr "Le téléchargement des fichiers de certificat nécessite un redémarrage du service ‘radiusd’."
+msgid "Uploading cert files requires a restart of radiusd."
+msgstr "Le téléchargement des fichiers de certificat nécessite un redémarrage du ‘radiusd’."
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc
 msgid "upstream"
