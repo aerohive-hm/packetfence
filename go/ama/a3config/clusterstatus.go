@@ -8,7 +8,7 @@ import (
 )
 
 type ClusterStatusData struct {
-	Is_cluster    bool `json:"is_cluste"`
+	Is_cluster    bool `json:"is_cluster"`
 	Is_management bool `json:"is_management"`
 }
 
