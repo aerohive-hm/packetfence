@@ -72,6 +72,7 @@ $(document).ready(function(){
             if (caFile.value.length != 0 && serverFile.value.length != 0){
               if (showCaCertFileInfo() || showServerFileInfo()){
                   $.when(processCAFile2, processServFile2).done(function(caFilePath, servFilePath){
+                      console.log(caFilePath[0].filePath); console.log(servFilePath[0].filePath);
                       if (caFilePath[1] == "success" || servFilePath[1] == "success"){
                           var ca_path = document.getElementById("ca_cert_path");
                           ca_path.value = caFilePath[0].filePath;
@@ -166,25 +167,42 @@ function showServerFileInfo(){
     var file2;
     var fileType2, fileSize2;
 
-    file2 = input2.files[0];
-    fileType2 = file2.type;
-    fileSize2 = file2.size/1024;
-    if (fileTypeValidation(input2)){
-        if (fileSizeValidation(input2)){
-          // append file name
-          var fileName = '';
-          fileName = input2.files[0].name;
-          document.getElementById("server_cert_label_upload").innerHTML = fileName;
-          return true;
+    if (!window.FileReader) {
+        alert("The File API isn't supported on this browser please change to Google Chrome.");
+        return;
+    }
+
+    input2 = document.getElementById('server_cert_path_upload');
+    if (!input2) {
+        alert("Couldn't find the file input element.");
+    }
+    else if (!input2.files) {
+        alert("This browser doesn't support the `files` property of file inputs.");
+    }
+    else if (!input2.files[0]) {
+        // alert("Please select a file before clicking 'Save'");
+    }
+    else {
+        file2 = input2.files[0];
+        fileType2 = file2.type;
+        fileSize2 = file2.size/1024;
+        if (fileTypeValidation(input2)){
+            if (fileSizeValidation(input2)){
+              // append file name
+              var fileName = '';
+              fileName = input2.files[0].name;
+              document.getElementById("server_cert_label_upload").innerHTML = fileName;
+              return true;
+            } else {
+              document.getElementById("server_cert_label_upload").innerHTML = 'Choose File...';
+              alert("File size is greater than 1MB. Upload again.");
+              return false;
+            }
         } else {
-          document.getElementById("server_cert_label_upload").innerHTML = 'Choose File...';
-          alert("File size is greater than 1MB. Upload again.");
-          return false;
+            document.getElementById("server_cert_label_upload").innerHTML = 'Choose File...';
+            alert("Incorrect file type. Upload again.");
+            return false;
         }
-    } else {
-        document.getElementById("server_cert_label_upload").innerHTML = 'Choose File...';
-        alert("Incorrect file type. Upload again.");
-        return false;
     }
 }
 
@@ -193,22 +211,39 @@ function showCaCertFileInfo() {
     var file;
     var fileType,fileSize;
 
+    if (!window.FileReader) {
+        alert("The File API isn't supported on this browser please change to Google Chrome.");
+        return;
+    }
+
     input = document.getElementById('ca_cert_path_upload');
-    if (fileTypeValidation(input)){
-        if (fileSizeValidation(input)){
-          var fileName = '';
-          fileName = input.files[0].name;
-          document.getElementById("ca_cert_label_upload").innerHTML = fileName;
-          return true;
+
+    if (!input) {
+        alert("Couldn't find the file input element.");
+    }
+    else if (!input.files) {
+        alert("This browser doesn't support the `files` property of file inputs.");
+    }
+    else if (!input.files[0]) {
+        // alert("Please select a file before clicking 'Save'");
+    }
+    else {
+        if (fileTypeValidation(input)){
+            if (fileSizeValidation(input)){
+              var fileName = '';
+              fileName = input.files[0].name;
+              document.getElementById("ca_cert_label_upload").innerHTML = fileName;
+              return true;
+            } else {
+              document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
+              alert("File size is greater than 1MB. Upload again.");
+              return false;
+            }
         } else {
-          document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
-          alert("File size is greater than 1MB. Upload again.");
-          return false;
+            alert("Incorrect file type. Upload again.");
+            document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
+            return false;
         }
-    } else {
-        alert("Incorrect file type. Upload again.");
-        document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
-        return false;
     }
 }
 
