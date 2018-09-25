@@ -37,10 +37,12 @@ $(document).ready(function(){
         getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
         if (getListOfNodes == 0){
-
+          $("#modalheader").text("Select at least 1 node.");
+          $("#listOfSelectedNodes").text("No nodes were selected.");
+          $("#removing-node").hide();
         } else {
           $('.removeModal').show();
-
+          $("#removing-node").show();
           $('#close-modal').on('click', function() {
               $('modal').hide();
           });
