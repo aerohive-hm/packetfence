@@ -11,10 +11,13 @@
 <head>
   <link href="[% c.uri_for('/static/admin/certificates.css') %]" rel="stylesheet">
 </head>
+<div class="alert-container">
+  <div id="success-alert" style="display:none;"><div style="padding: 10px;" id="successMessage"></div></div>
+  <div id="success-alert-ca" style="display:none;"><div style="padding: 10px;" id="successMessage-ca"></div></div>
+  <div id="error-alert" style="display:none;"><div style="padding: 10px;" id="errorMessage"></div></div>
+</div>
 <div class="card">
     <div class="card-block">
-      <div id="success-alert" style="display:none;"><div style="padding: 10px;" id="successMessage"></div></div>
-      <div id="error-alert" style="display:none;"><div style="padding: 10px;" id="errorMessage"></div></div>
         <h2>[% l('Certificates') %]</h2>
           <ul class="nav nav-tabs">
             <li class="active">
