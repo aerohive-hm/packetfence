@@ -33,8 +33,11 @@ class logo extends Component {
 
     getRightI18n= () => {
         let self=this;
-        let navigatorLanguage = self.props.navigatorLanguage; 
+        let navigatorLanguage = navigator.language||navigator.userLanguage;
         let rightI18n;
+
+        navigatorLanguage = navigatorLanguage.substr(0, 2);
+
         if(navigatorLanguage==="fr"){
             rightI18n=i18nfr;
         }else{
@@ -43,12 +46,14 @@ class logo extends Component {
         self.setState({
             i18n : rightI18n,
         })
-
     }
 
     render(){
         const {} = this.props;
         let self=this;
+
+        document.title = self.state.i18n.a3Setup;
+
         return(
 
             <div className="title-screen-full-div-logo">
