@@ -14,7 +14,7 @@ type ClusterStatusData struct {
 
 func GetClusterStatus(ctx context.Context) ClusterStatusData {
 	statusData := ClusterStatusData{}
-	statusData.Is_cluster = clusterEnableDefault
+	statusData.Is_cluster = ClusterNew().CheckClusterEnable()
 	vip := ClusterNew().GetPrimaryClusterVip("eth0")
 	statusData.Is_management = utils.IsManagement(vip)
 	return statusData
