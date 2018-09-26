@@ -61,24 +61,15 @@ func writeAdminToDb(user, password string) error {
 	timeStart := utils.AhNowUtcFormated()
 	expiration := utils.ExpireTime
 
-	// strip realm, code to be removed
-	ret := strings.Split(user, "@")
-	var tmpUser string
-	if len(ret) > 1 {
-		tmpUser = ret[0]
-	} else {
-		tmpUser = user
-	}
-
 	hpassword := hashPassword(password)
 	bpassword := `{bcrypt}` + hpassword
-	values := fmt.Sprintf(sqlCmd, tmpUser, bpassword, timeStart,
+	values := fmt.Sprintf(sqlCmd, user, bpassword, timeStart,
 		expiration, "ALL")
 	sql := []amadb.SqlCmd{
 		{
 			"replace into person(pid,email)values(?,?)",
 			[]interface{}{
-				tmpUser,
+				user,
 				user,
 			},
 		},
