@@ -199,13 +199,14 @@ func startService() {
 }
 
 func forceUrlStartWithHttps(s string) string {
-	if s[0:5] == "https" {
-		return s
-	} else if s[0:4] == "http" {
-		s1 := strings.Replace(s, "http", "https", 1)
+	str := strings.Replace(s, " ", "", -1)
+	if str[0:5] == "https" {
+		return str
+	} else if str[0:4] == "http" {
+		s1 := strings.Replace(str, "http", "https", 1)
 		return s1
 	} else {
-		s2 := strings.Join([]string{"https://", s}, "")
+		s2 := strings.Join([]string{"https://", str}, "")
 		return s2
 	}
 }
