@@ -49,8 +49,11 @@ func UpdatePfServices() []Clis {
 }
 
 func UpdateCurrentlyAt() {
-	cmd := "cp -f " + A3Release + " " + A3CurrentlyAt
-	ExecShell(cmd)
+	cmds := []string{
+		"cp -f " + A3Release + " " + A3CurrentlyAt,
+		"sync",
+	}
+	ExecCmds(cmds)
 }
 
 func initClusterDB() {
