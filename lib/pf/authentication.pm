@@ -447,12 +447,12 @@ sub adminAuthentication {
   my $internal_sources = pf::authentication::getInternalAuthenticationSources();
   my ($stripped_username,$realm) = strip_username($user);
   $realm //= 'null';
-  my $realm_source = pf::config::util::get_realm_authentication_source($stripped_username, $realm, $internal_sources);
+  my $realm_source = pf::config::util::get_realm_authentication_source($stripped_username, 'null', $internal_sources);
 
   $realm_source = ref($realm_source) eq 'ARRAY' ? $realm_source : [$realm_source];
 
   foreach my $source (@{$realm_source}) {
-    get_logger->info("Found a realm source ".$source->id." for user $stripped_username in realm $realm.");
+    get_logger->info("Found a realm source ".$source->id." for user $user.");
     my ($result, $message, $source_id, $extra) = pf::authentication::authenticate( { 
             'username' => $user, 
             'password' => $password, 
