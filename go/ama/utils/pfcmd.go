@@ -161,6 +161,7 @@ func StopService() {
 		`systemctl stop packetfence-mariadb`,
 		`systemctl stop packetfence-etcd`,
 		`rm -rf /usr/local/pf/var/etcd/`,
+		`pfcmd service httpd.webservices stop`,
 	}
 	ExecCmds(cmds)
 }
