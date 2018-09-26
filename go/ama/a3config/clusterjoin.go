@@ -32,6 +32,10 @@ func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterNetworks
 		}
 	}
 
+	if len(clusterData.Items) == 0 {
+		return errors.New("UpdateEventClusterJoinData Error:Items is NULL:"), clusterRespData
+	}
+
 	for _, i := range clusterData.Items {
 		err = UpdateJoinClusterconf(i, clusterData.Hostname)
 		if err != nil {
