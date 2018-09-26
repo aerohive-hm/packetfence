@@ -868,7 +868,12 @@ rm -rf /usr/local/pf/var/cache/
 /bin/systemctl enable packetfence-config
 /bin/systemctl disable packetfence-iptables
 /bin/systemctl enable packetfence-routes
-/bin/systemctl isolate packetfence-base
+# the isolate this will bring up some services(like pf-db service) which cause the later operation for  
+# cluster update process failure, so just skip it during upgrade 
+if [ "$1" = "1" ]; then
+  /bin/systemctl isolate packetfence-base
+fi
+
 /bin/systemctl enable packetfence-httpd.admin
 /bin/systemctl enable a3-api-backend
 /bin/systemctl enable a3-nodeapp
