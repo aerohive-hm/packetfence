@@ -152,5 +152,5 @@ func ActiveSyncFromPrimary(ip, user, password string) {
 	ama.ClearClusterStatus()
 
 	utils.UpdateCurrentlyAt()
-	utils.ExecShell(`pfcmd service iptables start`)
+	utils.ExecShell(`pfcmd service iptables restart`)
 }
