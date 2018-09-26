@@ -313,6 +313,7 @@ app.post("/a3/rollback_db", function(req, res){
 app.post("/a3/db", function(req, res){
     var params = get_post_params(req);
     let opts = params[2];
+    res.setTimeout(3600000);
     audit_log("the cmd to run is db:"+params[2]);
     var ret = verify_credential(params[0], params[1], res);
     if (ret == 0) {
