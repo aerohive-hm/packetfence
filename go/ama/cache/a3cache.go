@@ -12,12 +12,15 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 	"context"
 	"fmt"
+	"sync"
 )
 
+var mu sync.Mutex
 const tableSets string = "a3tables_set"
 const tableQueue string = "a3tables_queue"
 
 func CacheTableInfo(tableId string, value []byte) (int,error) {
+	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
@@ -44,7 +47,8 @@ func CacheTableInfo(tableId string, value []byte) (int,error) {
 		log.LoggerWContext(context.Background()).Error("Get sets count failed")
 		return 0,err
 	}
-	
+	mu.Unlock()
+
 	return int(count.(int64)),nil
 }
 
@@ -52,6 +56,8 @@ func FetchTablesInfo(count int) ([]interface{}, error){
 	var tables []interface{}
 	var max int = count
 
+	
+	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
@@ -102,11 +108,13 @@ func FetchTablesInfo(count int) ([]interface{}, error){
 			continue
 		}
 	}
+	mu.Unlock()
 
 	return tables, err
 }
 
 func RedisTablesCount() (int,error) {
+	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
@@ -115,17 +123,19 @@ func RedisTablesCount() (int,error) {
 
 	c := r.pool.Get()
 	defer c.Close()
-	
+
 	count, err := c.Do("SCARD", tableSets)
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("Get sets count failed")
 		return 0,err
 	}
+	mu.Unlock()
 
 	return int(count.(int64)), nil
 }
 
 func CacheTableInfoInOrder(tableId string, value []byte) (int,error) {
+	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
@@ -162,6 +172,7 @@ func CacheTableInfoInOrder(tableId string, value []byte) (int,error) {
 		fmt.Println("Enqueue failed: %s", err.Error())
 		return 0, err
 	}
+	mu.Unlock()
 
 	return int(num.(int64)),nil
 }
@@ -170,6 +181,7 @@ func FetchTablesInfoInOrder(count int) ([]interface{}, error){
 	var tables []interface{}
 	var max int = count
 
+	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
@@ -220,6 +232,7 @@ func FetchTablesInfoInOrder(count int) ([]interface{}, error){
 			continue
 		}
 	}
+	mu.Unlock()
 
 	return tables, err
 }
