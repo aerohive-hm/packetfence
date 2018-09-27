@@ -281,6 +281,15 @@ func NetmaskStr2Len(mask string) int {
 	return num
 }
 
+//replace \t \r \n in strings
+func ReplaceBlank(str string) string {
+	if str != "" {
+		reg := regexp.MustCompile("\\s*|\t|\r|\n")
+		str = reg.ReplaceAllString(str, "")
+	}
+	return str
+}
+
 func IpBitwiseAndMask(ip, mask string) string {
 	n := NetmaskStr2Len(mask)
 	ipv4Addr := net.ParseIP(ip)
@@ -289,15 +298,16 @@ func IpBitwiseAndMask(ip, mask string) string {
 	str := fmt.Sprintf("%s", ipv4Addr.Mask(ipv4Mask))
 	return str
 }
-func IsSameIpRange(ip1, ip2, mask string) bool {
 
+func IsSameIpRange(ip1, ip2, mask string) bool {
+	ip1 = ReplaceBlank(ip1)
+	ip2 = ReplaceBlank(ip2)
 	str1 := IpBitwiseAndMask(ip1, mask)
 	str2 := IpBitwiseAndMask(ip2, mask)
 	if str1 == str2 {
 		return true
 	}
 	return false
-
 }
 
 // set gateway for interface
@@ -446,4 +456,3 @@ func IsManagement(vip string) bool {
 	}
 	return false
 }
-

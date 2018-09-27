@@ -156,7 +156,7 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 	/*ip and vip should be the same net range*/
 	for _, item := range items {
 		if enable && !utils.IsSameIpRange(item.IpAddr, item.Vip, item.NetMask) {
-			msg = fmt.Sprintf("ip(%s) and vip(%s) mask(%s) should be the same net range", item.IpAddr, item.Vip, item.NetMask)
+			msg = fmt.Sprintf("ip(%s) and vip(%s) should be the same net range", item.IpAddr, item.Vip)
 			return errors.New(msg)
 		}
 
