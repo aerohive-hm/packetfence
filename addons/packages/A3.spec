@@ -661,7 +661,7 @@ fi
 
 /usr/bin/mkdir -p /var/log/journal/
 echo "Restarting journald to enable persistent logging"
-/bin/systemctl restart systemd-journald
+#/bin/systemctl restart systemd-journald
 
 if [ `systemctl get-default` = "packetfence-cluster.target" ]; then
     echo "This is an upgrade on a clustered system. We don't change the default systemd target."
@@ -882,7 +882,7 @@ fi
 # Don't launch it during image building stage, otherwise all image has same DB root password
 if [ "$1" = "2" ]; then
   /bin/systemctl start packetfence-httpd.admin
-  /bin/systemctl restart a3-api-backend
+  #/bin/systemctl restart a3-api-backend
 fi
 
 echo Installation complete
