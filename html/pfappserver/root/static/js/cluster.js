@@ -33,25 +33,26 @@ $(document).ready(function(){
     //button press on trashcan, array, removeClusterNode(), removeClusterNode(nodeArray)
     document.getElementById('remove-node').onclick = function(e){
         e.preventDefault();
-        var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
-        // if (getListOfNodes.length == 0){
-        //   // $('.modal.in').modal('hide');
-        //   document.getElementById('errorMessage').innerHTML = "No node selected.";
-        //   $("#error-alert").show();
-        //   setTimeout(function(){
-        //       $("#error-alert").slideUp(500);
-        //   }, 3000);
-        // } else {
-        $('#removeModal').modal('show');
 
-        $('#close-modal').on('click', function() {
-            $('modal').hide();
-        });
-        document.getElementById("removing-node").onclick =  function(){
-            removeClusterNode(getListOfNodes);
-            $('.modal.in').modal('hide');
+        getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
+        var getListOfNodes = getCheckedNodes(document.getElementById('cluster-management-table-tbody'));
+        if (getListOfNodes == 0){
+          $("#modalheader").text("Select at least 1 node.");
+          $("#listOfSelectedNodes").text("No nodes were selected.");
+          $("#removing-node").hide();
+        } else {
+          $('.removeModal').show();
+          $("#removing-node").show();
+          $('#close-modal').on('click', function() {
+              $('modal').hide();
+          });
+          document.getElementById("removing-node").onclick =  function(){
+              removeClusterNode(getListOfNodes);
+              $('.modal.in').modal('hide');
+          }
         }
     }
+
 });
 
 //function to get the number of cluster nodes checked in table
@@ -162,6 +163,7 @@ function getClusterStatusInfo(){
                 if (members.type === "Master"){
                     $("#cluster-management-table-tbody").prepend("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
                 } else {
+
                     // if (members.status == Inactive)
                     $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' value='"+ members.hostname +"'/>" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
                 }

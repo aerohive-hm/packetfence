@@ -536,6 +536,7 @@ cp -r conf $RPM_BUILD_ROOT/usr/local/pf/
 cp -r a3_update $RPM_BUILD_ROOT/usr/local/pf/
 mv -f $RPM_BUILD_ROOT/usr/local/pf/conf/a3-release $RPM_BUILD_ROOT/usr/local/pf/conf/pf-release
 cp -r raddb $RPM_BUILD_ROOT/usr/local/pf/
+cp -r clish $RPM_BUILD_ROOT/usr/local/pf/
 mv packetfence.sudoers $RPM_BUILD_ROOT/etc/sudoers.d/A3
 mv packetfence.cron.d $RPM_BUILD_ROOT/etc/cron.d/A3
 %if %{release_build}
@@ -870,8 +871,9 @@ rm -rf /usr/local/pf/var/cache/
 # the isolate this will bring up some services(like pf-db service) which cause the later operation for  
 # cluster update process failure, so just skip it during upgrade 
 if [ "$1" = "1" ]; then
-/bin/systemctl isolate packetfence-base
+  /bin/systemctl isolate packetfence-base
 fi
+
 /bin/systemctl enable packetfence-httpd.admin
 /bin/systemctl enable a3-api-backend
 /bin/systemctl enable a3-nodeapp
@@ -1393,6 +1395,14 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/sbin/radsniff-wrapper
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update_wrapper
+%dir                    /usr/local/pf/clish
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish_wrapper
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/change_ip.sh
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/reboot_system
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/get_network_settings.sh
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/logout_console.sh
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/xml-config/*
 %dir                    /usr/local/pf/a3_update
 %attr(0755, root, root) /usr/local/pf/a3_update/A3_Cluster.js
 %attr(0755, root, root) /usr/local/pf/a3_update/a3_cluster_update.pl

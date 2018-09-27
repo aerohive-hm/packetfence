@@ -2,10 +2,12 @@ package report
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/log"
+	"time"
 )
 
 /*
@@ -56,4 +58,36 @@ func GetNodeCateId(ctx context.Context, role_name string) int {
 		return cate_id
 	}
 	return -1
+}
+
+func PopAllNodeCategary(ctx context.Context) []interface{} {
+	var nodeCateArray = make([]interface{}, 0)
+	var note sql.NullString
+
+	tmpDB := new(amadb.A3Db)
+	err := tmpDB.DbInit()
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Open database error: " + err.Error())
+		return nil
+	}
+	db := tmpDB.Db
+	defer db.Close()
+
+	rows, err := db.Query("SELECT * FROM node_category")
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Read rows fail")
+		return nil
+	}
+	for rows.Next() {
+		nodeCate := NodecategoryParseStruct{}
+		nodeCate.TableName = "node_category"
+		nodeCate.TimeStamp = fmt.Sprintf("%d", time.Now().UTC().UnixNano()*1000/(int64(time.Millisecond)))
+		if err := rows.Scan(&nodeCate.CategoryID, &nodeCate.Name, &nodeCate.MaxNodesPerPid, &note); err != nil {
+			log.LoggerWContext(ctx).Error("Read data fail")
+			continue
+		}
+		nodeCateArray = append(nodeCateArray, nodeCate)
+	}
+
+	return nodeCateArray
 }

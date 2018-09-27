@@ -88,6 +88,14 @@ cat <<EOF > /etc/hosts
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 EOF
 
+# add clish related stuff
+cp /vagrant/data/clish_libs/* /usr/lib64/
+groupadd netcfg
+useradd -d /home/clish -s /usr/local/pf/clish/clish_wrapper netcfg -g netcfg
+echo "aerohive" | passwd netcfg --stdin
+echo 'netcfg ALL=NOPASSWD: /usr/local/pf/clish/change_ip.sh, /usr/local/pf/clish/reboot_system, /usr/local/pf/clish/get_network_settings.sh, /usr/local/pf/clish/logout_console.sh' >> /etc/sudoers
+
+
 # remove the vb guest additional
 rm -rf /opt/VBoxGuestAdditions*
 systemctl disable vboxadd

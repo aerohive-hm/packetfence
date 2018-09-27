@@ -49,8 +49,11 @@ func UpdatePfServices() []Clis {
 }
 
 func UpdateCurrentlyAt() {
-	cmd := "cp -f " + A3Release + " " + A3CurrentlyAt
-	ExecShell(cmd)
+	cmds := []string{
+		"cp -f " + A3Release + " " + A3CurrentlyAt,
+		"sync",
+	}
+	ExecCmds(cmds)
 }
 
 func initClusterDB() {
@@ -150,7 +153,7 @@ func UpdateDB() {
 
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
-		"systemctl stop packetfence-mariadb",
+		"systemctl start packetfence-mariadb",
 	}
 	ExecCmds(cmds)
 }
@@ -161,6 +164,7 @@ func StopService() {
 		`systemctl stop packetfence-mariadb`,
 		`systemctl stop packetfence-etcd`,
 		`rm -rf /usr/local/pf/var/etcd/`,
+		`pfcmd service httpd.webservices stop`,
 	}
 	ExecCmds(cmds)
 }

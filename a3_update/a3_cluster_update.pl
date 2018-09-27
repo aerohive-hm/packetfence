@@ -125,13 +125,14 @@ sub a3_app_update {
 
   $ret = pf::a3_cluster_update::remote_api_call_post($ip, 'a3/update_a3_app', {});
   if ($ret != 0) {
-    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/rollback_app', {});
-    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['pf', 'start']});
     #at later stage failing on other nodes, we using API to remove them from cluster
     if ($ip ne $first_node_ip_to_update) {
       remove_nodes_from_cluster();
       commit_progress_log("error at $ip");
+      exit_failure(1);
     }
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/rollback_app', {});
+    pf::a3_cluster_update::remote_api_call_post($ip, 'a3/pf_cmd', {'opts'=>['pf', 'start']});
     exit_failure(1);
   }
 
@@ -347,6 +348,7 @@ for my $ip (@remains_nodes_ip_to_update) {
 sync_files_from_master();
 
 enable_nodes_after_update();
+
 galera_db_sync();
 
 # run conf migration on remaining nodes 

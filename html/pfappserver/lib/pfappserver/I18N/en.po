@@ -3741,7 +3741,7 @@ msgid "Link with Aerohive Cloud Account"
 msgstr ""
 
 # html/pfappserver/root/admin/cloudIntegration.tt
-msgid "Linked with Aerohive Cloud Services at"
+msgid "Linked with Aerohive Cloud Services at "
 msgstr ""
 
 
@@ -10449,7 +10449,15 @@ msgstr "IBM"
 msgid "ifindex"
 msgstr "IfIndex"
 
-# html/pfappserver/root/admin/cloudIntegration.tt
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "If you or your organization already has an Aerohive Cloud Account for managing your network"
+msgstr ""
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid " you may enter your credentials and select"
+msgstr ""
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
 msgid "If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select,"
 msgstr ""
 
@@ -11735,7 +11743,7 @@ msgid "Uploading certificate files requires a restart of all httpd services."
 msgstr ""
 
 # html/pfappserver/root/admin/cloudIntegration.tt
-msgid "Uploading certificate files requires a restart of radiusd service."
+msgid "Uploading certificate files requires a restart of radiusd."
 msgstr ""
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc
