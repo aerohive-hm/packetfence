@@ -80,7 +80,7 @@ func handlePostRadAuthReq(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	log.LoggerWContext(ctx).Debug(fmt.Sprintf("fetch redis key=%s for event data", redisKey))
-	count, err := cache.CacheTableInfo(redisKey, message)
+	count, err := cache.CacheTableInfoInOrder(redisKey, message)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("cache data to queue fail")
 		return []byte(crud.PostOK)
@@ -108,7 +108,7 @@ func handlePostRadAuthRes(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	log.LoggerWContext(ctx).Debug(fmt.Sprintf("fetch redis key=%s for event data", redisKey))
-	count, err := cache.CacheTableInfo(redisKey, d.ReqData)
+	count, err := cache.CacheTableInfoInOrder(redisKey, d.ReqData)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("cache data to queue fail")
 		return []byte(crud.PostOK)

@@ -150,7 +150,7 @@ func UpdateDB() {
 
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
-		"systemctl stop packetfence-mariadb",
+		"systemctl start packetfence-mariadb",
 	}
 	ExecCmds(cmds)
 }
