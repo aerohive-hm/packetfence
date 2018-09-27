@@ -607,6 +607,11 @@ Valid context are "portal" and "admin", basically any prefix to "_strip_username
 sub strip_username_if_needed {
     my ($username, $context) = @_;
     return $username unless(defined($username));
+
+    # AH, for admin auth login, only use local user, skip realm
+    if ($context eq $pf::constants::realm::ADMIN_CONTEXT) {
+        return ($username, undef);
+    }
     
     my $logger = get_logger;
 
