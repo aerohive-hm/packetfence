@@ -751,7 +751,7 @@ sub dump_app {
   _commit_cluster_update_log("Starting Application data backup");
 
   if (call_system_cmd("$TAR_BIN -C /usr/local -czf $A3_UPDATE_APP_DUMP pf --exclude='pf/logs' --exclude='pf/var'") != 0) {
-    commit_update_log("Unable to back up application data: $!");
+    _commit_cluster_update_log("Unable to back up application data: $!");
     exit $fail_code
   }
 

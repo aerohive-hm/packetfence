@@ -42,14 +42,13 @@ func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 */
 func prepareClusterNodeJoin() {
 	err := a3share.NotifyClusterStatus(a3share.StopService)
-	if err != nil {		
+	if err != nil {
 		return
 	}
-	
+
 	utils.ForceNewCluster()
 	a3share.NotifyClusterStatus(a3share.StartSync)
 }
-
 
 func StartClusterNodejoining() {
 
@@ -153,5 +152,5 @@ func ActiveSyncFromPrimary(ip, user, password string) {
 	ama.ClearClusterStatus()
 
 	utils.UpdateCurrentlyAt()
-
+	utils.ExecShell(`pfcmd service iptables restart`)
 }
