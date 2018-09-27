@@ -273,7 +273,7 @@ func CheckMaskValid(mask string) error {
 			i++
 			value = value << 1
 		}
-		if i > 0 && i < 8 && (value&255) != 0 {
+		if i >= 0 && i < 8 && (value&255) != 0 {
 			return errors.New(msg)
 		}
 	}

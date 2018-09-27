@@ -95,7 +95,7 @@ func UpdateInterfaceInfo(ctx context.Context, i Item) error {
 		log.LoggerWContext(ctx).Error("UpdateNetconf error:" + err.Error())
 		return err
 	}
-	err = UpdatePrimaryClusterconf(true, i)
+	err = UpdatePrimaryClusterconf(!Isclusterjoin, i)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("UpdatePrimaryClusterconf error:" + err.Error())
 		return err
