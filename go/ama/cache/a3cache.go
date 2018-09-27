@@ -9,22 +9,25 @@
 package cache
 
 import (
-	"github.com/inverse-inc/packetfence/go/log"
 	"context"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/log"
 	"sync"
 )
 
 var mu sync.Mutex
+
 const tableSets string = "a3tables_set"
 const tableQueue string = "a3tables_queue"
 
-func CacheTableInfo(tableId string, value []byte) (int,error) {
+func CacheTableInfo(tableId string, value []byte) (int, error) {
 	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
-		return 0,err
+		mu.Unlock()
+
+		return 0, err
 	}
 
 	c := r.pool.Get()
@@ -33,34 +36,37 @@ func CacheTableInfo(tableId string, value []byte) (int,error) {
 	_, err = c.Do("SET", tableId, string(value))
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("SET key %s failed", tableId))
-		return 0,err
+		mu.Unlock()
+		return 0, err
 	}
 
 	_, err = c.Do("SADD", tableSets, tableId)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("ADD table %s failed", tableId) )
-		return 0,err
+		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("ADD table %s failed", tableId))
+		mu.Unlock()
+		return 0, err
 	}
 
 	count, err := c.Do("SCARD", tableSets)
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("Get sets count failed")
-		return 0,err
+		mu.Unlock()
+		return 0, err
 	}
 	mu.Unlock()
 
-	return int(count.(int64)),nil
+	return int(count.(int64)), nil
 }
 
-func FetchTablesInfo(count int) ([]interface{}, error){
+func FetchTablesInfo(count int) ([]interface{}, error) {
 	var tables []interface{}
 	var max int = count
 
-	
 	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
+		mu.Unlock()
 		return nil, err
 	}
 
@@ -70,7 +76,8 @@ func FetchTablesInfo(count int) ([]interface{}, error){
 	number, err := c.Do("SCARD", tableSets)
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("Get sets count failed")
-		return nil,err
+		mu.Unlock()
+		return nil, err
 	}
 
 	if int64(count) > number.(int64) {
@@ -78,7 +85,8 @@ func FetchTablesInfo(count int) ([]interface{}, error){
 	}
 	if max == 0 {
 		log.LoggerWContext(context.Background()).Info("No memeber in sets:", tableSets)
-		return nil, nil
+		mu.Unlock()
+		return tables, nil
 	}
 
 	for i := 0; i < max; i++ {
@@ -90,11 +98,14 @@ func FetchTablesInfo(count int) ([]interface{}, error){
 
 		table, err := c.Do("GET", string(tableId.([]byte)))
 		if err != nil {
-			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("Get %s failed", string(tableId.([]byte))) )
-			continue;
+			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("Get %s failed", string(tableId.([]byte))))
+			continue
 		}
-
-		tables = append(tables, table)
+		if table == nil {
+			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("table == nil, key:%s", string(tableId.([]byte))))
+		} else {
+			tables = append(tables, table)
+		}
 
 		_, err = c.Do("DEL", string(tableId.([]byte)))
 		if err != nil {
@@ -113,11 +124,12 @@ func FetchTablesInfo(count int) ([]interface{}, error){
 	return tables, err
 }
 
-func RedisTablesCount() (int,error) {
+func RedisTablesCount() (int, error) {
 	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
+		mu.Unlock()
 		return 0, err
 	}
 
@@ -127,19 +139,21 @@ func RedisTablesCount() (int,error) {
 	count, err := c.Do("SCARD", tableSets)
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("Get sets count failed")
-		return 0,err
+		mu.Unlock()
+		return 0, err
 	}
 	mu.Unlock()
 
 	return int(count.(int64)), nil
 }
 
-func CacheTableInfoInOrder(tableId string, value []byte) (int,error) {
+func CacheTableInfoInOrder(tableId string, value []byte) (int, error) {
 	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
-		return 0,err
+		mu.Unlock()
+		return 0, err
 	}
 
 	c := r.pool.Get()
@@ -148,36 +162,37 @@ func CacheTableInfoInOrder(tableId string, value []byte) (int,error) {
 	_, err = c.Do("SET", tableId, string(value))
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("SET key %s failed", tableId))
-		return 0,err
+		mu.Unlock()
+		return 0, err
 	}
 
 	count, err := c.Do("SADD", tableSets, tableId)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("ADD table %s failed", tableId) )
-		return 0,err
+		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("ADD table %s failed", tableId))
+		mu.Unlock()
+		return 0, err
 	}
 
 	//Push tableID to queue in order
-	//count equal to zero mean exist the repeating element 
+	//count equal to zero mean exist the repeating element
 	if count.(int64) == 0 {
 		_, err = c.Do("LREM", tableQueue, 0, tableId)
 		if err != nil {
 			log.LoggerWContext(context.Background()).Error("Remove repeating element failed:" + err.Error())
-			fmt.Println("Remove repeating element failed: %s", err.Error())
 		}
 	}
 	num, err := c.Do("RPUSH", tableQueue, tableId)
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("Enqueue failed:" + err.Error())
-		fmt.Println("Enqueue failed: %s", err.Error())
+		mu.Unlock()
 		return 0, err
 	}
 	mu.Unlock()
 
-	return int(num.(int64)),nil
+	return int(num.(int64)), nil
 }
 
-func FetchTablesInfoInOrder(count int) ([]interface{}, error){
+func FetchTablesInfoInOrder(count int) ([]interface{}, error) {
 	var tables []interface{}
 	var max int = count
 
@@ -185,6 +200,7 @@ func FetchTablesInfoInOrder(count int) ([]interface{}, error){
 	r, err := NewRedisPool("", "")
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
+		mu.Unlock()
 		return nil, err
 	}
 
@@ -194,7 +210,8 @@ func FetchTablesInfoInOrder(count int) ([]interface{}, error){
 	number, err := c.Do("llen", tableQueue)
 	if err != nil {
 		log.LoggerWContext(context.Background()).Error("Get queue length failed")
-		return nil,err
+		mu.Unlock()
+		return nil, err
 	}
 
 	if int64(count) > number.(int64) {
@@ -202,7 +219,8 @@ func FetchTablesInfoInOrder(count int) ([]interface{}, error){
 	}
 	if max == 0 {
 		log.LoggerWContext(context.Background()).Info("No memeber in sets:", tableSets)
-		return nil, nil
+		mu.Unlock()
+		return tables, nil
 	}
 
 	for i := 0; i < max; i++ {
@@ -214,11 +232,14 @@ func FetchTablesInfoInOrder(count int) ([]interface{}, error){
 
 		table, err := c.Do("GET", string(tableId.([]byte)))
 		if err != nil {
-			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("Get %s failed", string(tableId.([]byte))) )
-			continue;
+			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("Get %s failed", string(tableId.([]byte))))
+			continue
 		}
-
-		tables = append(tables, table)
+		if table == nil {
+			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("table is nill, key:%s", string(tableId.([]byte))))
+		} else {
+			tables = append(tables, table)
+		}
 
 		_, err = c.Do("DEL", string(tableId.([]byte)))
 		if err != nil {
