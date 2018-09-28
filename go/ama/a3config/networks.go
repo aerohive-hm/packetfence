@@ -320,6 +320,7 @@ func DeleteItemBlankChar(ctx context.Context, items []Item) []Item {
 		items[j].IpAddr = utils.ReplaceBlank(i.IpAddr)
 		items[j].Vip = utils.ReplaceBlank(i.Vip)
 		items[j].NetMask = utils.ReplaceBlank(i.NetMask)
+		items[j].Name = utils.ReplaceBlank(i.Name)
 	}
 	return items
 }
