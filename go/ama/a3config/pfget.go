@@ -18,7 +18,7 @@ func GetPfHostname() string {
 }
 
 func GetWebServices() Section {
-	return A3Read("PF", "webservices")
+	return A3ReadFull("PF", "webservices")
 }
 
 func ReadIface(ifname string) Section {
