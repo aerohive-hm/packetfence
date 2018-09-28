@@ -16,8 +16,16 @@ use warnings;
 use Moose;
 use namespace::autoclean;
 use pf::db;
+use pf::a3_entitlement qw(is_usage_over_capacity is_entitlement_expired get_trial_status);
+use pf::a3_eula_acceptance qw(a3_is_eula_accepted);
 use pf::config qw(%Config);
+use pf::file_paths qw($conf_dir);
 use pf::util;
+use pf::a3_util;
+use pf::log;
+use pf::cluster;
+use Data::Dumper;
+
 BEGIN { extends 'Catalyst::Controller' }
 
 #
@@ -41,6 +49,17 @@ auto
 sub auto :Private {
     my ( $self, $c ) = @_;
     $c->stash->{readonly_mode} = db_check_readonly();
+
+    if (-e "$conf_dir/currently-at") {
+        $c->stash->{is_usage_over_capacity} = pf::a3_entitlement::is_usage_over_capacity();
+        $c->stash->{is_entitlement_expired} = pf::a3_entitlement::is_entitlement_expired();
+        $c->stash->{is_eula_accepted} = pf::a3_eula_acceptance::a3_is_eula_accepted();
+        $c->stash->{get_trial_status} = pf::a3_entitlement::get_trial_status();
+        my ($cluster_enabled, $is_management) = pf::a3_util::a3_cluster_status();
+        $c->stash->{is_cluster_enabled} = $cluster_enabled;
+        $c->stash->{is_master_node} = $is_management;
+    }
+
     return 1;
 }
 
@@ -60,7 +79,7 @@ sub index :Path :Args(0) {
         $c->response->redirect($admin_url);
     } else {
         # Redirect to the configurator
-        $c->response->redirect($c->uri_for($c->controller('Configurator')->action_for('index')));
+        $c->response->redirect($c->uri_for($c->controller('A3')->action_for('index'))."/configurator/index.html");
     }
     $c->detach();
 }
@@ -85,24 +104,37 @@ Attempt to render a view, if needed.
 
 sub end : ActionClass('RenderView') {
     my ( $self, $c ) = @_;
-     
-    if (isenabled($Config{'advanced'}{'admin_csp_security_headers'})) {
-        $c->csp_server_headers();
-    }
-  
-    if (defined($c->req->header('accept')) && $c->req->header('accept') eq 'application/json'){
+    $self->updateResponseHeaders($c);
+    if (defined($c->req->header('accept')) && $c->req->header('accept') eq 'application/json') {
         $c->stash->{current_view} = 'JSON';
     }
+
     if (scalar @{$c->error}) {
-        for my $error ( @{ $c->error } ) {
+        for my $error (@{$c->error}) {
             $c->log->error($error);
         }
         $c->stash->{status_msg} = $c->pf_localize('An error condition has occured. See server side logs for details.');
         $c->response->status(500);
         $c->clear_errors;
     }
-    elsif (exists $c->stash->{status_msg} && defined $c->stash->{status_msg} ) {
-        $c->stash->{status_msg} = $c->pf_localize($c->stash->{status_msg});
+    elsif (defined (my $status_msg = $c->stash->{status_msg})) {
+        $c->stash->{status_msg} = $c->pf_localize($status_msg);
+    }
+}
+
+=head2 updateResponseHeaders
+
+updateResponseHeaders
+
+=cut
+
+sub updateResponseHeaders {
+    my ($self, $c) = @_;
+    my $response = $c->response;
+    $response->header('Cache-Control' => 'no-cache, no-store');
+    $response->header('X-Frame-Options' => 'SAMEORIGIN');
+    if (isenabled($Config{'advanced'}{'admin_csp_security_headers'})){
+        $c->csp_server_headers();
     }
 }
 

@@ -1,0 +1,146 @@
+
+.global-div-getStartCtl{
+    float:left;
+    width:1280px;
+}
+
+.new-deployment-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 590px;
+    background:#1774bc url("../../media/newDeploymentBackground.svg");
+
+}
+.new-deployment-logo-div-getStartCtl{
+    float:left;
+    margin-top:101px;
+    margin-left:297px;
+    width:56px;
+    height: 66px;
+}
+.new-deployment-logo-img-getStartCtl{
+    float:left;
+    width:56px;
+    height: 66px;
+}
+.new-deployment-new-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    margin-top:16px;
+    line-height: 65px;
+    font-size: 48px;
+    color:#ffffff;
+    text-align: center;
+    font-weight: bold;
+
+}
+.new-deployment-deployment-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    line-height: 65px;
+    font-size: 48px;
+    color:#ffffff;
+    text-align: center;
+    font-weight: bold;
+
+}
+.new-deployment-explain-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    line-height: 65px;
+    font-size: 18px;
+    color:#ffffff;
+    text-align: center;
+    font-weight: bold;
+
+}
+.new-deployment-button-div-getStartCtl{
+    float:left;
+    width:260px;
+    height: 80px;
+    margin-left:190px;
+    line-height: 80px;
+    font-size: 22px;
+    background: #ffffff;
+    color:#1774bc;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+
+}
+
+
+
+
+
+.join-cluster-div-getStartCtl{
+    float:left;
+    width:640px;
+    height:590px;
+    background:#a8b7c7 url("../../media/joinClusterBackground.svg");
+
+}
+.join-cluster-logo-div-getStartCtl{
+    float:left;
+    margin-top:101px;
+    margin-left:297px;
+    width:56px;
+    height: 66px;
+}
+.join-cluster-logo-img-getStartCtl{
+    float:left;
+    width:56px;
+    height: 66px;
+}
+.join-cluster-new-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    margin-top:16px;
+    line-height: 65px;
+    font-size: 48px;
+    color:#ffffff;
+    text-align: center;
+    font-weight: bold;
+
+}
+.join-cluster-deployment-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    line-height: 65px;
+    font-size: 48px;
+    color:#ffffff;
+    text-align: center;
+    font-weight: bold;
+
+}
+.join-cluster-explain-div-getStartCtl{
+    float:left;
+    width:640px;
+    height: 65px;
+    line-height: 65px;
+    font-size: 18px;
+    color:#ffffff;
+    text-align: center;
+    font-weight: bold;
+
+}
+.join-cluster-button-div-getStartCtl{
+    float:left;
+    width:260px;
+    height: 80px;
+    margin-left:190px;
+    line-height: 80px;
+    font-size: 22px;
+    background: #ffffff;
+    color:#a8b7c7;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+}

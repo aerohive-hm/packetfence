@@ -263,6 +263,11 @@ SetEnvIf Request_URI "netdata" is_netdata
       ProxyPassReverse /portal_preview/ http://[% preview_ip %]/
       ProxyPassReverse /portal_preview/ https://[% server_name %]/
       ProxyPassReverse /portal_preview/ http://[% server_name %]/
+      #A3_MODIFICATION
+      ProxyPass /a3/configurator/ http://127.0.0.1:10000/configurator/
+      ProxyPass /a3/api/v1/configurator/ http://127.0.0.1:10000/api/v1/configurator/
+      ProxyPassReverse /a3/configurator/ http://127.0.0.1:10000/configurator/
+      ProxyPassReverse /a3/api/v1/configurator/ http://127.0.0.1:10000/api/v1/configurator/
       #LogLevel debug
 
       # Proxy to netdata
@@ -307,6 +312,18 @@ SetEnvIf Request_URI "netdata" is_netdata
           ProxyHTMLURLMap / /portal_preview/
 
           Header add Set-Cookie "PF_PORTAL=%{X_PORTAL}e; Path=/portal_preview" env=X_PORTAL
+      </Location>
+
+      #AH_MODIFICATION
+      <Location /a3>
+          Header edit Location ^/(.*) /a3/$1
+          Header edit Location http:\/\/.* /a3
+          RequestHeader append X-Forwarded-For-A3 "127.0.0.1"
+
+          ProxyHTMLInterp On
+          ProxyHTMLURLMap http://127.0.0.1/ /a3/ l
+          ProxyHTMLURLMap /a3/ / l
+          ProxyHTMLURLMap / /a3/
       </Location>
 
       Alias /static [% install_dir %]/html/pfappserver/root/static

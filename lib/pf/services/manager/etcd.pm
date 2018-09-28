@@ -51,7 +51,7 @@ sub generateConfig {
     my %tags;
     $tags{'template'} = "$conf_dir/etcd.conf.yml";
     $tags{'initial_cluster'} = '';
-    $tags{'data_dir'} = $var_dir;
+    $tags{'data_dir'} = $var_dir.'/etcd';
     $tags{'listen_peer_urls'} = "http://$management_network->{'Tip'}:2380";
     $tags{'initial_advertise_peer_urls'} = "http://$management_network->{'Tip'}:2380";
     $tags{'listen_client_urls'} = "http://$management_network->{'Tip'}:2379,http://127.0.0.1:2379";
@@ -60,7 +60,7 @@ sub generateConfig {
     $tags{'etcd_name'} = "Miguel";
 
     my $i = 0;
-    foreach my $member (@cluster_servers) {
+    foreach my $member (pf::cluster::enabled_servers) {
         $tags{'initial_cluster'} .= "infra$i=http://$member->{management_ip}:2380,";
         if ($member->{management_ip} eq $management_network->{'Tip'}) {
             $tags{'etcd_name'} = "infra$i";

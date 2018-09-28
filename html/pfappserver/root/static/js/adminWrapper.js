@@ -5,18 +5,17 @@ $(document).ready(function(){
       width: "toggle"
     });
   });
+
   // $("#trialIndicator").load(window.location + " #trialIndicator");
+  timeLeft();
+
   $(".dismiss-modal").click(function(){
     $("#myModal").css("display", "none");
   });
 
-  document.getElementById("licenseKey").onclick = function () {
-    var base_url = window.location.origin;
-    console.log("going to license management page");
-    location.href = base_url+"/admin/licenseKeys";
-  };
-
-  timeLeft();
+  $("#logout").click(function(){
+     localStorage.clear();
+  });
 
   var emailForm = $('.emailForm');
   var emailFormButton = $('.toggle-emailForm');
@@ -40,7 +39,13 @@ $(document).ready(function(){
         successEmailMessage.slideDown(1000);
       });
     });
+
 });
+
+function toLicensePage(){
+      var base_url = window.location.origin;
+      location.href = base_url+"/admin/licenseKeys";
+}
 
 function timeLeft(){
   var base_url = window.location.origin;
@@ -55,9 +60,8 @@ function timeLeft(){
     }).done(function(data){
          seconds = data.trial[0].expires_in;
          var parseSeconds = parseInt(seconds, 10);
-         days  = Math.ceil(parseSeconds / (3600*24));
-         hours = Math.ceil(parseSeconds / 3600);
-         console.log("Days: " + days);
+         days  = Math.floor(parseSeconds / (3600*24));
+         hours = Math.floor(parseSeconds / 3600);
          numberOfDaysLeft = days;
          var percentageWidth = Math.round((numberOfDaysLeft) * (100/30)) + '%';
          if (numberOfDaysLeft > 15 && numberOfDaysLeft < 29){
@@ -72,21 +76,16 @@ function timeLeft(){
 
          }else if(numberOfDaysLeft <= 15 && numberOfDaysLeft > 0 ){
             if ($.cookie('pop') == null) {
-               console.log("show modal");
-               $('#myModal').modal('show');
                $.cookie('pop', '1');
             }
             if (numberOfDaysLeft == 1){
-              document.getElementById("daysLeft2").innerHTML= numberOfDaysLeft + " day";
               $("#daysLeft").html(numberOfDaysLeft + " " + "day");
               $(timeBar).css('width', percentageWidth);
             }else{
-              document.getElementById("daysLeft2").innerHTML= numberOfDaysLeft + " days";
               $("#daysLeft").html(numberOfDaysLeft + " " + "days");
               $(timeBar).css('width', percentageWidth);
             }
          }else if (numberOfDaysLeft == 0){
-              console.log("show expired modal");
                $('#expiredModal').modal('show');
                $("#daysLeft").html(numberOfDaysLeft + " " + "day");
                $(timeBar).css('width', percentageWidth);
@@ -97,7 +96,6 @@ function timeLeft(){
            // modal to show for actually expire
     }).fail(function(xhr, status, error){
         $('.trialIndicator').remove();
-        console.log("removing trial indicator");
 
     });
     return numOfDaysLeft;
@@ -105,12 +103,30 @@ function timeLeft(){
 
 
 function openExpiredModal(){
-    console.log("show expired modal");
     $('#expiredModal').modal({backdrop:'static', keyboard: false });
     $('#expiredModal').modal('show');
 }
 
 function openAlmostExpiredModal(){
-    $('#myModal').modal({backdrop:'static', keyboard: false });
-    $('#myModal').modal('show');
+      if(typeof(Storage) !== "undefined") {
+          var almostModalShowed = localStorage.getItem('modalShowed');
+          if (!almostModalShowed) {
+              $('#myModal').modal({backdrop:'static', keyboard: false });
+              $('#myModal').modal('show');
+              localStorage.setItem('modalShowed', 1);
+          }
+          else {
+              $("#myModal").hide();
+          }
+      }
+}
+
+function openEnforcementModal(){
+    $('#enforcementModal').modal({backdrop:'static', keyboard: false });
+    $('#enforcementModal').modal('show');
+}
+
+function openOverUsageModal(){
+    $('#overUsageModal').modal({backdrop:'static', keyboard: false });
+    $('#overUsageModal').modal('show');
 }

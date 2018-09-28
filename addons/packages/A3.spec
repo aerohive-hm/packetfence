@@ -54,7 +54,7 @@ Source: http://10.16.134.140/src/%{real_name}-%{version}-%{rev}.tar.gz
 %endif
 
 # Log related globals
-%global logfiles packetfence.log snmptrapd.log pfdetect pfmon violation.log
+%global logfiles packetfence.log snmptrapd.log pfdetect pfmon violation.log httpd.admin.audit.log
 %global logdir /usr/local/pf/logs
 
 BuildRequires: gettext, httpd, ipset-devel, pkgconfig
@@ -308,6 +308,8 @@ Requires: netdata, fping, MySQL-python
 # pki
 Requires: perl(Crypt::SMIME)
 
+# Cluster-related
+Requires: percona-xtrabackup, socat
 
 Requires: perl(Sereal::Encoder), perl(Sereal::Decoder), perl(Data::Serializer::Sereal) >= 1.04
 #
@@ -333,9 +335,14 @@ Requires: haproxy >= 1.6, keepalived >= 1.3.6
 # CAUTION: we need to require the version we want for Fingerbank and ensure we don't want anything equal or above the next major release as it can add breaking changes
 Requires: fingerbank >= 4.0.0, fingerbank < 5.0.0
 Requires: perl(File::Tempdir)
+Requires: perl(REST::Client)
+Requires: nodejs = 2:6.11.0
+Requires: a3-node-modules
 
 # etcd
 Requires: etcd >= 3.1
+# psmisc
+Requires: psmisc
 
 %description -n %{real_name}
 
@@ -478,12 +485,19 @@ done
 %{__install} -D -m0644 conf/systemd/packetfence-pfipset.service $RPM_BUILD_ROOT/usr/lib/systemd/system/packetfence-pfipset.service
 %{__install} -D -m0644 conf/systemd/packetfence-netdata.service $RPM_BUILD_ROOT/usr/lib/systemd/system/packetfence-netdata.service
 %{__install} -D -m0644 conf/systemd/packetfence-pfstats.service $RPM_BUILD_ROOT/usr/lib/systemd/system/packetfence-pfstats.service
+%{__install} -D -m0644 conf/systemd/a3-update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-update.service
+%{__install} -D -m0644 conf/systemd/a3-httpd.update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-httpd.update.service
+%{__install} -D -m0644 conf/systemd/a3-api-backend.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-api-backend.service
+%{__install} -D -m0644 conf/systemd/a3-nodeapp.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-nodeapp.service
 
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons/AD
 %{__install} -d -m2770 $RPM_BUILD_ROOT/usr/local/pf/conf
+%{__install} -d -m2770 $RPM_BUILD_ROOT/usr/local/pf/conf_migration
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/conf/radiusd
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/conf/ssl
+%{__install} -d -m0755 $RPM_BUILD_ROOT/usr/local/pf/conf/ssl/tls_certs
+%{__install} -d -m0755 $RPM_BUILD_ROOT/usr/local/pf/conf/ssl/tmp_certs
 %{__install} -d -m2775 $RPM_BUILD_ROOT%logdir
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/raddb/sites-enabled
 %{__install} -d -m2775 $RPM_BUILD_ROOT/usr/local/pf/var
@@ -501,6 +515,7 @@ done
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/var/control
 %{__install} -d $RPM_BUILD_ROOT/etc/sudoers.d
 %{__install} -d $RPM_BUILD_ROOT/etc/cron.d
+%{__install} -d $RPM_BUILD_ROOT/etc/yum.repos.d
 touch $RPM_BUILD_ROOT/usr/local/pf/var/cache_control
 cp Makefile $RPM_BUILD_ROOT/usr/local/pf/
 cp -r bin $RPM_BUILD_ROOT/usr/local/pf/
@@ -518,10 +533,17 @@ cp addons/*.sh $RPM_BUILD_ROOT/usr/local/pf/addons/
 %{__install} -D packetfence.journald $RPM_BUILD_ROOT/usr/lib/systemd/journald.conf.d/01-packetfence.conf
 cp -r sbin $RPM_BUILD_ROOT/usr/local/pf/
 cp -r conf $RPM_BUILD_ROOT/usr/local/pf/
+cp -r a3_update $RPM_BUILD_ROOT/usr/local/pf/
 mv -f $RPM_BUILD_ROOT/usr/local/pf/conf/a3-release $RPM_BUILD_ROOT/usr/local/pf/conf/pf-release
 cp -r raddb $RPM_BUILD_ROOT/usr/local/pf/
+cp -r clish $RPM_BUILD_ROOT/usr/local/pf/
 mv packetfence.sudoers $RPM_BUILD_ROOT/etc/sudoers.d/A3
 mv packetfence.cron.d $RPM_BUILD_ROOT/etc/cron.d/A3
+%if %{release_build}
+  mv A3.repo $RPM_BUILD_ROOT/etc/yum.repos.d/A3.repo
+%else
+  mv A3-dev.repo $RPM_BUILD_ROOT/etc/yum.repos.d/A3-dev.repo
+%endif
 mv addons/pfarp_remote/sbin/pfarp_remote $RPM_BUILD_ROOT/usr/local/pf/sbin
 mv addons/pfarp_remote/conf/pfarp_remote.conf $RPM_BUILD_ROOT/usr/local/pf/conf
 rmdir addons/pfarp_remote/sbin
@@ -532,11 +554,15 @@ rmdir addons/pfarp_remote
 cp -r db $RPM_BUILD_ROOT/usr/local/pf/
 cp -r html $RPM_BUILD_ROOT/usr/local/pf/
 cp -r lib $RPM_BUILD_ROOT/usr/local/pf/
+cp conf_migration/* $RPM_BUILD_ROOT/usr/local/pf/conf_migration/
 
 mkdir $RPM_BUILD_ROOT/usr/local/pf/docs
+mkdir -p $RPM_BUILD_ROOT/usr/local/pf/html/update
 cp docs/pfcmd.help $RPM_BUILD_ROOT/usr/local/pf/docs
 
 mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen
+
+mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahusavg-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahusavg
 
 # Exclude new Vue.js content for now
 rm -rf $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static.alt/
@@ -645,7 +671,7 @@ else
 fi
 
 #Check if log files exist and create them with the correct owner
-for fic_log in packetfence.log redis_cache.log violation.log
+for fic_log in packetfence.log redis_cache.log violation.log httpd.admin.audit.log
 do
 if [ ! -e /usr/local/pf/logs/$fic_log ]; then
   touch /usr/local/pf/logs/$fic_log
@@ -660,6 +686,9 @@ echo "Restarting rsyslogd"
 #Make ssl certificate
 cd /usr/local/pf
 make conf/ssl/server.pem
+if [ -e /usr/local/pf/conf/ssl/server.pem ]; then
+  chown pf.pf /usr/local/pf/conf/ssl/server.pem
+fi
 
 # Create server local RADIUS secret
 if [ ! -f /usr/local/pf/conf/local_secret ]; then
@@ -688,6 +717,13 @@ else
   echo "DH already exists, won't touch it!"
 fi
 
+for cert_file in server.key server.crt ca.pem
+do
+if [ -e /usr/local/pf/raddb/certs/$cert_file ]; then
+  chown pf.pf /usr/local/pf/raddb/certs/$cert_file
+fi
+done
+
 if [ ! -f /usr/local/pf/conf/pf.conf ]; then
   echo "Touch pf.conf because it doesnt exist"
   touch /usr/local/pf/conf/pf.conf
@@ -714,6 +750,9 @@ net.ipv4.ip_nonlocal_bind = 1
 
 # Allowed local port range
 net.ipv4.ip_local_port_range = 1025 65534
+
+# Reserved local port for server
+net.ipv4.ip_local_reserved_ports = 9999
 
 # Increase number of incoming connections
 net.core.somaxconn = 65534
@@ -809,6 +848,9 @@ kernel.sched_migration_cost_ns = 5000000
 
 # Group tasks by TTY
 kernel.sched_autogroup_enabled = 0
+
+# Disable IPv6
+net.ipv6.conf.all.disable_ipv6 = 1
 EOF
 sysctl -p /etc/sysctl.d/99-A3.conf
 
@@ -826,11 +868,22 @@ rm -rf /usr/local/pf/var/cache/
 /bin/systemctl enable packetfence-config
 /bin/systemctl disable packetfence-iptables
 /bin/systemctl enable packetfence-routes
-/bin/systemctl isolate packetfence-base
+# the isolate this will bring up some services(like pf-db service) which cause the later operation for  
+# cluster update process failure, so just skip it during upgrade 
+if [ "$1" = "1" ]; then
+  /bin/systemctl isolate packetfence-base
+fi
+
 /bin/systemctl enable packetfence-httpd.admin
+/bin/systemctl enable a3-api-backend
+/bin/systemctl enable a3-nodeapp
 
 /usr/local/pf/bin/pfcmd configreload
-/bin/systemctl start packetfence-httpd.admin
+# Don't launch it during image building stage, otherwise all image has same DB root password
+if [ "$1" = "2" ]; then
+  /bin/systemctl start packetfence-httpd.admin
+  /bin/systemctl restart a3-api-backend
+fi
 
 echo Installation complete
 echo "  * Open your web browser and navigate to https://@ip_packetfence:1443/configurator to complete your A3 configuration."
@@ -899,6 +952,7 @@ fi
 
 %exclude                /usr/lib/systemd/system/packetfence-config.service
 %attr(0644, root, root) /usr/lib/systemd/system/packetfence-*.service
+%attr(0644, root, root) /usr/lib/systemd/system/a3-*.service
 %attr(0644, root, root) /usr/lib/systemd/journald.conf.d/01-packetfence.conf
 
 %dir %attr(0750, root,root) /etc/systemd/system/packetfence*target.wants
@@ -908,6 +962,12 @@ fi
 %config %attr(0440,root,root) %{_sysconfdir}/sudoers.d/A3
 %config %attr(0644,root,root) %{_sysconfdir}/logrotate.d/A3
 %config %attr(0600,root,root) %{_sysconfdir}/cron.d/A3
+%if %{release_build}
+  %config %attr(0644,root,root) %{_sysconfdir}/yum.repos.d/A3.repo
+%else
+  %config %attr(0644,root,root) %{_sysconfdir}/yum.repos.d/A3-dev.repo
+%endif
+  
 
 %dir                    /usr/local/pf
                         /usr/local/pf/Makefile
@@ -933,6 +993,8 @@ fi
 %dir                    /usr/local/pf/bin
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3ec
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3us
+%attr(0755, pf, pf)     /usr/local/pf/bin/a3ma
+%attr(0755, pf, pf)     /usr/local/pf/bin/a3cs
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfhttpd
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd.pl
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd_vlan
@@ -946,6 +1008,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/maintenance
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/node
 %attr(0700, root, root) /usr/local/pf/bin/ahpwgen
+%attr(0755, pf, pf)     /usr/local/pf/bin/ahusavg
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdhcp
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfdns
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfstats
@@ -960,6 +1023,7 @@ fi
                         /usr/local/pf/conf/caddy-services/*.conf.example
 %config(noreplace)      /usr/local/pf/conf/chi.conf
 %config                 /usr/local/pf/conf/chi.conf.defaults
+%config                 /usr/local/pf/conf/cluster-files.txt
 %config(noreplace)      /usr/local/pf/conf/pfdns.conf
 %config(noreplace)      /usr/local/pf/conf/pfdhcp.conf
 %config(noreplace)      /usr/local/pf/conf/portal_modules.conf
@@ -1110,6 +1174,8 @@ fi
 %config(noreplace)      /usr/local/pf/conf/scan.conf
                         /usr/local/pf/conf/scan.conf.example
 %dir                    /usr/local/pf/conf/ssl
+%dir                    /usr/local/pf/conf/ssl/tls_certs
+%dir                    /usr/local/pf/conf/ssl/tmp_certs
 %dir                    /usr/local/pf/conf/systemd
 %config                 /usr/local/pf/conf/systemd/*
 %config(noreplace)      /usr/local/pf/conf/switches.conf
@@ -1189,9 +1255,13 @@ fi
                         /usr/local/pf/conf/report.conf.example
 %config(noreplace)      /usr/local/pf/conf/traffic_shaping.conf
                         /usr/local/pf/conf/traffic_shaping.conf.example
+%dir                    /usr/local/pf/conf_migration
+%attr(0755, pf, pf)     /usr/local/pf/conf_migration/*
 %dir                    /usr/local/pf/db
-                        /usr/local/pf/db/a3-schema-1.0.0.sql
+                        /usr/local/pf/db/a3-schema-*.sql
                         /usr/local/pf/db/pf-schema.sql
+                        /usr/local/pf/db/a3-upgrade*.sql
+                        /usr/local/pf/db/a3-update-path
 %dir                    /usr/local/pf/docs
 %doc                    /usr/local/pf/docs/pfcmd.help
 %dir                    /usr/local/pf/html
@@ -1213,7 +1283,7 @@ fi
                         /usr/local/pf/html/captive-portal/content/timerbar.js
                         /usr/local/pf/html/captive-portal/content/ChilliLibrary.js
                         /usr/local/pf/html/captive-portal/content/shared_mdm_profile.mobileconfig
-                        /usr/local/pf/html/captive-portal/content/packetfence-windows-agent.exe
+                        /usr/local/pf/html/captive-portal/content/a3-windows-agent.exe
                         /usr/local/pf/html/captive-portal/content/billing/stripe.js
                         /usr/local/pf/html/captive-portal/content/provisioner/mobileconfig.js
                         /usr/local/pf/html/captive-portal/content/provisioner/sepm.js
@@ -1255,6 +1325,7 @@ fi
                         /usr/local/pf/html/parking/index.html
                         /usr/local/pf/html/parking/max-attempts.html
                         /usr/local/pf/html/pfappserver/
+                        /usr/local/pf/html/update/
 %config(noreplace)      /usr/local/pf/html/pfappserver/pfappserver.conf
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Admin.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Config/AdminRoles.pm
@@ -1281,6 +1352,8 @@ fi
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Service.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/User.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Violation.pm
+%dir                    /usr/local/pf/html/a3ui
+                        /usr/local/pf/html/a3ui/*
                         /usr/local/pf/lib
 %exclude                /usr/local/pf/lib/pfconfig*
 %config(noreplace)      /usr/local/pf/lib/pf/floatingdevice/custom.pm
@@ -1303,6 +1376,7 @@ fi
 %ghost                  %logdir/packetfence.log
 %ghost                  %logdir/snmptrapd.log
 %ghost                  %logdir/violation.log
+%ghost                  %logdir/httpd.admin.audit.log
 %ghost                  %logdir/pfdetect
 %ghost                  %logdir/pfmon
 %dir                    /usr/local/pf/sbin
@@ -1319,6 +1393,21 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/sbin/system-id
 %attr(0755, pf, pf)     /usr/local/pf/sbin/winbindd-wrapper
 %attr(0755, pf, pf)     /usr/local/pf/sbin/radsniff-wrapper
+%attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update
+%attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update_wrapper
+%dir                    /usr/local/pf/clish
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish_wrapper
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/change_ip.sh
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/reboot_system
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/get_network_settings.sh
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/logout_console.sh
+%attr(0755, netcfg, netcfg)     /usr/local/pf/clish/xml-config/*
+%dir                    /usr/local/pf/a3_update
+%attr(0755, root, root) /usr/local/pf/a3_update/A3_Cluster.js
+%attr(0755, root, root) /usr/local/pf/a3_update/a3_cluster_update.pl
+%attr(0644, root, root) /usr/local/pf/a3_update/package.json
+%attr(0755, root, root) /usr/local/pf/a3_update/post_process/*
 %dir                    /usr/local/pf/var
 %dir                    /usr/local/pf/var/conf
 %dir                    /usr/local/pf/raddb

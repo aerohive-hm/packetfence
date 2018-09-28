@@ -77,6 +77,9 @@ cd "$GOPATHPF"
 
 cd go
 
+# Ensure current binaries are available through path
+export PATH="$GOBIN:$PATH"
+
 # Install the dependencies
 go get -u github.com/kardianos/govendor
 $GOPATH/bin/govendor sync
@@ -93,6 +96,8 @@ if build_mode; then
   mv pfstats $BINDST/
   make ahpwgen-bin
   mv ahpwgen-bin $BINDST/
+  make ahusavg-bin
+  mv ahusavg-bin $BINDST/
 
 elif test_mode; then
   make test

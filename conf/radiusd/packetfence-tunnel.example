@@ -264,6 +264,7 @@ post-auth {
 	} else {
 		packetfence-audit-log-accept
 	}
+    rest-ama
 
 	#
 	#  Un-comment the following if you have set
@@ -606,6 +607,7 @@ post-auth {
 	} else {
 		packetfence-audit-log-accept
 	}
+    rest-ama
 
 	#
 	#  Un-comment the following if you have set

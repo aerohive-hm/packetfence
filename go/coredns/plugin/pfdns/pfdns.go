@@ -10,6 +10,7 @@ import (
 	"os"
 	"regexp"
 	"time"
+
 	"github.com/inverse-inc/packetfence/go/coredns/plugin"
 	"github.com/inverse-inc/packetfence/go/coredns/request"
 	"github.com/inverse-inc/packetfence/go/database"
@@ -43,6 +44,7 @@ type pfdns struct {
 	DNSFilter         *cache.Cache
 	IpsetCache        *cache.Cache
 	apiClient         *unifiedapiclient.Client
+	PortalFQDN        string
 }
 
 // Ports array
@@ -64,9 +66,9 @@ func (pf *pfdns) Ip2Mac(ip string, ipVersion int) (string, error) {
 		err error
 	)
 	if ipVersion == 4 {
-		err = pf.IP4log.QueryRow(ip).Scan(&mac)
+		err = pf.IP4log.QueryRow(ip, 1).Scan(&mac)
 	} else {
-		err = pf.IP6log.QueryRow(ip).Scan(&mac)
+		err = pf.IP6log.QueryRow(ip, 1).Scan(&mac)
 	}
 
 	if err != nil {
@@ -79,7 +81,7 @@ func (pf *pfdns) Ip2Mac(ip string, ipVersion int) (string, error) {
 func (pf *pfdns) HasViolations(mac string) bool {
 	violation := false
 	var violationCount int
-	err := pf.Violation.QueryRow(mac).Scan(&violationCount)
+	err := pf.Violation.QueryRow(mac, 1).Scan(&violationCount)
 	if err != nil {
 		fmt.Printf("ERROR pfdns HasViolation %s %s\n", mac, err)
 	} else if violationCount != 0 {
@@ -199,7 +201,7 @@ func (pf *pfdns) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 		case "inline":
 			fmt.Println("Performing inline or DNS enforcement for this device")
 			var status = "unreg"
-			err = pf.Nodedb.QueryRow(mac).Scan(&status)
+			err = pf.Nodedb.QueryRow(mac, 1).Scan(&status)
 			if err != nil {
 				fmt.Printf("ERROR pfdns error getting node status %s %s\n", mac, err)
 			}
@@ -249,7 +251,11 @@ func (pf *pfdns) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 	switch state.Family() {
 	case 1:
 		rr = new(dns.A)
-		rr.(*dns.A).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeA, Class: state.QClass()}
+		if state.QName() == pf.PortalFQDN {
+			rr.(*dns.A).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeA, Class: state.QClass(), Ttl: 60}
+		} else {
+			rr.(*dns.A).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeA, Class: state.QClass()}
+		}
 		for k, v := range pf.Network {
 			if k.Contains(bIP) {
 				returnedIP := append([]byte(nil), v.To4()...)
@@ -261,7 +267,11 @@ func (pf *pfdns) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 		}
 	case 2:
 		rr = new(dns.AAAA)
-		rr.(*dns.AAAA).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeAAAA, Class: state.QClass()}
+		if state.QName() == pf.PortalFQDN {
+			rr.(*dns.AAAA).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeAAAA, Class: state.QClass(), Ttl: 60}
+		} else {
+			rr.(*dns.AAAA).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeAAAA, Class: state.QClass()}
+		}
 		for k, v := range pf.Network {
 			if k.Contains(bIP) {
 				returnedIP := append([]byte(nil), v.To16()...)
@@ -396,7 +406,7 @@ func (pf *pfdns) PassthrouthsInit() error {
 	}
 
 	for k, v := range pfconfigdriver.Config.Passthroughs.Registration.Normal {
-		rgx, _ := regexp.Compile(k)
+		rgx, _ := regexp.Compile("^" + k + ".$")
 		pf.FqdnPort[rgx] = v
 	}
 	return nil
@@ -415,7 +425,7 @@ func (pf *pfdns) PassthrouthsIsolationInit() error {
 	}
 
 	for k, v := range pfconfigdriver.Config.Passthroughs.Isolation.Normal {
-		rgx, _ := regexp.Compile(k)
+		rgx, _ := regexp.Compile("^" + k + ".$")
 		pf.FqdnIsolationPort[rgx] = v
 	}
 	return nil
@@ -487,25 +497,25 @@ func (pf *pfdns) DbInit() error {
 		return err
 	}
 
-	pf.IP4log, err = pf.Db.Prepare("select mac from ip4log where ip = ? ")
+	pf.IP4log, err = pf.Db.Prepare("select mac from ip4log where ip = ? AND tenant_id = ?")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "pfdns: database ip4log prepared statement error: %s", err)
 		return err
 	}
 
-	pf.IP6log, err = pf.Db.Prepare("select mac from ip6log where ip = ? ")
+	pf.IP6log, err = pf.Db.Prepare("select mac from ip6log where ip = ? AND tenant_id = ?")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "pfdns: database ip6log prepared statement error: %s", err)
 		return err
 	}
 
-	pf.Nodedb, err = pf.Db.Prepare("select status from node where mac = ? ")
+	pf.Nodedb, err = pf.Db.Prepare("select status from node where mac = ? AND tenant_id = ?")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "pfdns: database nodedb prepared statement error: %s", err)
 		return err
 	}
 
-	pf.Violation, err = pf.Db.Prepare("Select count(*) from violation, action where violation.vid=action.vid and action.action='reevaluate_access' and mac=? and status='open'")
+	pf.Violation, err = pf.Db.Prepare("Select count(*) from violation, action where violation.vid=action.vid and action.action='reevaluate_access' and mac=? and status='open' AND tenant_id = ?")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "pfdns: database violation prepared statement error: %s", err)
 		return err
@@ -569,4 +579,10 @@ func (pf *pfdns) SetPassthrough(ctx context.Context, passthrough, ip, port strin
 	}
 
 	return err
+}
+
+func (pf *pfdns) PortalFQDNInit() error {
+	general := pfconfigdriver.Config.PfConf.General
+	pf.PortalFQDN = general.Hostname + "." + general.Domain + "."
+	return nil
 }

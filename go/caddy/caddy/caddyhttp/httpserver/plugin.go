@@ -486,6 +486,7 @@ var directives = []string{
 	"pfsso",
 	"pfipset",
 	"httpdispatcher",
+	"a3-api",
 }
 
 const (

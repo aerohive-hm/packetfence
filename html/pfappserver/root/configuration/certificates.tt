@@ -1,0 +1,113 @@
+
+[%  jsFiles = [
+        'js/vendor/raphael.min',
+        'admin/config/items',
+        'js/node',
+        'js/user',
+        'js/certificates',
+        'admin/common.js'
+        ]
+-%]
+<head>
+  <link href="[% c.uri_for('/static/admin/certificates.css') %]" rel="stylesheet">
+</head>
+<div class="alert-container">
+  <div id="success-alert" style="display:none;"><div style="padding: 10px;" id="successMessage"></div></div>
+  <div id="success-alert-ca" style="display:none;"><div style="padding: 10px;" id="successMessage-ca"></div></div>
+  <div id="error-alert" style="display:none;"><div style="padding: 10px;" id="errorMessage"></div></div>
+</div>
+<div class="card">
+    <div class="card-block">
+        <h2>[% l('Certificates') %]</h2>
+          <ul class="nav nav-tabs">
+            <li class="active">
+              <a data-toggle="tab" href="#https">[% l('HTTPS') %]</a>
+            </li>
+            <li>
+              <a data-toggle="tab" href="#eap_tls">[% l('EAP-TLS') %]</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+
+            <!--https-->
+            <div id="https" class="tab-pane fade in active">
+               <div style="padding-left: 50px;">
+                   <form class="https_form" name="https_form" id="https_form">
+                      <label><h4>[% l('HTTPS') %]</h4></label>
+                      <div class="server">
+                        <h6>[% l('Server Certificate and Key Upload') %]</h6>
+                        <span>[% l('A server key and server certificate are required.') %]
+                          [% l('Uploading certificate files requires a restart of all httpd services.') %]</span>
+                        <br><br>
+                        <h5>[% l('Current Server Certificate') %] <a class="btn" id="download_button_https" style="margin-left: 447px;"> [% l('Download') %]</a></h5>
+                        <div id="https_serv_view_more"></div>
+                        <br><br>
+                        <input id="https_key_path" name="https_key_path" type="hidden" value="">
+                        <label class="form-horizontal control-label"><h5>[% l('Key') %]</h5></label>
+                        <div class="controls">
+                            <input class="https_serverKey_upload btn" id="https_serverKey_upload" type="file">
+                            <p class="help-block">[% l('When uploading, make sure the file is under 0.008MB (8000 bytes) and in .key format.') %]</p>
+                        </div>
+                        <input id="https_cert_path" name="https_cert_path" type="hidden" value="">
+                        <label class="form-horizontal control-label"><h5>[% l('Server Certificate') %]</h5></label>
+                        <div class="controls">
+                            <input class="https_serverCert_upload btn" id="https_serverCert_upload" type="file">
+                            <p class="help-block">[% l('When uploading, make sure the file is under 1MB (1000000 bytes) and in .crt/.pem/.cer format.') %]</p>
+                        </div>
+                      </div>
+                      <br>
+                      <button id="https-upload" class="btn btn-success">[% l('Submit') %]</button>
+                      <br>
+                   </form>
+               </div>
+            </div>
+
+            <!--eap-tls-->
+            <div id="eap_tls" class="tab-pane fade">
+              <div style="padding-left: 50px;">
+                <form class="eap_tls_form" name="eap_tls_form" id="eap_tls_form">
+                  <label><h4>[% l('EAP-TLS') %]</h4></label>
+                  <div class="server">
+                    <h6>[% l('Server Certificate and Key Upload') %]</h6>
+                    <span>[% l('A server key and server certificate are required. Uploading a CA certificate is optional.') %]</span>
+                    <span>[% l('Uploading certificate files requires a restart of radiusd.') %]</span>
+                    <br><br>
+                    <div class="certificate-info">
+                      <h5>[% l('Current Server Certificate') %] <a class="btn" id="download_button_eap_serv" style="margin-left: 447px;">[% l('Download') %]</a></h5>
+                      <div id="eap_serv_view_more"></div>
+                      <h5>[% l('Current CA Certificate') %] <a class="btn" id="download_button_eap_ca" style="margin-left: 471px;">[% l('Download') %]</a></h5>
+                      <div id="eap_ca_view_more"></div>
+                    </div>
+                    <br><br>
+                    <input id="eap_key_path" name="eap_key_path" type="hidden" value="">
+                    <label class="form-horizontal control-label"><h5>[% l('Key') %]</h5></label>
+                    <div class="controls">
+                        <input id="serverKey_upload" name="serverKey_upload" class="serverKey_upload btn" type="file"/>
+                        <p class="help-block">[% l('When uploading, make sure the file is under 0.008MB (8000 bytes) and in .key format.') %]</p>
+                    </div>
+
+                    <input id="eap_cert_path" name="eap_cert_path" type="hidden" value="">
+                    <label class="form-horizontal control-label"><h5>[% l('Server Certificate') %]</h5></label>
+                    <div>
+                        <input id="serverCert_upload" name="serverCert_upload" class="serverCert_upload btn" type="file"/>
+                        <p class="help-block">[% l('When uploading, make sure the file is under 1MB (1000000 bytes) and in .crt/.pem/.cer format.') %]</p>
+                    </div>
+                    <br>
+                    <input id="eap_cacert_path" name="eap_cacert_path" type="hidden" value="">
+                    <label class="form-horizontal control-label"><h5>[% l('CA Certificate') %]</h5></label>
+                    <div>
+                        <input id="caCert_upload" name="caCert_upload" class="caCert_upload btn" type="file"/>
+                        <p class="help-block">[% l('(Optional) When uploading, make sure the file is under 1MB (1000000 bytes) and in .crt/.pem/.cer format.') %]</p>
+                    </div>
+                  </div>
+                  <br>
+                  <button id="eap-upload" class="btn btn-success">[% l('Submit') %]</button>
+                  <br>
+                </form>
+              </div>
+            </div>
+          </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="[% c.uri_for('/static/js/certificates.js') %]"></script>

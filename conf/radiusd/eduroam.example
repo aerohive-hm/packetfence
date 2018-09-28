@@ -292,6 +292,7 @@ accounting {
 	attr_filter.accounting_response
     
 	rest
+	rest-ama
 }
 
 
@@ -346,6 +347,7 @@ post-auth {
 
 	attr_filter.packetfence_post_auth
 	linelog
+	rest-ama
 	#
 	#  Access-Reject packets are sent through the REJECT sub-section of the
 	#  post-auth section.

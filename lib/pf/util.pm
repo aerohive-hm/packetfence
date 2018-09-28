@@ -43,6 +43,8 @@ use Fcntl qw(:DEFAULT);
 use Net::Ping;
 use Crypt::OpenSSL::X509;
 use Date::Parse;
+use JSON;
+use WWW::Curl::Easy;
 
 our ( %local_mac );
 
@@ -94,6 +96,8 @@ BEGIN {
         find_outgoing_interface
         strip_filename_from_exceptions
         expand_csv
+        get_cert_subject get_cert_subject_cn
+        call_url
     );
 }
 
@@ -128,6 +132,68 @@ sub valid_date {
     } else {
         return (1);
     }
+}
+
+sub get_cert_subject {
+    return _get_cert_info(shift, '^\s*Subject:\s+(.*)$');
+}
+
+sub get_cert_subject_cn {
+    return _get_cert_info(shift, '^\s*Subject:.*\s(CN=[^,]+)$');
+}
+
+sub _get_cert_info {
+    my ($certfile, $pattern) = @_;
+
+    my @cert = `/usr/bin/openssl x509 -noout -text -in $certfile`;
+
+    if ($? == 0) {
+        foreach my $line (@cert) {
+            chomp $line;
+            if ($line =~ $pattern) {
+                return $1;
+            }
+        }
+    }
+
+    return undef;
+}
+
+sub call_url {
+    my ($method, $url, $input_data) = @_;
+    my $curl = WWW::Curl::Easy->new;
+    my $logger = get_logger();
+    my $json = JSON->new->allow_nonref;
+    if ($method eq 'POST') {
+        $curl->setopt(CURLOPT_POST, 1);
+        $curl->setopt(CURLOPT_POSTFIELDS, $json->encode($input_data));
+    } elsif ($method eq 'GET') {
+        $curl->setopt(CURLOPT_HTTPGET, 1);
+    } else {
+        return -1, "unsupported methods";
+    }
+
+
+    $curl->setopt(CURLOPT_URL, $url);
+
+    $curl->setopt(CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Accept: application/json'
+    ]);
+
+    my $response_body;
+    $curl->setopt(CURLOPT_WRITEDATA, \$response_body);
+
+    my $retcode = $curl->perform;
+    $logger->debug("calling url $method: $url");
+
+    if ($retcode == 0) {
+        my $response_code = $curl->getinfo(CURLINFO_HTTP_CODE);
+        return $retcode, $response_body, $response_code;
+    }
+
+    return $retcode, undef, 500;
+
 }
 
 our $VALID_IP_REGEX = qr/^(?:\d{1,3}\.){3}\d{1,3}$/;

@@ -4,6 +4,8 @@ package pfappserver;
 
 =cut
 
+use POSIX;
+
 use Moose;
 use namespace::autoclean;
 
@@ -91,6 +93,7 @@ __PACKAGE__->config(
     },
 
     'Plugin::Session' => {
+        cookie_secure => use_secure_cookie(),
         #chi will set the expire time
         chi_class => 'pf::CHI',
         chi_args => {
@@ -100,7 +103,7 @@ __PACKAGE__->config(
 
     'View::JSON' => {
        # TODO to discuss: always add to exposed stash or use a standard 'resultset' instead?
-       expose_stash    => [ qw(status status_msg error interfaces networks switches config services success items time_offset trial entitlement) ], # defaults to everything
+       expose_stash    => [ qw(status status_msg filePath error interfaces networks switches config services success items time_offset trial entitlement update_info update_progress CN_Server CN_CA Server_INFO CA_INFO Cert_Content A3_data) ], # defaults to everything
     },
 
     'View::HTML' => {
@@ -162,6 +165,17 @@ __PACKAGE__->config(
        }
      },
 );
+
+
+=head2 use_secure_cookie
+
+use secure cookie
+
+=cut
+
+sub use_secure_cookie {
+    return $ENV{CATALYST_DEBUG} ? 0 : 1;
+}
 
 sub pf_hash_for {
     my ($self,@args) = @_;

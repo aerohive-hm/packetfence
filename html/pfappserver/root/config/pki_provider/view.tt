@@ -1,23 +1,69 @@
 [% IF c.action.name == "view"  %]
 [% SET action_uri = c.uri_for(c.controller.action_for('update'), [ item.id ]) %]
-[%ELSE%]
+[% ELSE %]
 [% SET action_uri = c.req.uri %]
 [% END %]
-<form name="modalItem" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
+
+<style>
+#ca_cert_path_upload, #server_cert_path_upload{
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+#ca_cert_label_upload, #server_cert_label_upload{
+  margin-right: 15px;
+}
+
+#ca_cert_path_upload + label, #server_cert_path_upload + label {
+  font-size: 1.25em;
+  font-weight: 700;
+  color: white;
+  background-color: #333;
+  display: inline-block;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  width: 300px;
+  text-align: center;
+}
+
+#ca_cert_path_upload + label:hover, #server_cert_path_upload + label:hover {
+  background-color: gray;
+}
+
+#caSubjNewlabel, #servSubjNewlabel{
+  display: inline-block;
+  white-space: nowrap;
+  width: 200px;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+</style>
+<form name="modalItem" id="pki_form" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
   [%- IF item.id %]<input type="hidden" name="id" value="[% item.id | html %]">[% END %]
   <div class="modal-header">
     <a class="close" data-dismiss="modal">&times;</a>
     <h3>[% IF item %]<i>[% l('PKI Provider') %]</i> [% item.id | html %][% ELSE %][% l('New PKI Provider') %][% END %]</h3>
   </div>
 
-  <div class="modal-body">
-        [% form.field('id').render | none UNLESS item && item.id.defined %]
-        [% form.block('definition').render | none %]
+  <div class="alert alert-danger" id='success-alert' role="alert" style="display:none; position:fixed; z-index:25; left: 40%;">
+    <span id="errorMessage"></span>
+  </div>
+
+  <div class="modal-body pki-group">
+    [% form.field('id').render | none UNLESS item && item.id.defined %]
+    <div class="pki-group">
+    [% form.block('definition').render | none %]
+    </div>
   </div><!--modal-body-->
 
   <div class="modal-footer">
     <a href="#" class="btn" data-dismiss="modal">[% l('Close') %]</a>
-    [% IF can_access("PKI_PROVIDER_UPDATE") %]<button class="btn btn-primary" data-loading-text="[% l('Saving') %]">[% l('Save') %]</button>[% END %]
+    [% IF can_access("PKI_PROVIDER_UPDATE") %]<button class="btn btn-primary" id="savePKI" data-loading-text="[% l('Saving') %]">[% l('Save') %]</button>[% END %]
   </div>
-
 </form>
+<script type="text/javascript" src="[% c.uri_for('/static/js/PKI_view.js') %]"></script>

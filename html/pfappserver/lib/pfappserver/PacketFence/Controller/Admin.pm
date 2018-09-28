@@ -118,6 +118,7 @@ sub login :Local :Args(0) {
 
                     # Save the updated roles data
                     $c->persist_user();
+                    $c->change_session_id();
 
                     # Don't send a standard 302 redirect code; return the redirection URL in the JSON payload
                     # and perform the redirection on the client side
@@ -264,7 +265,6 @@ sub index :Path :Args(0) {
         }
     }
     $c->response->redirect($c->uri_for($c->controller->action_for($action)));
-
 }
 
 =head2 object
@@ -288,6 +288,10 @@ sub object :Chained('/') :PathPart('admin') :CaptureArgs(0) {
       $c->stash->{latest_key}            = $entitlements->[0];
       $c->stash->{latest_key_expires_in} = $entitlements->[0]->{expires_in};
     }
+
+    my ($status, $trial) = $c->model('Entitlement')->get_trial_info();
+    $c->stash->{is_expired} = ($status == $STATUS::OK) && $trial->{is_expired};
+    $c->stash->{expires_in} = int($trial->{expires_in}/(3600*24));
 }
 
 
@@ -471,6 +475,10 @@ sub time_offset :Chained('object') :PathPart('time_offset') :Args(1) {
 
 sub help :Chained('object') :PathPart('help') :Args(0) {
     my ( $self, $c ) = @_;
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
+
 }
 
 =head2 checkup
@@ -510,22 +518,61 @@ sub licenseKeys :Chained('object') :PathPart('licenseKeys') :Args(0){
     $c->stash->{max_capacity} = $c->model('Entitlement')->get_licensed_capacity();
     $c->stash->{used_capacity} = $c->model('Entitlement')->get_used_capacity();
     $c->stash->{system_id} = $A3_SYSTEM_ID;
+    $c->stash->{current_mov_avg} = $c->model('Entitlement')->get_moving_avg();
 
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
     $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
+
+    my ($status, $trial) = $c->model('Entitlement')->get_trial_info();
+    $c->stash->{is_expired} = ($status == $STATUS::OK) && $trial->{is_expired};
+    $c->stash->{expires_in} = int($trial->{expires_in}/(3600*24));
 
     $c->stash->{latest_key_expires_in} = undef;
 
     if ($c->request->method eq 'POST') {
         $c->stash->{current_view} = 'JSON';
-
-        # Get data
-
-        # TODO: Get the userinput key and find data in table
     }
 
 }
 
+
+=head2 update
+
+=cut
+
+sub update :Chained('object') :PathPart('update') :Args(0){
+    my( $self, $c ) = @_;
+
+    if ($c->request->method eq 'GET') {
+        my $logger = get_logger();
+
+        $c->stash->{is_update_in_progress} = $c->model('Update')->is_update_in_progress();
+
+        $logger->info("is_update_in_progress = " . $c->stash->{is_update_in_progress});
+
+        if ($c->stash->{is_update_in_progress}) {
+            $c->stash->{update_progress} = $c->model('Update')->get_update_status();
+        }
+
+        my ($status, $latest) = $c->model('Update')->fetch_latest_release();
+
+        if ($status == $STATUS::OK) {
+            $c->stash->{update_available} = $TRUE;
+            $c->stash->{version} = $latest->{version};
+            $c->stash->{releaseNotesUri} = $latest->{releaseNotesUri};
+        }
+        elsif ($status == $STATUS::NO_CONTENT) {
+            $c->stash->{update_available} = $FALSE;
+        }
+        else {
+            # TODO: Error
+        }
+    }
+
+    my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
+    $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
+    $c->stash->{is_eula_accepted} = $c->model('EulaAcceptance')->is_eula_accepted();
+}
 
 =head1 COPYRIGHT
 

@@ -6,7 +6,7 @@ VBOXMANAGE=/usr/bin/VBoxManage
 PK_FILE=/root/.ssh/private_key/all_certs.pem
 PK_PASSWORD=$1
 
-/usr/bin/rm -rf work/ devel A3.ova
+/usr/bin/rm -rf work/ devel A3*.ova
 
 if [ "$BUILD_TYPE" != "RELEASE" ]; then
     /usr/bin/touch devel
@@ -44,7 +44,7 @@ cd work/
 # To sign or not to sign OVA
 
 if [ "$BUILD_TYPE" != "RELEASE" ]; then
-	$OVFTOOL --lax box.ovf ../A3-unsigned.ova
+	$OVFTOOL --lax --shaAlgorithm=SHA1 box.ovf ../A3-unsigned.ova
 else
 	$OVFTOOL -o --privateKey=$PK_FILE --privateKeyPassword=$PK_PASSWORD --shaAlgorithm=SHA1 box.ovf ../A3.ova
 fi

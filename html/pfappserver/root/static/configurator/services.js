@@ -13,6 +13,21 @@ $(document).ready(function(){
      $("#details").click(function(){
          $("#daemonTable").toggle();
      });
+
+     $("#details").click(function() {
+        if ($(this).text() === "More Details") {
+            $(this).text("Less Details");
+        } else if ($(this).text() === "Less Details"){
+            $(this).text("More Details");
+            //french ver
+        } else if ($(this).text() === "Plus de détails"){
+            $(this).text("Moins de détails");
+        } else if ($(this).text() === "Moins de détails"){
+            $(this).text("Plus de détails");
+        } else{
+
+        };
+     });
 });
 
 function saveStep(href) {

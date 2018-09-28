@@ -65,6 +65,7 @@ our %ACTION_MAP_CONDITION = (
 
 our %RECORD_RESULT_ATTR_MAP = (
     most_accurate_user_agent => "user_agent",
+    hostname => "computername",
     map { $_ => $_ } qw(dhcp_fingerprint dhcp_vendor dhcp6_fingerprint dhcp6_enterprise),
 );
 
@@ -91,6 +92,7 @@ sub process {
     my $cache_key = "pf::fingerbank::process($mac)";
 
     my $process_timestamp = $cache->compute($cache_key, sub {
+        $force = $TRUE;
         return DateTime->now(); 
     });
 
@@ -191,6 +193,9 @@ sub record_result {
         },
         -where => {
             mac => $mac,
+            tenant_id => {
+                -in => \['SELECT id FROM tenant'],
+            },
         },
         -no_auto_tenant_id => 1,
     );

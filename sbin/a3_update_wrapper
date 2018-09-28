@@ -1,0 +1,35 @@
+#!/bin/sh
+
+LOGFILE=/usr/local/pf/logs/a3_update.log
+TMPDIR=`/usr/bin/mktemp -d -p /tmp a3_update.XXXXXXXX`
+
+if [ $? -ne 0 ]; then
+    echo "Unable to create workspace for update" >> $LOGFILE
+    exit 1
+fi
+
+# Determine whether the current system is clustered
+/usr/bin/perl <<EOF >/dev/null 2>&1
+use lib '/usr/local/pf/lib';
+use pf::cluster;
+
+if (\$pf::cluster::cluster_enabled) {
+    exit 0;
+}
+
+exit 1;
+EOF
+
+if [ $? -eq 0 ]; then
+    /usr/local/pf/a3_update/a3_cluster_update.pl
+else
+    /usr/local/pf/sbin/a3_update $TMPDIR
+fi
+
+# Be sure to remove tmpdir
+/usr/bin/rm -rf $TMPDIR
+
+# Give the UI a chance to update progress
+/usr/bin/sleep 30
+
+/usr/bin/rm -f /usr/local/pf/var/run/update.lock

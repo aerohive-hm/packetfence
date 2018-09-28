@@ -23,6 +23,7 @@ use pf::constants qw($TRUE $FALSE);
 use pf::a3_entitlement;
 use pf::accounting;
 use pf::node;
+use pf::util;
 
 extends 'Catalyst::Model';
 
@@ -85,6 +86,16 @@ sub apply_entitlement_key {
             # On success, save entitlement properties and return object
             if (pf::a3_entitlement::create($key, $responseHash)) {
                 $logger->info("Total capacity is now " . $self->get_licensed_capacity());
+                eval {
+                    # LicenseChange = 3
+                    my $msgtype = 3;
+                    my $url = "http://127.0.0.1:10000/api/v1/event/perlevent";
+                    $logger->info("send LicenseChange update event to AMA:");
+                    pf::util::call_url("POST", $url, {msgtype => $msgtype,});
+                };
+                if ($@) {
+                    $logger->error("Error send LicenseInfoChange data to AMA : $@");
+                }
                 return pf::a3_entitlement::find_one($key);
             }
         }
@@ -140,6 +151,68 @@ Get the current used endpoint capacity
 
 sub get_used_capacity {
     return pf::node::node_count_active();
+}
+
+=head2 get_moving_avg
+
+Get the current moving avg
+
+=cut
+
+sub get_moving_avg {
+    my $logger = get_logger();
+    my ($status, $moving_avg) = pf::a3_entitlement::get_current_moving_avg();
+    if (is_success($status)) {
+        return $moving_avg;
+    }
+    else {
+        $logger->warn("Cannot retrieve moving average from db");
+        return 0;
+    }
+}
+
+=head2 is_current_usage_under_limit
+
+Compares the entitlement endpoint limit with daily moving usage avg
+
+=cut
+
+sub is_current_usage_under_limit {
+    my $logger = get_logger();
+    my ($count_status, $count) = pf::a3_entitlement::get_current_moving_avg_count();
+    if (is_success($count_status)) {
+        #return true if we only have less than 7 days of moving avg
+        return $TRUE if $count < 7;
+    }
+    else {
+        $logger->warn("Cannot retrieve moving average count from db");
+        return $STATUS::NOT_FOUND;
+    }
+    my ($status, $current_moving_avg) = pf::a3_entitlement::get_current_moving_avg();
+    if (is_success($status)) {
+        return $current_moving_avg <= get_licensed_capacity();
+    }
+    else {
+        $logger->warn("Cannot retrieve moving average data from db");
+        return $STATUS::NOT_FOUND;
+    }
+}
+
+=head2 is_current_entitlement_expired
+
+Checks whether the entitlement is expired
+
+=cut
+
+sub is_current_entitlement_expired {
+    my $active_entitlements = pf::a3_entitlement::find_active();
+    my ($trial_status, $trial_info) = get_trial_info();
+    if (is_success($trial_status)) {
+        return $trial_info->{is_expired} && @$active_entitlements == 0;
+    }
+    else {
+        return @$active_entitlements == 0;
+    }
 }
 
 =head2 is_trial_eligible

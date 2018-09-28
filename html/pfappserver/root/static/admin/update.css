@@ -1,0 +1,77 @@
+
+.card-block{
+  height: 600px;
+}
+
+.spacing{
+    padding-left: 50px;
+    padding-right: 50px;
+}
+.update-header{
+    display: table;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.update-body{
+    display: table;
+    margin: 0 auto;
+}
+
+.version-number{
+    text-align: center;
+}
+
+.update-button{
+    margin-bottom: 25px !important;
+    padding: 15px 60px !important;
+    background: #FFC007 !important;
+    border: 1px #FFC007 solid !important;
+    color: #000 !important;
+    text-transform: uppercase;
+    font-size: 15px !important;
+}
+
+.update-button:hover{
+    background: #FFF !important;
+    color: #333 !important;
+}
+
+/* .update-button in progress bar state*/
+.update-area{
+   height: 90px;
+   width:100%;
+}
+
+.detail-box{
+    width: 500px;
+    height: 370px;
+    border: 1px #DDD solid;
+    margin-bottom:15px;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 8px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, .5);
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+
+/* progressbar */
+.progress-bar-content{
+    display: none;
+}
+
+#progress-bar {
+    width: 100%;
+    background-color: #ddd;
+}
+
+#progress {
+    width: 1%;
+    height: 30px;
+    background-color: #FFC007;
+}

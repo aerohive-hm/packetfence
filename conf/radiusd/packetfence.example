@@ -287,6 +287,7 @@ accounting {
 	attr_filter.accounting_response
     
 	rest
+	rest-ama
 }
 
 
@@ -343,6 +344,7 @@ post-auth {
 		} else {
 			packetfence-audit-log-accept
 		}
+		rest-ama
 	}
 
 	attr_filter.packetfence_post_auth

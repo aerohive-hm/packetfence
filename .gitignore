@@ -3,6 +3,11 @@
 # Except this file
 !.gitignore
 
+# Unwanted IDE/OS stuff
+.DS_Store
+.idea
+*.iml
+
 # temporary files
 *.swp
 *.orig
@@ -15,7 +20,6 @@ addons/stress-tester/plan.conf
 conf/admin.conf
 conf/httpd.conf
 conf/named.conf
-conf/cluster-files.txt
 conf/pf.conf
 conf/*.lock
 conf/*.lockonce
@@ -25,6 +29,7 @@ conf/nessus/
 conf/currently-at
 conf/caddy-services/*.conf
 conf/pfdns.conf
+conf/pfdhcp.conf
 conf/etcd.conf.yml
 bin/pfcmd
 bin/ntlm_auth_wrapper
@@ -211,6 +216,9 @@ var/
 raddb/sites-enabled/
 html/captive-portal/content/node_modules/
 html/common/node_modules/
+
+# dynamic template for admin
+html/pfappserver/root/admin/v-index.tt
 
 # ignore python config files
 *.pyc

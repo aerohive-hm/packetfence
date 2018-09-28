@@ -98,6 +98,10 @@ msgstr "Nom d’utilisateur 802.1X"
 msgid "90 days"
 msgstr "90 jours"
 
+# html/pfappserver/root/configuration/system_config.tt
+msgid "A3 can be monitored from the cloud. You can configure your connectivity to Aerohive Cloud from this module."
+msgstr "La surveillance du serveur A3 peut être effectuée à partir du cloud. Vous pouvez configurer votre connectivité au Aerohive Cloud à partir de ce module."
+
 # html/pfappserver/lib/pfappserver/Form/Config/Source/AdminProxy.pm
 msgid "A comma-separated list of IP addresses"
 msgstr "Liste d’adresses IP séparées par des virgules"
@@ -110,6 +114,14 @@ msgstr "Une liste des durées d’accès disponibles pour l’utilisateur admin 
 msgid "A description of the billing tier"
 msgstr "Description du plan de facturation"
 
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "After connecting to your Aerohive Cloud Account, allow a few minutes for all the cluster nodes to finish the joining process. Refresh this page to check the status of the cluster members."
+msgstr "Après vous être connecté à votre compte Aerohive Cloud, attendez quelques minutes que tous les nœuds du cluster terminent le processus de jointure. Actualisez cette page pour vérifier le statut des membres du cluster."
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Aerohive Cloud"
+msgstr "Aerohive Cloud"
+
 # html/pfappserver/root/service/status.tt
 msgid ""
 "A manual start from the command line will be required. Are you sure you want"
@@ -121,6 +133,18 @@ msgid ""
 "A message that will be added to the e-mail sent to the user regarding this "
 "violation."
 msgstr "Un message qui sera ajouté au courriel envoyé à l’utilisateur concernant la violation."
+
+# html/pfappserver/root/admin/update.tt
+msgid "A newer version of A3 is available:"
+msgstr "Une version plus récente de A3 est disponible:"
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "A server key and server certificate are required."
+msgstr "Une clé de serveur et un certificat de serveur sont requis."
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "A server key and server certificate are required. Uploading a CA certificate is optional."
+msgstr "Une clé de serveur et un certificat de serveur sont requis. Le téléchargement d'un certificat de la CA est optionnel."
 
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid ""
@@ -628,13 +652,20 @@ msgstr ""
 
 #html/pfappserver/root/admin/almostExpiringModal.tt
 
-msgid "It looks like your subscription is almost ending. Please renew your license by"
-msgstr ""
+msgid "Subscription Ending In"
+msgstr "La Période de Souscription Fin En "
+
+msgid "Your subscription is ending in"
+msgstr "La Période de Souscription Fin En"
 
 msgid "to continue using it. You can do this by calling this number:"
 msgstr ""
 
 msgid "If you have an entitlement key you can press the Enter Key button below. Thanks again for using our service."
+msgstr ""
+
+#html/pfappserver/root/admin/licenseEnforcementModal.tt
+msgid "All license keys have expired. Contact Aerohive by calling this number to renew your subscription:"
 msgstr ""
 
 # html/pfappserver/root/config/adminroles/view.tt
@@ -822,6 +853,10 @@ msgstr "Un email a été envoyé à %1 pour %2 utilisateurs."
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/User.pm
 msgid "An SMS was sent to %1 out of %2 users."
 msgstr "Un email a été envoyé à %1 pour %2 utilisateurs."
+
+# html/pfappserver/root/admin/update.tt
+msgid "An update to version %1 is currently in progress."
+msgstr "Une mise à jour vers la version %1 est actuellement en cours."
 
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Admin.pm
 msgid "Another challenge."
@@ -1083,6 +1118,10 @@ msgstr "Objet de base"
 msgid "Bcrypt hashing"
 msgstr "Hachage Bcrypt"
 
+# html/pfappserver/root/admin/update.tt
+msgid "Begin Update"
+msgstr "Démarrer la mise à jour"
+
 # html/pfappserver/root/config/source/index.tt
 msgid "Billing"
 msgstr "Facturation"
@@ -1149,12 +1188,22 @@ msgstr "Court-circuiter les systèmes de détection de portail captif par certai
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "CA cert path"
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "CA Certificate"
+msgstr "Certificat de l’AC"
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+msgid "CA Certificate Path"
 msgstr "Emplacement du certificat de l’AC"
 
 # html/pfappserver/root/admin/licenseKeys.tt
 msgid "Capacity"
 msgstr "Capacité"
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "Certificates"
+msgstr "Certificats"
 
 # html/pfappserver/root/config/switch/view.tt
 msgid "CLI"
@@ -1163,6 +1212,31 @@ msgstr "CLI"
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
 msgid "CLI Access Enabled"
 msgstr "Accès console activé"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Cloud Integration"
+msgstr "Intégration Cloud"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Cloud Host"
+msgstr "Hôte de Cloud"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Cloud Admin"
+msgstr "Administrateur Cloud"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Cluster Link Status"
+msgstr "État du lien de la grappe"
+
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Cluster Member"
+msgstr "Membre de la grappe"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Cluster"
+msgstr "Grappe"
 
 # pf::admin_roles (Actions groups)
 msgid "CONFIGURATION_MAIN"
@@ -1320,7 +1394,7 @@ msgstr "Cochez cette case pour que la durée d’accès corresponde au temps d�
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
 msgid ""
-"Check this box to have the certificate revoke when the node using it is "
+"Check this box to have the certificate revoked when the node using it is "
 "unregistered.<br/>Do not use if multiple devices share the same certificate"
 msgstr "Cocher cette case pour que le certificat soit révoqué lorsqu’un équipement est désenregistré.</br>À ne pas utiliser si plusieurs équipements partagent le même certificat."
 
@@ -1554,15 +1628,19 @@ msgstr "Violations fermées"
 # html/pfappserver/root/admin/configuration.tt
 # html/pfappserver/root/pfqueue/cluster.tt
 msgid "Cluster"
-msgstr "Cluster:"
+msgstr "Cluster"
 
 # html/pfappserver/root/admin/status.tt
 msgid "Cluster Queue"
 msgstr "Queue du cluster"
 
-# html/pfappserver/root/admin/status.tt
-msgid "Cluster state"
-msgstr "État du cluster"
+# html/pfappserver/root/admin/cluster.tt
+msgid "Cluster Node List"
+msgstr "Liste des serveurs de la grape"
+
+# html/pfappserver/root/admin/cluster.tt
+msgid "Virtual Router Id"
+msgstr "ID de routeur virtuel"
 
 # html/pfappserver/root/configuration/system_config.tt
 msgid "Cluster:"
@@ -1713,6 +1791,7 @@ msgid "Comma-separated list of the device uplinks"
 msgstr "Liste des ports uplinks du équipement séparée par une virgule."
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
 msgid "Common Name Attribute"
 msgstr "Attribut nom d’hôte"
 
@@ -1720,10 +1799,6 @@ msgstr "Attribut nom d’hôte"
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
 msgid "Common Name Format"
 msgstr "Format nom d’hôte"
-
-# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
-msgid "Common name Attribute"
-msgstr "Attribut nom d’hôte"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
 msgid "Community Read"
@@ -1957,6 +2032,10 @@ msgstr "Champs personnalisés"
 # html/pfappserver/root/admin/reports.tt
 msgid "Custom reports"
 msgstr "Rapport personnalisé"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Data Center"
+msgstr "Centre Informatique"
 
 # pf::admin_roles (Actions groups)
 msgid "DEVICE_REGISTRATION"
@@ -2824,6 +2903,10 @@ msgstr "Courriel"
 msgid "Email Activation Timeout"
 msgstr "Délais d’activation courriel"
 
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "Email of the Cloud user"
+msgstr "Email de l'utilisateur du Cloud"
+
 # html/pfappserver/root/user/print.tt
 msgid "Email address"
 msgstr "Adresse courriel"
@@ -3370,6 +3453,10 @@ msgstr "Hôte"
 msgid "Host in activation link"
 msgstr "Hôte utilisé dans le lien d’activation"
 
+# html/pfappserver/root/admin/cluster.tt
+msgid "HOST NAME"
+msgstr "Nom d'hôte"
+
 # /usr/local/fingerbank/conf/fingerbank.conf.doc (proxy.host)
 msgid "Host the proxy is listening on"
 msgstr "Hôte du proxy pour l’écoute"
@@ -3485,6 +3572,10 @@ msgstr "ID de la configuration sur le serveur OpenVAS"
 msgid "INTERFACES"
 msgstr "Interfaces"
 
+# html/pfappserver/root/admin/cluster.tt
+msgid "INTERFACE"
+msgstr "Interface"
+
 # pf::admin_roles (Actions)
 msgid "INTERFACES_CREATE"
 msgstr "Interfaces - Créer"
@@ -3514,6 +3605,10 @@ msgstr "IP <i class=\"icon-exchange\"></i> MAC"
 # html/pfappserver/root/interface/list.tt
 # html/pfappserver/root/node/search.tt
 msgid "IP Address"
+msgstr "Adresse IP"
+
+# html/pfappserver/root/configuration/cluster.tt
+msgid "IP ADDRESS"
 msgstr "Adresse IP"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Switch.pm
@@ -3836,6 +3931,10 @@ msgstr "Gardez l’édition"
 msgid "Keep The Same"
 msgstr "Gardez le même paramètre"
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "Key"
+msgstr "Clé"
+
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Kickbox.pm
 msgid "Kickbox.io API key."
 msgstr "Clé d’API de Kickbox.io"
@@ -3894,6 +3993,10 @@ msgstr "Dernier vu"
 msgid "Lastname"
 msgstr "Nom de famille"
 
+# html/pfappserver/root/configurator/entitlement.tt
+msgid "Last Contact"
+msgstr "Dernier contact"
+
 # html/pfappserver/root/config/wrix/search_form.tt
 msgid "Latitude"
 msgstr "Latitude"
@@ -3940,6 +4043,18 @@ msgstr "Capacité sous licence:"
 # html/pfappserver/lib/pfappserver/Form/Config/ProfileCommon.pm
 msgid "Limit the number of login attempts. A value of 0 disables the limit."
 msgstr "Limiter le nombre de tentatives de connexion. Une valeur de 0 désactive la limite."
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Link with Aerohive Cloud Account"
+msgstr "Lier avec un compte Aerohive Cloud"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Linked with Aerohive Cloud Services at "
+msgstr "Lier avec un compte Aerohive Cloud"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Link Status"
+msgstr "État du lien"
 
 # html/pfappserver/root/config/portal_module/index.tt
 msgid "List View"
@@ -4452,6 +4567,10 @@ msgstr "Surveillance"
 msgid "More Details"
 msgstr "Plus de détails"
 
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "More information about the Cloud"
+msgstr "Pour plus d'informations sur le Cloud"
+
 # html/pfappserver/root/user/create.tt
 msgid "Multiple"
 msgstr "Multiple"
@@ -4689,6 +4808,9 @@ msgstr "Nouveaux Appareils"
 # html/pfappserver/root/config/pki_provider/view.tt
 msgid "New PKI Provider"
 msgstr "Nouveau fournisseur de certificats"
+
+msgid "Choose file..."
+msgstr "Choisir un fichier..."
 
 # html/pfappserver/root/configurator/database.tt
 msgid "New Password"
@@ -5148,6 +5270,10 @@ msgid "Organization for the certificate"
 msgstr "Organisme définit dans le certificat"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
+msgid "Organizational Unit"
+msgstr "L’unité organisationnelle"
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/scep.pm
 msgid "Organizational unit for the certificate"
 msgstr "L’unité organisationnelle définit dans le certificat"
 
@@ -5248,7 +5374,7 @@ msgstr "Nom du fournisseur de certificats"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "PKI Provider type"
+msgid "PKI Provider Type"
 msgstr "Type du fournisseur de certificats"
 
 # html/pfappserver/root/configuration/portal_config.tt
@@ -5446,6 +5572,10 @@ msgstr "Appareil parent"
 # html/pfappserver/root/user/view.tt
 msgid "Password"
 msgstr "Mot de passe"
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "Password of the Cloud user"
+msgstr "Mot de passe de l'utilisateur Cloud"
 
 # html/pfappserver/root/user/view.tt
 msgid "Password Reminder"
@@ -5998,6 +6128,10 @@ msgstr "Protocole Priv Trap"
 msgid "Priv Protocol Write"
 msgstr "Protocole Ecriture Priv"
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "Private key size is too big. Try again."
+msgstr "La taille de la clé privée est trop grande.  Réessayer."
+
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Config/Switch.pm
 msgid "Problem with importation: %1"
 msgstr "Problèmes avec l'importation: %1"
@@ -6505,6 +6639,19 @@ msgstr "Bande passante restante"
 msgid "Remediation"
 msgstr "Isolation"
 
+# pf::Authentication::Source::ADSource (available_attributes)
+# pf::Authentication::Source::LDAPSource (available_attributes)
+msgid "Removed the certificate file from the server!"
+msgstr "Supprimé le fichier de certificat du serveur!"
+
+# html/pfappserver/root/admin/cluster.tt
+msgid "Remove Selected Cluster Nodes?"
+msgstr "Supprimez la sélection des serveurs de la grappe?"
+
+# html/pfappserver/root/admin/cluster.tt
+msgid "Remove"
+msgstr "Supprimer"
+
 # html/pfappserver/root/interface/create.tt
 # html/pfappserver/root/interface/view.tt
 msgid ""
@@ -6622,8 +6769,8 @@ msgid "Revert File"
 msgstr "Revenir sur le fichier"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "Revoke on unregistration"
-msgstr "Révoquer sur désenregistrement"
+msgid "Revoke When Unregistered?"
+msgstr "Révoquer sur désenregistrement?"
 
 # html/pfappserver/lib/pfappserver/Form/Config/BillingTiers.pm
 # html/pfappserver/lib/pfappserver/Form/Config/DeviceRegistration.pm
@@ -7161,7 +7308,17 @@ msgstr "Charge moyenne du serveur"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
 # html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
-msgid "Server cert path"
+# html/pfappserver/root/admin/certificates.tt
+msgid "Server Certificate"
+msgstr "Certificat serveur"
+
+# html/pfappserver/root/admin/certificate.tt
+msgid "Server Certificate and Key Upload"
+msgstr "Téléchargement de certificat de serveur et clé"
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_local.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+msgid "Server Certificate Path"
 msgstr "Emplacement du certificat serveur"
 
 # conf/documentation.conf (database.host)
@@ -7242,8 +7399,12 @@ msgid "Share Unknown Fingerprints"
 msgstr "Partager les Fingerprints inconnues"
 
 # conf/documentation.conf (active_active.password)
-msgid "Shared KEY for VRRP protocol (must be the same on all members)."
+msgid "Shared KEY for VRRP protocol (must be the same on all members)"
 msgstr "Clé partagée pour le protocole VRRP (doit être identique sur tous les membres)"
+
+# html/pfappserver/root/admin/cluster.tt
+msgid "Shared Key"
+msgstr "Clé partagée"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Mirapay.pm
 msgid "Shared Secret"
@@ -7543,6 +7704,11 @@ msgstr "Intervalle de pause"
 msgid "Sleep interval between queries of MAC addresses"
 msgstr "Temps d’attente entre deux interrogations des adresses MAC."
 
+# html/pfappserver/root/admin/update.tt
+# html/pfappserver/root/admin/wrapper.tt
+msgid "Software Update"
+msgstr "Mise à jour logicielle"
+
 # html/pfappserver/lib/pfappserver/Form/Config/Domain.pm
 msgid "Source"
 msgstr "Source"
@@ -7686,7 +7852,12 @@ msgstr "État du certificat"
 # html/pfappserver/root/service/status.tt
 # html/pfappserver/root/user/nodes.tt
 # html/pfappserver/root/user/violations.tt
+# html/pfappserver/root/admin/cluster.tt
 msgid "Status"
+msgstr "Statut"
+
+# html/pfappserver/root/configurator/cluster.tt
+msgid "STATUS"
 msgstr "Statut"
 
 # html/pfappserver/root/configurator/admin.tt
@@ -7919,6 +8090,15 @@ msgstr "ID du système:"
 msgid "System state"
 msgstr "Etat du système"
 
+# html/pfappserver/root/admin/status.tt
+msgid "Upgrade"
+msgstr "Mettre à Niveau"
+
+
+# html/pfappserver/root/admin/status.tt
+msgid "Upgrades finished"
+msgstr "Mises à niveau terminées"
+
 # conf/documentation.conf (general.timezone)
 msgid "System's time zone in string format. List generated from Perl library DataTime::TimeZoneWhen left empty, it will use the time zone of the server."
 msgstr "Fuseau horaire du système en temps que chaîne. Liste générée à partir de la librairie Perl DateTime::TimeZone"
@@ -8140,6 +8320,10 @@ msgstr "Le moteur SNMP de PacetFence peut être configure ici."
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/URL.pm
 msgid "The URL on which the user should be redirected."
 msgstr "L’URL sur laquelle l’utilisateur doit être redirigé."
+
+# /html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "The URL of the Cloud host"
+msgstr "URL de l'hôte Cloud"
 
 # html/pfappserver/lib/pfappserver/Form/Config/Provisioning/mobileconfig.pm
 msgid "The Wi-Fi key to join the SSID"
@@ -8586,6 +8770,10 @@ msgstr "Nom d’utilisateur pour les webservices"
 msgid "There are no members in this group"
 msgstr "Il n’y a pas de membres dans ce groupe"
 
+# html/pfappserver/root/admin/update.tt
+msgid "There are no updates available at this time."
+msgstr "Il n'y a aucune mise à jour disponible pour le moment."
+
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule.pm
 msgid "There was no type specified"
 msgstr "Il n’y a pas de type specifié"
@@ -8670,9 +8858,13 @@ msgstr "Permet aux utilisateurs déjà enregistrés d’enregistrer à nouveau l
 
 # html/pfappserver/root/configuration/system_config.tt
 msgid ""
-"This allows you set the DNS name, SMTP information for alerts, default "
+"This allows you to set the DNS name, SMTP information for alerts, default "
 "language and more."
 msgstr "Ceci vous permet de configurer le nom DNS, les informations SMTP pour les alertes, le language par defaut et plus encore."
+
+# html/pfappserver/root/configuration/system_config.tt
+msgid "This allows you to upload HTTPS and EAP-TLS certificates and keys."
+msgstr "Ceci vous permet de configurer les certificats et les cles HTTPS et EAP-TLS."
 
 # html/pfappserver/root/configuration/network_conf.tt
 msgid ""
@@ -9001,8 +9193,9 @@ msgstr "Numéro de téléphone appelant qui sera utiliser pour envoyer un SMS"
 # html/pfappserver/root/config/switch/list.tt
 # html/pfappserver/root/interface/list.tt
 # html/pfappserver/root/node/view.tt
-msgid "Type"
-msgstr "Type"
+# html/pfappserver/root/admin/cluster.tt
+msgid "TYPE"
+msgstr "TYPE"
 
 # html/pfappserver/root/admin/reports.tt
 msgid "Types"
@@ -9012,9 +9205,21 @@ msgstr "Types"
 msgid "UID type"
 msgstr "Type de UID"
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "Unable to download the certificate"
+msgstr "Impossible de télécharger le certificat"
+
 # html/pfappserver/root/admin/licenseKeys.tt
 msgid "Unlimited"
 msgstr "Illimité"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Unlink from Aerohive Cloud Account"
+msgstr "Dissocier du compte Aerohive Cloud"
+
+# html/pfappserver/root/admin/wrapper.tt
+msgid "Update software"
+msgstr "Mettre le logiciel"
 
 # html/pfappserver/lib/pfappserver/Form/Config/PortalModule/URL.pm
 msgid "URL"
@@ -9194,6 +9399,10 @@ msgstr "Désenregistrement"
 # html/pfappserver/root/node/search.tt
 msgid "Unregistration Date"
 msgstr "Date de désenregistrement"
+
+# html/pfappserver/root/admin/update.tt
+msgid "Update complete"
+msgstr "Mise à jour terminée"
 
 # html/pfappserver/root/config/fingerbank/header.tt
 msgid "Update Fingerbank DB"
@@ -9381,6 +9590,10 @@ msgstr "Valable à partir"
 msgid "Valid Until"
 msgstr "Valable jusqu'en"
 
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "VHM Name"
+msgstr "Nom VHM"
+
 # pf::admin_roles (Actions groups)
 msgid "VIOLATIONS"
 msgstr "Violations"
@@ -9498,6 +9711,10 @@ msgstr "IP Virtuelle"
 msgid "Virtual LAN ID"
 msgstr "ID du LAN virtuel"
 
+# html/pfappserver/root/admin/cluster.tt
+msgid "Virtual Router Id"
+msgstr "ID de routeur virtuel"
+
 # html/pfappserver/root/configurator/services.tt
 msgid "Visit Administration Interface Now!"
 msgstr "Accédez à l’interface d’administration maintenant !"
@@ -9547,6 +9764,10 @@ msgstr "Taille de la clef WEP"
 # pf::admin_roles (Actions groups)
 msgid "WMI"
 msgstr "Règles WMI"
+
+# html/pfappserver/root/admin/cluster.tt
+msgid "will be removed from the cluster."
+msgstr "sera suprimer de la grappe."
 
 # html/pfappserver/root/config/scan/type/wmi.tt
 # html/pfappserver/root/config/wmi/index.tt
@@ -9973,6 +10194,10 @@ msgstr "Vous allez maintenant être redirigé vers l’interface d’administrat
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Config/Profile.pm
 msgid "Your Tier Description"
 msgstr "Description de votre niveau"
+
+# /html/pfappserver/lib/pfappserver/Base/Action/AdminRole.pm
+msgid "Your current daily average number of active endpoints has exceeded your entitlement limits, please increase your subscription!"
+msgstr "Votre nombre quotidien moyen actuel de points de terminaison actifs a dépassé vos limites de droits, veuillez augmenter votre abonnement!"
 
 # html/pfappserver/root/configurator/networks.tt
 msgid "Your gateway IP address to access Internet."
@@ -10456,6 +10681,14 @@ msgstr "Période de temps actuelle"
 # pfappserver::Model::Node::Tab::MSE (MSE Tab)
 msgid "currentlyTracked"
 msgstr "Actuellement suivit"
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "Current Server Certificate"
+msgstr "Certificat du serveur courant"
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "Current CA Certificate"
+msgstr "Certificat de la CA courant"
 
 # html/pfappserver/lib/pfappserver/Form/User.pm
 # html/pfappserver/root/admin/users.tt
@@ -11034,6 +11267,18 @@ msgstr "IBM"
 # pf::radius_audit_log (RADIUS Audit Log)
 msgid "ifindex"
 msgstr "IfIndex"
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "If you or your organization already has an Aerohive Cloud Account for managing your network"
+msgstr "Si vous ou votre organisation avez déjà un compte Aerohive Cloud pour gérer votre réseau"
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid " you may enter your credentials and select"
+msgstr " vous pouvez entrer vos données de connexion et sélectionner"
+
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "If you or your organization already has an Aerohive Cloud Account for managing your network, you may enter your credentials and select,"
+msgstr "Si vous ou votre organisation avez déjà un compte Aerohive Cloud pour gérer votre réseau, vous pouvez entrer vos données de connexion et sélectionner"
 
 # pf::Authentication::constants (Conditions)
 msgid "in_time_period"
@@ -12228,6 +12473,14 @@ msgstr "Nom d’utilistateur sans domaine"
 msgid "subtract"
 msgstr "retirer"
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "Successfully uploaded the CA certificate!"
+msgstr "Téléchargement réussi du certificat de la CA!"
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "Successfully verified and saved the uploaded certificate and the private key."
+msgstr "Vérification et enregistrement réussis du certificat téléchargé et de la clé privée."
+
 # pf::dhcp_option82 (DHCP Option 82)
 # pf::radius_audit_log (RADIUS Audit Log)
 msgid "switch_id"
@@ -12275,6 +12528,18 @@ msgstr "UDP"
 msgid "uid"
 msgstr "uid"
 
+# html/pfappserver/root/admin/certificates.tt
+msgid "Unable to verify the certificate. Try again."
+msgstr "Impossible de vérifier le certificat. Réessayer."
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "Unable to remove the certificate file!"
+msgstr "Impossible de supprimer le fichier de certificat!"
+
+# html/pfappserver/root/admin/certificates.tt
+msgid "Unable to download the certificate"
+msgstr Impossible de télécharger le certificat"
+
 # html/pfappserver/root/admin/nodes.tt
 # pfappserver::Model::Node (availableStatus)
 msgid "unreg"
@@ -12299,6 +12564,14 @@ msgstr "Mettre à jour ip6log par IP et MAC"
 # pf::api (Allowed actions)
 msgid "update_role_configuration"
 msgstr "Mettre à jour la configuration des rôles"
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Uploading certificate files requires a restart of all httpd services."
+msgstr "Le téléchargement des fichiers de certificat nécessite un redémarrage de tous les services ‘httpd’."
+
+# html/pfappserver/root/admin/cloudIntegration.tt
+msgid "Uploading cert files requires a restart of radiusd."
+msgstr "Le téléchargement des fichiers de certificat nécessite un redémarrage du ‘radiusd’."
 
 # /usr/local/fingerbank/conf/fingerbank.conf.doc
 msgid "upstream"
@@ -12425,6 +12698,12 @@ msgstr "Nom d’utilisateur"
 # html/pfappserver/lib/pfappserver/Form/Field/Duration.pm
 msgid "weeks"
 msgstr "semaines"
+
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_pki.pm
+# html/pfappserver/lib/pfappserver/Form/Config/PKI_Provider/packetfence_scep.pm
+# html/pfappserver/root/configuration/certificates.tt
+msgid "When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format."
+msgstr "Lors du téléchargement, assurez-vous que le fichier est sous 1 Mo (1 mégaoctet ou 1000000 octets) et au format PEM."
 
 # pf::provisioner (Provisioners)
 msgid "windows"

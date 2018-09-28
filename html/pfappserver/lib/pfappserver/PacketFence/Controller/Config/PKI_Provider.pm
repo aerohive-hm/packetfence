@@ -15,6 +15,18 @@ use Moose;  # automatically turns on strict and warnings
 use namespace::autoclean;
 
 use pf::factory::pki_provider;
+use pf::cluster;
+use strict;
+use warnings;
+#for file processing
+use File::Temp qw/ tempfile /;
+use File::Basename;
+use File::Path;
+use File::Spec::Functions;
+use File::Copy; #to move files over and change name
+
+use pf::log;
+use Data::Dumper;
 
 BEGIN {
     extends 'pfappserver::Base::Controller';
@@ -73,12 +85,87 @@ before [qw(clone view _processCreatePost update)] => sub {
 };
 
 sub create_type : Path('create') : Args(1) {
-    my ($self, $c, $type) = @_;
+    my ($self, $c, $type, $assignments) = @_;
+    # my $logger = get_logger();
     my $model = $self->getModel($c);
     my $itemKey = $model->itemKey;
     $c->stash->{$itemKey}{type} = $type;
+    # $logger->info("assignments: " .Dumper($assignments));
+    # $logger->info("assignments: $assignments");
     $c->forward('create');
+
 }
+
+sub processCertificate :Path('processCertificate') :Args(1) {
+    my ($self, $c, $type) = @_;
+
+    my $logger = get_logger();
+
+    $logger->info("inside acceptCertificate!!!");
+    $logger->info("\ntype: $type");
+
+    $c->stash->{current_view} = 'JSON';
+
+    if ($c->request->method eq 'POST'){
+        my $filename  = $c->request->{uploads}->{file}->{filename};
+        my $name      = $c->request->{query_parameters}->{name};
+        my $qualifier = $c->request->{query_parameters}->{qualifier};
+        my $source    = $c->request->{uploads}->{file}->{tempname};
+        my $targetdir = '/usr/local/pf/conf/ssl/tls_certs';
+        my $template  = 'cert-XXXXXX';
+        my $target    = "$targetdir/$name-$qualifier.pem";
+        my $tempfile  = "/usr/local/pf/conf/ssl/tls_certs/cert-XXXXXX.tmp";
+        my $filesize  = -s $source;
+
+        $logger->info("filename: $filename, size: $filesize, location: $source");
+
+        if ($filesize && $filesize > 1000000) {
+            $logger->warn("Uploaded file $filename is too large");
+            $c->response->status($STATUS::BAD_REQUEST);
+            $c->stash->{status_msg} = $c->loc("Certificate size is too big. Try again.");
+            return;
+        }
+
+        my $ret = system("/usr/bin/openssl x509 -noout -text -in $source");
+
+        if (($ret >> 8) != 0) {
+            $logger->warn("Uploaded file $filename is not a certificate in PEM format");
+            $c->response->status($STATUS::BAD_REQUEST);
+            $c->stash->{status_msg} = $c->loc("File is invalid. Try again.");
+            return;
+        }
+
+        my (undef, $tmp_filename) = tempfile($template, DIR => $targetdir, SUFFIX => ".tmp");
+
+        if ((system("/usr/bin/cp -f $source $tmp_filename") >> 8) != 0) {
+            $logger->warn("Failed to save file data: $!");
+            unlink($tmp_filename);
+
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+            return;
+        }
+
+        if ( ! rename($tmp_filename, $target) ) {
+            $logger->warn("Failed to move certificate file $filename into place at $target: $!");
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to install certificate. Try again.");
+            return;
+        }
+
+        if ( pf::cluster::add_file_to_cluster_sync($target) ) {
+            $c->response->status($STATUS::INTERNAL_SERVER_ERROR);
+            $c->stash->{status_msg} = $c->loc("Unable to save certificate to cluster. Try again.");
+            return;
+        }
+
+        $c->stash->{filePath} = $target;
+        $logger->info("Saved certificate at $target");
+    }
+}
+
+#find rand function
+# function for checking names, later?
 
 =head1 COPYRIGHT
 

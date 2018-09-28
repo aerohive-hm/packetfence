@@ -2,6 +2,9 @@
 
 yum install open-vm-tools -y
 
+# Copy GPG public key
+cp /vagrant/data/RPM* /etc/pki/rpm-gpg/
+
 # Set up local yum repository
 cat <<EOF >/etc/yum.repos.d/aerohive.repo
 [packetfence]
@@ -20,7 +23,7 @@ EOF
 # A3 installation
 yum install perl -y
 yum install --enablerepo=packetfence,aerohive A3 -y
-yum install --enablerepo=packetfence,aerohive A3-PKI -y
+yum install --enablerepo=packetfence,aerohive --disablerepo=A3_os,A3_deps,A3_release A3-PKI -y
 
 # Don't need our repository anymore
 rm /etc/yum.repos.d/aerohive.repo
@@ -79,3 +82,22 @@ cd /etc && patch -p0 <<EOF
  # The authpriv file has restricted access.
  authpriv.*                                              /var/log/secure
 EOF
+
+# Remove IPv6 localhost entry from /etc/hosts
+cat <<EOF > /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+EOF
+
+# add clish related stuff
+cp /vagrant/data/clish_libs/* /usr/lib64/
+groupadd netcfg
+useradd -d /home/clish -s /usr/local/pf/clish/clish_wrapper netcfg -g netcfg
+echo "aerohive" | passwd netcfg --stdin
+echo 'netcfg ALL=NOPASSWD: /usr/local/pf/clish/change_ip.sh, /usr/local/pf/clish/reboot_system, /usr/local/pf/clish/get_network_settings.sh, /usr/local/pf/clish/logout_console.sh' >> /etc/sudoers
+
+
+# remove the vb guest additional
+rm -rf /opt/VBoxGuestAdditions*
+systemctl disable vboxadd
+systemctl disable vboxadd-service
+rm -rf /usr/lib/systemd/system/vboxadd*

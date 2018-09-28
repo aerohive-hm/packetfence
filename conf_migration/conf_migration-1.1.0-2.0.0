@@ -1,0 +1,8 @@
+#!/bin/sh
+update_log_file=/usr/local/pf/logs/a3_cluster_update.log
+echo "Overwriting eap.conf and ssl-certificates.conf to default" >> $update_log_file
+/usr/bin/cat /usr/local/pf/conf/httpd.conf.d/ssl-certificates.conf.example > /usr/local/pf/conf/httpd.conf.d/ssl-certificates.conf
+/usr/bin/cat /usr/local/pf/conf/radiusd/eap.conf.example > /usr/local/pf/conf/radiusd/eap.conf
+
+echo "Adding the existing tls certificates file path to cluster-files.txt" >> $update_log_file
+/usr/bin/find /usr/local/pf/conf/ssl/tls_certs/ -type f >> /usr/local/pf/conf/cluster-files.txt

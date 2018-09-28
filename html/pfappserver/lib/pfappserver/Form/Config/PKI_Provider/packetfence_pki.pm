@@ -13,6 +13,7 @@ use HTML::FormHandler::Moose;
 
 extends 'pfappserver::Base::Form';
 with 'pfappserver::Base::Form::Role::Help';
+use HTML::FormHandler::Field::Upload;
 
 has_field 'id' => (
     type        => 'Text',
@@ -28,7 +29,7 @@ has_field 'id' => (
 
 has_field 'type' => (
     type        => 'Hidden',
-    label       => 'PKI Provider type',
+    label       => 'PKI Provider Type',
     required    => 1,
 );
 
@@ -117,14 +118,25 @@ has_field 'organization' => (
     },
 );
 
-has_field 'ca_cert_path' => (
-    type        => 'Path',
-    label       => 'CA cert path',
-    required    => 1,
+has_field 'ca_cert_path_upload' => (
+    type        => 'Upload',
+    label       => 'CA Certificate',
+    required    => 0,
     tags        => {
         after_element   => \&help,
-        help            => 'Path of the CA certificate that will generate your certificates',
+        help            => 'When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format.',
     },
+);
+
+has_field 'ca_cert_path' => (
+    type        => 'Hidden',
+    label       => 'CA Certificate Path',
+    required    => 1,
+);
+
+has_field 'ca_cert_subject' => (
+    type        => 'Hidden',
+    required    => 0,
 );
 
 has_field 'cn_attribute' => (
@@ -148,28 +160,39 @@ has_field 'cn_format' => (
     },
 );
 
-has_field 'server_cert_path' => (
-    type        => 'Path',
-    label       => 'Server cert path',
-    required    => 1,
+has_field 'server_cert_path_upload' => (
+    type        => 'Upload',
+    label       => 'Server Certificate',
+    required    => 0,
     tags        => {
         after_element   => \&help,
-        help            => 'Path of the RADIUS server authentication certificate',
+        help            => 'When uploading, make sure the file is under 1MB (1 megabyte or 1000000 bytes) and in PEM format.',
     },
+);
+
+has_field 'server_cert_path' => (
+    type        => 'Hidden',
+    label       => 'Server Certificate Path',
+    required    => 1,
+);
+
+has_field 'server_cert_subject' => (
+    type        => 'Hidden',
+    required    => 0,
 );
 
 has_field 'revoke_on_unregistration' => (
     type             => 'Checkbox',
-    label            => 'Revoke on unregistration',
+    label            => 'Revoke When Unregistered?',
     checkbox_value   => 'Y',
     tags             => {
         after_element   => \&help,
-        help            => 'Check this box to have the certificate revoke when the node using it is unregistered.<br/>Do not use if multiple devices share the same certificate',
+        help            => 'Check this box to have the certificate revoked when the node using it is unregistered.<br/>Do not use if multiple devices share the same certificate',
     },
 );
 
 has_block 'definition' => (
-    render_list => [ qw(type proto host port username password profile country state organization cn_attribute cn_format revoke_on_unregistration ca_cert_path server_cert_path) ],
+    render_list => [ qw(type proto host port username password profile country state organization cn_attribute cn_format revoke_on_unregistration ca_cert_path ca_cert_path_upload ca_cert_subject server_cert_path server_cert_path_upload server_cert_subject) ],
 );
 
 =head1 AUTHOR

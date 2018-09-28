@@ -1,9 +1,10 @@
-@import url('https://fonts.googleapis.com/css?family=Quicksand:300,400');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400');
 
 body {
-  font-family: "Quicksand", Helvetica, Arial, sans-serif !important;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif !important;
   font-size: 12px;
 }
+
 
 .spinner {
   border: 10px solid #f3f3f3; /* Light grey */
@@ -31,7 +32,7 @@ li.user_info {
 }
 
 button, input, select, textarea {
-  font-family: "Quicksand", Helvetica, Ariel, sans-serif;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
 }
 
 .nav-header {
@@ -64,7 +65,7 @@ button, input, select, textarea {
 }
 
 .navbar-search .search-query {
-  font-family: "Quicksand", Helvetica, Ariel, sans-serif;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
 }
 
 .navbar .nav > li > a {
@@ -178,14 +179,69 @@ button, input, select, textarea {
   border-bottom: none;
 }
 
-/* for modal popup reminder */
-/* #popup{
-    height : 50px;
-    background-color:blue;
-    position: fixed;
-    z-index: 20;
-} */
+/* for upload button on PKI providers */
+/* #client_cert_path, #client_key_path, #ca_cert_path, #server_cert_path {
+  border: 2px dashed #D5D5D5;
+  border-radius: 5px;
+  box-sizing: border-box;
+  display: inline-block;
+  font-size: 14px;
+  margin: 0;
+  padding-left: 8px;
+  position: relative;
+  overflow: hidden;
+  -webkit-appearance: none;
+  z-index: 1;
+}
+#client_cert_path:after, #client_key_path:after, #ca_cert_path:after, #server_cert_path:after {
+  /* hide the no file chosen text */
+  background-color: #FFF;
+  content: '';
+  display: block;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
 
+#client_cert_path::-webkit-file-upload-button,
+#client_key_path::-webkit-file-upload-button,
+#ca_cert_path::-webkit-file-upload-button,
+#server_cert_path::-webkit-file-upload-button {
+  /* Style the button */
+  background: #FFF;
+  color: #333;
+  font: inherit;
+  padding: 0;
+  position: relative;
+  border: none;
+  text-align: left;
+  position: relative;
+  z-index: 100;
+  -webkit-appearance: none;
+}
+
+#client_cert_path:hover:after,
+#client_key_path:hover:after,
+#ca_cert_path:hover:after,
+#server_cert_path:hover:after{
+   background: #D5D5D5;
+}
+
+#val, #val2, #val3, #val4 {
+    width: 400px;
+    height:25px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-left: 15px;
+    font-size:13px;
+    line-height: 25px;
+    text-indent: 10px;
+    pointer-events: none;
+} */
 
 @media (min-width: 979px) and (max-width: 1199px) {
   img {

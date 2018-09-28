@@ -1,0 +1,123 @@
+.disconnected{
+  width: 100%;
+  display: flex;
+}
+
+.cloud-form {
+  width:400px;
+}
+
+.link-account{
+  width: 255px;
+}
+
+/* table style */
+.td-title{
+  width: 100px;
+}
+
+/* for the spinner  */
+#spin-spinner{
+  display: none;
+  z-index: 5;
+  position: fixed;
+  margin-left: 395px;
+  margin-top: -25px;
+}
+
+.spin-spinner{
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  opacity: 0;
+  -webkit-transition: -webkit-transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+  transition: -webkit-transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+  transition: transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+  transition: transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86), -webkit-transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+}
+
+.spin-spinner-spinning {
+   opacity: 1;
+   position: static;
+   display: inline-block;
+ }
+
+.spinner-circle{
+  display: inline-block;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.spinner-dot-spin{
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  -webkit-animation: spinner 1.2s infinite linear;
+  animation: spinner 1.2s infinite linear;
+}
+
+.spinner-circle i{
+  width: 9px;
+  height: 9px;
+  border-radius: 100%;
+  background-color: #1890ff;
+  -webkit-transform: scale(0.5);
+  -ms-transform: scale(0.5);
+  transform: scale(0.5);
+  display: block;
+  opacity: 0.3;
+  position: absolute;
+  -webkit-animation: changeColors 1s infinite linear alternate;
+  animation: changeColors 1s infinite linear alternate;
+}
+
+.spinner-circle i:nth-child(1) {
+   transform: translate3D(0px, 0px, 0px);
+ }
+
+ .spinner-circle i:nth-child(2) {
+    transform: translate3D(10px, 0px, 0px);
+  }
+
+  .spinner-circle i:nth-child(3) {
+     transform: translate3D(0px, 10px, 0px);
+  }
+
+  .spinner-circle i:nth-child(4) {
+     transform: translate3D(10px, 10px, 10px);
+  }
+
+@keyframes spinner {
+    100% { transform: rotate(405deg); }
+}
+
+@keyframes changeColors {
+    100% { opacity:1; }
+}
+
+#success-alert, #error-alert{
+  display: none;
+  z-index: 15;
+  position: fixed;
+  top: 60px;
+}
+
+#success-alert{
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+  color: #468847;
+}
+
+#error-alert{
+  background-color: #f2dede;
+  border-color: #eed3d7;
+  color: #b94a48;
+}
+
+.help-block {
+    display: block;
+    margin-bottom: 10px;
+    margin-left: 130px;
+    margin-top: -7px;
+}

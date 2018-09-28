@@ -44,4 +44,25 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+#Update default user password
+DB_DEFAULT_ADMIN_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
+/usr/bin/mysql -u root -p$DB_ROOT_PW -e "UPDATE A3.password SET password='${DB_DEFAULT_ADMIN_USER_PW}' WHERE pid='admin';"
+DB_DEFAULT_DEMO_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
+/usr/bin/mysql -u root -p$DB_ROOT_PW -e "UPDATE A3.password SET password='${DB_DEFAULT_DEMO_USER_PW}' WHERE pid='demouser';"
+
+#Create replication user
+DB_CLUSTER_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
+/usr/bin/mysql -u root -p$DB_ROOT_PW -e "CREATE USER 'aerohivecluster'@'%' IDENTIFIED BY '${DB_CLUSTER_USER_PW}';"
+/usr/bin/mysql -u root -p$DB_ROOT_PW -e "CREATE USER 'aerohivecluster'@'localhost' IDENTIFIED BY '${DB_CLUSTER_USER_PW}';"
+/usr/bin/mysql -u root -p$DB_ROOT_PW -e "GRANT PROCESS, RELOAD, LOCK TABLES, REPLICATION CLIENT, SUPER ON *.* TO 'aerohivecluster'@'%';"
+/usr/bin/mysql -u root -p$DB_ROOT_PW -e "GRANT PROCESS, RELOAD, LOCK TABLES, REPLICATION CLIENT, SUPER ON *.* TO 'aerohivecluster'@'localhost';"
+/usr/bin/mysql -u root -p$DB_ROOT_PW -e "FLUSH PRIVILEGES;"
+PF_CONF=/usr/local/pf/conf/pf.conf
+/usr/bin/echo "[active_active]" >> $PF_CONF
+/usr/bin/echo "galera_replication_password=$DB_CLUSTER_USER_PW" >> $PF_CONF
+WS_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
+/usr/bin/echo "[webservices]" >> $PF_CONF
+/usr/bin/echo "pass=$WS_USER_PW" >> $PF_CONF
+
+
 echo "Finished initializing A3 database"

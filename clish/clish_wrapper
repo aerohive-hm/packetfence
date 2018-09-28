@@ -1,0 +1,4 @@
+#!/bin/sh
+export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+export CLISH_PATH=/usr/local/pf/clish/xml-config/
+/usr/local/pf/clish/clish

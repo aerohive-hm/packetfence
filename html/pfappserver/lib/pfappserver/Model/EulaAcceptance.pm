@@ -57,7 +57,7 @@ Check whether the Aerohive End User License Agreement has been accepted
 =cut
 
 sub is_eula_accepted {
-    return pf::a3_eula_acceptance::is_eula_accepted();
+    return pf::a3_eula_acceptance::a3_is_eula_accepted();
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};

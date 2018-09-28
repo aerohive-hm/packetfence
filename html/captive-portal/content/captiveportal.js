@@ -110,7 +110,7 @@ $(function() {
       checkAccept();
     }
   }
-  
+
   function initForm() {
     var fieldsForm = false;
     $('form input, form select').each(function(f) {
@@ -127,7 +127,7 @@ $(function() {
       var $parent = $input.parent();
       var $tmp = $('[data-template="password-button"]').first();
       if ($tmp.length === 0) return; // template not found
-      var $btn = $tmp.find('button').first();
+      var $btn = $tmp.find('.c-btn').first();
       $input.after($tmp);
       $btn.before($input);
 
@@ -199,7 +199,7 @@ $(function() {
 
     if ($(dots[activeIndex]).hasClass('dot--disabled'))
       return;
-    
+
     for (index = 0; index < cards.length; index++) {
       $card = $(cards[index]);
       $dot = $(dots[index]);

@@ -53,7 +53,7 @@ Source: http://www.packetfence.org/downloads/PacketFence/src/%{real_name}-%{vers
 %endif
 
 # Log related globals
-%global logfiles packetfence.log snmptrapd.log pfdetect pfmon violation.log
+%global logfiles packetfence.log snmptrapd.log pfdetect pfmon violation.log httpd.admin.audit.log
 %global logdir /usr/local/pf/logs
 
 BuildRequires: gettext, httpd, ipset-devel, pkgconfig
@@ -669,7 +669,7 @@ else
 fi
 
 #Check if log files exist and create them with the correct owner
-for fic_log in packetfence.log redis_cache.log violation.log
+for fic_log in packetfence.log redis_cache.log violation.log httpd.admin.audit.log
 do
 if [ ! -e /usr/local/pf/logs/$fic_log ]; then
   touch /usr/local/pf/logs/$fic_log
@@ -1258,6 +1258,7 @@ fi
 %ghost                  %logdir/packetfence.log
 %ghost                  %logdir/snmptrapd.log
 %ghost                  %logdir/violation.log
+%ghost                  %logdir/httpd.admin.audit.log
 %ghost                  %logdir/pfdetect
 %ghost                  %logdir/pfmon
 %doc                    /usr/local/pf/NEWS.asciidoc
@@ -1346,6 +1347,9 @@ fi
 %exclude                /usr/local/pf/addons/pfconfig/pfconfig.init
 
 %changelog
+* Wed May 09 2018 Inverse <info@inverse.ca> - 8.0.1-1
+- New release 8.0.1
+
 * Thu Apr 26 2018 Inverse <info@inverse.ca> - 8.0.0-1
 - New release 8.0.0
 

@@ -1,0 +1,55 @@
+
+[%  jsFiles = [
+        'js/vendor/raphael.min',
+        'admin/config/items',
+        'js/node',
+        'js/user',
+        'js/update'
+        ]
+    cssFiles = [
+        'admin/update'
+        ]
+-%]
+[% MACRO list_entry(action,description) BLOCK %]
+              <li[% IF section == action %] class="active"[% END %]>
+                <a href="#[% action %]">[% l(description) %]</a>
+              </li>
+[% END -%]
+<div class="spacing">
+  <section class="card">
+    <div class="card-block">
+      <div class="update-header">
+        <h1 class="center-title">[% l('Software Update') %]</h1>
+      </div>
+      <div class="update-body">
+        [% IF is_update_in_progress %]
+          <div class="version-number">
+            <h2>[% l('An update to version [_1] is currently in progress.', [version]) %]</h2>
+          </div>
+          <div class="update-details">
+            <div class="detail-box update-in-progress">
+            </div>
+          </div>
+        [% ELSIF update_available %]
+          <div class="version-number">
+            <h2>[% l('A newer version of A3 is available:') %] [% version %]</h2>
+            <div class="update-area">
+              <button class="btn btn-primary update-button" id="update-button">
+                <span class="content">[% l('Begin Update') %]</span>
+              </button>
+            </div>
+          </div>
+          <div class="update-details">
+            <div class="detail-box">
+              <iframe src="[% releaseNotesUri %]" width="498px" height="367px"></iframe>
+            </div>
+          </div>
+        [% ELSE %]
+          <div class="version-number">
+            <h2>[% l('There are no updates available at this time.') %]</h2>
+          </div>
+        [% END %]
+      </div>
+    </div>
+  </section>
+</div>

@@ -60,7 +60,11 @@ sub key :Path('key') :Args(1) {
             }
         }
         else {
-            $c->stash->{entitlement} = make_ek_hash($ek);
+            if ($ek->{err_status} == undef){
+                $c->stash->{entitlement} = make_ek_hash($ek);
+            } else {
+                $c->stash->{status_msg} = $c->loc("Unable to validate entitlement key at this time. Try again later...");
+            }
         }
     }
     elsif ($c->request->method eq 'GET') {
@@ -85,7 +89,6 @@ Usage: /entitlement/keys
 
 sub keys :Path('keys') :Args(0) {
     my ( $self, $c ) = @_;
-
     $c->stash->{entitlement_keys} = $c->model('Entitlement')->list_entitlement_keys();
 }
 
@@ -95,6 +98,7 @@ sub keys :Path('keys') :Args(0) {
 
 sub licenseKeys :Path('licenseKeys') :Args(0) {
     my ( $self, $c ) = @_;
+    my $logger = get_logger();
 
     $c->stash->{template} = "entitlement/licenseKeys.tt";
 
@@ -102,17 +106,20 @@ sub licenseKeys :Path('licenseKeys') :Args(0) {
     $c->stash->{max_capacity} = $c->model('Entitlement')->get_licensed_capacity();
     $c->stash->{used_capacity} = $c->model('Entitlement')->get_used_capacity();
     $c->stash->{system_id} = `/usr/bin/cat /etc/A3.systemid`;
+    $c->stash->{current_mov_avg} = $c->model('Entitlement')->get_moving_avg();
 
     my $entitlements = $c->model('Entitlement')->list_entitlement_keys();
     $c->stash->{is_eula_needed} = @$entitlements > 0 && ! $c->model('EulaAcceptance')->is_eula_accepted();
-    $c->forward('View::HTML');
 
+    my ($status, $trial) = $c->model('Entitlement')->get_trial_info();
+    $c->stash->{is_expired} = ($status == $STATUS::OK) && $trial->{is_expired};
+    $c->stash->{expires_in} = int($trial->{expires_in}/(3600*24));
+    $c->forward('View::HTML');
 }
 
 =head2 trial
 
 Initiate trial / get trial status
-
 Usage: /entitlement/trial
 
 =cut

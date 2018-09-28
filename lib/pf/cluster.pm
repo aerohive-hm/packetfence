@@ -30,6 +30,7 @@ use pf::file_paths qw(
     $maintenance_file
     $var_dir
 );
+use File::Temp qw(tempfile);
 use pf::util;
 use pf::constants;
 use pf::constants::cluster qw(@FILES_TO_SYNC);
@@ -50,7 +51,7 @@ use Module::Pluggable
 use Exporter;
 our ( @ISA, @EXPORT );
 @ISA = qw(Exporter);
-@EXPORT = qw(%ConfigCluster @cluster_servers @cluster_hosts $cluster_enabled $host_id $CLUSTER);
+@EXPORT = qw(%ConfigCluster @cluster_servers @cluster_hosts $cluster_enabled $host_id $CLUSTER is_management);
 
 our ($cluster_enabled, %ConfigCluster, @cluster_servers, @cluster_hosts);
 tie %ConfigCluster, 'pfconfig::cached_hash', 'config::Cluster';
@@ -584,6 +585,102 @@ sub handle_config_conflict {
     }
 
     return;
+
+}
+
+=head2 add_file_to_cluster_sync
+
+adds the file path to /usr/local/pf/conf/cluster-files.txt for /usr/local/pf/bin/cluster/sync --as-master
+
+=cut
+
+sub add_file_to_cluster_sync {
+
+    my ($file) = @_;
+    my $fh;
+    my $logger = get_logger();
+    unless (open($fh, '>>', '/usr/local/pf/conf/cluster-files.txt') ) {
+        $logger->error("Failed to open cluster-files to sync $file: $!");
+        return -1;
+    }
+
+    say $fh $file; #put the cert file path in cluster-file.txt for sync to cluster nodes
+    close $fh;
+    $logger->info("Added $file to cluster-files.txt");
+    return 0;
+}
+
+=head2 remove_file_from_cluster_sync
+
+removes the file path to /usr/local/pf/conf/cluster-files.txt
+
+=cut
+
+sub remove_file_from_cluster_sync {
+    my ($file) = @_;
+    my $cluster_file = '/usr/local/pf/conf/cluster-files.txt';
+    my $target_dir = '/usr/local/pf/conf/ssl/tls_certs';
+    my $in;
+    my $logger = get_logger();
+    (my $temp_fh, my $temp_file) = tempfile(DIR => $target_dir);
+    $logger->info("Removing file: $file from cluster file");
+    unless (open($in, '<', $cluster_file) ) {
+        $logger->error("Failed to open cluster-files to sync $file: $!");
+        return -1;
+    }
+
+    #checks line by line for the file path to remove
+    while (my $row = <$in>) {
+        chomp $row;
+        say $temp_fh $row unless $row eq $file;
+    }
+
+    close($in);
+    if ( ! rename ($temp_file, $cluster_file) ) {
+        $logger->error("Failed to rename $temp_file to $cluster_file: $!");
+        return -1;
+    }
+    return 0;
+}
+
+=head2 sync_and_remove_cluster_file
+
+removes the file in input directory that is removed from cluster-file list
+
+=cut
+
+sub sync_and_remove_cluster_file {
+    my ($target_dir) = @_;
+    my $logger = get_logger();
+    my $cluster_file = '/usr/local/pf/conf/cluster-files.txt';
+    my $in;
+    my @cluster_list;
+    unless (opendir(D, "$target_dir")) {
+        $logger->error("Failed to open $target_dir to read files");
+    }
+
+    my @list = grep !/^\.\.?$/, readdir(D);
+    closedir(D);
+
+    unless (open($in, '<', $cluster_file) ) {
+        $logger->error("Failed to open cluster-files to sync $!");
+        return;
+    }
+    #put the list of cluster file path in an array
+    while (<$in>) {
+        chomp;
+        push @cluster_list, $_;
+    }
+    close($in);
+
+    foreach my $file (@list) {
+        $file = $target_dir . $file;
+        if (! grep( /^$file$/, @cluster_list ) ) {
+            if (unlink($file) != 1) {
+                $logger->error("Failed to remove $file that is removed from cluster file");
+            }
+        }
+    }
 
 }
 

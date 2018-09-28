@@ -70,6 +70,10 @@ sub create {
     # Enable the newly created virtual interface
     $self->up($interface);
 
+
+    # Send event to AMA, Don't care result
+    $self->notify_ama($interface);
+    
     return ($STATUS::CREATED, ["Interface VLAN [_1] successfully created",$interface]);
 }
 
@@ -135,6 +139,9 @@ sub delete {
             return ($status, $status_msg);
         }
     }
+
+    # Send event to AMA, Don't care result
+    $self->notify_ama($interface);
 
     return ($STATUS::OK, ["Interface VLAN [_1] successfully deleted",$interface]);
 }
@@ -416,6 +423,9 @@ sub update {
     if(is_error($status)) {
         return ($status, $status_msg);
     }
+
+    # Send event to AMA, Don't care result
+    $self->notify_ama($interface);
 
     return ($STATUS::OK, ["Interface [_1] successfully edited",$interface]);
 }
@@ -868,6 +878,26 @@ sub map_interface_to_networks {
     }
 
     return $seen_networks;
+}
+
+
+=head2 notify_ama
+
+Send network change event to AMA module.
+
+=cut
+
+sub notify_ama {
+    my ( $self, $interface ) = @_;
+
+    eval {
+            # NetworkChange = 2
+            my $msgtype = 2;
+            my $url = "http://127.0.0.1:10000/api/v1/event/perlevent";
+            pf::util::call_url("POST", $url, {msgtype => $msgtype,});
+    };
+
+    return;
 }
 
 

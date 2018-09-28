@@ -21,6 +21,7 @@ use pf::StatsD::Timer;
 use pf::util::statsd qw(called);
 use pf::CHI::Request;
 use CHI::Memoize qw(memoize memoized);
+use pf::util;
 
 use constant LOCATIONLOG => 'locationlog';
 
@@ -355,6 +356,23 @@ sub locationlog_synchronize {
 
     $voip_status = $NO_VOIP if !defined $voip_status || $voip_status ne $VOIP; #Set the default voip status
     my $logger = get_logger();
+
+
+    my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
+    my $timestamp = $seconds * 1000 * 1000 + $microseconds;
+    my $url = "http://127.0.0.1:10000/api/v1/event/report";
+    my %ama_data = (
+        ah_tablename => "radacct", 
+        ah_timestamp => "$timestamp",
+        username => $user_name,
+        acctstatustype => "Interim-Update-Username",
+        callingstationid => $mac,
+        acctupdatetime => "$seconds",
+    );
+
+
+    pf::util::call_url("POST", $url, \%ama_data);
+
     $logger->trace(sub {"sync locationlog with ifDesc " . ($ifDesc // "undef")});
     $logger->trace("locationlog_synchronize called");
 
