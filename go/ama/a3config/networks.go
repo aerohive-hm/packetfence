@@ -132,6 +132,7 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 		/*only update cluster enable*/
 		return nil
 	}
+	networksData.Items = DeleteItemBlankChar(ctx, networksData.Items)
 	err := CheckItemValid(ctx, networksData.ClusterEnable, networksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("CheckItemValid error:" + err.Error())
@@ -312,6 +313,15 @@ func CheckItemValid(ctx context.Context, enable bool, items []Item) error {
 		return err
 	}
 	return nil
+}
+
+func DeleteItemBlankChar(ctx context.Context, items []Item) []Item {
+	for j, i := range items {
+		items[j].IpAddr = utils.ReplaceBlank(i.IpAddr)
+		items[j].Vip = utils.ReplaceBlank(i.Vip)
+		items[j].NetMask = utils.ReplaceBlank(i.NetMask)
+	}
+	return items
 }
 
 const (

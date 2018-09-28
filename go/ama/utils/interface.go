@@ -300,8 +300,6 @@ func IpBitwiseAndMask(ip, mask string) string {
 }
 
 func IsSameIpRange(ip1, ip2, mask string) bool {
-	ip1 = ReplaceBlank(ip1)
-	ip2 = ReplaceBlank(ip2)
 	str1 := IpBitwiseAndMask(ip1, mask)
 	str2 := IpBitwiseAndMask(ip2, mask)
 	if str1 == str2 {
