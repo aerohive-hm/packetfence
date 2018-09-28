@@ -267,19 +267,15 @@ sub removeDefaultValues {
         my $imported = $self->{imported};
         foreach my $section ( $self->Sections ) {
             next if ( !$imported->SectionExists($section) );
-            #next if (($section eq "webservices") || ($section eq "active_active"));
             foreach my $parameter ( $self->Parameters($section) ) {
                 next if ( !$imported->exists($section, $parameter) );
-                next if ((($section eq "webservices") && (($parameter eq "user") || ($parameter eq "pass")))
-                    || (($section eq "active_active") && (($parameter eq "galera_replication_username") || ($parameter eq "galera_replication_password"))));
-
                 my $self_val = $self->val($section, $parameter);
                 my $default_val = $imported->val($section, $parameter);
                 if ( !defined ($self_val) || $self_val eq $default_val  ) {
                     $self->delval($section, $parameter);
                 }
             }
-            if (($self->Parameters($section) == 0) && ($section ne "webservices") && ($section ne "active_active")) {
+            if ($self->Parameters($section) == 0) {
                 $self->DeleteSection($section);
             }
         }
