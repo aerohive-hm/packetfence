@@ -190,8 +190,6 @@ func startService() {
 	clusterEnable := a3config.ClusterNew().CheckClusterEnable()
 
 	if clusterEnable {
-		a3config.UpdateGaleraUser()
-		a3config.UpdateWebservicesAcct()
 		a3config.UpdateClusterFile()
 	}
 
