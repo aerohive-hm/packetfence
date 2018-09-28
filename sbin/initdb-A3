@@ -62,6 +62,7 @@ PF_CONF=/usr/local/pf/conf/pf.conf
 /usr/bin/echo "galera_replication_password=$DB_CLUSTER_USER_PW" >> $PF_CONF
 WS_USER_PW=`/usr/bin/head -c24 /dev/urandom | /usr/bin/base64 | /usr/bin/tr + .`
 /usr/bin/echo "[webservices]" >> $PF_CONF
+/usr/bin/echo "user=aerohiveweb" >> $PF_CONF
 /usr/bin/echo "pass=$WS_USER_PW" >> $PF_CONF
 
 
