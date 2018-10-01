@@ -546,8 +546,8 @@ sub update :Chained('object') :PathPart('update') :Args(0){
 
     if ($c->request->method eq 'GET') {
         my ($cluster_enabled, $is_management) = pf::a3_util::a3_cluster_status();
-        if ($a3_cluster_status && !$is_management) {
-            $c->response->status{$STATUS::BAD_REQUEST};
+        if ($cluster_enabled && !$is_management) {
+            $c->response->status{$STATUS::FORBIDDEN};
             return;
         }
         my $logger = get_logger();
