@@ -85,6 +85,14 @@
         </table>
         <br/>
         <button class="btn btn-danger" id="unlink-account">[% l('Unlink from Aerohive Cloud Account') %]</button>
+        <div class="spin-spinner spin-spinner-spinning" id="spin-spinner2">
+          <span class="spinner-circle spinner-dot-spin">
+              <i></i>
+              <i></i>
+              <i></i>
+              <i></i>
+          </span>
+        </div>
         <br/><br/>
         <h6>[% l('Cluster Link Status') %]</h6>
         <table id="items cloud-cluster-table" class="table items">
@@ -123,6 +131,14 @@
         </table>
         <br>
         <button class="btn btn-danger" id="unlink-account">[% l('Unlink from Aerohive Cloud Account') %]</button>
+        <div class="spin-spinner spin-spinner-spinning" id="spin-spinner2">
+          <span class="spinner-circle spinner-dot-spin">
+              <i></i>
+              <i></i>
+              <i></i>
+              <i></i>
+          </span>
+        </div>
       </div>
       [% END %]
     </div>
