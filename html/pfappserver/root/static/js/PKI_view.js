@@ -1,25 +1,43 @@
 
 $(document).ready(function(){
-    //label for the button stickers
+
+    // button settings
     var caNewlabel = document.createElement("Label");
-      caNewlabel.setAttribute("for", "ca_cert_path_upload");
-      caNewlabel.setAttribute("id", "ca_cert_label_upload");
-      caNewlabel.innerHTML = "Choose File...";
+        caNewlabel.setAttribute("for", "ca_cert_path_upload");
+        caNewlabel.setAttribute("id", "ca_cert_label_upload");
+        caNewlabel.innerHTML = "Choose File...";
     $("#ca_cert_path_upload").after(caNewlabel);
     var servNewlabel = document.createElement("Label");
-      servNewlabel.setAttribute("for", "server_cert_path_upload");
-      servNewlabel.setAttribute("id", "server_cert_label_upload");
-      servNewlabel.innerHTML = "Choose File...";
+        servNewlabel.setAttribute("for", "server_cert_path_upload");
+        servNewlabel.setAttribute("id", "server_cert_label_upload");
+        servNewlabel.innerHTML = "Choose File...";
     $("#server_cert_path_upload").after(servNewlabel);
 
-    //new download buttons
-    // var caNewlabel = document.createElement("A");
-    // var caNewlabel = document.createElement("A");
+    //view more links
+    var caViewMore = document.createElement("A");
+        caViewMore.setAttribute("id", "ca_view_more");
+        caViewMore.setAttribute("data-toggle", "popover");
+        caViewMore.setAttribute("data-placement", "top");
+        // caViewMore.setAttribute("data-trigger","focus");
+        caViewMore.setAttribute("tab-index", "5");
+        caViewMore.innerHTML = "View Current CA Certificate";
+
+    var servViewMore = document.createElement("A");
+        servViewMore.setAttribute("id", "serv_view_more");
+        servViewMore.setAttribute("data-toggle", "popover");
+        servViewMore.setAttribute("data-placement", "top");
+        // servViewMore.setAttribute("data-trigger","focus");
+        servViewMore.setAttribute("tab-index", "5");
+        servViewMore.innerHTML = "View Current Server Certificate";
+
+    //dl buttons
     // var caNewlabel = document.createElement("Button");
     // var caNewlabel = document.createElement("Button");
     // var caCertPopup = document.createElement("");
     // var caNewlabel = document.createElement("Button");
 
+    document.getElementById('ca_cert_label_upload').after(caViewMore);
+    document.getElementById('server_cert_label_upload').after(servViewMore);
 
     document.getElementById("ca_cert_path_upload").onchange = function(){
       showCaCertFileInfo();
@@ -28,42 +46,14 @@ $(document).ready(function(){
       showServerFileInfo();
     };
 
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip()
-    })
 
-//***********for label after the upload button***************//
+//*********** info for view more ***************//
     var caSubjectVal = document.getElementById('ca_cert_subject').value;
     var servSubjectVal = document.getElementById('server_cert_subject').value;
 
-    var caSubjNewlabel = document.createElement("Div");
-    caSubjNewlabel.setAttribute("id", "caSubjNewlabel");
-    var servSubjNewlabel = document.createElement("Div");
-    servSubjNewlabel.setAttribute("id", "servSubjNewlabel");
+    caViewMore.setAttribute("data-content", caSubjectVal);
+    servViewMore.setAttribute("data-content", servSubjectVal);
 
-    caSubjNewlabel.innerHTML = caSubjectVal;
-    servSubjNewlabel.innerHTML = servSubjectVal;
-
-    var caLength = $("#caSubjNewlabel").width();
-    var caTextLength = $("#ca_cert_subject").width();
-    var servLength = $("#servSubjNewlabel").width();
-    var servTextLength = $("#server_cert_subject").width();
-
-    if (caTextLength > caLength) {
-      document.getElementById('caSubjNewlabel').after("...");
-      caSubjNewlabel.setAttribute("data-toggle", "tooltip");
-      caSubjNewlabel.setAttribute("data-placement", "top");
-      caSubjNewlabel.setAttribute("title", caSubjectVal);
-    }
-    if (servTextLength > servLength) {
-      document.getElementById('servSubjNewlabel').after("...");
-      servSubjNewlabel.setAttribute("data-toggle", "tooltip");
-      servSubjNewlabel.setAttribute("data-placement", "top");
-      servSubjNewlabel.setAttribute("title", servSubjectVal);
-    }
-
-    document.getElementById('ca_cert_label_upload').after(caSubjNewlabel);
-    document.getElementById('server_cert_label_upload').after(servSubjNewlabel);
 
 //*****************save button press pki********************//
     document.getElementById("savePKI").onclick = function(e){
@@ -83,7 +73,6 @@ $(document).ready(function(){
                   if (caFile.value.length != 0 && serverFile.value.length != 0){
                       if (showCaCertFileInfo() || showServerFileInfo()){
                           $.when(processCAFile2, processServFile2).done(function(caFilePath, servFilePath){
-                              console.log(caFilePath[0].filePath); console.log(servFilePath[0].filePath);
                               if (caFilePath[1] == "success" || servFilePath[1] == "success"){
                                   var ca_path = document.getElementById("ca_cert_path");
                                   ca_path.value = caFilePath[0].filePath;
@@ -175,6 +164,12 @@ $(document).ready(function(){
             //err msg for if pki name is blank
         // }
     }; //end of save click button
+
+    //initiate popover
+    $("#ca_view_more").popover();
+    $("#serv_view_more").popover();
+
+
 });
 
 
@@ -251,11 +246,13 @@ function showCaCertFileInfo() {
               document.getElementById("ca_cert_label_upload").innerHTML = fileName;
               return true;
             } else {
+              $(input).val('');
               document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
               alert("File size is greater than 1MB. Upload again.");
               return false;
             }
         } else {
+            $(input).val('');
             alert("Incorrect file type. Upload again.");
             document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
             return false;
@@ -305,7 +302,7 @@ function processFiles(input, pki_provider_name, qualifier){
         success: function(data){
         },
         error: function(data){
-          var errMsg = data.status_msg;
+          var errMsg = data.responseJSON.status_msg;
           if (errMsg != null ) {
               document.getElementById('errorMessage').innerHTML = errMsg;
               $("#success-alert").show();
@@ -316,12 +313,3 @@ function processFiles(input, pki_provider_name, qualifier){
         }
     }); //end of ajax
 }
-
-// function regexPkiName(nameInput){
-//     var checkKeyRegex = RegExp("^[a-zA-Z0-9][a-zA-Z0-9\._-]*$/");
-//     if (checkKeyRegex.test(nameInput)){
-//         return true;
-//     } else {
-//         return false;
-//     }
-// }
