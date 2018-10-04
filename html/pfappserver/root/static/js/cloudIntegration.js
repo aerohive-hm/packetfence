@@ -23,6 +23,7 @@ $(document).ready(function(){
     //unlink button press
     document.getElementById('unlink-account').onclick = function(){
         document.getElementById("link-account").disabled = false;
+        document.getElementById("unlink-account").disabled = true;
         unlinkAerohiveAccount();
     }
 });
@@ -105,6 +106,7 @@ function getNodeInfo(){
 function unlinkAerohiveAccount(){
     var base_url = window.location.origin;
     var data = {url: ""};
+    $('#spin-spinner2').show();
 
     $.ajax({
         type: 'POST',
@@ -112,6 +114,7 @@ function unlinkAerohiveAccount(){
         dataType: 'json',
         data: data,
         success: function(data){
+            $('#spin-spinner2').hide();
             data = jQuery.parseJSON(data.A3_data);
             if (data.code == "fail"){
                 document.getElementById('errorMessage').innerHTML = data.msg;
@@ -119,17 +122,21 @@ function unlinkAerohiveAccount(){
                 setTimeout(function (){
                     $("#error-alert").slideUp(500);
                 }, 3000);
+                document.getElementById("unlink-account").disabled = false;
             } else {
                 $(".linked").hide();
                 $(".disconnected").show();
+
                 document.getElementById('successMessage').innerHTML = "Successfully unlinked.";
                 $("#success-alert").show();
                 setTimeout(function (){
                     $("#success-alert").slideUp(500);
                 }, 3000);
+                document.getElementById("unlink-account").disabled = false;
             }
         },
         error: function(data){
+            $('#spin-spinner2').hide();
             data = jQuery.parseJSON(data.A3_data);
             document.getElementById('errorMessage').innerHTML = data.msg;
             $("#error-alert").show();
@@ -137,6 +144,7 @@ function unlinkAerohiveAccount(){
                 $("#error-alert").slideUp(500);
             }, 3000);
             document.getElementById("link-account").disabled = false;
+            document.getElementById("unlink-account").disabled = false;
         }
     });
 }
@@ -179,6 +187,7 @@ function linkAerohiveAccount(){
                     $("#success-alert").slideUp(500);
                 }, 3000);
                 getNodeInfo();
+                document.getElementById("link-account").disabled = false;
             }
         },
         error: function(data){
@@ -188,7 +197,7 @@ function linkAerohiveAccount(){
             setTimeout(function (){
                 $("#error-alert").slideUp(500);
             }, 3000);
-            document.getElementById("link-account").disabled = false;
+            document.getElementById("unlink-account").disabled = false;
         }
     });
 }

@@ -335,6 +335,12 @@ sub readCert :Chained('/') :PathPart('readCert') :Args(0) :AdminRole('CERTIFICAT
             $c->stash->{Server_INFO} = `/usr/bin/openssl x509 -noout -text -in $radius_server_cert`;
             $c->stash->{CA_INFO} = `/usr/bin/openssl x509 -noout -text -in $radius_ca_cert`;
             $c->response->status($STATUS::OK);
+        } elsif ($qualifier eq "pki-provider") {
+            my $cert_path = $c->request->{query_parameters}->{cert_path};
+            $c->stash->{Server_INFO} = `/usr/bin/openssl x509 -noout -text -in $cert_path`;
+            $c->response->status($STATUS::OK);
+        } else {
+            $c->response->status($STATUS::BAD_REQUEST);
         }
     } else {
         $c->response->status($STATUS::METHOD_NOT_ALLOWED);
@@ -363,6 +369,8 @@ sub downloadCert :Chained('/') :PathPart('downloadCert') :Args(0) :AdminRole('CE
             $cert_path = $radius_server_cert;
         } elsif ($qualifier eq 'eap-ca') {
             $cert_path = $radius_ca_cert;
+        } elsif ($qualifier eq 'pki-provider') {
+            $cert_path = $c->request->{query_parameters}->{cert_path};
         } else {
             $c->response->status($STATUS::BAD_REQUEST);
             $c->stash->{status_msg} = $c->loc("Unable to download the certificate");
@@ -370,7 +378,7 @@ sub downloadCert :Chained('/') :PathPart('downloadCert') :Args(0) :AdminRole('CE
         }
 
         unless (open($in, '<', $cert_path) ) {
-            $logger->error("Failed to open $cert_path to sync $!");
+            $logger->error("Failed to open $cert_path to download $!");
             return;
         }
         #read the cert
