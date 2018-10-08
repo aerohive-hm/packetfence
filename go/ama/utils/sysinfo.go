@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -15,18 +17,35 @@ type SysHealth struct {
 	MemUsed  float64
 }
 
+func GetSysUptime() int64 {
+	cmd := "cut -f1 -d \" \" /proc/uptime"
+	out, err := ExecShell(cmd)
+	if err != nil {
+		log.LoggerWContext(context.Background()).Error(cmd + "exec error:" + err.Error())
+		return 0
+	}
+
+	out = strings.TrimRight(out, "\n")
+	f, err := strconv.ParseFloat(out, 32)
+	if err != nil {
+		log.LoggerWContext(context.Background()).Error("Fload parse error:" + err.Error())
+		return 0
+	}
+
+	return int64(f * 1000)
+}
+
 func GetA3Version() string {
 	cmd := "pfcmd version"
 	out, err := ExecShell(cmd)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
 		return ""
 	}
 	i := strings.Index(out, "\n")
 	return out[:i]
 }
 
-func GetSysUptime() int64 {
+func GetAMAUptime() int64 {
 	return uptime()
 }
 
@@ -35,7 +54,6 @@ func GetA3SysId() string {
 
 	out, err := ExecShell(cmd)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
 		return ""
 	}
 	return out
