@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"golang.org/x/sys/unix"
 )
 
 type SysHealth struct {
@@ -17,22 +18,17 @@ type SysHealth struct {
 	MemUsed  float64
 }
 
+//The returned value using Millisecond as the unit
 func GetSysUptime() int64 {
-	cmd := "cut -f1 -d \" \" /proc/uptime"
-	out, err := ExecShell(cmd)
+	var sysinfo unix.Sysinfo_t
+
+	err := unix.Sysinfo(&sysinfo)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error(cmd + "exec error:" + err.Error())
+		log.LoggerWContext(context.Background()).Error("Get system info failed:" + err.Error())
 		return 0
 	}
 
-	out = strings.TrimRight(out, "\n")
-	f, err := strconv.ParseFloat(out, 32)
-	if err != nil {
-		log.LoggerWContext(context.Background()).Error("Fload parse error:" + err.Error())
-		return 0
-	}
-
-	return int64(f * 1000)
+	return sysinfo.Uptime * 1000
 }
 
 func GetA3Version() string {
