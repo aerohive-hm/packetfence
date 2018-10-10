@@ -273,8 +273,17 @@ func keepaliveToRdc(ctx context.Context) {
 				continue
 			}
 		}
-		//Check the connect status, if not connected, do nothing
+		/*
+			Check the connect status, if a node join in cluster but onboarding to
+			cloud fail, if not increase the timeoutCount, program will no way to
+			try to onboarding to cloud, customer need to hit the "unlink", then "link"
+			button to trigger a onboarding  behavior, but this operation will take affect
+			for the entire cluser, so it should be better if the AMA can keep trying
+			to onboarding to the cloud actiely.
+		*/
 		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
+			timeoutCount++
+			log.LoggerWContext(ctx).Info(fmt.Sprintf("Enable the cloud integration, but status is not connected, keepalive timeout %d", timeoutCount))
 			continue
 		}
 
