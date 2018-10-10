@@ -345,7 +345,6 @@ func dispathMsgFromRdc(ctx context.Context, message []byte) {
 			//RDC token need to write file, if process restart we can read it
 			dst := fmt.Sprintf("Bearer %s", resMsg.Data["token"])
 			UpdateRdcToken(ctx, dst, false)
-			rdcTokenStr = resMsg.Data["token"]
 		}
 	}
 	return
