@@ -1,12 +1,15 @@
 package utils
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/log"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+	"golang.org/x/sys/unix"
 )
 
 type SysHealth struct {
@@ -15,18 +18,30 @@ type SysHealth struct {
 	MemUsed  float64
 }
 
+//The returned value using Millisecond as the unit
+func GetSysUptime() int64 {
+	var sysinfo unix.Sysinfo_t
+
+	err := unix.Sysinfo(&sysinfo)
+	if err != nil {
+		log.LoggerWContext(context.Background()).Error("Get system info failed:" + err.Error())
+		return 0
+	}
+
+	return sysinfo.Uptime * 1000
+}
+
 func GetA3Version() string {
 	cmd := "pfcmd version"
 	out, err := ExecShell(cmd)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
 		return ""
 	}
 	i := strings.Index(out, "\n")
 	return out[:i]
 }
 
-func GetSysUptime() int64 {
+func GetAMAUptime() int64 {
 	return uptime()
 }
 
@@ -35,7 +50,6 @@ func GetA3SysId() string {
 
 	out, err := ExecShell(cmd)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
 		return ""
 	}
 	return out
