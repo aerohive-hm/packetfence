@@ -57,4 +57,4 @@ echo "" >> /etc/issue
 touch /var/lock/subsys/local
 
 # overwrite the crond sysconfig to redirect logs to syslog instead
-echo "CRONDARGS=\"-s\"" > /etc/sysconfig/crond
+echo "CRONDARGS=-s" > /etc/sysconfig/crond

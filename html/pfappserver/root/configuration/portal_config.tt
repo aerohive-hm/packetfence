@@ -7,7 +7,9 @@
     <dt>[% l('Captive Portal:') %]</dt> <dd>[% l('This is for changing global captive-portal parameters.') %]</dd>
     <dt>[% l('Filter Engines:') %]</dt> <dd>[% l('A3 allows you to create advanced filtering rules based on RADIUS, DHCP, DNS or HTTP information. It also allows you to define advanced role-mapping or VLAN-mapping rules.') %]</dd>
     <dt>[% l('Billing Tiers:') %]</dt> <dd>[% l('This allows A3 to define tiers for billing engines integration.') %]</dd>
+    [% IF !is_cluster_enabled or is_master_node %]
     <dt>[% l('PKI Provider:') %]</dt> <dd>[% l('When provisioning in EAP-TLS, A3 needs to be configured to integrate with PKI infrastructure. This is done in this module.') %]</dd>
+    [% END %]
     <dt>[% l('Provisioners:') %]</dt> <dd>[% l('A3 can "push" provisioning agents on endpoints to auto-configure the WiFi connection during the registration process. You can configure the provisioning agents in this module.') %]</dd>
     <dt>[% l('Portal Modules:') %]</dt> <dd>[% l('The module allows you to deeply customize the captive portal workflows.') %]</dd>
     <dt>[% l('Access Duration:') %]</dt> <dd>[% l('This allows you to set the various access duration that will be available in your actions definition from your authentication sources.') %]</dd>
