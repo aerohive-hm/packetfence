@@ -30,7 +30,6 @@ $(document).ready(function(){
 
 //api call to get the info for each node/standalone
 function getNodeInfo(){
-    console.log("inside getNodeInfo");
     var rdcUrl            = document.getElementById('rdcUrl'),
         region            = document.getElementById('region'),
         ownerId           = document.getElementById('ownerId'),
@@ -175,7 +174,6 @@ function linkAerohiveAccount(){
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
             $('#spin-spinner').hide();
-            console.log(data.code);
             if (data.code == "fail"){
                 document.getElementById('errorMessage').innerHTML = data.msg;
                 $("#error-alert").show();
@@ -184,7 +182,6 @@ function linkAerohiveAccount(){
                 }, 3000);
                 document.getElementById("link-account").disabled = false;
             } else {
-                console.log("in hererere");
                 $(".disconnected").hide();
                 $(".linked").show();
                 document.getElementById('successMessage').innerHTML = "Successfully linked";
