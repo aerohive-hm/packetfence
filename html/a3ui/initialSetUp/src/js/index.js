@@ -32,7 +32,7 @@ class App extends Component {
         this.state = {
             i18n:{},
             loading : false,
-            show:"networks",
+            show:"",
             // getStart
             // adminUser
             // networks
@@ -70,7 +70,7 @@ class App extends Component {
             i18n : rightI18n,
             navigatorLanguage:navigatorLanguage,
         },function(){
-            //self.getStep();
+            self.getStep();
         })
 
     }
