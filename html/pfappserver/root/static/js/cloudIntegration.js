@@ -30,6 +30,7 @@ $(document).ready(function(){
 
 //api call to get the info for each node/standalone
 function getNodeInfo(){
+    console.log("inside getNodeInfo");
     var rdcUrl            = document.getElementById('rdcUrl'),
         region            = document.getElementById('region'),
         ownerId           = document.getElementById('ownerId'),
@@ -45,6 +46,7 @@ function getNodeInfo(){
             //linked
             data = jQuery.parseJSON(data.A3_data);
             if (data.msgtype == "nodesInfo"){
+                $(".disconnected").attr("style", "display: none");
                 $('#rdcUrl').html(data.body.header.rdcUrl);
                 document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
                 if (data.body.header.region == ""){
@@ -83,11 +85,13 @@ function getNodeInfo(){
                     });
                 }
                 $(".linked").show();
-                $(".disconnected").hide();
+                // $(".disconnected").hide();
+                $(".disconnected").attr("style", "display: none");
             //unlinked
             } else if (data.msgtype == "cloudConf"){
+                $(".disconnected").attr("style", "display: ");
                 $(".linked").hide();
-                $(".disconnected").show();
+                // $(".disconnected").show();
             } else {
                 $(".disconnected").show();
             }
@@ -156,21 +160,22 @@ function linkAerohiveAccount(){
     var form = document.forms.namedItem("cloudForm");
     var formData = new FormData(form);
 
-    var object = {};
-    formData.forEach(function(value, key){
-        object[key] = value;
-    });
+    var formData = {
+        'url'     : $('input[name=url]').val(),
+        'user'    : $('input[name=user]').val(),
+        'pass'    : $('input[name=pass]').val()
+    };
 
     document.getElementById("link-account").disabled = true;
     $.ajax({
         type: 'POST',
         url: base_url + '/ama/cloud_integration/',
         dataType: 'json',
-        data: object,
+        data: formData,
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
             $('#spin-spinner').hide();
-
+            console.log(data.code);
             if (data.code == "fail"){
                 document.getElementById('errorMessage').innerHTML = data.msg;
                 $("#error-alert").show();
@@ -179,6 +184,7 @@ function linkAerohiveAccount(){
                 }, 3000);
                 document.getElementById("link-account").disabled = false;
             } else {
+                console.log("in hererere");
                 $(".disconnected").hide();
                 $(".linked").show();
                 document.getElementById('successMessage').innerHTML = "Successfully linked";
