@@ -437,10 +437,10 @@ class networksCtl extends Component {
             items.push({
                 prefix:self.state.dataTable[i].prefix,
                 original:self.state.dataTable[i].original,
-                name:self.state.dataTable[i].name,
-                ip_addr:self.state.dataTable[i].ip_addr,
-                netmask:self.state.dataTable[i].netmask,
-                vip:self.state.dataTable[i].vip,
+                name:self.state.dataTable[i].name.toString().trim(),
+                ip_addr:self.state.dataTable[i].ip_addr.toString().trim(),
+                netmask:self.state.dataTable[i].netmask.toString().trim(),
+                vip:self.state.dataTable[i].vip.toString().trim(),
                 type:self.state.dataTable[i].type,
                 services:self.state.dataTable[i].services.join(","),
             });

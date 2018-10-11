@@ -1,15 +1,43 @@
 
 $(document).ready(function(){
+
+    // button settings
     var caNewlabel = document.createElement("Label");
-      caNewlabel.setAttribute("for", "ca_cert_path_upload");
-      caNewlabel.setAttribute("id", "ca_cert_label_upload");
-      caNewlabel.innerHTML = "Choose File...";
+        caNewlabel.setAttribute("for", "ca_cert_path_upload");
+        caNewlabel.setAttribute("id", "ca_cert_label_upload");
+        caNewlabel.innerHTML = "Choose File...";
     $("#ca_cert_path_upload").after(caNewlabel);
     var servNewlabel = document.createElement("Label");
-      servNewlabel.setAttribute("for", "server_cert_path_upload");
-      servNewlabel.setAttribute("id", "server_cert_label_upload");
-      servNewlabel.innerHTML = "Choose File...";
+        servNewlabel.setAttribute("for", "server_cert_path_upload");
+        servNewlabel.setAttribute("id", "server_cert_label_upload");
+        servNewlabel.innerHTML = "Choose File...";
     $("#server_cert_path_upload").after(servNewlabel);
+
+    //view more links
+    var caViewMore = document.createElement("A");
+        caViewMore.setAttribute("id", "ca_view_more");
+        caViewMore.setAttribute("data-toggle", "popover");
+        caViewMore.setAttribute("data-placement", "top");
+        // caViewMore.setAttribute("data-trigger","focus");
+        caViewMore.setAttribute("tab-index", "5");
+        caViewMore.innerHTML = "View Current CA Certificate";
+
+    var servViewMore = document.createElement("A");
+        servViewMore.setAttribute("id", "serv_view_more");
+        servViewMore.setAttribute("data-toggle", "popover");
+        servViewMore.setAttribute("data-placement", "top");
+        // servViewMore.setAttribute("data-trigger","focus");
+        servViewMore.setAttribute("tab-index", "5");
+        servViewMore.innerHTML = "View Current Server Certificate";
+
+    //dl buttons
+    // var caNewlabel = document.createElement("Button");
+    // var caNewlabel = document.createElement("Button");
+    // var caCertPopup = document.createElement("");
+    // var caNewlabel = document.createElement("Button");
+
+    document.getElementById('ca_cert_label_upload').after(caViewMore);
+    document.getElementById('server_cert_label_upload').after(servViewMore);
 
     document.getElementById("ca_cert_path_upload").onchange = function(){
       showCaCertFileInfo();
@@ -18,42 +46,14 @@ $(document).ready(function(){
       showServerFileInfo();
     };
 
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip()
-    })
 
-//***********for label after the upload button***************//
+//*********** info for view more ***************//
     var caSubjectVal = document.getElementById('ca_cert_subject').value;
     var servSubjectVal = document.getElementById('server_cert_subject').value;
 
-    var caSubjNewlabel = document.createElement("Div");
-    caSubjNewlabel.setAttribute("id", "caSubjNewlabel");
-    var servSubjNewlabel = document.createElement("Div");
-    servSubjNewlabel.setAttribute("id", "servSubjNewlabel");
+    caViewMore.setAttribute("data-content", caSubjectVal);
+    servViewMore.setAttribute("data-content", servSubjectVal);
 
-    caSubjNewlabel.innerHTML = caSubjectVal;
-    servSubjNewlabel.innerHTML = servSubjectVal;
-
-    var caLength = $("#caSubjNewlabel").width();
-    var caTextLength = $("#ca_cert_subject").width();
-    var servLength = $("#servSubjNewlabel").width();
-    var servTextLength = $("#server_cert_subject").width();
-
-    if (caTextLength > caLength) {
-      document.getElementById('caSubjNewlabel').after("...");
-      caSubjNewlabel.setAttribute("data-toggle", "tooltip");
-      caSubjNewlabel.setAttribute("data-placement", "top");
-      caSubjNewlabel.setAttribute("title", caSubjectVal);
-    }
-    if (servTextLength > servLength) {
-      document.getElementById('servSubjNewlabel').after("...");
-      servSubjNewlabel.setAttribute("data-toggle", "tooltip");
-      servSubjNewlabel.setAttribute("data-placement", "top");
-      servSubjNewlabel.setAttribute("title", servSubjectVal);
-    }
-
-    document.getElementById('ca_cert_label_upload').after(caSubjNewlabel);
-    document.getElementById('server_cert_label_upload').after(servSubjNewlabel);
 
 //*****************save button press pki********************//
     document.getElementById("savePKI").onclick = function(e){
@@ -64,101 +64,112 @@ $(document).ready(function(){
         var serverFileExists = document.getElementById('server_cert_path');
         var pki_provider_name = document.getElementById("id");
         var pki_provider_id = $("input[name=id]").val();
-
-        if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name != null) {
-            //clone
-            var processCAFile2 = processFiles(caFile, pki_provider_name.value, 'CA');
-            var processServFile2 = processFiles(serverFile, pki_provider_name.value, 'Server');
-            if (caFile.value.length != 0 && serverFile.value.length != 0){
-              if (showCaCertFileInfo() || showServerFileInfo()){
-                  $.when(processCAFile2, processServFile2).done(function(caFilePath, servFilePath){
-                      console.log(caFilePath[0].filePath); console.log(servFilePath[0].filePath);
-                      if (caFilePath[1] == "success" || servFilePath[1] == "success"){
-                          var ca_path = document.getElementById("ca_cert_path");
-                          ca_path.value = caFilePath[0].filePath;
-                          var server_path = document.getElementById("server_cert_path");
-                          server_path.value = servFilePath[0].filePath;
-                          $('form').submit();
+        // if (pki_provider_name.value != ""){
+            // if ((/\s/g.test(pki_provider_name.value) == false) || /\s/g.test(pki_provider_name.value) == false ){
+              if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name != null) {
+                  //clone
+                  var processCAFile2 = processFiles(caFile, pki_provider_name.value, 'CA');
+                  var processServFile2 = processFiles(serverFile, pki_provider_name.value, 'Server');
+                  if (caFile.value.length != 0 && serverFile.value.length != 0){
+                      if (showCaCertFileInfo() || showServerFileInfo()){
+                          $.when(processCAFile2, processServFile2).done(function(caFilePath, servFilePath){
+                              if (caFilePath[1] == "success" || servFilePath[1] == "success"){
+                                  var ca_path = document.getElementById("ca_cert_path");
+                                  ca_path.value = caFilePath[0].filePath;
+                                  var server_path = document.getElementById("server_cert_path");
+                                  server_path.value = servFilePath[0].filePath;
+                                  //if pki name doesn't exist
+                                  $('form').submit();
+                              }
+                          });
                       }
-                  });
+                  } else { $('form').submit(); }
+              } else if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name == null) {
+                  //updates
+
+                  //if only ca file update
+                  if (caFile.value.length != 0 && serverFile.value.length == 0){
+                      var processCAFile = processFiles(caFile, pki_provider_id, 'CA');
+                      if (showCaCertFileInfo() || showServerFileInfo()){
+                          $.when(processCAFile).done(function(caFilePath){
+
+                              if (caFilePath[1] == "success"){
+                                  var ca_path = document.getElementById("ca_cert_path");
+                                  ca_path.value = caFilePath[0].filePath;
+                              }
+                              $('form').submit();
+                          });
+                      }else{
+                         $('form').submit();
+                      }
+                  //if ionly serv file update
+                  } else if (caFile.value.length == 0 && serverFile.value.length != 0){
+                      var processServFile = processFiles(serverFile, pki_provider_id, 'Server');
+                      if (showServerFileInfo()){
+                          $.when(processServFile).done(function(servFilePath){
+                              if (servFilePath[1] == "success"){
+                                  var server_path = document.getElementById("server_cert_path");
+                                  server_path.value = servFilePath[0].filePath;
+                              }
+                              $('form').submit();
+                          });
+                      }else{
+                         $('form').submit();
+                      }
+                  //if both files updte
+                  } else if (caFile.value.length != 0 && serverFile.value.length != 0){
+                      var processCAFile = processFiles(caFile, pki_provider_id, 'CA');
+                      var processServFile = processFiles(serverFile, pki_provider_id, 'Server');
+                      if (showCaCertFileInfo() || showServerFileInfo()){
+                          $.when(processCAFile, processServFile).done(function(caFilePath, servFilePath){
+
+                              if (caFilePath[1] == "success" && servFilePath[1] == "success"){
+                                  var ca_path = document.getElementById("ca_cert_path");
+                                  ca_path.value = caFilePath[0].filePath;
+                                  var server_path = document.getElementById("server_cert_path");
+                                  server_path.value = servFilePath[0].filePath;
+                              }
+                              $('form').submit();
+                          });
+                      }else{
+                         $('form').submit();
+                      }
+                    //nothing updated
+                  } else { $('form').submit(); }
+                  //end of updates
+              } else if ((caFile.value.length != 0 && serverFile.value.length != 0) && (caFileExists.value.length == 0 && serverFileExists.value.length == 0)){
+                  //create
+                  var processCAFile2 = processFiles(caFile, pki_provider_name.value, 'CA');
+                  var processServFile2 = processFiles(serverFile, pki_provider_name.value, 'Server');
+                  if (showCaCertFileInfo() && showServerFileInfo()){
+                      $.when(processCAFile2, processServFile2).done(function(caFilePath, servFilePath){
+                          if (caFilePath[1] == "success" && servFilePath[1] == "success"){
+                              var ca_path = document.getElementById("ca_cert_path");
+                              ca_path.value = caFilePath[0].filePath;
+                              var server_path = document.getElementById("server_cert_path");
+                              server_path.value = servFilePath[0].filePath;
+                              $('form').submit();
+                          }
+                      });
+                  }
+              } else {
+                  document.getElementById('errorMessage').innerHTML = "Files are incorrect. Try uploading the files again.";
+                  $("#success-alert").show();
+                  setTimeout(function (){
+                    $("#success-alert").slideUp(500);
+                  }, 3000);
               }
-            } else { $('form').submit(); }
-        } else if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name == null) {
-            //updates
-
-            //if only ca file update
-            if (caFile.value.length != 0 && serverFile.value.length == 0){
-                var processCAFile = processFiles(caFile, pki_provider_id, 'CA');
-                if (showCaCertFileInfo() || showServerFileInfo()){
-                    $.when(processCAFile).done(function(caFilePath){
-
-                        if (caFilePath[1] == "success"){
-                            var ca_path = document.getElementById("ca_cert_path");
-                            ca_path.value = caFilePath[0].filePath;
-                        }
-                        $('form').submit();
-                    });
-                }else{
-                   $('form').submit();
-                }
-            //if ionly serv file update
-            } else if (caFile.value.length == 0 && serverFile.value.length != 0){
-                var processServFile = processFiles(serverFile, pki_provider_id, 'Server');
-                if (showServerFileInfo()){
-                    $.when(processServFile).done(function(servFilePath){
-                        if (servFilePath[1] == "success"){
-                            var server_path = document.getElementById("server_cert_path");
-                            server_path.value = servFilePath[0].filePath;
-                        }
-                        $('form').submit();
-                    });
-                }else{
-                   $('form').submit();
-                }
-            //if both files updte
-            } else if (caFile.value.length != 0 && serverFile.value.length != 0){
-                var processCAFile = processFiles(caFile, pki_provider_id, 'CA');
-                var processServFile = processFiles(serverFile, pki_provider_id, 'Server');
-                if (showCaCertFileInfo() || showServerFileInfo()){
-                    $.when(processCAFile, processServFile).done(function(caFilePath, servFilePath){
-
-                        if (caFilePath[1] == "success" && servFilePath[1] == "success"){
-                            var ca_path = document.getElementById("ca_cert_path");
-                            ca_path.value = caFilePath[0].filePath;
-                            var server_path = document.getElementById("server_cert_path");
-                            server_path.value = servFilePath[0].filePath;
-                        }
-                        $('form').submit();
-                    });
-                }else{
-                   $('form').submit();
-                }
-              //nothing updated
-            } else { $('form').submit(); }
-            //end of updates
-        } else if ((caFile.value.length != 0 && serverFile.value.length != 0) && (caFileExists.value.length == 0 && serverFileExists.value.length == 0)){
-            //create
-            var processCAFile2 = processFiles(caFile, pki_provider_name.value, 'CA');
-            var processServFile2 = processFiles(serverFile, pki_provider_name.value, 'Server');
-            if (showCaCertFileInfo() && showServerFileInfo()){
-                $.when(processCAFile2, processServFile2).done(function(caFilePath, servFilePath){
-                    if (caFilePath[1] == "success" && servFilePath[1] == "success"){
-                        var ca_path = document.getElementById("ca_cert_path");
-                        ca_path.value = caFilePath[0].filePath;
-                        var server_path = document.getElementById("server_cert_path");
-                        server_path.value = servFilePath[0].filePath;
-                        $('form').submit();
-                    }
-                });
-            }
-        } else {
-            document.getElementById('errorMessage').innerHTML = "Files are incorrect. Try uploading the files again.";
-            $("#success-alert").show();
-            setTimeout(function (){
-              $("#success-alert").slideUp(500);
-            }, 3000);
-        }
+        // }//end of if to check if pki name has a blank space
+        // } else {
+            //err msg for if pki name is blank
+        // }
     }; //end of save click button
+
+    //initiate popover
+    $("#ca_view_more").popover();
+    $("#serv_view_more").popover();
+
+
 });
 
 
@@ -235,11 +246,13 @@ function showCaCertFileInfo() {
               document.getElementById("ca_cert_label_upload").innerHTML = fileName;
               return true;
             } else {
+              $(input).val('');
               document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
               alert("File size is greater than 1MB. Upload again.");
               return false;
             }
         } else {
+            $(input).val('');
             alert("Incorrect file type. Upload again.");
             document.getElementById("ca_cert_label_upload").innerHTML = 'Choose File...';
             return false;
@@ -274,9 +287,10 @@ function fileSizeValidation(input){
 //calls only when save button is pressed
 function processFiles(input, pki_provider_name, qualifier){
     var base_url = window.location.origin;
-    var form = document.forms.namedItem("modalItem");
-    var fd = new FormData(form[0]);
-    fd.append("file", input.files[0]);
+    // var form = document.forms.namedItem("modalItem");
+    var form = $('#modalItem').get(0);
+    var fd = new FormData();
+    fd.append('file', $('input[type=file]')[0].files[0]);
 
     return $.ajax({
         type: 'POST',
@@ -288,7 +302,7 @@ function processFiles(input, pki_provider_name, qualifier){
         success: function(data){
         },
         error: function(data){
-          var errMsg = data.status_msg;
+          var errMsg = data.responseJSON.status_msg;
           if (errMsg != null ) {
               document.getElementById('errorMessage').innerHTML = errMsg;
               $("#success-alert").show();

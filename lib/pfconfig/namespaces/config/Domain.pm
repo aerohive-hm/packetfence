@@ -41,7 +41,7 @@ sub build_child {
     # This is done since Samba 4+ doesn't inflate it itself anymore
     while(my ($id, $cfg) = each(%tmp_cfg)){
         if(lc($cfg->{server_name}) eq "%h") {
-            $cfg->{server_name} = [split(/\./,hostname())]->[0];
+            $cfg->{server_name} = [split(/\./, `hostname`)]->[0];
         }
     }
 

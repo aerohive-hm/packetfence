@@ -61,7 +61,7 @@ sub generateConfig {
     $tags{'emailaddr'} = $Config{'alerting'}{'emailaddr'};
     $tags{'fromaddr'} = $Config{'alerting'}{'fromaddr'} || "keepalived\@$host_id";
     $tags{'smtpserver'} = $Config{'alerting'}{'smtpserver'};
-    $tags{'router_id'} = "PacketFence-$host_id";
+    $tags{'router_id'} = "A3-$host_id";
 
     $tags{'vrrp'} = '';
     $tags{'mysql_backend'} = '';

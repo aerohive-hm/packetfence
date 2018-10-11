@@ -17,12 +17,19 @@
 }
 
 /* for the spinner  */
-#spin-spinner{
+#spin-spinner, #spin-spinner2{
   display: none;
   z-index: 5;
   position: fixed;
-  margin-left: 395px;
   margin-top: -25px;
+}
+
+#spin-spinner{
+  margin-left: 395px;
+}
+
+#spin-spinner2{
+  margin-left: 275px;
 }
 
 .spin-spinner{

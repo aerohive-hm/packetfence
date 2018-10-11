@@ -25,6 +25,7 @@ use pf::cluster;
 use pf::authentication;
 use pf::Authentication::constants qw($LOGIN_CHALLENGE);
 use pf::util;
+use pf::a3_util;
 use Data::Dumper;
 use pf::config qw(
     %Config
@@ -544,6 +545,11 @@ sub update :Chained('object') :PathPart('update') :Args(0){
     my( $self, $c ) = @_;
 
     if ($c->request->method eq 'GET') {
+        my ($cluster_enabled, $is_management) = pf::a3_util::a3_cluster_status();
+        if ($cluster_enabled && !$is_management) {
+            $c->response->status($STATUS::FORBIDDEN);
+            return;
+        }
         my $logger = get_logger();
 
         $c->stash->{is_update_in_progress} = $c->model('Update')->is_update_in_progress();
