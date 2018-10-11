@@ -66,6 +66,7 @@ func handleUpdateClusterNetwork(r *http.Request, d crud.HandlerData) []byte {
 		ret = err.Error()
 		return crud.FormPostRely(code, ret)
 	}
+	clusternetdata.Items = a3config.DeleteItemBlankChar(ctx, clusternetdata.Items)
 	clusternetdata.SysId = utils.GetA3SysId()
 	// update primary node networks data
 	err, clusterRespData := a3share.UpdatePrimaryNetworksData(ctx, *clusternetdata)
