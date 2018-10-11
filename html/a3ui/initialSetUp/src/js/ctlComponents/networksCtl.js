@@ -45,6 +45,7 @@ class networksCtl extends Component {
             originalDescription:"",
             addVlanVisible:false,
             addVlanPrefix:"",
+            addVlanButton:true,
         };
 
 
@@ -725,6 +726,7 @@ class networksCtl extends Component {
         wrongMessageCopy.netmaskWrongMessage="";
         wrongMessageCopy.vipWrongMessage="";
         self.setState({ 
+            addVlanButton:true,
             addVlanPrefix:self.state.dataTable[index].prefix,
             addVlanVisible:true,
         });
@@ -781,6 +783,7 @@ class networksCtl extends Component {
                 }
                 self.setState({
                     loading : true,
+                    addVlanButton:false,
                 })
                 new RequestApi('put',url,JSON.stringify(param),xCsrfToken,(data)=>{
                     if(data.code==="ok"){
@@ -794,6 +797,7 @@ class networksCtl extends Component {
                     }else{
                         self.setState({
                             loading : false,
+                            addVlanButton:true,
                         })                   
                         message.destroy();
                         message.error(data.msg);
@@ -802,6 +806,7 @@ class networksCtl extends Component {
                 },()=>{
                     self.setState({
                         loading : false,
+                        addVlanButton:true,
                     })
 
                 }) 
@@ -885,7 +890,7 @@ class networksCtl extends Component {
 
 
     render() {
-        const {wrongMessage,enableClustering,dataTable,loading,addVlanVisible} = this.state;
+        const {wrongMessage,enableClustering,dataTable,loading,addVlanVisible,addVlanButton } = this.state;
         const {} = this.props;
         const { getFieldDecorator } = this.props.form;
         let self = this;
@@ -1388,7 +1393,8 @@ class networksCtl extends Component {
                                 <Button 
                                     type="primary" 
                                     className="modal-form-button-next-antd-button-networksCtl" 
-                                    htmlType="submit" 
+                                    htmlType="submit"
+                                    disabled={!addVlanButton}  
                                 >{self.state.i18n.save}</Button>
                             </div>
                             <div className="modal-form-button-cancel-div-networksCtl">
