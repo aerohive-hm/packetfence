@@ -57,9 +57,9 @@ func UpdateInterface(i Item) error {
 		return err
 	}
 	/*check  ip if the broadcast*/
-	if IsBroadcastIp(i.IpAddr, i.NetMask) {
-		msg := fmt.Sprintf("ip (%s) is broadcast ip", i.IpAddr)
-		return errors.New(msg)
+	err = CheckBroadcastIp(i.IpAddr, i.NetMask)
+	if err != nil {
+		return err
 	}
 
 	if clusterEnableDefault {
@@ -78,9 +78,9 @@ func UpdateInterface(i Item) error {
 					return errors.New(msg)
 				}
 				/*check vip if the broadcast*/
-				if IsBroadcastIp(i.Vip, i.NetMask) {
-					msg := fmt.Sprintf("vip (%s) is broadcast ip", i.Vip)
-					return errors.New(msg)
+				err = CheckBroadcastIp(i.Vip, i.NetMask)
+				if err != nil {
+					return err
 				}
 				/*check vip if exsit*/
 				if IsVipExsit(i) {
