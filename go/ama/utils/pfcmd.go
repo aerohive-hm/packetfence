@@ -1,9 +1,9 @@
 package utils
 
 import (
-	//"errors"
+	"time"
 	"fmt"
-	//"regexp"
+	"regexp"
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/log"
 	"strconv"
@@ -268,4 +268,45 @@ func SyncFromMaster(file string) error {
 	cmd := A3Root + `/bin/cluster/sync --as-master --file=` + file
 	_, err := ExecShell(cmd)
 	return err
+}
+
+func checkAndRestartNTPSync()  {
+	out, err := ExecShell(`timedatectl status`)
+	if err != nil {
+		return
+	}
+
+	re := regexp.MustCompile(`NTP synchronized: yes`)
+	ret := re.FindAllStringSubmatch(out, -1)
+
+	if len(ret) == 0 {
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("NTP NOT synchronized, restart NTP"))
+		cmds := []string{
+			`timedatectl set-ntp false`,
+			`timedatectl set-ntp true`,
+		}
+		ExecCmds(cmds)
+	} else {
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("NTP already synchronized"))
+		ama.SystemNTPSynced = true
+	}
+
+	return
+}
+
+// Make sure NTP synchronized successfully, or else the admin account will have problem to login
+func ForceNTPsynchronized() {  
+	ticker := time.NewTicker(time.Duration(30) * time.Second)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check NTP synchronized status"))
+	checkAndRestartNTPSync()
+	if ama.SystemNTPSynced {
+		return
+	}
+
+	for _ = range ticker.C {		
+		checkAndRestartNTPSync()
+		if ama.SystemNTPSynced {
+			break
+		}
+	}
 }
