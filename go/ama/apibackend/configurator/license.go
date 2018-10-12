@@ -3,7 +3,6 @@ package configurator
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -126,24 +125,43 @@ func recordEula(timestamp string) error {
 	return db.Exec(sql)
 }
 
+func msg4WebUI(status int) string {
+	var msg string
+	if status == 409 {
+		msg = "Entitlement key is already in use."
+	} else if status > 500 {
+		msg = "Unable to validate entitlement key at this time. Try again later."
+	} else {
+		msg = "Entitlement key does not exist or is not valid."
+	}
+
+	return msg
+}
+
+
 func handlePostLicenseConf(r *http.Request, d crud.HandlerData) []byte {
-	var msg []byte
+	var resp []byte
 	var eva *LicenseEva
+	var status int
 
 	ctx := r.Context()
-	code := "fail"
+	code := "ok"
+	msg := ""
 
 	license := new(LicenseConf)
 	err := json.Unmarshal(d.ReqData, license)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("unmarshal error:" + err.Error())
+		code = "fail"
+		msg = "unknown POST data"
 		goto END
 	}
 
 	if license.Trial == "1" {
 		err = createTrial()
-		if err == nil {
-			code = "ok"
+		if err != nil {
+			code = "fail"
+			msg = "Create Trial data into database failed"
 		}
 		a3config.RecordSetupStep(a3config.StepAerohiveCloud, code)
 		goto END
@@ -152,42 +170,45 @@ func handlePostLicenseConf(r *http.Request, d crud.HandlerData) []byte {
 	if license.EulaAccept {
 		log.LoggerWContext(ctx).Info("record Eula accept.")
 		timestamp := utils.AhNowUtcFormated4License()
-		resp, err := apibackclient.RecordEula(timestamp)
+		_, err, status = apibackclient.RecordEula(timestamp)
 		if err != nil {
+			log.LoggerWContext(ctx).Error(err.Error())
+			code = "fail"
+			msg = msg4WebUI(status)
 			goto END
 		}
 		err = recordEula(timestamp)
-		if err == nil {
-			code = "ok"
-			log.LoggerWContext(ctx).Info(fmt.Sprintln(resp))
-
+		if err != nil {		
+			code = "fail"
+			msg = "Writing data to database failed"
 		}
 		a3config.RecordSetupStep(a3config.StepAerohiveCloud, code)
 		goto END
 	}
 
-	msg, err = apibackclient.VerifyLicense(license.Key)
+	resp, err, status = apibackclient.VerifyLicense(license.Key)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
+		code = "fail"
+		msg = msg4WebUI(status)
 		goto END
 	}
 	eva = new(LicenseEva)
-	err = json.Unmarshal(msg, eva)
+	err = json.Unmarshal(resp, eva)
 	if err != nil {
+		code = "fail"
+		msg = "Parsing respond data failed"
 		goto END
 	}
 
 	err = create(license.Key, eva)
 	if err == nil {
-		code = "ok"
 		a3config.RecordSetupStep(a3config.StepAgreement, code)
+	} else {
+		code = "fail"
+		msg = "Writing License data to database failed"
 	}
 
 END:
-	ret := ""
-	if err != nil {
-		ret = err.Error()
-	}
-
-	return crud.FormPostRely(code, ret)
+	return crud.FormPostRely(code, msg)
 }

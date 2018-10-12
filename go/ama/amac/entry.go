@@ -126,6 +126,9 @@ func GetConnStatus() int {
 func Entry(ctx context.Context) {
 	var msg MsgStru
 
+	//check NTP sync or not
+	go utils.ForceNTPsynchronized()
+	
 	//check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
 	if GlobalSwitch == "enable" {
 		//trying to connect to the cloud when damon start

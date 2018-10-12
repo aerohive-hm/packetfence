@@ -65,7 +65,6 @@ func SetHostname(hostname string) error {
 	cmds := []string{
 		`sed -i -r "s/HOSTNAME=[-_\.A-Za-z0-9]+/HOSTNAME=` +
 			hostname + `/" /etc/sysconfig/network`,
-		fmt.Sprintf(`echo 127.0.0.1 %s >> /etc/hosts`, hostname),
 	}
 	ExecCmds(cmds)
 	return nil
