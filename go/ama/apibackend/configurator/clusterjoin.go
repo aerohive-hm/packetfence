@@ -12,6 +12,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -56,6 +57,12 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	if err != nil {
 		log.LoggerWContext(ctx).Error("ClusterAuth error: " + err.Error())
 		ret := fmt.Sprintf("It can't connect to cluster primary [%s] with adminuser [%s]", join.PrimaryServer, join.Admin)
+		a3config.DeleteClusterPrimary()
+		return crud.FormPostRely(code, ret)
+	}
+	_, primaryclusterData := a3share.GetPrimaryClusterStatus(ctx)
+	if !primaryclusterData.Is_cluster {
+		ret := fmt.Sprintf("primary [%s] is standalone.", join.PrimaryServer)
 		a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}

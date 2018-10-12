@@ -83,8 +83,8 @@ func UpdateInterface(i Item) error {
 					return err
 				}
 				/*check vip if exsit*/
-				if IsVipExsit(i) {
-					msg := fmt.Sprintf("%s is exsit in net", i.Vip)
+				if IsVipExist(i) {
+					msg := fmt.Sprintf("%s is exist in net", i.Vip)
 					return errors.New(msg)
 				}
 			}
@@ -107,7 +107,7 @@ func UpdateInterface(i Item) error {
 	return err
 }
 
-func IsVipExsit(i Item) bool {
+func IsVipExist(i Item) bool {
 	ifname := ChangeUiIfname(i.Name, i.Prefix)
 	del, result := false, false /*need to delete vlan*/
 	if !utils.IfaceExists(ifname) {
