@@ -194,7 +194,7 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 	}
 
 	if RespData.Code != "ok" {
-		err = errors.New("return code is not ok from Primary server.")
+		err = errors.New(RespData.Msg)
 		return err, RespData
 	}
 
