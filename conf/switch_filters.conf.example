@@ -108,7 +108,7 @@
 #     owner.category
 #     radius_request
 #     params
-# 
+#
 # Operator can be:
 #     is
 #     is_not
@@ -150,7 +150,7 @@
 #
 #
 # Param(x) can be:
-# - any switch configuration parameter to override (Only available for radius_authorize scope)
+# - any device configuration parameter to override (Only available for radius_authorize scope)
 #
 # Switch can be:
 # - any switch module

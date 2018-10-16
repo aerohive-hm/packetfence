@@ -1284,7 +1284,7 @@ Returns the number of currently registered, online nodes
 
 sub node_count_active {
     my $count_sql = <<'END_SQL';
-SELECT COUNT(*)
+SELECT COUNT(DISTINCT node.mac)
   FROM node,radacct
  WHERE node.mac = radacct.callingstationid
    AND node.status = 'reg'

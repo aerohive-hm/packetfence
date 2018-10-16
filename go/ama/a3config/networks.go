@@ -132,6 +132,7 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 		/*only update cluster enable*/
 		return nil
 	}
+	//networksData.Items = DeleteItemBlankChar(ctx, networksData.Items)
 	err := CheckItemValid(ctx, networksData.ClusterEnable, networksData.Items)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("CheckItemValid error:" + err.Error())
@@ -280,10 +281,17 @@ func CheckMaskValid(mask string) error {
 	return nil
 }
 
-func IsBroadcastIp(ip, mask string) bool {
+func CheckBroadcastIp(ip, mask string) error {
+	msg := fmt.Sprintf("%s format is inorrect", ip)
 	netip := utils.IpBitwiseAndMask(ip, mask)
+	if netip == "" {
+		return errors.New(msg)
+	}
 	snetip := strings.Split(netip, ".")
 	smask := strings.Split(mask, ".")
+	if len(snetip) != 4 || len(smask) != 4 {
+		return errors.New(msg)
+	}
 	s := make([]string, 4)
 	for k := 0; k < 4; k++ {
 		value, _ := strconv.Atoi(snetip[k])
@@ -293,9 +301,10 @@ func IsBroadcastIp(ip, mask string) bool {
 	}
 	boradip := strings.Join(s, ".")
 	if ip == boradip {
-		return true
+		msg = fmt.Sprintf("%s is broadcast ip", ip)
+		return errors.New(msg)
 	}
-	return false
+	return nil
 }
 
 func CheckItemValid(ctx context.Context, enable bool, items []Item) error {
@@ -312,6 +321,16 @@ func CheckItemValid(ctx context.Context, enable bool, items []Item) error {
 		return err
 	}
 	return nil
+}
+
+func DeleteItemBlankChar(ctx context.Context, items []Item) []Item {
+	for j, i := range items {
+		items[j].IpAddr = utils.ReplaceBlank(i.IpAddr)
+		items[j].Vip = utils.ReplaceBlank(i.Vip)
+		items[j].NetMask = utils.ReplaceBlank(i.NetMask)
+		items[j].Name = utils.ReplaceBlank(i.Name)
+	}
+	return items
 }
 
 const (

@@ -15,6 +15,7 @@ type ClusterEventRespItem struct {
 }
 type ClusterEventRespData struct {
 	Code       string                 `json:"code"`
+	Msg        string                 `json:"msg"`
 	DbPassword string                 `json"dbpass"`
 	Items      []ClusterEventRespItem `json:"items"`
 }
@@ -28,6 +29,7 @@ func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterNetworks
 	for _, node := range nodeList {
 		if node.Hostname == clusterData.Hostname {
 			msg := fmt.Sprintf("hostname (%s) is exsit.", clusterData.Hostname)
+			clusterRespData.Msg = msg
 			return errors.New(msg), clusterRespData
 		}
 	}
@@ -36,6 +38,7 @@ func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterNetworks
 		err = UpdateJoinClusterconf(i, clusterData.Hostname)
 		if err != nil {
 			log.LoggerWContext(ctx).Error("UpdateJoinClusterconf error:" + err.Error())
+			clusterRespData.Msg = "UpdateJoinClusterconf error"
 			return err, clusterRespData
 		}
 	}

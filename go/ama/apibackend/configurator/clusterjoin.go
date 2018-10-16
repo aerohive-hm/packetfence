@@ -8,10 +8,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
+	"github.com/inverse-inc/packetfence/go/ama/share"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -55,7 +57,13 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	err = client.ClusterAuth()
 	if err != nil {
 		log.LoggerWContext(ctx).Error("ClusterAuth error: " + err.Error())
-		ret := fmt.Sprintf("It can't connect to cluster primary [%s] with adminuser [%s]", join.PrimaryServer, join.Admin)
+		ret = CheckClusterAuthError(err)
+		a3config.DeleteClusterPrimary()
+		return crud.FormPostRely(code, ret)
+	}
+	_, primaryclusterData := a3share.GetPrimaryClusterStatus(ctx)
+	if !primaryclusterData.Is_cluster {
+		ret = fmt.Sprintf("primary [%s] is standalone.", join.PrimaryServer)
 		a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
@@ -63,4 +71,26 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	a3config.RecordSetupStep(a3config.StepClusterNetworking, code)
 	a3config.Isclusterjoin = true
 	return crud.FormPostRely(code, ret)
+}
+
+func CheckClusterAuthError(err error) string {
+	ret := ""
+	/*Detailedly distinguish error messages for A3-466*/
+	if strings.Contains(err.Error(), "no route to host") {
+		ret = fmt.Sprintf("Ip [%s] unreachable error", a3config.ReadClusterPrimary())
+		return ret
+	}
+	if strings.Contains(err.Error(), "connection refused") {
+		ret = fmt.Sprintf("Connection refused error")
+		return ret
+	}
+	if strings.Contains(err.Error(), "status code is 401") {
+		ret = fmt.Sprintf("User/Password error")
+		return ret
+	}
+	if strings.Contains(err.Error(), "no such host") {
+		ret = fmt.Sprintf("DNS can not be resolved error")
+		return ret
+	}
+	return err.Error()
 }

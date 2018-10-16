@@ -5,6 +5,16 @@ body {
   font-size: 12px;
 }
 
+.user_info{
+  padding-top: 20px !important;
+  text-transform: lowercase !important;
+  color: #F4F6F9;
+  padding-left: 10px;
+  padding-right:5px;
+  width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .spinner {
   border: 10px solid #f3f3f3; /* Light grey */

@@ -38,6 +38,7 @@ type ClusterStatusType struct {
 
 var ClusterStatus = ClusterStatusType{}
 var ServiceStartPercentage = "0"
+var SystemNTPSynced = false
 
 // if we are vip owner
 var IsManagement = false

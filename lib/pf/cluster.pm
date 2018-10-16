@@ -66,7 +66,7 @@ $cluster_enabled = sub {
 
 our $CLUSTER = "CLUSTER";
 
-our $host_id = `hostname`;
+our $host_id = hostname();
 
 =head2 node_disabled_file
 
