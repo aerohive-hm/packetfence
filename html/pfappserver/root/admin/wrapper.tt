@@ -146,7 +146,7 @@
                   <li><a id="logout" href="[% c.uri_for(c.controller('Admin').action_for('logout')) %]"><i class="icon-off"></i> [% l('Log out') %]</a></li>
                 </ul>
               </li>
-              <li class="user_info" style="padding-top: 20px; text-transform: lowercase !important; color: #F4F6F9; padding-left: 10px; padding-right:5px;">
+              <li class="user_info">
                 <span>[% c.user | html %]</span>
               </li>
 	          </ul>

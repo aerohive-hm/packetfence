@@ -300,8 +300,6 @@ func IpBitwiseAndMask(ip, mask string) string {
 }
 
 func IsSameIpRange(ip1, ip2, mask string) bool {
-	ip1 = ReplaceBlank(ip1)
-	ip2 = ReplaceBlank(ip2)
 	str1 := IpBitwiseAndMask(ip1, mask)
 	str2 := IpBitwiseAndMask(ip2, mask)
 	if str1 == str2 {
@@ -340,7 +338,6 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 		if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
 			/*check ip if is exsit*/
 			info := fmt.Sprintf("UpdateVlanIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
-			fmt.Println(info)
 			log.LoggerWContext(context.Background()).Info(info)
 			if !IsIfaceActive(ifname) {
 				err = SetIfaceUp(ifname)
@@ -391,7 +388,6 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 	oldmasklen, _ := strconv.Atoi(oldmask)
 	if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
 		info := fmt.Sprintf("UpdateEthIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
-		fmt.Println(info)
 		log.LoggerWContext(context.Background()).Info(info)
 		/*new ip must be the same net range with the old ip */
 		if !IsSameIpRange(ip, oldip, mask) {

@@ -8,13 +8,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
-
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
+	"net/http"
 )
 
 type AdminUserInfo struct {
@@ -112,6 +112,11 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 
 	if utils.IsFileZero(utils.A3Root + "/conf/pf.conf") {
 		err = errors.New("System is starting up, please wait a moment.")
+		goto END
+	}
+
+	if !ama.SystemNTPSynced {
+		err = errors.New("System NTP is not synchronized, please wait a moment or restart the A3 again.")
 		goto END
 	}
 
