@@ -96,7 +96,7 @@ echo "aerohive" | passwd netcfg --stdin
 echo 'netcfg ALL=NOPASSWD: /usr/local/pf/clish/change_ip.sh, /usr/local/pf/clish/reboot_system, /usr/local/pf/clish/get_network_settings.sh, /usr/local/pf/clish/logout_console.sh' >> /etc/sudoers
 
 # modify sshd configuration
-sed -i.bak '/^ExecStart=/i ExecStartPre=\/usr\/loca\/pf\/sbin\/sshd_config_modify' /usr/lib/systemd/system/sshd.service 
+sed -i.bak '/^ExecStart=/i ExecStartPre=\/usr\/local\/pf\/sbin\/sshd_config_modify' /usr/lib/systemd/system/sshd.service 
 rm -rf /usr/lib/systemd/system/sshd.service.bak
 
 # remove the vb guest additional
