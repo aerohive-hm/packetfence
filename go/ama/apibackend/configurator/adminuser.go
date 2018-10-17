@@ -62,8 +62,6 @@ func writeAdminToDb(user, password string) error {
 
 	hpassword := hashPassword(password)
 	bpassword := `{bcrypt}` + hpassword
-	info := fmt.Sprintf("hpassword:%s", hpassword)
-	log.LoggerWContext(context.Background()).Info(info)
 	values := fmt.Sprintf(sqlCmd, user, bpassword, timeStart,
 		expiration, "ALL")
 	sql := []amadb.SqlCmd{
