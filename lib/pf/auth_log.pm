@@ -133,6 +133,25 @@ sub record_auth {
         status => $auth_status,
         profile => $profile,
     });
+
+    my $logger = get_logger();
+    $logger->info("Update username $pid to cloud once finish the portal authentication");
+    my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
+    my $timestamp = $seconds * 1000 * 1000 + $microseconds;
+    my $url = "http://127.0.0.1:10000/api/v1/event/report";
+    my %ama_data = (
+        ah_tablename => "radacct", 
+        ah_timestamp => "$timestamp",
+        username => $pid,
+        acctstatustype => "Interim-Update-Username",
+        callingstationid => $mac,
+        acctupdatetime => "$seconds",
+    );
+
+
+    pf::util::call_url("POST", $url, \%ama_data);
+
+
     return (is_success($status));
 }
 
