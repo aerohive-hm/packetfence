@@ -8,13 +8,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
+	"net/http"
 )
 
 type AdminUserInfo struct {
@@ -62,6 +62,8 @@ func writeAdminToDb(user, password string) error {
 
 	hpassword := hashPassword(password)
 	bpassword := `{bcrypt}` + hpassword
+	info := fmt.Sprintf("hpassword:%s", hpassword)
+	log.LoggerWContext(context.Background()).Info(info)
 	values := fmt.Sprintf(sqlCmd, user, bpassword, timeStart,
 		expiration, "ALL")
 	sql := []amadb.SqlCmd{
@@ -114,7 +116,7 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 		err = errors.New("System is starting up, please wait a moment.")
 		goto END
 	}
-	
+
 	if !ama.SystemNTPSynced {
 		err = errors.New("System NTP is not synchronized, please wait a moment or restart the A3 again.")
 		goto END
