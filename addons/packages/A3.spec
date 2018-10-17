@@ -1395,6 +1395,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/sbin/radsniff-wrapper
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update_wrapper
+%attr(0755, root, root) /usr/local/pf/sbin/sshd_config_modify
 %dir                    /usr/local/pf/clish
 %attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish
 %attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish_wrapper
