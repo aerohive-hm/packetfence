@@ -69,10 +69,6 @@ sub create {
     # Might want to move this one in the controller... create doesn't invoke up...
     # Enable the newly created virtual interface
     $self->up($interface);
-
-
-    # Send event to AMA, Don't care result
-    $self->notify_ama($interface);
     
     return ($STATUS::CREATED, ["Interface VLAN [_1] successfully created",$interface]);
 }
