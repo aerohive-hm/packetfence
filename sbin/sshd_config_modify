@@ -1,0 +1,10 @@
+#!/bin/sh
+ssh_config=/etc/ssh/sshd_config
+IP=`ip addr|grep inet|grep -v 127|grep -v inet6|head -1|awk '{print $2}'|awk -F/ '{print $1}'`
+echo "Mgmt IP is $IP"
+grep "^ListenAddress" $ssh_config > /dev/null
+if [ $? -eq 0 ]; then
+    sed -i.bak "s/^ListenAddress.*/ListenAddress $IP/" $ssh_config
+else
+    echo "ListenAddress $IP" >> $ssh_config 
+fi
