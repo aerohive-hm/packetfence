@@ -187,6 +187,10 @@ our @SyslogInfo = (
         'name'      => 'mariadb_error.log',
         'conditions' => [ '$syslogtag contains "mysqld"' ],
     },
+    {
+        'name'      => 'pf-mariadb.log',
+        'conditions' => [ '$programname == "pf-mariadb"' ],
+    },
 );
 
 our $ALL_LOGS = join(",", map { $_->{name} } @pf::constants::syslog::SyslogInfo);
