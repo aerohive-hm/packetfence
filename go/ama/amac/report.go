@@ -159,7 +159,16 @@ func radAcctFieldHandle(t *report.RadacctParseStruct) report.RadacctParseStruct 
 	case "Interim-Update-Username":
 		//do nothing
 	}
-	//t.AcctStatusType = ""
+
+	/*
+		If serviceType eq Call-Check, the username will be MAC address
+		Which from the MAC authen, the radacc-update packet will overwrite
+		the username of portal authentication. If ServiceType is Framed-User
+		means this is a 802.1X username, we should push this info to cloud.
+	*/
+	if t.ServiceType == "Call-Check" {
+		t.UserName = ""
+	}
 
 	return *t
 }
