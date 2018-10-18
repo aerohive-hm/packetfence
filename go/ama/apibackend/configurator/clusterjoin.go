@@ -14,6 +14,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
 	"github.com/inverse-inc/packetfence/go/ama/share"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -61,12 +62,23 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 		a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
+	//check mgt0 ip is the same range with primary eth0 ip
+	_, primaryNetData := a3share.GetPrimaryNetworksData(ctx)
+	netMask := GetEthMaskFromNetworksDate(primaryNetData)
+	mgtip := utils.GetOwnMGTIp()
+	if !utils.IsSameIpRange(join.PrimaryServer, mgtip, netMask) {
+		ret = fmt.Sprintf("mgtip [%s] and primary ip [%s] are not the same net range", mgtip, join.PrimaryServer)
+		a3config.DeleteClusterPrimary()
+		return crud.FormPostRely(code, ret)
+	}
+	//check primary if the standalone
 	_, primaryclusterData := a3share.GetPrimaryClusterStatus(ctx)
 	if !primaryclusterData.Is_cluster {
 		ret = fmt.Sprintf("primary [%s] is standalone.", join.PrimaryServer)
 		a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
+
 	code = "ok"
 	a3config.RecordSetupStep(a3config.StepClusterNetworking, code)
 	a3config.Isclusterjoin = true
@@ -93,4 +105,13 @@ func CheckClusterAuthError(err error) string {
 		return ret
 	}
 	return err.Error()
+}
+
+func GetEthMaskFromNetworksDate(NetworksDate a3config.NetworksData) string {
+	for _, i := range NetworksDate.Items {
+		if i.Name == "eth0" {
+			return i.NetMask
+		}
+	}
+	return "255.255.255.255"
 }

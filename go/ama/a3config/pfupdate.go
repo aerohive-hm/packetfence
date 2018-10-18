@@ -32,8 +32,10 @@ func UpdateHostname(hostname string) error {
 	s := strings.Split(hostname, ".")
 	domain := defaultDomain
 	if len(s) > 1 {
-		/*contain domain*/
-		domain = strings.Join(s[1:], ".")
+		/*contain domain and can not be only num*/
+		if !utils.IsOnlyNumStr(s[1]) {
+			domain = strings.Join(s[1:], ".")
+		}
 	}
 	err := utils.SetHostname(hostname)
 	if err != nil {

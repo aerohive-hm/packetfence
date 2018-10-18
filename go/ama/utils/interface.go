@@ -452,3 +452,9 @@ func IsManagement(vip string) bool {
 	}
 	return false
 }
+
+func IsOnlyNumStr(str string) bool {
+	r, _ := regexp.Compile("^[0-9]")
+	b := r.MatchString(str)
+	return b
+}
