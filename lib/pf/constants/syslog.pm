@@ -89,8 +89,12 @@ our @SyslogInfo = (
         'conditions' => [ '$programname contains "httpd_webservices"' ]
     },
     {
-        'name'      => 'api-frontend.access',
+        'name'      => 'httpd.api-frontend.access',
         'conditions' => [ '$msg contains "api-frontend-access"' ],
+    },
+    {
+        'name'      => 'api-frontend.log',
+        'conditions' => [ '$programname == "api-frontend"' ],
     },
     {
         'name'       => 'pfstats.log',
@@ -124,7 +128,7 @@ our @SyslogInfo = (
     },
     {
         'name'       => 'pfdns.log',
-        'conditions' => [ '$programname == "pfdns"' ]
+        'conditions' => [ '$programname contains "pfdns"' ]
     },
     {
         'name'       => 'pffilter.log',
@@ -135,6 +139,10 @@ our @SyslogInfo = (
         'conditions' => [ '$programname == "pfmon"' ]
     },
     {
+        'name'       => 'pfsso.log',
+        'conditions' => [ '$programname == "pfsso"' ]
+    },
+    {
         'name'       => 'radius-acct.log',
         'conditions' => [
 '$programname contains "radius" and $syslogfacility-text == "local2"',
@@ -142,7 +150,7 @@ our @SyslogInfo = (
         ]
     },
     {
-        'name' => 'radius-cli.log',
+        'name'       => 'radius-cli.log',
         'conditions' =>
           [ '$syslogtag contains "cli" and $syslogfacility-text == "local3"' ]
     },
@@ -176,8 +184,24 @@ our @SyslogInfo = (
         'conditions' => [ '$syslogtag contains "redis-queue"' ]
     },
     {
-        'name'      => 'mariadb_error.log',
+        'name'       => 'redis_server.log',
+        'conditions' => [ '$programname == "redis-server"' ]
+    },
+    {
+        'name'       => 'mariadb_error.log',
         'conditions' => [ '$syslogtag contains "mysqld"' ],
+    },
+    {
+        'name'       => 'haproxy_portal.log',
+        'conditions' => [ '$programname == "haproxy" and ($msg contains "portal-http" or $msg contains "backend has no server available")' ],
+    },
+    {
+        'name'       => 'haproxy_db.log',
+        'conditions' => [ '$programname == "haproxy" and ($msg contains "mysql" or $msg contains "backend has no server available")' ],
+    },
+    {
+        'name'       => 'etcd.log',
+        'conditions' => [ '$programname == "etcd"' ],
     },
 );
 

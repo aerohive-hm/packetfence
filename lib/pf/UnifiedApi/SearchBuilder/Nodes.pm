@@ -51,7 +51,10 @@ our @IP4LOG_JOIN = (
             'ip4log.ip' => {
                 "=" => \
 "( SELECT `ip` FROM `ip4log` WHERE `mac` = `node`.`mac` AND `tenant_id` = `node`.`tenant_id`  ORDER BY `start_time` DESC LIMIT 1 )",
-            }
+            },
+            'ip4log.tenant_id' => {
+                -ident => 'node.tenant_id'
+            },
         }
     },
     'ip4log',
@@ -115,6 +118,20 @@ our @NODE_CATEGORY_ROLE_JOIN = (
     '=>{node.bypass_role_id=node_category_bypass_role.category_id}', 'node_category|node_category_bypass_role',
 );
 
+our @VIOLATION_JOIN = (
+    {
+        operator  => '=>',
+        condition => {
+            'node.mac' => { '=' => { -ident => '%2$s.mac' } },
+            'node.tenant_id' => { '=' => { -ident => '%2$s.tenant_id' } },
+            'violation.status' => { '=' => "open" },
+        },
+    },
+    'violation',
+);
+
+our @VIOLATION_GROUP_BY = qw(node.tenant_id node.mac);
+
 our %ALLOWED_JOIN_FIELDS = (
     'ip4log.ip' => {
         join_spec     => \@IP4LOG_JOIN,
@@ -145,12 +162,46 @@ our %ALLOWED_JOIN_FIELDS = (
     },
     map_dal_fields_to_join_spec("pf::dal::radacct", \@RADACCT_JOIN, \%RADACCT_WHERE),
     map_dal_fields_to_join_spec("pf::dal::locationlog", \@LOCATION_LOG_JOIN, \%LOCATION_LOG_WHERE),
+    'violation.open_count' => {
+        namespace => 'violation',
+        join_spec => \@VIOLATION_JOIN,
+        rewrite_query => \&non_searchable,
+        group_by => \@VIOLATION_GROUP_BY,
+        column_spec => \"count(violation.id) as `violation.open_count`",
+    },
+    'violation.open_vid' => {
+        namespace => 'violation',
+        join_spec => \@VIOLATION_JOIN,
+        rewrite_query => \&rewrite_violation_open_vid,
+        group_by => \@VIOLATION_GROUP_BY,
+        column_spec => \"group_concat(violation.vid) as `violation.open_vid`"
+    },
 );
+
+sub non_searchable {
+    my ($self, $s, $q) = @_;
+    return (422, { msg => "$q->{field} is not searchable" });
+}
+
+sub rewrite_violation_open_vid {
+    my ($self, $s, $q) = @_;
+    $q->{field} = 'violation.vid';
+    return (200, $q);
+}
 
 sub rewrite_online_query {
     my ($self, $s, $q) = @_;
-    if ($q->{op} eq 'equals') {
-        my $value = $q->{value};
+    my $op =$q->{op};
+    if ($op ne 'equals' && $op ne 'not_equals') {
+        return (422, { msg => "$op is not valid for the online field" });
+    }
+
+    my $value = $q->{value};
+    if (!defined $value || ($value ne 'on' && $value ne 'off' && $value ne 'unknown')) {
+        return (422, { msg => "value of " . ($value // "(null)"). " is not valid for the online field" });
+    }
+
+    if ($op eq 'equals') {
         $q->{value} = undef;
         if ($value eq 'unknown') {
             $q->{field} = 'radacct.acctstarttime';
@@ -167,8 +218,7 @@ sub rewrite_online_query {
                 $q->{op} = 'not_equals';
             }
         }
-    } elsif ($q->{op} eq 'not_equals') {
-        my $value = $q->{value};
+    } elsif ($op eq 'not_equals') {
         $q->{value} = undef;
         if ($value eq 'unknown') {
             $q->{field} = 'radacct.acctstarttime';
@@ -184,7 +234,7 @@ sub rewrite_online_query {
             }
         }
     }
-    return $q;
+    return (200, $q);
 }
 
 sub map_dal_fields_to_join_spec {

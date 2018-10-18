@@ -114,6 +114,11 @@ sub make_search_args {
         return $status, $order_by;
     }
 
+    ($status, my $group_by) = $self->make_group_by($search_info);
+    if (is_error($status)) {
+        return $status, $group_by;
+    }
+
     my $offset   = $self->make_offset($search_info);
     my $limit    = $self->make_limit($search_info);
     my %search_args = (
@@ -124,6 +129,7 @@ sub make_search_args {
         -order_by   => $order_by,
         -from       => $from,
         -columns    => $columns,
+        -group_by   => $group_by,
     );
 
     return 200, \%search_args;
@@ -337,7 +343,10 @@ sub verify_query {
         }
 
         push @{$s->{found_fields}}, $field;
-        $query = $self->rewrite_query($s, $query);
+        (my $status, $query) = $self->rewrite_query($s, $query);
+        if (is_error($status)) {
+            return $status, $query;
+        }
     }
 
     return (200, $query);
@@ -352,15 +361,16 @@ rewrite_query
 sub rewrite_query {
     my ($self, $s, $query) = @_;
     my $f = $query->{field};
+    my $status = 200;
     if ($self->is_table_field($s, $f)) {
         $query->{field} = $s->{dal}->table . "." . $f;
     } elsif ($self->is_field_rewritable($s, $f)) {
         my $allowed = $self->allowed_join_fields;
         my $cb = $allowed->{$f}{rewrite_query};
-        $query = $self->$cb($s, $query);
+        ($status, $query) = $self->$cb($s, $query);
     }
 
-    return $query;
+    return ($status, $query);
 }
 
 
@@ -499,7 +509,44 @@ sub normalize_order_by {
         return undef;
     }
 
+    if ($order_by =~ /\./) {
+        $order_by = \"`$order_by`";
+    }
+
     return { $direction => $order_by }
+}
+
+=head2 make_group_by
+
+make_group_by
+
+=cut
+
+sub make_group_by {
+    my ($self, $s) = @_;
+    return 200, [$self->group_by_clause($s)];
+}
+
+=head2 group_by_clause
+
+group_by_clause
+
+=cut
+
+sub group_by_clause {
+    my ($self, $s) = @_;
+    my $allowed_join_fields = $self->allowed_join_fields;
+    my @clauses;
+    my %found;
+    foreach my $f (@{$s->{found_fields} // []}) {
+        next if !exists $allowed_join_fields->{$f};
+        my $jf = $allowed_join_fields->{$f};
+        my $namespace = $jf->{namespace};
+        next if !exists $jf->{group_by};
+        $found{$namespace} = 1;
+        push @clauses, @{$jf->{group_by}};
+    }
+    return @clauses;
 }
 
 =head1 AUTHOR

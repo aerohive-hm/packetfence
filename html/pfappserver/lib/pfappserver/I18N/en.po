@@ -1784,14 +1784,6 @@ msgstr ""
 msgid "Creating"
 msgstr ""
 
-# html/pfappserver/root/node/create.tt
-msgid "Creating Nodes .."
-msgstr ""
-
-# html/pfappserver/root/user/create.tt
-msgid "Creating Users .."
-msgstr ""
-
 # html/pfappserver/root/user/view.tt
 msgid "Custom Fields"
 msgstr ""
@@ -1990,11 +1982,8 @@ msgid "Dashboard"
 msgstr ""
 
 # html/pfappserver/root/graph/dashboard.tt
-msgid "Database"
-msgstr ""
-
 # html/pfappserver/root/configurator/database.tt
-msgid "Database Configuration"
+msgid "Database"
 msgstr ""
 
 # html/pfappserver/root/configuration/system_config.tt
@@ -3320,7 +3309,7 @@ msgid "If using the HTTP transport, specify the password for the Palo Alto API"
 msgstr ""
 
 # html/pfappserver/root/configurator/fingerbank.tt
-msgid "If you do not configure a Fingerbank API key, you will not have access to any device profiling capabilities in PacketFence"
+msgid "If you do not configure a Fingerbank API key, you will not have access to any device profiling capabilities in PacketFence."
 msgstr ""
 
 # html/pfappserver/root/configurator/database.tt
@@ -4849,10 +4838,6 @@ msgstr "Provisioning - Read"
 # pf::admin_roles (Actions)
 msgid "PROVISIONING_UPDATE"
 msgstr "Provisioning - Update"
-
-# html/pfappserver/root/configurator/configuration.tt
-msgid "PacketFence Configuration"
-msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Eduroam.pm
 msgid "PacketFence Eduroam RADIUS virtual server authentication listening port"
@@ -10591,6 +10576,10 @@ msgstr "DHCP"
 # pf::factory::detect::parser (Detect Parsers)
 msgid "pfdetect_type_fortianalyser"
 msgstr "FortiAnalyzer"
+
+# pf::factory::detect::parser (Detect Parsers)
+msgid "pfdetect_type_nexpose"
+msgstr "Nexpose"
 
 # pf::factory::detect::parser (Detect Parsers)
 msgid "pfdetect_type_regex"

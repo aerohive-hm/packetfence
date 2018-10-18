@@ -49,7 +49,7 @@ Readonly our %ATTRIBUTES_MAP => (
 );
 
 has '+type' => (default => 'LDAP');
-has 'host' => (isa => 'Maybe[Str]', is => 'rw', default => '127.0.0.1');
+has 'host' => (isa => 'Maybe[Str]', is => 'rw', default => '');
 has 'port' => (isa => 'Maybe[Int]', is => 'rw', default => 389);
 has 'connection_timeout' => ( isa => 'Num', is => 'rw', default => $DEFAULT_LDAP_CONNECTION_TIMEOUT );
 has 'write_timeout' => (isa => 'Num', is => 'rw', default => $DEFAULT_LDAP_WRITE_TIMEOUT);
@@ -90,8 +90,9 @@ sub available_attributes {
   my @ldap_attributes = $self->ldap_attributes;
 
   # We check if our username attribute is present, if not we add it.
-  if (not grep {$_->{value} eq $self->{'usernameattribute'} } @ldap_attributes ) {
-    push (@ldap_attributes, { value => $self->{'usernameattribute'}, type => $Conditions::LDAP_ATTRIBUTE });
+  my $usernameattribute = $self->{'usernameattribute'};
+  if ( length ($usernameattribute) && !grep {$_->{value} eq $usernameattribute } @ldap_attributes ) {
+    push (@ldap_attributes, { value => $usernameattribute, type => $Conditions::LDAP_ATTRIBUTE });
   }
 
   return [@$super_attributes, sort { $a->{value} cmp $b->{value} } @ldap_attributes];

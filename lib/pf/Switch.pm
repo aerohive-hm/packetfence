@@ -61,6 +61,7 @@ use Time::HiRes;
 use pf::access_filter::radius;
 use File::Spec::Functions;
 use File::FcntlLock;
+use JSON::MaybeXS;
 
 #
 # %TRAP_NORMALIZERS
@@ -422,6 +423,29 @@ sub connectRead {
     return 1;
 }
 
+=item cachedSNMPTable
+
+Get a cached SNMP request using the default cache expiration
+
+    $self->cachedSNMPTable([-base_oid => ['1.3.6.1.2.1.1.6.0']]);
+
+Get a cached SNMP request using a provided expiration
+
+    $self->cachedSNMPTable([-base_oid => ['1.3.6.1.2.1.1.6.0']], {expires_in => '10m'});
+
+=cut
+
+sub cachedSNMPTable {
+    my ($self, $args, $options) = @_;
+    my $session = $self->{_sessionRead};
+    if(!defined $session) {
+        $self->logger->error("Trying read to from a undefined session");
+        return undef;
+    }
+    $options //= {};
+    return $self->cache->compute($self->{'_id'} . "-"  . encode_json($args), $options, sub {$self->{_sessionRead}->get_table(@$args)});
+}
+
 =item cachedSNMPRequest
 
 Get a cached SNMP request using the default cache expiration
@@ -442,7 +466,7 @@ sub cachedSNMPRequest {
         return undef;
     }
     $options //= {};
-    return $self->cache->compute($self->{'_id'} . "-" . $args, $options, sub {$self->{_sessionRead}->get_request(@$args)});
+    return $self->cache->compute($self->{'_id'} . "-"  . encode_json($args), $options, sub {$self->{_sessionRead}->get_request(@$args)});
 }
 
 =item disconnectRead - closing read connection to switch
@@ -1551,7 +1575,7 @@ sub isPhoneAtIfIndex {
     }
 
     if (!defined($self->{_VoIPDHCPDetect}) || isenabled($self->{_VoIPDHCPDetect}) ) {
-        if (defined($node_info->{dhcp_fingerprint}) && $node_info->{dhcp_fingerprint} =~ /VoIP Phone/) {
+        if (defined($node_info->{device_class}) && $node_info->{device_class} =~ /VoIP Device/) {
             $logger->debug("DHCP fingerprint for $mac indicates VoIP phone");
             return 1;
         }
@@ -3014,7 +3038,7 @@ sub parseRequest {
     my $client_mac      = ref($radius_request->{'Calling-Station-Id'}) eq 'ARRAY'
                            ? clean_mac($radius_request->{'Calling-Station-Id'}[0])
                            : clean_mac($radius_request->{'Calling-Station-Id'});
-    my $user_name       = $radius_request->{'TLS-Client-Cert-Common-Name'} || $radius_request->{'User-Name'};
+    my $user_name       = $radius_request->{'TLS-Client-Cert-Subject-Alt-Name-Upn'} || $radius_request->{'TLS-Client-Cert-Common-Name'} || $radius_request->{'User-Name'};
     my $nas_port_type   = ( defined($radius_request->{'NAS-Port-Type'}) ? $radius_request->{'NAS-Port-Type'} : ( defined($radius_request->{'Called-Station-SSID'}) ? "Wireless-802.11" : undef ) );
     my $port            = $radius_request->{'NAS-Port'};
     my $eap_type        = ( exists($radius_request->{'EAP-Type'}) ? $radius_request->{'EAP-Type'} : 0 );

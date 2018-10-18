@@ -24,7 +24,7 @@ BEGIN {
     use setup_test_config;
 }
 
-use Test::More tests => 20;
+use Test::More tests => 25;
 
 #This test will running last
 use Test::NoWarnings;
@@ -42,7 +42,7 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
 }
 
 {
-    my @f = qw(mac ip4log.ip locationlog.ssid locationlog.port); 
+    my @f = qw(mac ip4log.ip locationlog.ssid locationlog.port);
 
     my %search_info = (
         dal => $dal,
@@ -56,7 +56,7 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
     );
 
     is_deeply(
-        [ 
+        [
             $sb->make_from(\%search_info)
         ],
         [
@@ -99,7 +99,7 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
         'Return the columns'
     );
     is_deeply(
-        [ 
+        [
             $sb->make_where(\%search_info)
         ],
         [
@@ -184,69 +184,138 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
     );
 
     is_deeply(
-        $sb->rewrite_query( $s, $q ),
-        { op => 'equals', value => undef, field => 'radacct.acctstarttime' },
+        [ $sb->rewrite_query( $s, $q ) ],
+        [
+            200,
+            {
+                op    => 'equals',
+                value => undef,
+                field => 'radacct.acctstarttime'
+            }
+        ],
         "Rewrite online='unknown'",
     );
 
     is_deeply(
-        $sb->rewrite_query(
-            $s, { op => 'equals', value => 'on', field => 'online' }
-        ),
-        {
-            'op' => 'and',
-            'values' => [
-                { op => 'not_equals', value => undef, field => 'radacct.acctstarttime' },
-                { op => 'equals', value => undef, field => 'radacct.acctstoptime' },
-            ],
-        },
+        [
+            $sb->rewrite_query(
+                $s, { op => 'equals', value => 'on', field => 'online' }
+            )
+        ],
+        [
+            200,
+            {
+                'op'     => 'and',
+                'values' => [
+                    {
+                        op    => 'not_equals',
+                        value => undef,
+                        field => 'radacct.acctstarttime'
+                    },
+                    {
+                        op    => 'equals',
+                        value => undef,
+                        field => 'radacct.acctstoptime'
+                    },
+                ],
+            },
+        ],
         "Rewrite online='on'",
     );
 
     is_deeply(
-        $sb->rewrite_query(
-            $s, { op => 'equals', value => 'off', field => 'online' }
-        ),
-        { op => 'not_equals', value => undef, field => 'radacct.acctstoptime' },
+        [
+            $sb->rewrite_query(
+                $s, { op => 'equals', value => 'off', field => 'online' }
+            )
+        ],
+        [
+            200,
+            {
+                op    => 'not_equals',
+                value => undef,
+                field => 'radacct.acctstoptime'
+            },
+        ],
         "Rewrite online='off'",
     );
 
     is_deeply(
-        $sb->rewrite_query(
-            $s, { op => 'not_equals', value => 'off', field => 'online' }
-        ),
-        {
-            op => 'or',
-            values => [
-                { op => 'equals', value => undef, field => 'radacct.acctstarttime' },
-                { op => 'equals', value => undef, field => 'radacct.acctstoptime' },
-            ],
-        },
+        [
+            $sb->rewrite_query(
+                $s, { op => 'not_equals', value => 'off', field => 'online' }
+            ),
+        ],
+        [
+            200,
+            {
+                op => 'or',
+                values => [
+                    { op => 'equals', value => undef, field => 'radacct.acctstarttime' },
+                    { op => 'equals', value => undef, field => 'radacct.acctstoptime' },
+                ],
+            },
+        ],
         "Rewrite online!='off'",
     );
 
     is_deeply(
-        $sb->rewrite_query(
-            $s, { op => 'not_equals', value => 'on', field => 'online' }
-        ),
-        {
-            op => 'or',
-            values => [
-                { op => 'equals', value => undef, field => 'radacct.acctstarttime' },
-                { op => 'not_equals', value => undef, field => 'radacct.acctstoptime' },
-            ],
-        },
+        [
+            $sb->rewrite_query(
+                $s, { op => 'not_equals', value => 'on', field => 'online' }
+            ),
+        ],
+        [
+            200,
+            {
+                op     => 'or',
+                values => [
+                    {
+                        op    => 'equals',
+                        value => undef,
+                        field => 'radacct.acctstarttime'
+                    },
+                    {
+                        op    => 'not_equals',
+                        value => undef,
+                        field => 'radacct.acctstoptime'
+                    },
+                ],
+            },
+        ],
         "Rewrite online!='on'",
     );
 
     is_deeply(
-        $sb->rewrite_query(
-            $s, { op => 'not_equals', value => 'unknown', field => 'online' }
-        ),
-        {
-            op => 'not_equals', value => undef, field => 'radacct.acctstarttime',
-        },
+        [
+            $sb->rewrite_query(
+                $s,
+                { op => 'not_equals', value => 'unknown', field => 'online' }
+            )
+        ],
+        [
+            200,
+            {
+                op    => 'not_equals',
+                value => undef,
+                field => 'radacct.acctstarttime',
+            },
+        ],
         "Rewrite online!='unknown'",
+    );
+
+    is_deeply(
+        [
+            $sb->rewrite_query(
+                $s,
+                { op => 'contains', value => 'unknown', field => 'online' }
+            )
+        ],
+        [
+            422,
+            { msg => "contains is not valid for the online field" },
+        ],
+        "Invalid op for online",
     );
 }
 
@@ -269,7 +338,7 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
     my @f = qw(status online mac pid ip4log.ip bypass_role_id);
 
     my %search_info = (
-        dal => $dal, 
+        dal => $dal,
         fields => \@f,
     );
 
@@ -289,7 +358,7 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
         'Return the columns'
     );
     is_deeply(
-        [ 
+        [
             $sb->make_where(\%search_info)
         ],
         [
@@ -300,8 +369,6 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
         ],
         'Return the joined tables'
     );
-
-    $sb->make_where(\%search_info);
 
     my @a = $sb->make_from(\%search_info);
     is_deeply(
@@ -318,6 +385,59 @@ my $sb = pf::UnifiedApi::SearchBuilder::Nodes->new();
     );
 }
 
+{
+    my @f = qw(mac violation.open_count);
+
+    my %search_info = (
+        dal => $dal,
+        fields => \@f,
+    );
+
+    is_deeply(
+        [ $sb->make_columns( \%search_info ) ],
+        [
+            200,
+            [
+                'node.mac',
+                \"count(violation.id) as `violation.open_count`",
+            ],
+        ],
+        'Return the columns'
+    );
+
+    is_deeply(
+        [ $sb->make_where(\%search_info) ],
+        [
+            200,
+            {
+            },
+        ],
+        'Return the joined tables'
+    );
+
+    is_deeply(
+        [ $sb->make_from(\%search_info) ],
+        [
+            200,
+            [
+                -join => 'node',
+                @pf::UnifiedApi::SearchBuilder::Nodes::VIOLATION_JOIN,
+            ]
+        ],
+        'Return the joined tables'
+    );
+
+    is_deeply(
+        [
+            $sb->make_group_by(\%search_info)
+        ],
+        [
+            200,
+            [qw(node.tenant_id node.mac)],
+        ],
+        "violation.open_count Group by",
+    )
+}
 
 =head1 AUTHOR
 

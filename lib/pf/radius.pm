@@ -258,6 +258,8 @@ sub authorize {
         if (is_error($status)) {
             $logger->error("auto-registration of node failed $status_msg");
             $do_auto_reg = 0;
+            $RAD_REPLY_REF = [ $RADIUS::RLM_MODULE_USERLOCK, ('Reply-Message' => $status_msg) ];
+            goto CLEANUP;
         }
     }
 
@@ -327,12 +329,12 @@ sub authorize {
     $RAD_REPLY_REF = $switch->returnRadiusAccessAccept($args);
 
 CLEANUP:
+    if ($do_auto_reg) {
+        pf::registration::finalize_node_registration($node_obj, $pf::constants::realm::RADIUS_CONTEXT);
+    }
     $status = $node_obj->save;
     if (is_error($status)) {
         $logger->error("Cannot save $mac error ($status)");
-    }
-    if ($do_auto_reg) {
-        pf::registration::finalize_node_registration($node_obj);
     }
 
     # cleanup

@@ -7,7 +7,8 @@ export const pfSearchConditionType = {
   SUBSTRING:               'substring',
   NODE_STATUS:             'node_status',
   ROLE:                    'role',
-  CONNECTION_TYPE:         'connection_type'
+  CONNECTION_TYPE:         'connection_type',
+  ONLINE:                  'online'
 }
 
 export const pfSearchConditionValue = {
@@ -48,6 +49,10 @@ pfConditionOperators[pfSearchConditionType.ONLINE] = {
   'not_equals':                pfSearchConditionValue.SELECT
 }
 pfConditionOperators[pfSearchConditionType.VOIP] = {
+  'equals':                    pfSearchConditionValue.SELECT,
+  'not_equals':                pfSearchConditionValue.SELECT
+}
+pfConditionOperators[pfSearchConditionType.VIOLATION] = {
   'equals':                    pfSearchConditionValue.SELECT,
   'not_equals':                pfSearchConditionValue.SELECT
 }
@@ -108,6 +113,10 @@ pfSearchConditionValues[pfSearchConditionType.ONLINE] = [
   {
     value: 'off',
     text: 'Offline'
+  },
+  {
+    value: 'unknown',
+    text: 'Unknown'
   }
 ]
 pfSearchConditionValues[pfSearchConditionType.VOIP] = [
@@ -120,6 +129,9 @@ pfSearchConditionValues[pfSearchConditionType.VOIP] = [
     text: 'No'
   }
 ]
+pfSearchConditionValues[pfSearchConditionType.VIOLATION] = (store) => {
+  return store.getters['config/violationsList']
+}
 
 export const pfSearchConditionFormatter = {
   MAC: 'mac'

@@ -14,8 +14,8 @@
                             <div class="bd-toc-link" v-t="'Standard Searches'"></div>
                             <b-nav-item to="search/openviolations">Open Violations</b-nav-item>
                             <b-nav-item to="search/closedviolations">Closed Violations</b-nav-item>
-                            <div class="bd-toc-link" v-t="'Saved Searches'"></div>
                         </b-nav>
+                        <pf-saved-search :storeName="this.$options.name.toLowerCase()" :routeName="this.$options.name.toLowerCase()"/>
                     </div>
                 </b-collapse>
             </b-col>
@@ -28,7 +28,15 @@
 </template>
 
 <script>
+import pfMixinSavedSearch from '@/components/pfMixinSavedSearch'
+
 export default {
-  name: 'Nodes'
+  name: 'Nodes',
+  mixins: [
+    pfMixinSavedSearch
+  ],
+  components: {
+    'pf-saved-search': pfMixinSavedSearch
+  }
 }
 </script>
