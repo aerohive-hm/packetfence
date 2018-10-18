@@ -1,7 +1,9 @@
 $(document).ready(function(){
     //three function calls: getNodeInfo, linkAerohiveAccount, unlinkAerohiveAccount
+    $(".disconnected").attr("style", "display: none");
     setupObfuscatedTextHover('.pf-obfuscated-text + button');
     getNodeInfo();
+
     //link account btn press
     document.getElementById("link-account").onclick = function(e){
         e.preventDefault();
@@ -63,7 +65,7 @@ function getNodeInfo(){
                     }
                 }
                 $('#vhmId').html(data.body.header.vhmId);
-                $(".disconnected").hide();
+
                 if (data.body.header.mode === "cluster"){ //if it's a cluster
                     $.each(data.body.data, function(i, items){
                         $("#cloud-cluster-table-tbody").append("<tr><td id='connectedIcon'>" + items.status + "</td><td>" + items.hostname + "</td><td>" +  items.lastContactTime + "</td></tr>");
@@ -84,15 +86,15 @@ function getNodeInfo(){
                     });
                 }
                 $(".linked").show();
-                // $(".disconnected").hide();
-                $(".disconnected").attr("style", "display: none");
+                $(".disconnected").hide();
             //unlinked
             } else if (data.msgtype == "cloudConf"){
-                $(".disconnected").attr("style", "display: ");
                 $(".linked").hide();
-                // $(".disconnected").show();
+                $(".disconnected").show();
+                $(".disconnected").attr("style", "display:flex");
             } else {
                 $(".disconnected").show();
+                $(".disconnected").attr("style", "display:flex");
             }
         },
         error: function(data){
@@ -120,7 +122,7 @@ function unlinkAerohiveAccount(){
             $('#spin-spinner2').hide();
             data = jQuery.parseJSON(data.A3_data);
             if (data.code == "fail"){
-                document.getElementById('errorMessage').innerHTML = data.msg;
+                document.getElementById('errorMessage').innerHTML = "Failed to unlink.";
                 $("#error-alert").show();
                 setTimeout(function (){
                     $("#error-alert").slideUp(500);
@@ -129,6 +131,7 @@ function unlinkAerohiveAccount(){
             } else {
                 $(".linked").hide();
                 $(".disconnected").show();
+                $(".disconnected").attr("style", "display:flex");
 
                 document.getElementById('successMessage').innerHTML = "Successfully unlinked.";
                 $("#success-alert").show();

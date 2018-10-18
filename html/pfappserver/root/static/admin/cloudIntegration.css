@@ -1,6 +1,6 @@
 .disconnected{
   width: 100%;
-  display: flex;
+  display: none;
 }
 
 .cloud-form {
