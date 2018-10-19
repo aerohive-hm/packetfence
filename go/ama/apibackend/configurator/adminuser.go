@@ -47,7 +47,7 @@ func hashPassword(password string) string {
 	return ""
 }
 
-/* replace is better than insert because it does not need to check if pid exsit or not */
+/* replace is better than insert because it does not need to check if pid exist or not */
 const (
 	sqlCmd = `replace into password(pid,password,valid_from,expiration,access_level)` +
 		`values('%s','%s','%s','%s','%s')`

@@ -117,7 +117,7 @@ class joinClusterCtl extends Component {
             newWrongMessage.adminWrongMessage=self.state.i18n.clusterAdminIsRequired;
         }else
         if(isEmail(admin.toString().trim())===false){
-            newWrongMessage.adminWrongMessage=self.state.i18n.emailFormatIsIncorret;
+            newWrongMessage.adminWrongMessage=self.state.i18n.emailFormatIsIncorrect;
         }else{
             newWrongMessage.adminWrongMessage="";
         }
