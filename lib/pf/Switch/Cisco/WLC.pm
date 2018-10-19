@@ -111,6 +111,7 @@ use pf::constants;
 use pf::config qw(
     $MAC
     $SSID
+    $WEBAUTH_WIRELESS
 );
 use pf::web::util;
 use pf::util;
@@ -627,6 +628,10 @@ sub parseExternalPortalRequest {
         $redirect_url = $r->headers_in->{'Referer'};
     }
 
+    if($redirect_url !~ /^http/) {
+        $redirect_url = "http://".$redirect_url;
+    }
+
     %params = (
         session_id              => $session_id,
         switch_id               => $switch_id,
@@ -634,6 +639,7 @@ sub parseExternalPortalRequest {
         client_ip               => $client_ip,
         redirect_url            => $redirect_url,
         synchronize_locationlog => $FALSE,
+        connection_type         => $WEBAUTH_WIRELESS,
     );
 
     return \%params;

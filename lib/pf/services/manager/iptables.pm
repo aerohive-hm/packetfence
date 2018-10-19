@@ -88,6 +88,15 @@ sub _start {
     return $result;
 }
 
+sub startAndCheck {
+    my ($self) = @_;
+
+    while(1) {
+        $self->_start() unless($self->isAlive());
+        sleep 60;
+    }
+}
+
 =head2 stop
 
 Wrapper around systemctl. systemctl should in turn call the actual _stop.

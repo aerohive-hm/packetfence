@@ -52,3 +52,33 @@
     priority = 91000
     type = line
     dimension = pattern 'source.a3.devices.connected_per_ssid;*' '' last 1 1
+
+[redis.queue_stats_count]
+    name = redis.queue_stats_count
+    title = redis queue stats counters
+    family = a3
+    context = chart.context
+    units = count
+    priority = 91000
+    type = stacked
+    dimension = pattern 'source.a3.redis.queue_stats_count;*' '' last 1 1
+
+[redis.queue_stats_expired]
+    name = redis.queue_stats_expired
+    title = redis queue stats expired counters
+    family = a3
+    context = chart.context
+    units = expired
+    priority = 91000
+    type = stacked
+    dimension = pattern 'source.a3.redis.queue_stats_expired;*' '' last 1 1
+
+[redis.queue_stats_outstanding]
+    name = redis.queue_stats_outstanding
+    title = redis queue stats outstanding counters
+    family = a3
+    context = chart.context
+    units = outstanding
+    priority = 91000
+    type = stacked
+    dimension = pattern 'source.a3.redis.queue_stats_outstanding;*' '' last 1 1

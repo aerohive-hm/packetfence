@@ -4,6 +4,8 @@ export default {
   all: params => {
     if (params.sort) {
       params.sort = params.sort.join(',')
+    } else {
+      params.sort = 'pid'
     }
     return apiCall.get('users', { params }).then(response => {
       return response.data

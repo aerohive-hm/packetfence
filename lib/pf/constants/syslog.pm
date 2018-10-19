@@ -17,10 +17,6 @@ use warnings;
 
 our @SyslogInfo = (
     {
-        'name'       => 'collectd.log',
-        'conditions' => [ '$programname == "collectd"' ]
-    },
-    {
         'name'       => 'fingerbank.log',
         'conditions' => [ '$syslogtag contains "fingerbank"' ]
     },
@@ -55,14 +51,6 @@ our @SyslogInfo = (
     {
         'name'       => 'httpd.collector.log',
         'conditions' => [ '$syslogtag contains "httpd_collector"' ]
-    },
-    {
-        'name'       => 'httpd.graphite.error',
-        'conditions' => [ '$syslogtag contains "httpd_graphite_err"' ]
-    },
-    {
-        'name'       => 'httpd.graphite.access',
-        'conditions' => [ '$syslogtag contains "httpd_graphite"' ]
     },
     {
         'name'       => 'httpd.parking.error',
@@ -101,8 +89,16 @@ our @SyslogInfo = (
         'conditions' => [ '$programname contains "httpd_webservices"' ]
     },
     {
-        'name'      => 'api-frontend.access',
+        'name'      => 'httpd.api-frontend.access',
         'conditions' => [ '$msg contains "api-frontend-access"' ],
+    },
+    {
+        'name'      => 'api-frontend.log',
+        'conditions' => [ '$programname == "api-frontend"' ],
+    },
+    {
+        'name'       => 'pfstats.log',
+        'conditions' => [ '$programname == "pfstats"' ]
     },
     {
         'name'       => 'packetfence.log',
@@ -132,7 +128,7 @@ our @SyslogInfo = (
     },
     {
         'name'       => 'pfdns.log',
-        'conditions' => [ '$programname == "pfdns"' ]
+        'conditions' => [ '$programname contains "pfdns"' ]
     },
     {
         'name'       => 'pffilter.log',
@@ -143,6 +139,10 @@ our @SyslogInfo = (
         'conditions' => [ '$programname == "pfmon"' ]
     },
     {
+        'name'       => 'pfsso.log',
+        'conditions' => [ '$programname == "pfsso"' ]
+    },
+    {
         'name'       => 'radius-acct.log',
         'conditions' => [
 '$programname contains "radius" and $syslogfacility-text == "local2"',
@@ -150,7 +150,7 @@ our @SyslogInfo = (
         ]
     },
     {
-        'name' => 'radius-cli.log',
+        'name'       => 'radius-cli.log',
         'conditions' =>
           [ '$syslogtag contains "cli" and $syslogfacility-text == "local3"' ]
     },
@@ -184,12 +184,24 @@ our @SyslogInfo = (
         'conditions' => [ '$syslogtag contains "redis-queue"' ]
     },
     {
-        'name'      => 'mariadb_error.log',
+        'name'       => 'redis_server.log',
+        'conditions' => [ '$programname == "redis-server"' ]
+    },
+    {
+        'name'       => 'mariadb_error.log',
         'conditions' => [ '$syslogtag contains "mysqld"' ],
     },
     {
-        'name'      => 'pf-mariadb.log',
-        'conditions' => [ '$programname == "pf-mariadb"' ],
+        'name'       => 'haproxy_portal.log',
+        'conditions' => [ '$programname == "haproxy" and ($msg contains "portal-http" or $msg contains "backend has no server available")' ],
+    },
+    {
+        'name'       => 'haproxy_db.log',
+        'conditions' => [ '$programname == "haproxy" and ($msg contains "mysql" or $msg contains "backend has no server available")' ],
+    },
+    {
+        'name'       => 'etcd.log',
+        'conditions' => [ '$programname == "etcd"' ],
     },
 );
 

@@ -36,6 +36,12 @@ pfstats:
         cd - && \
         mv stats/stats pfstats
 
+pfdetect:
+	cd detect && \
+        go build && \
+        cd - && \
+        mv detect/detect pfdetect
+
 ahpwgen-bin:
 	cd ahpwgen && \
 	go build && \

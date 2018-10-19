@@ -4,8 +4,8 @@ global
 	group haproxy
 	daemon
 	pidfile %%var_dir%%/run/haproxy-portal.pid
-	log %%active_active_ip%% local0
-	stats socket /tmp/proxystats level admin process 1
+	log /dev/log local0
+	stats socket %%var_dir%%/run/haproxy-portal.stats level admin process 1
 	maxconn 4000
 	#Oldest compatible clients: Firefox 1, Chrome 1, IE 7, Opera 5, Safari 1, Windows XP IE8, Android 2.3, Java 7
 	tune.ssl.default-dh-param 2048

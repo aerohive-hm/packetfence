@@ -181,7 +181,7 @@ sub locationlog_view_open_switchport {
             'node.voip' => $voip,
             end_time => $ZERO_DATE,
         },
-        -from => [-join => qw(locationlog =>{locationlog.mac=node.mac} node)],
+        -from => [-join => 'locationlog', '<={locationlog.mac=node.mac,locationlog.tenant_id=node.tenant_id}', 'node'],
         -order_by => { -desc => 'start_time' },
     });
 }
@@ -195,7 +195,7 @@ sub locationlog_view_open_switchport_no_VoIP {
             'node.voip' => { "!=" => "yes"},
             end_time => $ZERO_DATE,
         },
-        -from => [-join => qw(locationlog =>{locationlog.mac=node.mac} node)],
+        -from => [-join => 'locationlog', '<={locationlog.mac=node.mac,locationlog.tenant_id=node.tenant_id}', 'node'],
         -order_by => { -desc => 'start_time' },
     });
 }
@@ -209,7 +209,7 @@ sub locationlog_view_open_switchport_only_VoIP {
             'node.voip' => "yes",
             end_time => $ZERO_DATE,
         },
-        -from => [-join => qw(locationlog =>{locationlog.mac=node.mac} node)],
+        -from => [-join => 'locationlog', '<={locationlog.mac=node.mac,locationlog.tenant_id=node.tenant_id}', 'node'],
         -limit => 1,
         -order_by => { -desc => 'start_time' },
     });
@@ -299,7 +299,7 @@ sub locationlog_update_end_switchport_no_VoIP {
             'node.voip' => {"!=" => "yes"},
             end_time => $ZERO_DATE,
         },
-        -table => [-join => qw(locationlog {locationlog.mac=node.mac} node)],
+        -table => [-join => 'locationlog', '<={locationlog.mac=node.mac,locationlog.tenant_id=node.tenant_id}', 'node'],
     );
     return ($rows);
 }
@@ -317,7 +317,7 @@ sub locationlog_update_end_switchport_only_VoIP {
             'node.voip' => "yes",
             end_time => $ZERO_DATE,
         },
-        -table => [-join => qw(locationlog {locationlog.mac=node.mac} node)],
+        -table => [-join => 'locationlog', '<={locationlog.mac=node.mac,locationlog.tenant_id=node.tenant_id}', 'node'],
     );
     return ($rows);
 }

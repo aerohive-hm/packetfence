@@ -26,7 +26,7 @@ has_field 'host' =>
    type => 'Text',
    label => 'Host',
    element_class => ['input-small'],
-   element_attr => {'placeholder' => '127.0.0.1'},
+   element_attr => {'placeholder' => ''},
    default => $META->get_attribute('host')->default,
   );
 has_field 'port' =>
@@ -105,7 +105,7 @@ has_field 'scope' =>
     { value => 'sub', label => 'Subtree' },
     { value => 'children', label => 'Children' },
    ],
-   default => 'base',
+   default => 'sub',
   );
 has_field 'usernameattribute' =>
   (
@@ -164,6 +164,17 @@ has_field 'monitor',
    tags => { after_element => \&help,
              help => 'Do you want to monitor this source?' },
    default => $META->get_attribute('monitor')->default,
+);
+
+has_field 'shuffle',
+  (
+   type => 'Toggle',
+   label => 'Shuffle',
+   checkbox_value => '1',
+   unchecked_value => '0',
+   tags => { after_element => \&help,
+             help => 'Randomly choose LDAP server to query' },
+   default => $META->get_attribute('shuffle')->default,
 );
 
 =head2 validate

@@ -73,7 +73,7 @@ our @API_V1_ROUTES = (
         controller => 'Violations',
         collection => {
             subroutes    => {
-                'by_mac/:search' => { get => 'by_mac' },                
+                'by_mac/#search' => { get => 'by_mac' },
                 'search' => {
                     'post' => 'search'
                 },
@@ -126,10 +126,27 @@ our @API_V1_ROUTES = (
     {
         controller  => 'Ip4logs',
         collection => {
-            subroutes    => {
-                'history/:search' => { get => 'history' },
-                'archive/:search' => { get => 'archive' },
-                'open/:search' => { get => 'open' }, 
+            subroutes => {
+                'history/#search' => { get => 'history' },
+                'archive/#search' => { get => 'archive' },
+                'open/#search' => { get => 'open' },
+                'mac2ip/#mac' => { get => 'mac2ip' },
+                'ip2mac/#ip'  => { get => 'ip2mac' },
+                'search' => {
+                    'post' => 'search'
+                },
+            },
+        },
+    },
+    {
+        controller  => 'Ip6logs',
+        collection => {
+            subroutes => {
+                'history/#search' => { get => 'history' },
+                'archive/#search' => { get => 'archive' },
+                'open/#search' => { get => 'open' }, 
+                'mac2ip/#mac' => { get => 'mac2ip' },
+                'ip2mac/#ip'  => { get => 'ip2mac' },
                 'search' => {
                     'post' => 'search'
                 },
@@ -204,6 +221,17 @@ our @API_V1_ROUTES = (
             subroutes => undef,
         },
     },
+    {
+        controller => 'Queues',
+        collection => {
+            subroutes    => {
+                'stats' => {
+                    get => 'stats'
+                },
+            },
+        },
+        resource => undef,
+    },
 );
 
 sub startup {
@@ -211,6 +239,7 @@ sub startup {
     $self->controller_class('pf::UnifiedApi::Controller');
     $self->routes->namespaces(['pf::UnifiedApi::Controller', 'pf::UnifiedApi']);
     $self->hook(before_dispatch => \&set_tenant_id);
+    $self->hook(after_dispatch => \&after_dispatch_cb);
     $self->plugin('pf::UnifiedApi::Plugin::RestCrud');
     $self->setup_api_v1_routes();
     $self->custom_startup_hook();
@@ -220,6 +249,21 @@ sub startup {
     });
 
     return;
+}
+
+=head2 after_dispatch_cb
+
+after_dispatch_cb
+
+=cut
+
+sub after_dispatch_cb {
+    my ($c) = @_;
+    my $requests_handled = ++$c->app->{requests_handled};
+    if ($requests_handled >= 2000) {
+        kill 'QUIT', $$;
+    }
+    return ;
 }
 
 sub setup_api_v1_routes {
