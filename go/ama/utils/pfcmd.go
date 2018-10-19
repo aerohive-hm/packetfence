@@ -297,6 +297,7 @@ func checkAndRestartNTPSync()  {
 // Make sure NTP synchronized successfully, or else the admin account will have problem to login
 func ForceNTPsynchronized() {  
 	ticker := time.NewTicker(time.Duration(30) * time.Second)
+	defer ticker.Stop()
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check NTP synchronized status"))
 	checkAndRestartNTPSync()
 	if ama.SystemNTPSynced {

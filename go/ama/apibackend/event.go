@@ -23,6 +23,7 @@ func init() {
 		"commandstatus": event.CommandStatusNew,
 		"radiusauth":    event.RadAuthNew,
 		"radiusacct":    event.RadAcctNew,
+		"clusterdbstatus": event.ClusterDBStatusNew,
 	}
 	Register("event", sections)
 }
