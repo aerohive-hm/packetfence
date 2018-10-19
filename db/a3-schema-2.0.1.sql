@@ -2,9 +2,9 @@
 -- Setting the major/minor/sub-minor version of the DB
 --
 
-SET @MAJOR_VERSION = 8;
-SET @MINOR_VERSION = 1;
-SET @SUBMINOR_VERSION = 0;
+SET @MAJOR_VERSION = 2;
+SET @MINOR_VERSION = 0;
+SET @SUBMINOR_VERSION = 1;
 
 --
 -- The VERSION_INT to ensure proper ordering of the version in queries
@@ -458,7 +458,7 @@ DELIMITER ;
 
 --
 -- Table structure for table `sms_carrier`
--- 
+--
 -- Source: StatusNet
 -- Schema fetched on 2010-10-15 from:
 -- http://gitorious.org/statusnet/mainline/blobs/raw/master/db/statusnet.sql
@@ -518,7 +518,7 @@ VALUES
     (100088, 'Orange (Poland)', '%s@orange.pl', now()),
     (100089, 'Personal (Argentina)', '%s@personal-net.com.ar', now()),
     (100090, 'Plus GSM (Poland)', '%s@text.plusgsm.pl', now()),
-    (100091, 'President\'s Choice (Canada)', '%s@txt.bell.ca', now()),
+    (100091, 'President''s Choice (Canada)', '%s@txt.bell.ca', now()),
     (100092, 'Qwest', '%s@qwestmp.com', now()),
     (100093, 'Rogers (Canada)', '%s@pcs.rogers.com', now()),
     (100094, 'Sasktel (Canada)', '%s@sms.sasktel.com', now()),
@@ -621,7 +621,7 @@ CREATE TABLE radacct_log (
   acctsessionid varchar(64) NOT NULL default '',
   username varchar(64) NOT NULL default '',
   nasipaddress varchar(15) NOT NULL default '',
-  acctstatustype varchar(25) NOT NULL default '',  
+  acctstatustype varchar(25) NOT NULL default '',
   timestamp datetime NULL default NULL,
   acctinputoctets bigint(20) default NULL,
   acctoutputoctets bigint(20) default NULL,
@@ -682,18 +682,18 @@ IF (Previous_Session_Time IS NOT NULL) THEN
       AND (acctstoptime IS NULL OR acctstoptime = 0);
 END IF;
 
-INSERT INTO radacct 
+INSERT INTO radacct
            (
-            acctsessionid,      acctuniqueid,       username, 
-            realm,          nasipaddress,       nasportid, 
-            nasporttype,        acctstarttime,      acctupdatetime, 
-            acctstoptime,       acctsessiontime,    acctauthentic, 
-            connectinfo_start,  connectinfo_stop,   acctinputoctets, 
-            acctoutputoctets,   calledstationid,    callingstationid, 
-            acctterminatecause, servicetype,        framedprotocol, 
+            acctsessionid,      acctuniqueid,       username,
+            realm,          nasipaddress,       nasportid,
+            nasporttype,        acctstarttime,      acctupdatetime,
+            acctstoptime,       acctsessiontime,    acctauthentic,
+            connectinfo_start,  connectinfo_stop,   acctinputoctets,
+            acctoutputoctets,   calledstationid,    callingstationid,
+            acctterminatecause, servicetype,        framedprotocol,
             framedipaddress, tenant_id
-           ) 
-VALUES 
+           )
+VALUES
     (
     p_acctsessionid, p_acctuniqueid, p_username,
     p_realm, p_nasipaddress, p_nasportid,
@@ -760,29 +760,29 @@ BEGIN
     SET Previous_Input_Octets = 0;
     SET Previous_Output_Octets = 0;
     # If there is no open session for this, open one.
-    INSERT INTO radacct 
+    INSERT INTO radacct
            (
-            acctsessionid,      acctuniqueid,       username, 
-            realm,              nasipaddress,       nasportid, 
+            acctsessionid,      acctuniqueid,       username,
+            realm,              nasipaddress,       nasportid,
             nasporttype,        acctstoptime,       acctstarttime,
-            acctsessiontime,    acctauthentic, 
-            connectinfo_stop,  acctinputoctets, 
-            acctoutputoctets,   calledstationid,    callingstationid, 
+            acctsessiontime,    acctauthentic,
+            connectinfo_stop,  acctinputoctets,
+            acctoutputoctets,   calledstationid,    callingstationid,
             servicetype,        framedprotocol,     acctterminatecause,
             framedipaddress,    tenant_id
-           ) 
-    VALUES 
+           )
+    VALUES
         (
             p_acctsessionid,        p_acctuniqueid,     p_username,
             p_realm,                p_nasipaddress,     p_nasportid,
-            p_nasporttype,          p_timestamp,     date_sub(p_timestamp, INTERVAL p_acctsessiontime SECOND ), 
+            p_nasporttype,          p_timestamp,     date_sub(p_timestamp, INTERVAL p_acctsessiontime SECOND ),
             p_acctsessiontime,      p_acctauthentic,
             p_connectinfo_stop,     p_acctinputoctets,
             p_acctoutputoctets,     p_calledstationid,  p_callingstationid,
             p_servicetype,          p_framedprotocol,   p_acctterminatecause,
             p_framedipaddress,      p_tenant_id
         );
-  ELSE 
+  ELSE
     # Update record with new traffic
     UPDATE radacct SET
       acctstoptime = p_timestamp,
@@ -881,7 +881,7 @@ BEGIN
   SELECT count(callingstationid), acctinputoctets, acctoutputoctets, acctsessiontime, acctupdatetime
     INTO countmac, Previous_Input_Octets, Previous_Output_Octets, Previous_Session_Time, Previous_AcctUpdate_Time
     FROM radacct
-    WHERE (acctuniqueid = p_acctuniqueid) 
+    WHERE (acctuniqueid = p_acctuniqueid)
     AND (acctstoptime IS NULL OR acctstoptime = 0) LIMIT 1;
 
   IF (countmac = 1) THEN
@@ -893,7 +893,7 @@ BEGIN
         acctoutputoctets = p_acctoutputoctets,
         acctupdatetime = p_timestamp,
         acctinterval = timestampdiff( second, Previous_AcctUpdate_Time,  p_timestamp  )
-    WHERE acctuniqueid = p_acctuniqueid 
+    WHERE acctuniqueid = p_acctuniqueid
     AND (acctstoptime IS NULL OR acctstoptime = 0);
   ELSE
     IF (cnt = 0) THEN
@@ -928,7 +928,7 @@ BEGIN
      END IF;
    END IF;
 
- 
+
   # Create new record in the log table
   INSERT INTO radacct_log
    (acctsessionid, username, nasipaddress,
@@ -990,7 +990,7 @@ CREATE TABLE savedsearch (
 ) ENGINE=InnoDB;
 
 --
--- Table structure for table 
+-- Table structure for table
 --
 
 CREATE TABLE inline_accounting (
@@ -1058,7 +1058,7 @@ CREATE TABLE activation (
   `tenant_id` int NOT NULL DEFAULT 1,
   `pid` varchar(255) default NULL,
   `mac` varchar(17) default NULL,
-  `contact_info` varchar(255) NOT NULL, -- email or phone number were approbation request is sent 
+  `contact_info` varchar(255) NOT NULL, -- email or phone number were approbation request is sent
   `carrier_id` int(11) NULL,
   `activation_code` varchar(255) NOT NULL,
   `expiration` datetime NOT NULL,
@@ -1139,7 +1139,7 @@ CREATE TABLE radius_audit_log (
   KEY `mac` (mac),
   KEY `ip` (ip),
   KEY `user_name` (user_name),
-  KEY `auth_status` (auth_status, created_at)  
+  KEY `auth_status` (auth_status, created_at)
 ) ENGINE=InnoDB;
 
 --
@@ -1265,3 +1265,42 @@ CREATE TABLE `api_user` (
 
 INSERT INTO pf_version (id, version) VALUES (@VERSION_INT, CONCAT_WS('.', @MAJOR_VERSION, @MINOR_VERSION, @SUBMINOR_VERSION));
 
+--
+-- The following are specific to A3
+--
+CREATE TABLE a3_entitlement (
+    entitlement_key varchar (64) NOT NULL,
+    type            varchar (16) NOT NULL,
+    status          int          NOT NULL,
+    endpoint_count  int          NOT NULL,
+    sub_start       datetime     NOT NULL,
+    sub_end         datetime     NOT NULL,
+    support_start   datetime     NOT NULL,
+    support_end     datetime     NOT NULL,
+    PRIMARY KEY (entitlement_key)
+) ENGINE=InnoDB;
+
+CREATE TABLE a3_eula_acceptance (
+    timestamp datetime NOT NULL,
+    is_synced tinyint  NOT NULL,
+    PRIMARY KEY (timestamp)
+) ENGINE=InnoDB;
+
+CREATE TABLE a3_usage_sample (
+    timestamp datetime NOT NULL,
+    count     int      NOT NULL,
+    PRIMARY KEY (timestamp)
+) ENGINE=InnoDB;
+
+CREATE TABLE a3_daily_avg (
+    daily_date   date NOT NULL,
+    daily_avg    int  NOT NULL,
+    moving_avg   int  NOT NULL,
+    PRIMARY KEY (daily_date)
+) ENGINE=InnoDB;
+
+CREATE TABLE a3_cluster_member (
+	system_id varchar (39) NOT NULL,
+	hostname varchar (64) NOT NULL,
+	PRIMARY KEY (system_id)
+) ENGINE=InnoDB;
