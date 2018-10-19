@@ -125,7 +125,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	if ama.IsClusterJoinMode() {
-		retMsg = "another server is joining the cluster."
+		retMsg = "the server is removing another cluster，please wait for a moment."
 		goto END
 	}
 
