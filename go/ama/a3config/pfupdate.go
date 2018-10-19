@@ -84,7 +84,7 @@ func UpdateInterface(i Item) error {
 				if err != nil {
 					return err
 				}
-				/*check vip if exsit*/
+				/*check vip if existt*/
 				if IsVipExist(i) {
 					msg := fmt.Sprintf("%s is exist in net", i.Vip)
 					return errors.New(msg)

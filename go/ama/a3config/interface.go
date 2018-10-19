@@ -82,10 +82,10 @@ func CheckCreateIfValid(i Item) error {
 	if !isvlan {
 		return nil
 	}
-	/*check new inteface if exsit*/
+	/*check new inteface if exist*/
 	ifname := ChangeUiIfname(i.Name, i.Prefix)
 	if utils.IfaceExists(ifname) {
-		msg = fmt.Sprintf("%s is exsit in system", i.Name)
+		msg = fmt.Sprintf("%s is exist in system", i.Name)
 		return errors.New(msg)
 	}
 	return nil
