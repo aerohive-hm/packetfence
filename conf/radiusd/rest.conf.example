@@ -305,7 +305,7 @@ rest rest-ama {
         "connectinfo":"%{Connect-Info}","acctinputgigawords":%{%{Acct-Input-Gigawords}:-0},"acctinputoctets":%{%{Acct-Input-Octets}:-0},\
         "acctoutputgigawords":%{%{Acct-Output-Gigawords}:-0},"acctoutputoctets":%{%{Acct-Output-Octets}:-0},\
         "acctterminatecause":"%{%{Acct-Terminate-Cause}:-N/A}","servicetype":"%{Service-Type}",\
-        "username":"%{SQL-User-Name}","realm":"%{Realm}",\
+        "username":"%{User-Name}","realm":"%{Realm}",\
         "framedprotocol":"%{Framed-Protocol}","framedipaddress":"%{Framed-IP-Address}","tenant_id":"%{control:PacketFence-Tenant-Id}"}'
         tls = ${..tls}
     }
