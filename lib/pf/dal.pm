@@ -105,8 +105,6 @@ sub db_execute {
     my $attempts = 3;
     my $logger = $self->logger;
     my $status = $STATUS::INTERNAL_SERVER_ERROR;
-
-  
     while ($attempts) {
         my $dbh = $self->get_dbh;
         unless ($dbh) {
@@ -585,7 +583,7 @@ sub _update_data {
             next;
         }
         $data{$field} = $new_value;
-    }   
+    }
     return $STATUS::OK, \%data;
 }
 
@@ -1150,7 +1148,6 @@ sub update_params_for_upsert {
     return %new_args;
 }
 
-
 =head2 do_insert
 
 Wrap call to pf::SQL::Abstract->insert and db_execute
@@ -1161,7 +1158,7 @@ sub do_insert {
     my ($proto, @args) = @_;
     my $sqla          = $proto->get_sql_abstract;
     @args = $proto->update_params_for_insert(@args);
-    my ($stmt, @bind) = $sqla->insert(@args); 
+    my ($stmt, @bind) = $sqla->insert(@args);
     return $proto->db_execute($stmt, @bind);
 }
 
@@ -1175,7 +1172,7 @@ sub do_upsert {
     my ($proto, @args) = @_;
     my $sqla          = $proto->get_sql_abstract;
     @args = $proto->update_params_for_upsert(@args);
-    my ($stmt, @bind) = $sqla->upsert(@args); 
+    my ($stmt, @bind) = $sqla->upsert(@args);
     return $proto->db_execute($stmt, @bind);
 }
 
@@ -1189,7 +1186,7 @@ sub do_update {
     my ($proto, @args) = @_;
     my $sqla          = $proto->get_sql_abstract;
     @args = $proto->update_params_for_update(@args);
-    my ($stmt, @bind) = $sqla->update(@args);  
+    my ($stmt, @bind) = $sqla->update(@args);
     return $proto->db_execute($stmt, @bind);
 }
 

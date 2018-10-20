@@ -51,6 +51,7 @@ var webservices pfconfigdriver.PfConfWebservices
 var intNametoInterface map[string]*Interface
 
 func main() {
+	log.SetProcessName("pfdhcp")
 	ctx = log.LoggerNewContext(ctx)
 	arp.AutoRefresh(30 * time.Second)
 	// Default http timeout

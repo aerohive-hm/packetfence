@@ -31,6 +31,11 @@ has forceManaged => ( is => 'rw', default => sub {1} );
 
 sub _buildpidFile { 0; }
 
+sub isManaged {
+    my ($self) = @_;
+    return 1;
+}
+
 sub start {
     my ( $self, $quick ) = @_;
     my $result = 0;
@@ -53,7 +58,11 @@ Build the command to lauch the service.
 
 sub _build_launcher {
     my ($self) = @_;
-    return "sudo systemctl isolate packetfence.target";
+    if($cluster_enabled) {
+        return "sudo systemctl isolate packetfence-cluster.target";
+    } else {
+        return "sudo systemctl isolate packetfence.target";
+    }
 }
 
 
@@ -128,7 +137,12 @@ sub sub_pid {
 
 sub pid {
     my ($self) = @_;
-    my @status = `sudo systemctl status  packetfence.target`;
+    my @status;
+    if($cluster_enabled) {
+        @status = `sudo systemctl status packetfence-cluster.target`;
+    } else {
+        @status = `sudo systemctl status packetfence.target`;
+    }
     my $pid = grep {/Active: active/} @status;
     return $pid;
 }
@@ -153,7 +167,7 @@ sub stopService {
     my ($self) = @_;
     my $logger = get_logger();
     $logger->info("Stopping packetfence.target");
-    `sudo systemctl isolate packetfence-base`;
+    `sudo systemctl isolate packetfence-base.target`;
     if ( $? == -1 ) {
         $logger->error("failed to execute: $!\n");
     }
@@ -162,6 +176,16 @@ sub stopService {
     }
 }
 
+=head2 systemdTarget
+
+systemdTarget
+
+=cut
+
+sub systemdTarget {
+    my ($self) = @_;
+    return "packetfence.target";
+}
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>

@@ -1,7 +1,7 @@
 # DNS Filter Configuration
 # ========================
 #
-# You can trigger rules in pfdns on a specific scope (registration, isolation, inline, dnsenforcement)
+# You can trigger rules in pfdns on a specific scope (registration, isolation)
 #
 # Make a simple rule like this:
 #
@@ -15,8 +15,8 @@
 # answer = 30 IN A 10.0.0.1
 # rcode = NOERROR
 #
-# It means that when pfdns receive a DNS request for the DNS name www.aerohive.com,
-# then it will answer with the IP address 10.0.0.1.
+# It means that when pfdns receives a DNS request for the DNS name www.aerohive.com,
+# it will respond with the IP address 10.0.0.1.
 #
 # See http://search.cpan.org/~nlnetlabs/Net-DNS-0.74/lib/Net/DNS/RR.pm for more details.
 #

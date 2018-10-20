@@ -16,7 +16,7 @@ use strict;
 use warnings;
 use Moose::Role;
 
-has 'pin_code_length' => (default => 4, is => 'rw', isa => 'Int');
+has 'pin_code_length' => (default => 6, is => 'rw', isa => 'Int');
 
 =head2 sendActivationSMS
 

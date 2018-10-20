@@ -12,7 +12,7 @@ RuntimeDirectoryMode=0775
 ExecStart=/usr/sbin/netdata -P /run/netdata/netdata.pid -D -c /usr/local/pf/var/conf/monitoring/netdata.conf 
 ExecStartPre=/bin/mkdir -p /var/cache/netdata
 ExecStartPre=/bin/chown -R netdata:netdata /var/cache/netdata
-ExecStartPre=/usr/local/pf/bin/pfcmd service netdata generateconfig
+ExecStartPre=/bin/perl -I/usr/local/pf/lib '-Mpf::services::manager::netdata' -e 'pf::services::manager::netdata->new()->generateConfig()'
 PermissionsStartOnly=true
 
 TimeoutSec=60

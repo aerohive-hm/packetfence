@@ -1,7 +1,7 @@
 [metric 'redis queue stats count']
 type=api
 statsd_type=gauge
-statsd_ns=source.packetfence.redis.queue_stats_count
+statsd_ns=source.a3.redis.queue_stats_count
 api_method=GET
 api_path=/api/v1/queues/stats
 api_compile=$.items[*].queue, $.items[*].stats.count
@@ -11,7 +11,7 @@ randomize=true
 [metric 'redis queue stats expired']
 type=api
 statsd_type=gauge
-statsd_ns=source.packetfence.redis.queue_stats_expired
+statsd_ns=source.a3.redis.queue_stats_expired
 api_method=GET
 api_path=/api/v1/queues/stats
 api_compile=$.items[*].stats.expired[*].name, $.items[*].stats.expired[*].count
@@ -21,7 +21,7 @@ randomize=true
 [metric 'redis queue stats outstanding']
 type=api
 statsd_type=gauge
-statsd_ns=source.packetfence.redis.queue_stats_outstanding
+statsd_ns=source.a3.redis.queue_stats_outstanding
 api_method=GET
 api_path=/api/v1/queues/stats
 api_compile=$.items[*].stats.outstanding[*].name, $.items[*].stats.outstanding[*].count

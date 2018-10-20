@@ -56,6 +56,12 @@ rogueinterval=10
 # This can help detect MAC spoofing.
 hostname_change_detection=disabled
 #
+# network.connection_type_change_detection
+#
+# Will identify if a device switches from wired to wireless (or the opposite) and send an e-mail with these changes.
+# This can help detect MAC spoofing.
+connection_type_change_detection=disabled
+#
 # network.dhcpoption82logger
 #
 # If enabled A3 will monitor DHCP option82 location-based information.
@@ -231,17 +237,17 @@ admin=1443
 #
 # ports.soap
 #
-# Port the SOAP interface listens on.
+# Port that the SOAP interface listens on.
 soap=9090
 #
 # ports.collector
 #
-# Port the collector interface listens on.
+# Port that the collector interface listens on.
 collector=9292
 #
 # ports.aaa
 #
-# Port the AAA HTTP interface listens on.
+# Port that the AAA HTTP interface listens on.
 aaa=7070
 #
 # ports.httpd_portal_modstatus

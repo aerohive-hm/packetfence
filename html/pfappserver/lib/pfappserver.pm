@@ -4,8 +4,6 @@ package pfappserver;
 
 =cut
 
-use POSIX;
-
 use Moose;
 use namespace::autoclean;
 

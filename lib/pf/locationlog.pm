@@ -21,7 +21,6 @@ use pf::StatsD::Timer;
 use pf::util::statsd qw(called);
 use pf::CHI::Request;
 use CHI::Memoize qw(memoize memoized);
-use pf::util;
 
 use constant LOCATIONLOG => 'locationlog';
 
