@@ -83,24 +83,25 @@ func GetMyMariadbRecoveryData() {
 
 	//pf-mariadb generate grastate.dat.bak, don't change the login now, might not need to generate grastate.dat.bak file
 	//if grastate.dat.bak exist, the node should think itself is safe to bootstrap
-	if !MariadbStatusData.ReadGrastated {
-		if utils.IsFileExist("/var/lib/mysql/grastate.dat.bak") {
+	
+	if utils.IsFileExist("/var/lib/mysql/grastate.dat.bak") {
 			result, _ = utils.ExecShell(`sed -n '/safe_to_bootstrap:/ p' /var/lib/mysql/grastate.dat.bak | sed -r 's/\s*safe_to_bootstrap:\s*//'`)
 			result = strings.TrimRight(result, "\n")
 			MariadbStatusData.SafeToBootstrap, _ = strconv.Atoi(result)
 			result, _ = utils.ExecShell(`sed -n '/seqno:/ p' /var/lib/mysql/grastate.dat.bak | sed -r 's/\s*seqno:\s*//'`)
 			result = strings.TrimRight(result, "\n")
 			MariadbStatusData.GrastateSeqno, _ = strconv.ParseInt(result, 10, 64)
-		} else {
+			utils.ExecShell(`rm -fr /var/lib/mysql/grastate.dat.bak`)
+	} else {
 			result, _ = utils.ExecShell(`sed -n '/safe_to_bootstrap:/ p' /var/lib/mysql/grastate.dat | sed -r 's/\s*safe_to_bootstrap:\s*//'`)
 			result = strings.TrimRight(result, "\n")
 			MariadbStatusData.SafeToBootstrap, _ = strconv.Atoi(result)
 			result, _ = utils.ExecShell(`sed -n '/seqno:/ p' /var/lib/mysql/grastate.dat | sed -r 's/\s*seqno:\s*//'`)
 			result = strings.TrimRight(result, "\n")
 			MariadbStatusData.GrastateSeqno, _ = strconv.ParseInt(result, 10, 64)
-		}
-		MariadbStatusData.ReadGrastated = true
 	}
+	MariadbStatusData.ReadGrastated = true
+	
 
 	result, _ = utils.ExecShell(`sed -n '/my_uuid:/ p' /var/lib/mysql/gvwstate.dat | sed -r 's/^.*my_uuid:\s*//'`)
 	result = strings.TrimRight(result, "\n")
