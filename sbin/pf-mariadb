@@ -271,10 +271,16 @@ sub attempt_start {
         fork_launch_mysql("standalone");
     }
     elsif(!_check_pid($MYSQLD_SPAWNER_PID) && -f "/var/lib/mysql/gvwstate.dat") {
-        fork_launch_mysql("dirty-shutdown");
-    }
-    elsif(_check_pid($MYSQLD_SPAWNER_PID)) {
-        print "Attempt_start another mariadb process $MYSQLD_SPAWNER_PID is exist.\n";
+        #dirty-shutdown also should check bootstrap flag
+        my $safe_to_bootstrap = `cat /var/lib/mysql/grastate.dat | grep 'safe_to_bootstrap: 1'`;
+        if($safe_to_bootstrap) {
+            print "This node is safe to bootstrap from dirty-shutdown. Starting in bootstrap mode.\n";
+            bootstrap_new_cluster();
+        }
+        else {
+            print "This node is not safe to bootstrap from dirty-shutdown. Starting in normal mode to connect to a bootstrapped peer.\n";
+            fork_launch_mysql("dirty-shutdown-peers-alive-no-db-attempt-connect-to-bootstrapped");
+        }
     }
     else {
         startup_clean_shutdown();

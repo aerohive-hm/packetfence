@@ -28,7 +28,7 @@ func UpdateEventClusterJoinData(ctx context.Context, clusterData ClusterNetworks
 	nodeList := ClusterNew().FetchNodesInfo()
 	for _, node := range nodeList {
 		if node.Hostname == clusterData.Hostname {
-			msg := fmt.Sprintf("hostname (%s) is exsit.", clusterData.Hostname)
+			msg := fmt.Sprintf("hostname (%s) is exist.", clusterData.Hostname)
 			clusterRespData.Msg = msg
 			return errors.New(msg), clusterRespData
 		}

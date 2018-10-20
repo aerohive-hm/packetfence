@@ -336,7 +336,7 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 		oldip, oldmask := GetifaceIpInfo(ifname)
 		oldmasklen, _ := strconv.Atoi(oldmask)
 		if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
-			/*check ip if is exsit*/
+			/*check ip if is exist*/
 			info := fmt.Sprintf("UpdateVlanIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
 			log.LoggerWContext(context.Background()).Info(info)
 			if !IsIfaceActive(ifname) {
@@ -346,7 +346,7 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 				}
 			}
 			if oldip != ip && IsIpExists(ifname, ip) {
-				msg := fmt.Sprintf("%s is exsit in net", ip)
+				msg := fmt.Sprintf("%s is exist in net", ip)
 				return errors.New(msg)
 			}
 			err = DelIfaceIIpAddr(ifname, oldip)
@@ -367,9 +367,9 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 				return err
 			}
 		}
-		/*check ip if is exsit*/
+		/*check ip if is exist*/
 		if IsIpExists(ifname, ip) {
-			msg := fmt.Sprintf("%s is exsit in net", ip)
+			msg := fmt.Sprintf("%s is exist in net", ip)
 			DelVlanIface(ifname)
 			return errors.New(msg)
 		}
@@ -394,9 +394,9 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 			msg := fmt.Sprintf("new ip(%s) is not same net range with oldip(%s)", ip, oldip)
 			return errors.New(msg)
 		}
-		/*check ip if is exsit*/
+		/*check ip if is exist*/
 		if oldip != ip && IsIpExists(ifname, ip) {
-			msg := fmt.Sprintf("%s is exsit in net", ip)
+			msg := fmt.Sprintf("%s is exist in net", ip)
 			return errors.New(msg)
 		}
 		go doUpdateEthIface(ifname, ip, oldip, mask, gateway)
