@@ -385,7 +385,6 @@ func RestartMariadb(safeToBootstrap bool) {
 // Only monitor Mariadb do right starting and modify related parameters
 // But don't start or stop Mariadb here actively
 func MariadbStatusCheck() {	
-	count := 0
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Start Check Mariadb status Timer"))
 	ticker := time.NewTicker(time.Duration(20) * time.Second)
 	defer ticker.Stop()
@@ -406,13 +405,12 @@ func MariadbStatusCheck() {
 			
 			continue
 		} else {
-			count++
 			event.MariadbStatusData.DBState = event.MariadbFail
 			event.GetMyMariadbRecoveryData()
 			GetOtherNodesData()
 
 			//mariadb not start yet or initial setup mode, do nothing now
-			if !MysqldIsExisted() || ama.IsClusterJoinMode() {
+			if ama.IsClusterJoinMode() || !MysqldIsExisted()  {
 				continue
 			}
 
@@ -422,14 +420,15 @@ func MariadbStatusCheck() {
 					RestartMariadb(true)
 					continue
 				}
-				// do something if I am safe to bootstrap
-				if !MariadbStartNewCluster() {
-					RestartMariadb(true)
-					continue
-				}
 
 				if HaveOtherNodeDbAvailiable() {
 					RestartMariadb(false)
+					continue
+				}
+				
+				// do something if I am safe to bootstrap
+				if !MariadbStartNewCluster() {
+					RestartMariadb(true)
 					continue
 				}
 				
@@ -447,12 +446,14 @@ func MariadbStatusCheck() {
 				}
 
 				//Why I can't join, something wrong?
-				if HaveOtherNodeDbAvailiable() && count % 3 == 0  {
+				if HaveOtherNodeDbAvailiable() {
 					//TODO check mariadb-error.log to find some reason
 					log.LoggerWContext(ctx).Info(fmt.Sprintf("Other node mariadb is good, Why I can't join, something wrong"))
+					continue
 					
 				}
 			}
+
 			
 			// If I am doing right, wait other node doing right
 			//we have node that can safe to bootstrap, do nothing now
@@ -467,7 +468,7 @@ func MariadbStatusCheck() {
 
 			//don't know who have most advance node, try me
 			if !MostAdvancedNodeExist() {
-				RestartMariadb(true)
+				ModifygrastateFileSafeToBootstrap()
 			}
 		}
 	}
