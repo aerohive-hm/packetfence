@@ -250,7 +250,7 @@ sub print_status {
             if ($isManaged && !$manager->optional) {
                 print "$service\t$colors->{error}stopped   ".$self->pid."$colors->{reset}\n";
             } else {
-                print "$service\t$colors->{warning}stopped   ".$self->pid."$colors->{reset}\n";
+                print "$service\t$colors->{warning}optional  ".$self->pid."$colors->{reset}\n";
             }
             $loop = $FALSE;
         }
