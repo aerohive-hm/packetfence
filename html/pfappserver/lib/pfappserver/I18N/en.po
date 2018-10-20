@@ -7471,7 +7471,7 @@ msgid "Device Type"
 msgstr ""
 
 # html/pfappserver/root/node/search.tt
-msgid "Device description"
+msgid "Device Description"
 msgstr ""
 
 # html/pfappserver/root/config/filters/index.tt
@@ -11076,7 +11076,7 @@ msgstr "Device Group"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch_mac"
-msgstr "Device Mac"
+msgstr "Device MAC"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch_port"
