@@ -429,6 +429,13 @@ do
   cp $file "$(dirname $file)/$(basename $file .example)"
 done
 
+# build UI
+pushd .
+cd html/pfappserver/root/static
+make vendor dev
+grunt --stack dist
+popd
+
 %install
 %{__rm} -rf $RPM_BUILD_ROOT
 # systemd targets
