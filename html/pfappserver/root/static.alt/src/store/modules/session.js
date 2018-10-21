@@ -58,6 +58,16 @@ const getters = {
 }
 
 const actions = {
+  load: ({state, dispatch}) => {
+    if (state.token) {
+      if (!state.username) {
+        return dispatch('update', state.token)
+      }
+      return Promise.resolve()
+    } else {
+      return Promise.reject(new Error('No token'))
+    }
+  },
   update: ({commit, dispatch}, token) => {
     localStorage.setItem(STORAGE_TOKEN_KEY, token)
     api.setToken(token)
@@ -69,7 +79,7 @@ const actions = {
           let target = ''
           for (const currentAction of ADMIN_ROLES_ACTIONS) {
             if (role.toLowerCase().endsWith(currentAction)) {
-              action = currentAction
+              action = currentAction.replace(/_/g, '-')
               target = role.substring(0, role.length - action.length - 1).toLowerCase()
               break
             }

@@ -3,7 +3,7 @@
         <b-col md="8" lg="6" xl="4">
             <b-form v-on:submit.prevent="login">
                 <b-card no-body>
-                    <b-card-header v-t="'Log in to A3 Administration'"></b-card-header>
+                    <b-card-header v-t="'Login to PacketFence Administration'"></b-card-header>
                     <b-card-body>
                         <b-alert :variant="message.level" :show="message.text">
                             {{ $t(message.text) }}

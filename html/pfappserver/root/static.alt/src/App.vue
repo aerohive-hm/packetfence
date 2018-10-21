@@ -3,7 +3,7 @@
     <b-navbar toggleable="md" fixed="top" type="dark" class="navbar-expand-md bg-dark">
       <b-nav-toggle target="navbar"></b-nav-toggle>
       <b-navbar-brand>
-        <img src="/static/img/aerohive-logo.svg"/>
+        <img src="/static/img/packetfence.white.small.svg"/>
       </b-navbar-brand>
       <b-collapse is-nav id="navbar" v-if="isAuthenticated">
         <b-navbar-nav>
@@ -55,14 +55,6 @@ export default {
     }
   },
   created () {
-    let token = this.$store.state.session.token
-    if (token) {
-      // Validate token by fetching token info
-      this.$store.dispatch('session/update', token)
-    } else {
-      // No token -- go back to login
-      this.$router.push('/')
-    }
     this.$store.dispatch('session/setLanguage', { i18n: this.$i18n, lang: 'en' })
   }
 }
