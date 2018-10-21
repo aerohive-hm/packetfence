@@ -3,47 +3,30 @@
 [% ELSE %]
 [% SET action_uri = c.req.uri %]
 [% END %]
-
 <style>
-#ca_cert_path_upload, #server_cert_path_upload{
-	width: 0.1px;
-	height: 0.1px;
-	opacity: 0;
-	overflow: hidden;
-	position: absolute;
-	z-index: -1;
+#success-alert, #error-alert{
+  display: none;
+  z-index: 15;
+  position: fixed;
+  top: 60px;
 }
 
-#ca_cert_label_upload, #server_cert_label_upload{
-  margin-right: 15px;
+#success-alert{
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+  color: #468847;
 }
 
-#ca_cert_path_upload + label, #server_cert_path_upload + label {
-  font-size: 1.25em;
-  font-weight: 700;
-  color: white;
-  background-color: #333;
-  display: inline-block;
-  padding-top: 6px;
-  padding-bottom: 6px;
-  width: 300px;
-  text-align: center;
+#error-alert{
+  background-color: #f2dede;
+  border-color: #eed3d7;
+  color: #b94a48;
 }
-
-#ca_cert_path_upload + label:hover, #server_cert_path_upload + label:hover {
-  background-color: gray;
-}
-
-#caSubjNewlabel, #servSubjNewlabel{
-  display: inline-block;
-  white-space: nowrap;
-  width: 200px;
-  overflow-y: hidden;
-  overflow-x: hidden;
-}
-
 </style>
+
 <form name="modalItem" id="pki_form" class="form-horizontal form-condensed" action="[% action_uri %]" method="post">
+  <div id="success-alert"><div style="padding: 10px;" id="successMessage"></div></div>
+  <div id="error-alert"><div style="padding: 10px;" id="errorMessage"></div></div>
   [%- IF item.id %]<input type="hidden" name="id" value="[% item.id | html %]">[% END %]
   <div class="modal-header">
     <a class="close" data-dismiss="modal">&times;</a>
