@@ -434,6 +434,7 @@ pushd .
 cd html/pfappserver/root/static
 make vendor dev
 grunt --stack dist
+rm -rf bower_components node_modules
 popd
 
 %install
