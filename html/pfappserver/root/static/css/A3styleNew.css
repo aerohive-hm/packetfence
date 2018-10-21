@@ -203,6 +203,7 @@ button, input, select, textarea {
   -webkit-appearance: none;
   z-index: 1;
 }
+/*  */
 #client_cert_path:after, #client_key_path:after, #ca_cert_path:after, #server_cert_path:after {
   /* hide the no file chosen text */
   background-color: #FFF;
@@ -251,7 +252,7 @@ button, input, select, textarea {
     line-height: 25px;
     text-indent: 10px;
     pointer-events: none;
-} */
+}
 
 @media (min-width: 979px) and (max-width: 1199px) {
   img {
