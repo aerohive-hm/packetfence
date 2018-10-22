@@ -56,7 +56,7 @@ Inverse inc. <info@inverse.ca>
 
 Copyright (C) 2005-2018 Inverse inc.
 
-`=cut
+=cut
 
 1;
 
