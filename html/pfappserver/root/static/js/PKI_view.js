@@ -32,6 +32,16 @@ $(document).ready(function(){
         if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0)){
             $("#ca_cert_path_upload").after(caViewMore);
             $("#server_cert_path_upload").after(servViewMore);
+            console.log();
+
+            $.when(readCert(caFileExists.value)).done(function(caInfo){
+                var cleanCaInfo = caInfo.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
+                caViewMore.setAttribute("data-content", cleanCaInfo);
+            });
+            $.when(readCert(serverFileExists.value)).done(function(serverInfo){
+              var cleanServerInfo = serverInfo.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
+                servViewMore.setAttribute("data-content", cleanServerInfo);
+            });
         }
 
 //*********** info for view more ***************//
@@ -54,18 +64,17 @@ $(document).ready(function(){
         //for clone
             var cloneCAFile = updateCloneFiles(caFile, pki_provider_name.value, 'CA');
             var cloneServFile = updateCloneFiles(serverFile, pki_provider_name.value, 'Server');
-            console.log("in clone");
-            $.when(updateCAFile, updateServFile).done(function(caFilePath, servFilePath){
+            if (caFile.value.length != 0 || serverFile.value.length != 0){
+                $.when(cloneCAFile, cloneServFile).done(function(caFilePath, servFilePath){
                     caFileExists.value = caFilePath[0].filePath;
                     serverFileExists.value = servFilePath[0].filePath;
                     $('form').submit();
-                }
-            });
+                });
+            } else { $('form').submit(); }
         } else if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name == null) {
         //for update
               var updateCAFile = updateCloneFiles(caFile, pki_provider_id, 'CA');
               var updateServFile = updateCloneFiles(serverFile, pki_provider_id, 'Server');
-              console.log("in update");
               //if only ca file update
               if (caFile.value.length != 0 && serverFile.value.length == 0){
                   console.log("only ca file update");
@@ -97,20 +106,18 @@ $(document).ready(function(){
             } else { /*nothing update*/ $('form').submit(); }
         } else if ((caFile.value.length != 0 && serverFile.value.length != 0) && (caFileExists.value.length == 0 && serverFileExists.value.length == 0)){
         //for create
-            console.log("in create");
             $.when(processFiles(pki_provider_name.value)).done(function(filePaths){
                  caFileExists.value = filePaths.CA_file_path;
                  serverFileExists.value = filePaths.Server_file_path;
                  $('form').submit();
             });
-            // processFiles(pki_provider_name.value);
         } else {
 
         }
     }); //end of click save button NEW NEW NEW
 
     // API CALL RESPONSE: {pki_provider_name, [file1,file2]}
-    //input : array [caFile, serverFile]
+    //input : array [caFile, serverFile] for create
     function processFiles(pki_provider_name){
         console.log("inprocessfiles");
         var base_url = window.location.origin;
@@ -153,16 +160,16 @@ $(document).ready(function(){
     });
 
     //******************** download button *********************//
-    document.getElementById("download_button").addEventListener("click", function(e){
-        e.preventDefault();
-
-        $.when(downloadCert("pki_provider")).done(function(downloadFileInfo){
-              //if ca : ca.PEM
-              //if server: server.pem
-        //     downloadFile("server.crt", downloadFileInfo);
-        // });
-        }, false);
-    )};
+    // document.getElementById("download_button").addEventListener("click", function(e){
+    //     e.preventDefault();
+    //
+    //     $.when(downloadCert("pki_provider")).done(function(downloadFileInfo){
+    //           //if ca : ca.PEM
+    //           //if server: server.pem
+    //     //     downloadFile("server.crt", downloadFileInfo);
+    //     // });
+    //     }, false);
+    // )};
 }); // end of document ready
 
 
@@ -297,16 +304,17 @@ function downloadFile (fileName, data){
 
 function readCert(filePath){
     var base_url = window.location.origin;
+    var filePathData = {'cert_path' : filePath}
+
     return $.ajax({
         type: 'GET',
-        url: base_url + '/readCert/' + "?qualifier=" + filePath,
+        data: filePathData,
+        dataType: 'json',
+        url: base_url + '/readCert/' + "?qualifier=pki-provider",
         success: function(data){
-            //https_key_view_more || https_serv_view_more,
-            //eap_key_view_more || eap_serv_view_more || eap_ca_view_more
-            caViewMore.setAttribute("data-content", data.CN_CA + '<br><br>' + CA_INFO);
-            servViewMore.setAttribute("data-content", data.CN_Server + '<br><br>' + Server_INFO);
         },
         error: function(data){
+            console.log("readcert error: ");  console.log(data);
             document.getElementById('errorMessage').innerHTML = "Failed to receive info about certificates/key.";
             $("#success-alert").show();
             setTimeout(function(){
