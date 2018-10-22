@@ -58,6 +58,7 @@ func DeleteSysIdbyHost(hostname string) error {
 	return db.Exec(sql)
 
 }
+
 func QueryDBClusterIpSet() string {
 	var ctx = context.Background()
 
@@ -82,3 +83,30 @@ func QueryDBClusterIpSet() string {
 
 	return strValue
 }
+
+
+func QueryDBPrimaryStatus() string {
+	var ctx = context.Background()
+
+	tmpDB := new(A3Db)
+	err := tmpDB.DbInit()
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Open database error: " + err.Error())
+		return ""
+	}
+	db := tmpDB.Db
+	defer db.Close()
+
+	var strName, strValue string
+	row := db.QueryRow("show status like 'wsrep_cluster_status'")
+	err = row.Scan(&strName, &strValue)
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Query database wsrep_cluster_status error: " + err.Error())
+		return ""
+	}
+
+	log.LoggerWContext(ctx).Info("Query wsrep_cluster_status: " + strValue)
+
+	return strValue
+}
+

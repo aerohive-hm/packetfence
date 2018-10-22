@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"time"
+	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/database"
@@ -20,21 +21,6 @@ import (
 
 var ctx = context.Background()
 
-// Query DB status
-func MariadbIsActive() bool {	
-	sql := []amadb.SqlCmd{
-		{
-			Sql: `show status like 'wsrep_cluster_status'`,
-		},
-	}
-	db := new(amadb.A3Db)	
-	err := db.Exec(sql)
-	if err != nil {
-		log.LoggerWContext(ctx).Error("access db error: " + err.Error())
-		return false
-	}
-	return true
-}
 
 
 func GetPeerMariadbRecoveryData(ip string)  {
@@ -76,6 +62,55 @@ func GetPeerMariadbRecoveryData(ip string)  {
 	return 
 }
 
+
+
+func SendMariadbRecoveryState(ip, State string) error {
+	data := new(event.PostDbStatusData)
+
+	data.State = State
+	data.Code = "ok"
+	data.SendIp = utils.GetOwnMGTIp()
+
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/dbstatus", ip)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Post mariadb state change to %s", url))
+
+
+	client := new(apibackclient.Client)
+	client.Host = ip
+	jsonData, err := json.Marshal(&data)
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return err
+	}
+
+	err = client.ClusterSend("POST", url, string(jsonData))
+
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+	}
+
+	return err
+}
+
+
+func NotifyClusterBootStrapChange(state string) error {
+	nodeList := a3config.ClusterNew().FetchNodesInfo()
+	ownMgtIp := utils.GetOwnMGTIp()
+
+	for _, node := range nodeList {
+		if node.IpAddr == ownMgtIp {
+			continue
+		}
+
+		err := SendMariadbRecoveryState(node.IpAddr, state)
+		if err != nil {
+			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
+		}
+	}
+
+	return nil
+}
+
 func GetOtherNodesData() {
 
 	nodes := a3config.ClusterNew().FetchNodesInfo()
@@ -101,26 +136,40 @@ func HaveOtherNodeDbAvailiable() bool {
 	return false
 }
 
-// check if cluster have bootstrap node
-func SafeToBootstrapNodeExist() bool {
 
-	// Must fetch all nodes information then make the judgement
+func IhaveAllOtherNodeInfo() bool {
+
 	nodes := a3config.ClusterNew().FetchNodesInfo()
+	total := 0
+	IhaveNodeCnt := 0
 	for _, n := range nodes {
-		haveNodeInfo := false
+		total++
 		if n.IpAddr == utils.GetOwnMGTIp() {
+			IhaveNodeCnt++
 			continue
 		}
 		for _, node := range event.MariadbStatusData.OtherNode {
 			if node.IpAddr == n.IpAddr {
-				haveNodeInfo = true
+				IhaveNodeCnt++
 				break
 			}
 		}
-		if !haveNodeInfo {
-			log.LoggerWContext(ctx).Info(fmt.Sprintf("Don't have all nodes information, suppose we have safe_to_bootstrap node, check it later"))
-			return true
-		}
+	}
+
+	if IhaveNodeCnt != total {
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("Don't have all nodes information, check it later"))
+		return false
+	}
+
+	return true
+}
+
+// check if cluster have bootstrap node
+func SafeToBootstrapNodeExist() bool {
+
+	// Must fetch all nodes information then make the judgement
+	if !IhaveAllOtherNodeInfo() {
+		return true
 	}
 
 	
@@ -149,23 +198,10 @@ func SafeToBootstrapNodeExist() bool {
 func IamSafeToBootstrap() bool {
 	OtherNodeIsSafeToBootstrap := false
 
+
 	// Must fetch all nodes information then make the judgement
-	nodes := a3config.ClusterNew().FetchNodesInfo()
-	for _, n := range nodes {
-		haveNodeInfo := false
-		if n.IpAddr == utils.GetOwnMGTIp() {
-			continue
-		}
-		for _, node := range event.MariadbStatusData.OtherNode {
-			if node.IpAddr == n.IpAddr {
-				haveNodeInfo = true
-				break
-			}
-		}
-		if !haveNodeInfo {
-			log.LoggerWContext(ctx).Info(fmt.Sprintf("Don't have all nodes information, check it later"))
-			return false
-		}
+	if !IhaveAllOtherNodeInfo() {
+		return false
 	}
 
 	if event.MariadbStatusData.SafeToBootstrap != 1 {
@@ -207,6 +243,9 @@ func IamSafeToBootstrap() bool {
 
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("my seqno=%d, I am safe_to_bootstrap", event.MariadbStatusData.GrastateSeqno))
+	if OtherNodeIsSafeToBootstrap {
+		NotifyClusterBootStrapChange("YouAreNotSafeToBootstrap")
+	}
 	return true
 }
 
@@ -216,24 +255,9 @@ func IamSafeToBootstrap() bool {
 func MostAdvancedNodeExist() bool {
 
 	// Must fetch all nodes information then make the judgement
-	nodes := a3config.ClusterNew().FetchNodesInfo()
-	for _, n := range nodes {
-		haveNodeInfo := false
-		if n.IpAddr == utils.GetOwnMGTIp() {
-			continue
-		}
-		for _, node := range event.MariadbStatusData.OtherNode {
-			if node.IpAddr == n.IpAddr {
-				haveNodeInfo = true
-				break
-			}
-		}
-		if !haveNodeInfo {
-			log.LoggerWContext(ctx).Info(fmt.Sprintf("Don't have all nodes information, check it later"))
-			return true
-		}
+	if !IhaveAllOtherNodeInfo() {
+		return true
 	}
-	
 
 
 	for _, node := range event.MariadbStatusData.OtherNode {
@@ -252,22 +276,8 @@ func MostAdvancedNodeExist() bool {
 func IamMostAdvancedNode() bool {
 
 	// Must fetch all nodes information then make the judgement
-	nodes := a3config.ClusterNew().FetchNodesInfo()
-	for _, n := range nodes {
-		haveNodeInfo := false
-		if n.IpAddr == utils.GetOwnMGTIp() {
-			continue
-		}
-		for _, node := range event.MariadbStatusData.OtherNode {
-			if node.IpAddr == n.IpAddr {
-				haveNodeInfo = true
-				break
-			}
-		}
-		if !haveNodeInfo {
-			log.LoggerWContext(ctx).Info(fmt.Sprintf("Don't have all nodes information, check it later"))
-			return false
-		}
+	if !IhaveAllOtherNodeInfo() {
+		return false
 	}
 	
 	for _, node := range event.MariadbStatusData.OtherNode {
@@ -297,10 +307,7 @@ func IamMostAdvancedNode() bool {
 	return false
 }
 
-func KillMysqld() {
-	utils.ExecShell(`(ps -ef | grep mysqld | grep -v grep | awk '{print $2}' | xargs kill -9) &>/dev/null`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Killed Mariadb!!!"))
-}
+
 
 //check if mysqld already start
 func MysqldIsExisted() bool {
@@ -318,7 +325,6 @@ func MariadbStartNewCluster() bool {
 		return false
 	}
 	
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("find wsrep-new-cluster return=%s!!!", result))
 	if len(result) == 0 {
 		return false
 	}
@@ -351,35 +357,63 @@ func CheckMariadbErrorAddressInUse() bool {
 }
 
 
-func ModifygrastateFileSafeToBootstrap() {
-	utils.ExecShell(`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 1/' /var/lib/mysql/grastate.dat`)
-	event.MariadbStatusData.SafeToBootstrap = 1
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA modify safe_to_bootstrap=1 for /var/lib/mysql/grastate.dat!!!"))
-}
-
-func ModifygrastateFileNotSafeToBootstrap() {
-	utils.ExecShell(`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 0/' /var/lib/mysql/grastate.dat`)
-	event.MariadbStatusData.SafeToBootstrap = 0
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA modify safe_to_bootstrap=0 for /var/lib/mysql/grastate.dat!!!"))
-}
-
-
-
-func RecoveryStartedMariadb() {
-	utils.ExecShell(`systemctl start packetfence-mariadb.service`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Starting Mariadb!!!"))
-}
-
-
-
-func RestartMariadb(safeToBootstrap bool) {
-	KillMysqld()
-	if safeToBootstrap {
-		ModifygrastateFileSafeToBootstrap()
-	} else {
-		ModifygrastateFileNotSafeToBootstrap()
+//check mariadb_error.log
+//add more case check later
+func CheckMariadbErrorStateNotRecoverable() bool {
+	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log|sed -n '/gcs connect failed: State not recoverable/ p'`)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
+	if len(result) == 0 {
+		return false
 	}
-	RecoveryStartedMariadb()
+
+	result, _ = utils.ExecShell(`cat /var/lib/mysql/gvwstate.dat`)
+	
+	if len(result) == 0 {
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("empty file: /var/lib/mysql/gvwstate.dat, delete it!!!"))
+		utils.ExecShell(`rm -fr /var/lib/mysql/gvwstate.dat`)
+		
+	}
+	
+	return false
+}
+
+
+func CheckClusterDBHealthy() {
+	alive := 0
+	total := 0
+	dbgoodCnt := 0
+
+
+	if (event.MariadbStatusData.DBIsHealthy) {
+		return
+	}
+	dbClusterList := amadb.QueryDBClusterIpSet()
+	nodes := a3config.ClusterNew().FetchNodesInfo()
+	for _, n := range nodes {
+		total++
+		if strings.Contains(dbClusterList, n.IpAddr) {
+				alive++
+		} 	
+	}
+	
+	if alive == total {
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster mariadb is healthy!!"))
+		event.MariadbStatusData.DBIsHealthy = true
+		return
+	} 
+
+	GetOtherNodesData()	
+	for _, node := range event.MariadbStatusData.OtherNode {
+		if node.DBState == event.MariadbGood {
+			dbgoodCnt++
+		}
+	}
+
+	if dbgoodCnt == total {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("cluster mariadb are split-brain, My brain have %s, do something here!!!", dbClusterList))
+		return
+	}
+
 }
 
 // Only monitor Mariadb do right starting and modify related parameters
@@ -395,14 +429,16 @@ func MariadbStatusCheck() {
 	for _ = range ticker.C {
 		if !utils.IsFileExist(utils.A3CurrentlyAt) {
 			continue
-		}
-		if MariadbIsActive() {
+		}		
+		if event.MariadbIsActive() {
 			if event.MariadbStatusData.DBState == event.MariadbFail {
 				//I am good, reset those grastate data
 				event.ResetGrastateData()
 			}
 			event.MariadbStatusData.DBState = event.MariadbGood
-			
+			if a3config.ClusterNew().CheckClusterEnable() {
+				CheckClusterDBHealthy()
+			}
 			continue
 		} else {
 			event.MariadbStatusData.DBState = event.MariadbFail
@@ -416,34 +452,36 @@ func MariadbStatusCheck() {
 
 			// Make sure I am doing right
 			if IamSafeToBootstrap() {
-				if CheckMariadbErrorTCLOG() || CheckMariadbErrorAddressInUse() {
-					RestartMariadb(true)
+				if CheckMariadbErrorTCLOG() || CheckMariadbErrorAddressInUse() || CheckMariadbErrorStateNotRecoverable() {
+					event.RestartMariadb(true)
 					continue
 				}
 
 				if HaveOtherNodeDbAvailiable() {
-					RestartMariadb(false)
+					event.RestartMariadb(false)
 					continue
 				}
 				
 				// do something if I am safe to bootstrap
 				if !MariadbStartNewCluster() {
-					RestartMariadb(true)
+					event.RestartMariadb(true)
 					continue
 				}
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("I am safe_to_bootstrap, run mysqld with wsrep-new-cluster!!!"))
 				
 			} else {
 			
-				if CheckMariadbErrorTCLOG() || CheckMariadbErrorAddressInUse() {
-					RestartMariadb(false)
+				if CheckMariadbErrorTCLOG() || CheckMariadbErrorAddressInUse() || CheckMariadbErrorStateNotRecoverable() {
+					event.RestartMariadb(false)
 					continue
 				}
 				// I should not run with wsrep-new-cluster
 				// change something to make it right
 				if MariadbStartNewCluster() {
-					RestartMariadb(false)
+					event.RestartMariadb(false)
 					continue
 				}
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("I am NOT safe_to_bootstrap, run mysqld with normal!!!"))
 
 				//Why I can't join, something wrong?
 				if HaveOtherNodeDbAvailiable() {
@@ -463,12 +501,15 @@ func MariadbStatusCheck() {
 
 			// All nodes doing right, still not work, pick one as master
 			if IamMostAdvancedNode() {
-				RestartMariadb(true)
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("I am most advanced node, run mysqld with wsrep-new-cluster!!!"))
+				event.RestartMariadb(true)
 			}
 
 			//don't know who have most advance node, try me
-			if !MostAdvancedNodeExist() {
-				ModifygrastateFileSafeToBootstrap()
+			if !MostAdvancedNodeExist() {			
+				NotifyClusterBootStrapChange("YouAreNotSafeToBootstrap")
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("I choose me as most advanced node, run mysqld with wsrep-new-cluster!!!"))
+				event.RestartMariadb(true)
 			}
 		}
 	}

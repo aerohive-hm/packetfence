@@ -13,6 +13,8 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/ama/database"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 
 )
 
@@ -34,6 +36,7 @@ func ClusterDBStatusNew(ctx context.Context) crud.SectionCmd {
 const (
 	MysqlGrastateFile  = "/var/lib/mysql/grastate.dat"
 	MysqlGvwstateFile  = "/var/lib/mysql/gvwstate.dat"
+	MariadbHealth            = "MariadbHealth"
 	MariadbGood              = "MariadbGood"
 	MariadbFail              = "MariadbFail"
 )
@@ -48,6 +51,7 @@ type MariadbNodeInfo struct {
 }
 
 type MariadbRecoveryData struct {
+	DBIsHealthy     bool
 	DBState         string
 	IpAddr          string 
 	ReadGrastated   bool  //read once time during DB failed state
@@ -58,10 +62,14 @@ type MariadbRecoveryData struct {
 	OtherNode []MariadbNodeInfo 
 }
 
-
+type PostDbStatusData struct {
+	Code   string `json:"code"`
+	State  string `json:"state"`
+	SendIp string `json:"ip"`
+}
 
 var MariadbStatusData MariadbRecoveryData
-
+var ctx = context.Background()
 
 func ResetGrastateData() {
 
@@ -77,7 +85,6 @@ func ResetGrastateData() {
 
 func GetMyMariadbRecoveryData() {
 	var result string
-	ctx := context.Background()
 
 	MariadbStatusData.IpAddr = utils.GetOwnMGTIp()
 
@@ -106,22 +113,44 @@ func GetMyMariadbRecoveryData() {
 	result, _ = utils.ExecShell(`sed -n '/my_uuid:/ p' /var/lib/mysql/gvwstate.dat | sed -r 's/^.*my_uuid:\s*//'`)
 	result = strings.TrimRight(result, "\n")
 	MariadbStatusData.MyUUID = result
-	result, _ = utils.ExecShell(`sed -n '/view_id:/ p' /var/lib/mysql/gvwstate.dat | sed -r 's/^.*view_id:\s*[0-9]\s*//;s/\s*[0-9]\s*$//'`)
+	result, _ = utils.ExecShell(`sed -n '/view_id:/ p' /var/lib/mysql/gvwstate.dat | sed -r 's/^.*view_id:\s*[0-9]*\s*//;s/\s*[0-9]*\s*$//'`)
 	result = strings.TrimRight(result, "\n")
 	MariadbStatusData.ViewID = result
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("My storemariadb recovery data %v", MariadbStatusData))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("My store mariadb recovery data %v", MariadbStatusData))
 
 	return
 }
 
+// Query DB status
+func MariadbIsActive() bool {	
+	result := amadb.QueryDBPrimaryStatus()
+	if len(result) == 0 {
+		return false
+	} 
+
+	if !a3config.ClusterNew().CheckClusterEnable() {
+		return true
+	}
+
+	if strings.Contains(result, "Primary") {
+		return true
+	} 
+	return false
+}
+
+
 // get status of primary server
 func handleGetDBStatus(r *http.Request, d crud.HandlerData) []byte {
-	var ctx = context.Background()
 	MyInfo := MariadbNodeInfo{}
 
 	GetMyMariadbRecoveryData()
 
 	MyInfo.IpAddr = utils.GetOwnMGTIp()
+	if MariadbIsActive() {
+		MariadbStatusData.DBState = MariadbGood
+	} else {
+		MariadbStatusData.DBState = MariadbFail
+	}
 	MyInfo.DBState = MariadbStatusData.DBState
 	MyInfo.GrastateSeqno = MariadbStatusData.GrastateSeqno
 	MyInfo.SafeToBootstrap = MariadbStatusData.SafeToBootstrap
@@ -136,20 +165,63 @@ func handleGetDBStatus(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
+func KillMysqld() {
+	utils.ExecShell(`(ps -ef | grep mysqld | grep -v grep | awk '{print $2}' | xargs kill -9) &>/dev/null`)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Killed Mariadb!!!"))
+}
+
+func ModifygrastateFileSafeToBootstrap() {
+	utils.ExecShell(`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 1/' /var/lib/mysql/grastate.dat`)
+	MariadbStatusData.SafeToBootstrap = 1
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA modify safe_to_bootstrap=1 for /var/lib/mysql/grastate.dat!!!"))
+}
+
+func ModifygrastateFileNotSafeToBootstrap() {
+	utils.ExecShell(`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 0/' /var/lib/mysql/grastate.dat`)
+	MariadbStatusData.SafeToBootstrap = 0
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA modify safe_to_bootstrap=0 for /var/lib/mysql/grastate.dat!!!"))
+}
+
+
+
+func RecoveryStartedMariadb() {
+	utils.ExecShell(`systemctl start packetfence-mariadb.service`)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Starting Mariadb!!!"))
+}
+
+
+
+func RestartMariadb(safeToBootstrap bool) {
+	KillMysqld()
+	if safeToBootstrap {
+		ModifygrastateFileSafeToBootstrap()
+	} else {
+		ModifygrastateFileNotSafeToBootstrap()
+	}
+	RecoveryStartedMariadb()
+}
+
 func handleUpdateDBStatus(r *http.Request, d crud.HandlerData) []byte {
-	var ctx = context.Background()
-	OtherNodeInfo := new(MariadbNodeInfo)
+	statusData := new(PostDbStatusData)
 	code := "ok"
 	ret := ""
 
-	err := json.Unmarshal(d.ReqData, OtherNodeInfo)
+	err := json.Unmarshal(d.ReqData, statusData)
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return []byte(err.Error())
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive mariadb status information from %s", OtherNodeInfo.IpAddr))
-	
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive mariadb state %s from %s", statusData.State, statusData.SendIp))
+	switch {
+	case statusData.State == "StopYourDB":
+		KillMysqld()
+	case statusData.State == "YouAreNotSafeToBootstrap":
+		RestartMariadb(false)		
+	default:
+		code = "fail"
+		ret = "Unkown status."
+	}
 
 	return crud.FormPostRely(code, ret)
 }
