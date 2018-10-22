@@ -302,7 +302,7 @@ $captiveportal_default_profile_templates_path = catdir ($captiveportal_profile_t
   httpd.proxy.reverse.access httpd.proxy.reverse.error
   httpd.webservices.access httpd.webservices.error
   packetfence.log pfbandwidthd.log pfdetect.log pfqueue.log
-  pfdhcplistener.log pfdns.log pfmon.log pfconfig.log httpd.admin.audit.log
+  pfdhcplistener.log pfdns.log pfmon.log pfconfig.log httpd.admin.audit.log pf-mariadb.log
 );
 
 @stored_config_files = (
