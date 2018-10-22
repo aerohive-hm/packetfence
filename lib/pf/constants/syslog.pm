@@ -191,6 +191,10 @@ our @SyslogInfo = (
         'name'      => 'pf-mariadb.log',
         'conditions' => [ '$programname == "pf-mariadb"' ],
     },
+    {
+        'name'      => 'a3-api-backend.log',
+        'conditions' => [ '$syslogtag contains "a3-api-backend"' ],
+    },
 );
 
 our $ALL_LOGS = join(",", map { $_->{name} } @pf::constants::syslog::SyslogInfo);
