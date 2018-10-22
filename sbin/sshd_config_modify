@@ -8,3 +8,9 @@ if [ $? -eq 0 ]; then
 else
     echo "ListenAddress $IP" >> $SSH_CONFIG
 fi
+
+#disallow netcfg user to ssh
+grep "^Match User netcfg" $SSH_CONFIG > /dev/null
+if [ $? -ne 0 ]; then
+    echo -e "Match User netcfg\n    PasswordAuthentication no" >> $SSH_CONFIG
+fi
