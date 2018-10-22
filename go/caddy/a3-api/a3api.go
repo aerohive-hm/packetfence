@@ -51,6 +51,7 @@ func setup(c *caddy.Controller) error {
 		setup flow
 	*/
 	go amac.Entry(ctx)
+	go apibackend.MariadbStatusCheck()
 
 	httpserver.GetConfig(c).AddMiddleware(func(next httpserver.Handler) httpserver.Handler {
 		A3api.Next = next
