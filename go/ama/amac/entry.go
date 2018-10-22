@@ -161,14 +161,6 @@ func Entry(ctx context.Context) {
 		select {
 		case msg = <-MsgChannel:
 			handleMsgFromUi(ctx, msg)
-
-		default:
-			status := GetConnStatus()
-			if status == AMA_STATUS_ONBOARDING_SUC {
-				time.Sleep(5 * time.Second)
-			} else {
-				time.Sleep(1 * time.Second)
-			}
 		}
 	}
 }
