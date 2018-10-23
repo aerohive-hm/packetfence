@@ -1,6 +1,6 @@
 [Unit]
 Description=A3 API Backend Service
-Wants=packetfence-base.target packetfence-config.service
+Wants=packetfence-redis-cache.service packetfence-config.service
 After=packetfence-redis-cache.service packetfence-config.service
 Before=packetfence-httpd.portal.service
 
@@ -12,4 +12,4 @@ Restart=on-failure
 Slice=packetfence.slice
 
 [Install]
-WantedBy=packetfence.target
+WantedBy=packetfence-base.target
