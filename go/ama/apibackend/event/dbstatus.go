@@ -132,7 +132,25 @@ func MariadbIsActive() bool {
 		return true
 	}
 
-	if strings.Contains(result, "Primary") {
+	if !strings.Contains(result, "non-Primary") && strings.Contains(result, "Primary") {
+		return true
+	} 
+	return false
+}
+
+
+// Query DB status
+func MariadbIsNonPrimary() bool {	
+	result := amadb.QueryDBPrimaryStatus()
+	if len(result) == 0 {
+		return false
+	} 
+
+	if !a3config.ClusterNew().CheckClusterEnable() {
+		return false
+	}
+
+	if strings.Contains(result, "non-Primary") {
 		return true
 	} 
 	return false
