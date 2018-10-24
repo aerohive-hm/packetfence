@@ -33,8 +33,8 @@ type ViolationParseStruct struct {
 }
 
 type ViolationReportData struct {
-	TableName string      `json:"ah_tablename"`
-	TimeStamp string      `json:"ah_timestamp"`
-	Vid       string      `json:"vid"`
-	Mac       string      `json:"mac"`	
+	TableName string `json:"ah_tablename"`
+	TimeStamp string `json:"ah_timestamp"`
+	Vid       string `json:"vid"`
+	Mac       string `json:"mac"`
 }

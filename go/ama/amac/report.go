@@ -237,7 +237,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		case "radius_audit_log":
 			var t report.RadauditParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			if (t.AuthStatus == "allow") {
+			if t.AuthStatus == "allow" {
 				t.AuthStatus = "Accept"
 			} else {
 				t.AuthStatus = "Reject"

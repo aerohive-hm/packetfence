@@ -96,7 +96,7 @@ type RadauditReportData struct {
 	TableName string `json:"ah_tablename"`
 	TimeStamp string `json:"ah_timestamp"`
 	UserName  string `json:"user_name"`
-	Mac       string `json:"mac"`	
+	Mac       string `json:"mac"`
 }
 
 type StringExtend struct {
