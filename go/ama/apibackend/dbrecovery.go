@@ -44,9 +44,15 @@ func GetPeerMariadbRecoveryData(ip string)  {
 	err = json.Unmarshal(client.RespData, &NodeData)
 
 
-	for _, node := range event.MariadbStatusData.OtherNode {
-		if node.IpAddr == NodeData.IpAddr {
-			node = NodeData	
+	for index, _ := range event.MariadbStatusData.OtherNode {
+		if event.MariadbStatusData.OtherNode[index].IpAddr == NodeData.IpAddr {
+			//node.DBState = NodeData.DBState
+			//node.GrastateSeqno = NodeData.GrastateSeqno
+			//node.SafeToBootstrap = NodeData.SafeToBootstrap
+			//node.MyUUID = NodeData.MyUUID
+			//node.ViewID = NodeData.ViewID
+			event.MariadbStatusData.OtherNode[index] = NodeData
+
 			updateOtherNode = true
 			break
 		}
@@ -400,7 +406,14 @@ func CheckClusterDBHealthy() {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster mariadb is healthy!!"))
 		event.MariadbStatusData.DBIsHealthy = true
 		return
-	} 
+	} else {
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster mariadb is NOT healthy!!"))
+		if !IamSafeToBootstrap() {
+			event.RestartMariadb(false)
+		}
+		return
+	}
+		
 
 	GetOtherNodesData()	
 	for _, node := range event.MariadbStatusData.OtherNode {
@@ -415,6 +428,21 @@ func CheckClusterDBHealthy() {
 	}
 
 }
+
+func CheckErrorAndRestartProcess() bool {
+
+	if CheckMariadbErrorTCLOG() || CheckMariadbErrorAddressInUse() || CheckMariadbErrorStateNotRecoverable() {
+		return true
+	}
+
+	if event.MariadbIsNonPrimary() {
+		return true
+	}
+
+	return false
+
+}
+
 
 // Only monitor Mariadb do right starting and modify related parameters
 // But don't start or stop Mariadb here actively
@@ -452,7 +480,7 @@ func MariadbStatusCheck() {
 
 			// Make sure I am doing right
 			if IamSafeToBootstrap() {
-				if CheckMariadbErrorTCLOG() || CheckMariadbErrorAddressInUse() || CheckMariadbErrorStateNotRecoverable() {
+				if CheckErrorAndRestartProcess() {
 					event.RestartMariadb(true)
 					continue
 				}
@@ -471,7 +499,7 @@ func MariadbStatusCheck() {
 				
 			} else {
 			
-				if CheckMariadbErrorTCLOG() || CheckMariadbErrorAddressInUse() || CheckMariadbErrorStateNotRecoverable() {
+				if CheckErrorAndRestartProcess() {
 					event.RestartMariadb(false)
 					continue
 				}
