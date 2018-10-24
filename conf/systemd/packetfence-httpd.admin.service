@@ -23,6 +23,7 @@ ExecStop=/bin/kill -WINCH ${MAINPID}
 # graceful stop. Normally, Systemd sends SIGTERM signal right after the
 # ExecStop, which would kill httpd. We are sending useless SIGCONT here to give
 # httpd time to finish.
+TimeoutStartSec=180
 TimeoutStopSec=60
 KillMode=process
 KillSignal=SIGCONT
