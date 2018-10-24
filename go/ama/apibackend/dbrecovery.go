@@ -401,6 +401,8 @@ func CheckClusterDBHealthy() {
 				alive++
 		} 	
 	}
+
+	GetOtherNodesData()	
 	
 	if alive == total {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster mariadb is healthy!!"))
@@ -415,7 +417,6 @@ func CheckClusterDBHealthy() {
 	}
 		
 
-	GetOtherNodesData()	
 	for _, node := range event.MariadbStatusData.OtherNode {
 		if node.DBState == event.MariadbGood {
 			dbgoodCnt++
