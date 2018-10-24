@@ -167,9 +167,8 @@ func (cloudConf *GetCloudConf) convertToJson(ctx context.Context) []byte {
 func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var handler CloudGetHandler
 	ctx := r.Context()
-	switchConf := a3config.ReadCloudConf(a3config.Switch)
 
-	if switchConf == "enable" {
+	if amac.GetAMAConnStatus() == "connected" {
 		nodesInfo := new(GetNodesInfo)
 		nodesInfo.getValue(ctx)
 		handler = nodesInfo
