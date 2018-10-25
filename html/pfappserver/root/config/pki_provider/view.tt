@@ -69,7 +69,7 @@
           <div id="certificateInfoBody"></div>
       </div>
       <div class="modal-footer">
-          <button class="btn btn-success download" id="download">Download Certificate</button> <button class="btn btn-primary" id="closeCertInfoWindow">Close</button>
+          <button class="btn btn-success" id="download">Download Certificate</button> <button class="btn btn-primary" id="closeCertInfoWindow">Close</button>
       </div>
   </div>
 

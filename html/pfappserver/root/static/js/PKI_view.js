@@ -37,6 +37,7 @@ $(document).ready(function(){
                 var cleanCaInfo = caInfo.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
                 document.getElementById("certificateInfoBody").innerHTML = cleanCaInfo;
             });
+            document.getElementById("download").setAttribute("id", "download ca-dl");
         });
         $("#serv_view_more").click(function(){
             $("#wholeCertWindow").slideDown("slow");
@@ -44,6 +45,7 @@ $(document).ready(function(){
                 var cleanServerInfo = serverInfo.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
                 document.getElementById("certificateInfoBody").innerHTML = cleanServerInfo;
             });
+            document.getElementById("download").setAttribute("id", "download server-dl");
         });
         $("#closeCertInfoWindow").click(function(e){
             e.preventDefault();
@@ -151,18 +153,20 @@ $(document).ready(function(){
     } //end of processfiles
 
     // ******************** download button *********************//
-    // document.getElementById("download").addEventListener("click", function(e){
-    //     console.log("ca download button click");
-    //     e.preventDefault();
-    //     if (this.id === "ca_cert_path_upload"){
-    //         certFilesList[0]= this.files;
-    //     } else {
-    //         certFilesList[1]= this.files;
-    //     }
-    //     $.when(downloadCert("pki_provider")).done(function(downloadFileInfo){
-    //           downloadFile("cacertificate.pem", downloadFileInfo);
-    //     });
-    // }, false);
+    document.getElementById("download").addEventListener("click", function(e){
+        e.preventDefault();
+        var pkiName = "";
+        if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name == null) {/*update*/ pkiName = pki_provider_id; }
+        if (this.id === "download ca-dl"){
+            $.when(downloadCert("pki-provider", caFileExists.value)).done(function(downloadFileInfo){
+                  downloadFile(pkiName + "-" + "ca-certificate.pem", downloadFileInfo);
+            });
+        } else {
+            $.when(downloadCert("pki-provider", serverFileExists.value)).done(function(downloadFileInfo){
+                  downloadFile(pkiName + "-" + "server-certificate.pem", downloadFileInfo);
+            });
+        }
+    }, false);
 
 }); // end of document ready
 
@@ -262,14 +266,16 @@ function updateCloneFiles(input, pki_provider_name, qualifier){
 //end of updateclone
 
 /******************* Download ********************/
-function downloadCert(qualifier){
-    console.log("in downloadCert");
+function downloadCert(qualifier, filePath){
     var base_url = window.location.origin;
-    var dataType = "json";
+    var fd = {'cert_path': filePath,
+              'qualifier' : "pki-provider"};
 
     return $.ajax({
         type: 'GET',
-        url: base_url + '/downloadCert/' + "?qualifier=" + qualifier,
+        dataType: 'json',
+        data: fd,
+        url: base_url + '/downloadCert/',
         success: function(data){
         },
         error: function(data){
@@ -283,7 +289,6 @@ function downloadCert(qualifier){
 }
 
 function downloadFile (fileName, data){
-    console.log("in download file");
 
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data.Cert_Content));
@@ -299,13 +304,14 @@ function downloadFile (fileName, data){
 //gets the cert info
 function readCert(filePath){
     var base_url = window.location.origin;
-    var filePathData = {'cert_path' : filePath}
+    var fd = {'cert_path' : filePath,
+              'qualifier' : "pki-provider"};
 
     return $.ajax({
         type: 'GET',
-        data: filePathData,
         dataType: 'json',
-        url: base_url + '/readCert/' + "?qualifier=pki-provider",
+        data: fd,
+        url: base_url + '/readCert/',
         success: function(data){
         },
         error: function(data){
