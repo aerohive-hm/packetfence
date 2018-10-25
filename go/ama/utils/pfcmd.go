@@ -126,9 +126,10 @@ func ForceNewCluster() {
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
 		`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 1/' /var/lib/mysql/grastate.dat`,
+		"systemctl start packetfence-mariadb",
 	}
 	ExecCmds(cmds)
-	//waitProcStart("mysqld")
+	waitProcStart("mysqld")
 
 	updateEtcd()
 
@@ -208,7 +209,6 @@ func RecoverDB() {
 	killPorc("pf-mariadb")
 	cmds := []string{
 		`systemctl restart packetfence-mariadb`,
-		//pfservice + "pf restart",
 	}
 
 	ExecCmds(cmds)

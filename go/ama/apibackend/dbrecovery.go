@@ -458,14 +458,18 @@ func MariadbStatusCheck() {
 	for _ = range ticker.C {
 		if !utils.IsFileExist(utils.A3CurrentlyAt) {
 			continue
-		}		
+		}	
+
+		if ama.IsClusterJoinMode() {
+			continue
+		}
 		if event.MariadbIsActive() {
 			if event.MariadbStatusData.DBState == event.MariadbFail {
 				//I am good, reset those grastate data
 				event.ResetGrastateData()
 			}
 			event.MariadbStatusData.DBState = event.MariadbGood
-			if a3config.ClusterNew().CheckClusterEnable() {
+			if a3config.ClusterNew().CheckClusterEnable() && event.ClusterNodesCnt() > 1 {
 				CheckClusterDBHealthy()
 			}
 			continue
@@ -475,7 +479,7 @@ func MariadbStatusCheck() {
 			GetOtherNodesData()
 
 			//mariadb not start yet or initial setup mode, do nothing now
-			if ama.IsClusterJoinMode() || !MysqldIsExisted()  {
+			if !MysqldIsExisted()  {
 				continue
 			}
 

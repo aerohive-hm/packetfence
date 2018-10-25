@@ -121,6 +121,17 @@ func GetMyMariadbRecoveryData() {
 	return
 }
 
+
+func ClusterNodesCnt() int {
+	nodes := a3config.ClusterNew().FetchNodesInfo()
+	total := 0
+	for _, _ = range nodes {
+		total++		
+	}
+
+	return total
+}
+
 // Query DB status
 func MariadbIsActive() bool {	
 	result := amadb.QueryDBPrimaryStatus()
@@ -135,6 +146,11 @@ func MariadbIsActive() bool {
 	if !strings.Contains(result, "non-Primary") && strings.Contains(result, "Primary") {
 		return true
 	} 
+
+	if strings.Contains(result, "Disconnected") && ClusterNodesCnt() == 1 {
+		return true
+	}
+	
 	return false
 }
 
