@@ -122,12 +122,13 @@ func ForceNewCluster() {
 	ExecCmds(cmds)
 	waitProcStop("mysqld")
 
+
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
-		A3Root + `/sbin/pf-mariadb --force-new-cluster &>/dev/null &`,
+		`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 1/' /var/lib/mysql/grastate.dat`,
 	}
 	ExecCmds(cmds)
-	waitProcStart("mysqld")
+	//waitProcStart("mysqld")
 
 	updateEtcd()
 
