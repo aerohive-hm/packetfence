@@ -23,7 +23,8 @@ $(document).ready(function(){
     }
 
     //unlink button press
-    document.getElementById('unlink-account').onclick = function(){
+    document.getElementById('unlink-account').onclick = function(e){
+        e.preventDefault();
         document.getElementById("link-account").disabled = false;
         document.getElementById("unlink-account").disabled = true;
         unlinkAerohiveAccount();
@@ -185,6 +186,7 @@ function linkAerohiveAccount(){
                 }, 3000);
                 document.getElementById("link-account").disabled = false;
             } else {
+                $(".disconnected").attr("style", "display:none");
                 $(".disconnected").hide();
                 $(".linked").show();
                 document.getElementById('successMessage').innerHTML = "Successfully linked";

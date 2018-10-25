@@ -11,6 +11,7 @@ Controller for admin roles management.
 =cut
 
 use HTTP::Status qw(:constants is_error is_success);
+use pf::constants qw($TRUE $FALSE );
 use Moose;  # automatically turns on strict and warnings
 use namespace::autoclean;
 
@@ -101,9 +102,6 @@ sub processCertificate :Path('processCertificate') :Args(1) {
 
     my $logger = get_logger();
 
-    $logger->info("inside acceptCertificate!!!");
-    $logger->info("\ntype: $type");
-
     $c->stash->{current_view} = 'JSON';
 
     if ($c->request->method eq 'POST'){
@@ -162,6 +160,108 @@ sub processCertificate :Path('processCertificate') :Args(1) {
         $c->stash->{filePath} = $target;
         $logger->info("Saved certificate at $target");
     }
+}
+
+sub uploadCerts :Path('uploadCerts') :Args(1) {
+    my ($self, $c) = @_;
+
+    my $logger = get_logger();
+
+    $c->stash->{current_view} = 'JSON';
+
+    if ($c->request->method eq 'POST'){
+        my $CA_file  = $c->request->{uploads}->{file}->[0]->{filename};
+        my $server_file  = $c->request->{uploads}->{file}->[1]->{filename};
+        my $name      = $c->request->{query_parameters}->{name};
+        my $CA_source    = $c->request->{uploads}->{file}->[0]->{tempname};
+        my $server_source    = $c->request->{uploads}->{file}->[1]->{tempname};
+        my $CA_file_path;
+        my $server_file_path;
+        my ($status, $status_msg) = _validate_cert($CA_file, $CA_source);
+        if (!is_success($status)) {
+            $c->response->status($status);
+            $c->stash->{status_msg} = $c->loc($status_msg);
+            return;
+        }
+
+        ($status, $status_msg) = _validate_cert($server_file, $server_source);
+        if (!is_success($status)) {
+            $c->response->status($status);
+            $c->stash->{status_msg} = $c->loc($status_msg);
+            return;
+        }
+
+        ($status, $status_msg, $CA_file_path) = _save_cert($CA_file, $CA_source, $name, "CA");
+        if (!is_success($status)) {
+            $c->response->status($status);
+            $c->stash->{status_msg} = $c->loc($status_msg);
+            return;
+        }
+
+        ($status, $status_msg, $server_file_path) = _save_cert($server_file, $server_source, $name, "Server");
+        if (!is_success($status)) {
+            $c->response->status($status);
+            $c->stash->{status_msg} = $c->loc($status_msg);
+            unlink($CA_file_path);
+            return;
+        }
+
+        $c->stash->{CA_file_path} = $CA_file_path;
+        $c->stash->{Server_file_path} = $server_file_path;
+        $c->response->status($STATUS::OK);
+        $logger->info("Saved CA-certificate at $CA_file_path, server-certificate at $server_file_path");
+    }
+}
+
+sub _validate_cert {
+    my ($filename, $source) = @_;
+    my $logger = get_logger();
+
+    my $filesize  = -s $source;
+    my $status_msg;
+    $logger->info("filename: $filename, size: $filesize, location: $source");
+
+    if ($filesize && $filesize > 1000000) {
+        $logger->warn("Uploaded file $filename is too large");
+        return $STATUS::BAD_REQUEST, "Certificate size is too big. Try again.";
+    }
+
+    my $ret = system("/usr/bin/openssl x509 -noout -text -in $source");
+
+    if (($ret >> 8) != 0) {
+        $logger->warn("Uploaded file $filename is not a certificate in PEM format");
+        return $STATUS::BAD_REQUEST, "File is invalid. Try again.";
+    }
+
+    return $STATUS::OK, "";
+
+
+}
+
+sub _save_cert {
+    my ($filename, $source, $pki_id, $qualifier) = @_;
+    my $logger = get_logger();
+    my $targetdir = '/usr/local/pf/conf/ssl/tls_certs';
+    my $target    = "$targetdir/$pki_id-$qualifier.pem";
+    my $template  = 'cert-XXXXXX';
+    my (undef, $tmp_filename) = tempfile($template, DIR => $targetdir, SUFFIX => ".tmp");
+
+    if ((system("/usr/bin/cp -f $source $tmp_filename") >> 8) != 0) {
+        $logger->warn("Failed to save file data: $!");
+        return $STATUS::INTERNAL_SERVER_ERROR, "Unable to install certificate. Try again.", undef;
+    }
+
+    if ( ! rename($tmp_filename, $target) ) {
+        $logger->warn("Failed to move certificate file $filename into place at $target: $!");
+        return $STATUS::INTERNAL_SERVER_ERROR, "Unable to install certificate. Try again.", undef;
+    }
+
+    if ( pf::cluster::add_file_to_cluster_sync($target) ) {
+        $logger->warn("Failed to save file $target to cluster sync");
+        return $STATUS::INTERNAL_SERVER_ERROR, "Unable to save certificate to cluster. Try again.", undef;
+    }
+
+    return $STATUS::OK, "", $target;
 }
 
 #find rand function
