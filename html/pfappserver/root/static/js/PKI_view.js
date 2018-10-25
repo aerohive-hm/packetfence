@@ -147,7 +147,11 @@ $(document).ready(function(){
               //if succeed, replace path in ca_path/server_path field on html
             },
             error: function(data){
-                alert(data.status_msg);
+                document.getElementById('errorMessage').innerHTML = data.responseJSON.status_msg;
+                $("#error-alert").show();
+                setTimeout(function (){
+                  $("#error-alert").slideUp(500);
+                }, 3000);
             }
         });
     } //end of processfiles
@@ -252,7 +256,7 @@ function updateCloneFiles(input, pki_provider_name, qualifier){
         success: function(data){
         },
         error: function(data){
-          var errMsg = data.responseText;
+          var errMsg = data.responseJSON.status_msg;
           if (errMsg != null ) {
               document.getElementById('errorMessage').innerHTML = errMsg;
               $("#error-alert").show();
