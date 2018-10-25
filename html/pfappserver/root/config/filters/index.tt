@@ -21,7 +21,7 @@
       <a href="#config/filters/dns-filters">[% l('DNS filters') %]</a>
     </li>
     <li [% IF tab == 'switch-filters' %]class="active"[% END %]>
-      <a href="#config/filters/switch-filters">[% l('Switch filters') %]</a>
+      <a href="#config/filters/switch-filters">[% l('Device filters') %]</a>
     </li>
   </ul>
 
@@ -39,4 +39,3 @@
 </div>
   </div>
 </div>
-
