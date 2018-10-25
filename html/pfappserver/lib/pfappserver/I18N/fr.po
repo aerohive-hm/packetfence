@@ -8021,7 +8021,7 @@ msgid "Switch description"
 msgstr "Description du commutateur"
 
 # html/pfappserver/root/config/filters/index.tt
-msgid "Switch filters"
+msgid "Device filters"
 msgstr "Filtres de commutateurs"
 
 # html/pfappserver/root/node/tab_Location_view.tt
