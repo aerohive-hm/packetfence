@@ -235,33 +235,32 @@ func ServiceStatus() string {
 	cmd := pfservice + "pf status"
 	ret, _ := ExecShell(cmd)
 	lines := strings.Split(ret, "\n")
+
 	if len(lines) < 1 {
 		return ""
 	}
 
 	toBeStarted := 0
 	started := 0
+
 	for _, l := range lines {
-		vals := strings.Split(l, "|")
-		if len(vals) < 3 {
-			continue
-		}
-		i, err := strconv.Atoi(vals[1])
-		if err != nil {
-			continue
-		}
+		vals := strings.Fields(l)
 
-		toBeStarted += i
-
-		i, err = strconv.Atoi(vals[2])
-		if err != nil || i <= 0 {
-			continue
+		if len(vals) == 3 {
+			if vals[1] == "started" {
+				toBeStarted += 1
+				started += 1
+			} else if vals[1] == "stopped" {
+				toBeStarted += 1
+			}
 		}
-		started++
 	}
 
-	percent := strconv.Itoa((started + 1) * 100 / toBeStarted)
-	return percent
+	if toBeStarted > 0 {
+		return strconv.Itoa(started * 100 / toBeStarted)
+	} else {
+		return ""
+	}
 }
 
 func SyncFromMaster(file string) error {

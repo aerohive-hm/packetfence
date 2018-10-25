@@ -1903,14 +1903,6 @@ msgstr ""
 msgid "Creating"
 msgstr ""
 
-# html/pfappserver/root/node/create.tt
-msgid "Creating Nodes .."
-msgstr ""
-
-# html/pfappserver/root/user/create.tt
-msgid "Creating Users .."
-msgstr ""
-
 # html/pfappserver/root/user/view.tt
 msgid "Custom Fields"
 msgstr ""
@@ -2113,11 +2105,8 @@ msgid "Dashboard"
 msgstr ""
 
 # html/pfappserver/root/graph/dashboard.tt
-msgid "Database"
-msgstr ""
-
 # html/pfappserver/root/configurator/database.tt
-msgid "Database Configuration"
+msgid "Database"
 msgstr ""
 
 # html/pfappserver/root/configuration/system_config.tt
@@ -3476,7 +3465,7 @@ msgid "If using the HTTP transport, specify the password for the Palo Alto API"
 msgstr ""
 
 # html/pfappserver/root/configurator/fingerbank.tt
-msgid "If you do not configure a Fingerbank API key, you will not have access to any device profiling capabilities in PacketFence"
+msgid "If you do not configure a Fingerbank API key, you will not have access to any device profiling capabilities in PacketFence."
 msgstr ""
 
 # html/pfappserver/root/configurator/database.tt
@@ -7482,7 +7471,7 @@ msgid "Device Type"
 msgstr ""
 
 # html/pfappserver/root/node/search.tt
-msgid "Device description"
+msgid "Device Description"
 msgstr ""
 
 # html/pfappserver/root/config/filters/index.tt
@@ -10933,6 +10922,10 @@ msgid "pfdetect_type_fortianalyser"
 msgstr "FortiAnalyzer"
 
 # pf::factory::detect::parser (Detect Parsers)
+msgid "pfdetect_type_nexpose"
+msgstr "Nexpose"
+
+# pf::factory::detect::parser (Detect Parsers)
 msgid "pfdetect_type_regex"
 msgstr "regex"
 
@@ -11083,7 +11076,7 @@ msgstr "Device Group"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch_mac"
-msgstr "Device Mac"
+msgstr "Device MAC"
 
 # profile.filter (Portal Profile Filters)
 msgid "profile.filter.switch_port"
@@ -11898,3 +11891,33 @@ msgstr ""
 # html/pfappserver/root/config/profile/files.tt
 msgid "{percent}% of {total_size}"
 msgstr ""
+
+msgid "default_actions"
+msgstr "Execute module default actions"
+
+msgid "set_unregdate"
+msgstr "Set unregistration date"
+
+msgid "no_action"
+msgstr "Don't do any action"
+
+msgid "unregdate_from_source"
+msgstr "Set unregistration date from the auth source"
+
+msgid "role_from_source"
+msgstr "Set role from the auth source"
+
+msgid "time_balance_from_source"
+msgstr "Set the time balance from the auth source"
+
+msgid "bandwidth_balance_from_source"
+msgstr "Set the bandwidth balance from the auth source"
+
+msgid "actions"
+msgstr "Actions"
+
+msgid "multi_source_ids"
+msgstr "Sources"
+
+msgid "network.connection_type_change_detection"
+msgstr "Detect changes in connection type"
