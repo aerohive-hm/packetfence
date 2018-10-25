@@ -8022,7 +8022,7 @@ msgstr "Description du commutateur"
 
 # html/pfappserver/root/config/filters/index.tt
 msgid "Device filters"
-msgstr "Filtres de commutateurs"
+msgstr "Filtres de appareils"
 
 # html/pfappserver/root/node/tab_Location_view.tt
 # html/pfappserver/root/node/view.tt
