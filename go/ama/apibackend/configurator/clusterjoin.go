@@ -74,7 +74,7 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	//check primary if the standalone
 	_, primaryclusterData := a3share.GetPrimaryClusterStatus(ctx)
 	if !primaryclusterData.Is_cluster {
-		ret = fmt.Sprintf("primary [%s] is standalone.", join.PrimaryServer)
+		ret = fmt.Sprintf("The A3 server at %s is not part of a cluster", join.PrimaryServer)
 		a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
@@ -87,24 +87,20 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 
 func CheckClusterAuthError(err error) string {
 	ret := ""
+	primaryip := a3config.ReadClusterPrimary()
 	/*Detailedly distinguish error messages for A3-466*/
 	if strings.Contains(err.Error(), "no route to host") {
-		ret = fmt.Sprintf("Ip [%s] unreachable error", a3config.ReadClusterPrimary())
-		return ret
+		ret = fmt.Sprintf("IP address %s is unreachable", primaryip)
+	} else if strings.Contains(err.Error(), "connection refused") {
+		ret = fmt.Sprintf("Unable to connect to services on host %s", primaryip)
+	} else if strings.Contains(err.Error(), "status code is 401") {
+		ret = fmt.Sprintf("Cluster admin credentials are not correct")
+	} else if strings.Contains(err.Error(), "no such host") {
+		ret = fmt.Sprintf("Unable to resolve host name %s", primaryip)
+	} else {
+		ret = err.Error()
 	}
-	if strings.Contains(err.Error(), "connection refused") {
-		ret = fmt.Sprintf("Connection refused error")
-		return ret
-	}
-	if strings.Contains(err.Error(), "status code is 401") {
-		ret = fmt.Sprintf("User/Password error")
-		return ret
-	}
-	if strings.Contains(err.Error(), "no such host") {
-		ret = fmt.Sprintf("DNS can not be resolved error")
-		return ret
-	}
-	return err.Error()
+	return ret
 }
 
 func GetEthMaskFromNetworksDate(NetworksDate a3config.NetworksData) string {
