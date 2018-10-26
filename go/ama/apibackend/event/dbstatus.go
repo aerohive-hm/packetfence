@@ -116,7 +116,7 @@ func GetMyMariadbRecoveryData() {
 	result, _ = utils.ExecShell(`sed -n '/view_id:/ p' /var/lib/mysql/gvwstate.dat | sed -r 's/^.*view_id:\s*[0-9]*\s*//;s/\s*[0-9]*\s*$//'`)
 	result = strings.TrimRight(result, "\n")
 	MariadbStatusData.ViewID = result
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("My store mariadb recovery data %v", MariadbStatusData))
+	
 
 	return
 }

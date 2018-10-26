@@ -38,7 +38,7 @@ func GetPeerMariadbRecoveryData(ip string)  {
 		return 
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read mariadb recovery data:%s",
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read other node mariadb recovery data:%s",
 		string(client.RespData)))
 
 	err = json.Unmarshal(client.RespData, &NodeData)
@@ -46,11 +46,6 @@ func GetPeerMariadbRecoveryData(ip string)  {
 
 	for index, _ := range event.MariadbStatusData.OtherNode {
 		if event.MariadbStatusData.OtherNode[index].IpAddr == NodeData.IpAddr {
-			//node.DBState = NodeData.DBState
-			//node.GrastateSeqno = NodeData.GrastateSeqno
-			//node.SafeToBootstrap = NodeData.SafeToBootstrap
-			//node.MyUUID = NodeData.MyUUID
-			//node.ViewID = NodeData.ViewID
 			event.MariadbStatusData.OtherNode[index] = NodeData
 
 			updateOtherNode = true
@@ -62,9 +57,7 @@ func GetPeerMariadbRecoveryData(ip string)  {
 	if !updateOtherNode {
 		event.MariadbStatusData.OtherNode = append(event.MariadbStatusData.OtherNode, NodeData)
 	}
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("My store mariadb recovery data %v", event.MariadbStatusData))
-	
-	// GET status from all peer nodes
+
 	return 
 }
 
@@ -126,6 +119,8 @@ func GetOtherNodesData() {
 		}
 		GetPeerMariadbRecoveryData(n.IpAddr)
 	}
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("My store mariadb recovery data %v", event.MariadbStatusData))
 
 }
 
@@ -318,8 +313,9 @@ func IamMostAdvancedNode() bool {
 //check if mysqld already start
 func MysqldIsExisted() bool {
 	result, _ := utils.ExecShell(`ps -ef | grep mysqld | grep -v grep`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mysqld exist or not return=%s!!!", result))
+
 	if len(result) == 0 {
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mysqld process and return nothing!!!"))
 		return false
 	}
 	return true
@@ -342,10 +338,12 @@ func MariadbStartNewCluster() bool {
 //add more case check later
 func CheckMariadbErrorTCLOG() bool {
 	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log | sed -n '/restart, or delete tc log and start mysqld with --tc-heuristic-recover/ p'`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
+
 	if len(result) == 0 {
 		return false
 	}
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
 	utils.ExecShell(`rm -fr /var/lib/mysql/tc.log`)
 	return true
 }
@@ -355,10 +353,10 @@ func CheckMariadbErrorTCLOG() bool {
 //add more case check later
 func CheckMariadbErrorAddressInUse() bool {
 	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log|sed -n '/gcs connect failed: Address already in use/ p'`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
 	if len(result) == 0 {
 		return false
 	}
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
 	return true
 }
 
@@ -367,11 +365,12 @@ func CheckMariadbErrorAddressInUse() bool {
 //add more case check later
 func CheckMariadbErrorStateNotRecoverable() bool {
 	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log|sed -n '/gcs connect failed: State not recoverable/ p'`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
+
 	if len(result) == 0 {
 		return false
 	}
 
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
 	result, _ = utils.ExecShell(`cat /var/lib/mysql/gvwstate.dat`)
 	
 	if len(result) == 0 {
@@ -477,6 +476,7 @@ func MariadbStatusCheck() {
 			event.MariadbStatusData.DBState = event.MariadbFail
 			event.GetMyMariadbRecoveryData()
 			GetOtherNodesData()
+	
 
 			//mariadb not start yet or initial setup mode, do nothing now
 			if !MysqldIsExisted()  {
