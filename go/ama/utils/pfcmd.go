@@ -287,7 +287,9 @@ func checkAndRestartNTPSync()  {
 		}
 		ExecCmds(cmds)
 	} else {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("NTP already synchronized"))
+		if !ama.SystemNTPSynced {
+			log.LoggerWContext(ctx).Info(fmt.Sprintf("NTP already synchronized"))
+		}
 		ama.SystemNTPSynced = true
 	}
 
@@ -306,8 +308,5 @@ func ForceNTPsynchronized() {
 
 	for _ = range ticker.C {		
 		checkAndRestartNTPSync()
-		if ama.SystemNTPSynced {
-			break
-		}
 	}
 }
