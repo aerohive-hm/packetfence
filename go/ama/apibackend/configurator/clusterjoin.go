@@ -91,21 +91,16 @@ func CheckClusterAuthError(err error) string {
 	/*Detailedly distinguish error messages for A3-466*/
 	if strings.Contains(err.Error(), "no route to host") {
 		ret = fmt.Sprintf("IP address %s is unreachable", primaryip)
-		return ret
-	}
-	if strings.Contains(err.Error(), "connection refused") {
+	} else if strings.Contains(err.Error(), "connection refused") {
 		ret = fmt.Sprintf("Unable to connect to services on host %s", primaryip)
-		return ret
-	}
-	if strings.Contains(err.Error(), "status code is 401") {
+	} else if strings.Contains(err.Error(), "status code is 401") {
 		ret = fmt.Sprintf("Cluster admin credentials are not correct")
-		return ret
-	}
-	if strings.Contains(err.Error(), "no such host") {
+	} else if strings.Contains(err.Error(), "no such host") {
 		ret = fmt.Sprintf("Unable to resolve host name %s", primaryip)
-		return ret
+	} else {
+		ret = err.Error()
 	}
-	return err.Error()
+	return ret
 }
 
 func GetEthMaskFromNetworksDate(NetworksDate a3config.NetworksData) string {
