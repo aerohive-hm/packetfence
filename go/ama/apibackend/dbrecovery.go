@@ -312,7 +312,7 @@ func IamMostAdvancedNode() bool {
 
 //check if mysqld already start
 func MysqldIsExisted() bool {
-	result, _ := utils.ExecShell(`ps -ef | grep mysqld | grep -v grep`)
+	result, _ := utils.ExecShell(`ps -ef | grep mysqld | grep -v grep`, false)
 
 	if len(result) == 0 {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mysqld process and return nothing!!!"))
@@ -322,7 +322,7 @@ func MysqldIsExisted() bool {
 }
 
 func MariadbStartNewCluster() bool {
-	result, err := utils.ExecShell(`ps -ef | grep mysqld | grep -v grep | sed -n '/wsrep-new-cluster/ p'`)
+	result, err := utils.ExecShell(`ps -ef | grep mysqld | grep -v grep | sed -n '/wsrep-new-cluster/ p'`, true)
 	if err != nil {
 		return false
 	}
@@ -337,14 +337,14 @@ func MariadbStartNewCluster() bool {
 //check mariadb_error.log
 //add more case check later
 func CheckMariadbErrorTCLOG() bool {
-	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log | sed -n '/restart, or delete tc log and start mysqld with --tc-heuristic-recover/ p'`)
+	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log | sed -n '/restart, or delete tc log and start mysqld with --tc-heuristic-recover/ p'`, true)
 
 	if len(result) == 0 {
 		return false
 	}
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
-	utils.ExecShell(`rm -fr /var/lib/mysql/tc.log`)
+	utils.ExecShell(`rm -fr /var/lib/mysql/tc.log`, true)
 	return true
 }
 
@@ -352,7 +352,7 @@ func CheckMariadbErrorTCLOG() bool {
 //check mariadb_error.log
 //add more case check later
 func CheckMariadbErrorAddressInUse() bool {
-	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log|sed -n '/gcs connect failed: Address already in use/ p'`)
+	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log|sed -n '/gcs connect failed: Address already in use/ p'`, true)
 	if len(result) == 0 {
 		return false
 	}
@@ -364,18 +364,18 @@ func CheckMariadbErrorAddressInUse() bool {
 //check mariadb_error.log
 //add more case check later
 func CheckMariadbErrorStateNotRecoverable() bool {
-	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log|sed -n '/gcs connect failed: State not recoverable/ p'`)
+	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log|sed -n '/gcs connect failed: State not recoverable/ p'`, true)
 
 	if len(result) == 0 {
 		return false
 	}
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
-	result, _ = utils.ExecShell(`cat /var/lib/mysql/gvwstate.dat`)
+	result, _ = utils.ExecShell(`cat /var/lib/mysql/gvwstate.dat`, true)
 	
 	if len(result) == 0 {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("empty file: /var/lib/mysql/gvwstate.dat, delete it!!!"))
-		utils.ExecShell(`rm -fr /var/lib/mysql/gvwstate.dat`)
+		utils.ExecShell(`rm -fr /var/lib/mysql/gvwstate.dat`, true)
 		
 	}
 	

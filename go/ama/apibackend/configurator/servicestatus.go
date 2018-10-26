@@ -39,7 +39,7 @@ func handleGetServiceStatus(r *http.Request, d crud.HandlerData) []byte {
 	if msg == "100" &&
 		!utils.IsFileExist(utils.A3CurrentlyAt) {
 		utils.UpdateCurrentlyAt()
-		go utils.ExecShell(`pfcmd service iptables restart`)
+		go utils.ExecShell(`pfcmd service iptables restart`, true)
 	}
 
 	return []byte(fmt.Sprintf(`{"code":"%s", "percentage":"%s"}`, code, msg))

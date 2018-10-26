@@ -236,5 +236,5 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 func UpdateClusterFile() {
 	cmd := `echo -e "\n/usr/local/pf/conf/cloud.conf\n` +
 		`/usr/local/pf/conf/clusterid.conf" >> /usr/local/pf/conf/cluster-files.txt`
-	utils.ExecShell(cmd)
+	utils.ExecShell(cmd, true)
 }

@@ -24,7 +24,7 @@ type Service struct {
 
 func pfExpire(ns string) {
 	cmd := pfconfig + " expire " + ns
-	ExecShell(cmd)
+	ExecShell(cmd, true)
 }
 
 func ReloadConfig() {
@@ -33,11 +33,11 @@ func ReloadConfig() {
 
 func restartPfconfig() (string, error) {
 	cmd := `setsid sudo service packetfence-config restart 2>&1`
-	return ExecShell(cmd)
+	return ExecShell(cmd, true)
 }
 
 func serviceCmdBackground(cmd string) (string, error) {
-	return ExecShell("setsid " + cmd + " &>/dev/null &")
+	return ExecShell("setsid " + cmd + " &>/dev/null &", true)
 }
 
 func UpdatePfServices() []Clis {
@@ -79,7 +79,7 @@ func initStandAloneDb() {
 	}
 	ExecCmds(cmds)
 	waitProcStop("mysqld")
-	ExecShell(`systemctl start packetfence-mariadb`)
+	ExecShell(`systemctl start packetfence-mariadb`, true)
 }
 
 // only Start Services during initial setup
@@ -103,12 +103,6 @@ func InitStartService(isCluster bool) error {
 	if err != nil {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
-
-	//TODO: need to restart http server? abort web service?
-	//cmds := []string{
-	//	pfservice + "httpd.admin restart",
-	//}
-	//ExecCmds(cmds)
 
 	return nil
 }
@@ -188,7 +182,7 @@ func SyncFromPrimary(ip, user, pass string) {
 	ExecCmds(cmds)
 	waitProcStop("pfconfig")
 
-	ExecShell(`systemctl start packetfence-config`)
+	ExecShell(`systemctl start packetfence-config`, true)
 	waitProcStart("pfconfig")
 
 	ama.SetClusterStatus(ama.SyncDB)
@@ -234,7 +228,7 @@ func RemoveFromCluster() {
 
 func ServiceStatus() string {
 	cmd := pfservice + "pf status"
-	ret, _ := ExecShell(cmd)
+	ret, _ := ExecShell(cmd, false)
 	lines := strings.Split(ret, "\n")
 
 	if len(lines) < 1 {
@@ -266,12 +260,12 @@ func ServiceStatus() string {
 
 func SyncFromMaster(file string) error {
 	cmd := A3Root + `/bin/cluster/sync --as-master --file=` + file
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	return err
 }
 
 func checkAndRestartNTPSync()  {
-	out, err := ExecShell(`timedatectl status`)
+	out, err := ExecShell(`timedatectl status`, false)
 	if err != nil {
 		return
 	}
