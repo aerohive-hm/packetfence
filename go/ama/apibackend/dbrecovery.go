@@ -309,18 +309,6 @@ func IamMostAdvancedNode() bool {
 }
 
 
-
-//check if mysqld already start
-func MysqldIsExisted() bool {
-	result, _ := utils.ExecShell(`ps -ef | grep mysqld | grep -v grep`, false)
-
-	if len(result) == 0 {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mysqld process and return nothing!!!"))
-		return false
-	}
-	return true
-}
-
 func MariadbStartNewCluster() bool {
 	result, err := utils.ExecShell(`ps -ef | grep mysqld | grep -v grep | sed -n '/wsrep-new-cluster/ p'`, true)
 	if err != nil {
@@ -479,7 +467,8 @@ func MariadbStatusCheck() {
 	
 
 			//mariadb not start yet or initial setup mode, do nothing now
-			if !MysqldIsExisted()  {
+			if !Utils.isProcAlive()  {
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("mysqld process is not starting!!!"))
 				continue
 			}
 

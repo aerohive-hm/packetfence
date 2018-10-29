@@ -203,9 +203,11 @@ func handleGetDBStatus(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
-func KillMysqld() {
-	utils.ExecShell(`(ps -ef | grep mysqld | grep -v grep | awk '{print $2}' | xargs kill -9) &>/dev/null`, false)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Killed Mariadb!!!"))
+func ShutdownMariadb() {
+	//gracefully shutdown mariadb, If it is possible to shutdown fail, find reason instead of kill with SIGKILL.
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Try to shutdown Mariadb!!!"))
+	utils.killPorc("pf-mariadb")
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Shutdowned Mariadb!!!"))
 }
 
 func ModifygrastateFileSafeToBootstrap() {
@@ -224,13 +226,13 @@ func ModifygrastateFileNotSafeToBootstrap() {
 
 func RecoveryStartedMariadb() {
 	utils.ExecShell(`systemctl start packetfence-mariadb.service`, true)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Starting Mariadb!!!"))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Started Mariadb!!!"))
 }
 
 
 
 func RestartMariadb(safeToBootstrap bool) {
-	KillMysqld()
+	ShutdownMariadb()
 	if safeToBootstrap {
 		ModifygrastateFileSafeToBootstrap()
 	} else {
@@ -253,7 +255,7 @@ func handleUpdateDBStatus(r *http.Request, d crud.HandlerData) []byte {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive mariadb state %s from %s", statusData.State, statusData.SendIp))
 	switch {
 	case statusData.State == "StopYourDB":
-		KillMysqld()
+		ShutdownMariadb()
 	case statusData.State == "YouAreNotSafeToBootstrap":
 		RestartMariadb(false)		
 	default:
