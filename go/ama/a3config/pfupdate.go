@@ -31,6 +31,9 @@ func UpdateHostname(hostname string) error {
 	}
 	s := strings.Split(hostname, ".")
 	domain := defaultDomain
+	if utils.IsOnlyNumStr(s[0]) {
+		return errors.New("hostname can not be only numeric")
+	}
 	if len(s) > 1 {
 		/*contain domain and can not be only num*/
 		if !utils.IsOnlyNumStr(s[1]) {
