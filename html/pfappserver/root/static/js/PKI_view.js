@@ -37,7 +37,7 @@ $(document).ready(function(){
                 var cleanCaInfo = caInfo.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
                 document.getElementById("certificateInfoBody").innerHTML = cleanCaInfo;
             });
-            document.getElementById("download").setAttribute("id", "download ca-dl");
+            document.getElementById("download").setAttribute("value", "ca-dl");
         });
         $("#serv_view_more").click(function(){
             $("#wholeCertWindow").slideDown("slow");
@@ -45,7 +45,7 @@ $(document).ready(function(){
                 var cleanServerInfo = serverInfo.Server_INFO.replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
                 document.getElementById("certificateInfoBody").innerHTML = cleanServerInfo;
             });
-            document.getElementById("download").setAttribute("id", "download server-dl");
+            document.getElementById("download").setAttribute("value", "server-dl");
         });
         $("#closeCertInfoWindow").click(function(e){
             e.preventDefault();
@@ -161,15 +161,15 @@ $(document).ready(function(){
         e.preventDefault();
         var pkiName = "";
         if ((caFileExists.value.length != 0 && serverFileExists.value.length != 0) && pki_provider_name == null) {/*update*/ pkiName = pki_provider_id; }
-        if (this.id === "download ca-dl"){
+        if (this.value === "ca-dl"){
             $.when(downloadCert("pki-provider", caFileExists.value)).done(function(downloadFileInfo){
                   downloadFile(pkiName + "-" + "ca-certificate.pem", downloadFileInfo);
             });
-        } else {
+        } else if (this.value === "server-dl"){
             $.when(downloadCert("pki-provider", serverFileExists.value)).done(function(downloadFileInfo){
                   downloadFile(pkiName + "-" + "server-certificate.pem", downloadFileInfo);
             });
-        }
+        } else {return;}
     }, false);
 
 }); // end of document ready
