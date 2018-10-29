@@ -1,13 +1,14 @@
 package utils
 
 import (
-	"time"
 	"fmt"
 	"regexp"
-	"github.com/inverse-inc/packetfence/go/ama"
-	"github.com/inverse-inc/packetfence/go/log"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/inverse-inc/packetfence/go/ama"
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 const (
@@ -37,7 +38,7 @@ func restartPfconfig() (string, error) {
 }
 
 func serviceCmdBackground(cmd string) (string, error) {
-	return ExecShell("setsid " + cmd + " &>/dev/null &", true)
+	return ExecShell("setsid "+cmd+" &>/dev/null &", true)
 }
 
 func UpdatePfServices() []Clis {
@@ -115,7 +116,6 @@ func ForceNewCluster() {
 	}
 	ExecCmds(cmds)
 	waitProcStop("mysqld")
-
 
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
@@ -199,15 +199,6 @@ func SyncFromPrimary(ip, user, pass string) {
 	ama.SetClusterStatus(ama.SyncFinished)
 }
 
-func RecoverDB() {
-	KillProc("pf-mariadb")
-	cmds := []string{
-		`systemctl restart packetfence-mariadb`,
-	}
-
-	ExecCmds(cmds)
-}
-
 func RestartKeepAlived() {
 	cmds := []string{
 		pfcmd + "configreload hard",
@@ -264,7 +255,7 @@ func SyncFromMaster(file string) error {
 	return err
 }
 
-func checkAndRestartNTPSync()  {
+func checkAndRestartNTPSync() {
 	out, err := ExecShell(`timedatectl status`, false)
 	if err != nil {
 		return
@@ -291,7 +282,7 @@ func checkAndRestartNTPSync()  {
 }
 
 // Make sure NTP synchronized successfully, or else the admin account will have problem to login
-func ForceNTPsynchronized() {  
+func ForceNTPsynchronized() {
 	ticker := time.NewTicker(time.Duration(30) * time.Second)
 	defer ticker.Stop()
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check NTP synchronized status"))
@@ -300,7 +291,7 @@ func ForceNTPsynchronized() {
 		return
 	}
 
-	for _ = range ticker.C {		
+	for _ = range ticker.C {
 		checkAndRestartNTPSync()
 	}
 }
