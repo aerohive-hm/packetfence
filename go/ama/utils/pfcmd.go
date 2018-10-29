@@ -200,7 +200,7 @@ func SyncFromPrimary(ip, user, pass string) {
 }
 
 func RecoverDB() {
-	killPorc("pf-mariadb")
+	KillProc("pf-mariadb")
 	cmds := []string{
 		`systemctl restart packetfence-mariadb`,
 	}

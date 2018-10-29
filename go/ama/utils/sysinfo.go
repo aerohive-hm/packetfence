@@ -75,7 +75,7 @@ func GetHostname() string {
 	return strings.TrimRight(h, "\n")
 }
 
-func isProcAlive(proc string) bool {
+func IsProcAlive(proc string) bool {
 	_, err := ExecShell(`pgrep ` + proc, false)
 	if err == nil {
 		return true
@@ -103,7 +103,7 @@ func waitProcStart(proc string) {
 	}
 }
 
-func killPorc(proc string) {
+func KillProc(proc string) {
 	cmd := "pgrep " + proc
 	out, err := ExecShell(cmd, true)
 	if err != nil {

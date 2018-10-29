@@ -467,7 +467,7 @@ func MariadbStatusCheck() {
 	
 
 			//mariadb not start yet or initial setup mode, do nothing now
-			if !Utils.isProcAlive()  {
+			if !utils.IsProcAlive("mysqld")  {
 				log.LoggerWContext(ctx).Info(fmt.Sprintf("mysqld process is not starting!!!"))
 				continue
 			}
