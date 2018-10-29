@@ -204,6 +204,10 @@ our @SyslogInfo = (
         'conditions' => [ '$programname == "etcd"' ],
     },
     {
+        'name'       => 'pf-mariadb.log',
+        'conditions' => [ '$programname == "pf-mariadb"' ],
+    },
+    {
         'name'      => 'a3-api-backend.log',
         'conditions' => [ '$syslogtag contains "a3-api-backend"' ],
     },

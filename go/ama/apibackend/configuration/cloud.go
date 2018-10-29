@@ -167,8 +167,9 @@ func (cloudConf *GetCloudConf) convertToJson(ctx context.Context) []byte {
 func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var handler CloudGetHandler
 	ctx := r.Context()
+	switchConf := a3config.ReadCloudConf(a3config.Switch)
 
-	if amac.GetAMAConnStatus() == "connected" {
+	if switchConf == "enable" {
 		nodesInfo := new(GetNodesInfo)
 		nodesInfo.getValue(ctx)
 		handler = nodesInfo
@@ -295,18 +296,18 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
-	err = a3config.UpdateCloudConf(a3config.Switch, "enable")
-	if err != nil {
-		log.LoggerWContext(ctx).Error("Update cloud config error: " + err.Error())
-		ret = "Updating cloud configuration failed"
-		goto END
-	}
-
 	result, reason = amac.LoopConnect(ctx, postInfo.Pass)
 	if result == 0 {
 		code = "ok"
 		ret = "connect to cloud successfully"
-
+		
+		err = a3config.UpdateCloudConf(a3config.Switch, "enable")
+		if err != nil {
+			log.LoggerWContext(ctx).Error("Update cloud config error: " + err.Error())
+			ret = "Updating cloud configuration failed"
+			goto END
+		}
+		
 		//Need discuss here: is the trigger time correct?
 		amac.TriggerUpdateNodesToken(ctx, true)
 	} else {

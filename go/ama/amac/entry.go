@@ -304,7 +304,6 @@ func keepaliveToRdc(ctx context.Context) {
 			continue
 		}
 		AmacSendEventSuccessCounter++
-		timeoutCount = 0
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))
 
@@ -312,6 +311,7 @@ func keepaliveToRdc(ctx context.Context) {
 		if statusCode == 200 {
 			//Dispatch the data coming with keepalive reponses
 			dispathMsgFromRdc(ctx, []byte(body))
+			timeoutCount = 0
 		} else {
 			timeoutCount++
 			resp.Body.Close()

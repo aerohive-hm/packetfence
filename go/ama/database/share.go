@@ -105,8 +105,6 @@ func QueryDBPrimaryStatus() string {
 		return ""
 	}
 
-	log.LoggerWContext(ctx).Info("Query wsrep_cluster_status: " + strValue)
-
 	return strValue
 }
 
