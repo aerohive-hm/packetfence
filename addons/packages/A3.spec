@@ -495,7 +495,7 @@ popd
 %{__install} -D -m0644 conf/systemd/packetfence-pfstats.service $RPM_BUILD_ROOT/usr/lib/systemd/system/packetfence-pfstats.service
 %{__install} -D -m0644 conf/systemd/a3-update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-update.service
 %{__install} -D -m0644 conf/systemd/a3-httpd.update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-httpd.update.service
-%{__install} -D -m0644 conf/systemd/a3-api-backend.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-api-backend.service
+%{__install} -D -m0644 conf/systemd/ama.service $RPM_BUILD_ROOT/usr/lib/systemd/system/ama.service
 %{__install} -D -m0644 conf/systemd/a3-nodeapp.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-nodeapp.service
 
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons
@@ -887,14 +887,14 @@ fi
 
 /bin/systemctl enable packetfence-httpd.admin
 /bin/systemctl enable packetfence-iptables
-/bin/systemctl enable a3-api-backend
+/bin/systemctl enable ama
 /bin/systemctl enable a3-nodeapp
 
 /usr/local/pf/bin/pfcmd configreload
 # Don't launch it during image building stage, otherwise all image has same DB root password
 if [ "$1" = "2" ]; then
   /bin/systemctl start packetfence-httpd.admin
-  /bin/systemctl restart a3-api-backend
+  /bin/systemctl restart ama
 fi
 
 echo Installation complete
