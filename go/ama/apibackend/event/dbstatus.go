@@ -205,9 +205,9 @@ func handleGetDBStatus(r *http.Request, d crud.HandlerData) []byte {
 
 func ShutdownMariadb() {
 	//gracefully shutdown mariadb, If it is possible to shutdown fail, find reason instead of kill with SIGKILL.
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Try to shutdown Mariadb!!!"))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA trying to shut down MariaDB!!!"))
 	utils.KillProc("pf-mariadb")
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Shutdowned Mariadb!!!"))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA shut down MariaDB!!!"))
 }
 
 func ModifygrastateFileSafeToBootstrap() {
@@ -226,7 +226,7 @@ func ModifygrastateFileNotSafeToBootstrap() {
 
 func RecoveryStartedMariadb() {
 	utils.ExecShell(`systemctl start packetfence-mariadb.service`, true)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Started Mariadb!!!"))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA started MariaDB!!!"))
 }
 
 
@@ -252,7 +252,7 @@ func handleUpdateDBStatus(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(err.Error())
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive mariadb state %s from %s", statusData.State, statusData.SendIp))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive MariaDB state %s from %s", statusData.State, statusData.SendIp))
 	switch {
 	case statusData.State == "StopYourDB":
 		ShutdownMariadb()

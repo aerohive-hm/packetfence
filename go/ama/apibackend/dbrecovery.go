@@ -26,7 +26,7 @@ var ctx = context.Background()
 func GetPeerMariadbRecoveryData(ip string)  {
 	updateOtherNode := false
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/dbstatus", ip)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("get cluster mariadb recovery data from %s", url))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("get cluster MariaDB recovery data from %s", url))
 	NodeData := event.MariadbNodeInfo{}
 	
 	client := new(apibackclient.Client)
@@ -38,7 +38,7 @@ func GetPeerMariadbRecoveryData(ip string)  {
 		return 
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read other node mariadb recovery data:%s",
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read other node MariaDB recovery data:%s",
 		string(client.RespData)))
 
 	err = json.Unmarshal(client.RespData, &NodeData)
@@ -71,7 +71,7 @@ func SendMariadbRecoveryState(ip, State string) error {
 	data.SendIp = utils.GetOwnMGTIp()
 
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/dbstatus", ip)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Post mariadb state change to %s", url))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Post MariaDB state change to %s", url))
 
 
 	client := new(apibackclient.Client)
@@ -120,7 +120,7 @@ func GetOtherNodesData() {
 		GetPeerMariadbRecoveryData(n.IpAddr)
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("My store mariadb recovery data %v", event.MariadbStatusData))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("My store MariaDB recovery data %v", event.MariadbStatusData))
 
 }
 
@@ -392,11 +392,11 @@ func CheckClusterDBHealthy() {
 	GetOtherNodesData()	
 	
 	if alive == total {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster mariadb is healthy!!"))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster MariaDB is healthy!!"))
 		event.MariadbStatusData.DBIsHealthy = true
 		return
 	} else {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster mariadb is NOT healthy!!"))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster MariaDB is NOT healthy!!"))
 		if !IamSafeToBootstrap() {
 			event.RestartMariadb(false)
 		}
@@ -411,7 +411,7 @@ func CheckClusterDBHealthy() {
 	}
 
 	if dbgoodCnt == total {
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("cluster mariadb are split-brain, My brain have %s, do something here!!!", dbClusterList))
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("cluster MariaDB are split-brain, my brain have %s, do something here!!!", dbClusterList))
 		return
 	}
 
@@ -435,7 +435,7 @@ func CheckErrorAndRestartProcess() bool {
 // Only monitor Mariadb do right starting and modify related parameters
 // But don't start or stop Mariadb here actively
 func MariadbStatusCheck() {	
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Start Check Mariadb status Timer"))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Start Check MariaDB status Timer"))
 	ticker := time.NewTicker(time.Duration(20) * time.Second)
 	defer ticker.Stop()
 
@@ -508,7 +508,7 @@ func MariadbStatusCheck() {
 				//Why I can't join, something wrong?
 				if HaveOtherNodeDbAvailiable() {
 					//TODO check mariadb-error.log to find some reason
-					log.LoggerWContext(ctx).Info(fmt.Sprintf("Other node mariadb is good, Why I can't join, something wrong"))
+					log.LoggerWContext(ctx).Info(fmt.Sprintf("Other node MariaDB is good, why I can't join, something wrong"))
 					continue
 					
 				}
