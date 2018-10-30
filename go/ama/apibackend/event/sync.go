@@ -86,7 +86,7 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		ip := sync.SendIp
 		web := a3config.GetWebServices()["webservices"]
 		utils.SyncFromPrimary(ip, web["user"], web["pass"])
-		utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf restart", true)
+		utils.ExecShell(utils.A3Root+"/bin/pfcmd service pf restart", true)
 		ama.IsManagement = false
 
 		a3share.SendClusterSync(ip, a3share.FinishSync)
@@ -95,8 +95,8 @@ func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
 		//slave node notify primary to sync completed
 		ama.UpdateClusterNodeStatus(sync.SendIp, ama.SyncFinished)
 		if ama.IsAllNodeStatus(ama.SyncFinished) {
-			utils.RecoverDB()
 			ama.ClearClusterStatus()
+			log.LoggerWContext(ctx).Info("All nodes are synced success in the cluster.")
 		}
 	case sync.Status == a3share.ServerRemoved:
 		//notify cloud to remove node TODO
