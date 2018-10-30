@@ -89,6 +89,7 @@ func waitProcStop(proc string) {
 		if err != nil {
 			break
 		}
+		log.LoggerWContext(context.Background()).Info(fmt.Sprintf("Waiting process %s shut down!", proc))
 		time.Sleep(time.Duration(3) * time.Second)
 	}
 }
