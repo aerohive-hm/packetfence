@@ -208,8 +208,8 @@ our @SyslogInfo = (
         'conditions' => [ '$programname == "pf-mariadb"' ],
     },
     {
-        'name'      => 'a3-api-backend.log',
-        'conditions' => [ '$syslogtag contains "a3-api-backend"' ],
+        'name'      => 'a3-ama.log',
+        'conditions' => [ '$syslogtag contains "a3-ama"' ],
     },
 );
 
