@@ -296,3 +296,32 @@ func ForceNTPsynchronized() {
 		checkAndRestartNTPSync()
 	}
 }
+
+func CheckAndStartOneService(name string)  {
+	cmd := pfservice + name + " status"
+	ret, _ := ExecShell(cmd, true)
+	lines := strings.Split(ret, "\n")
+
+	if len(lines) < 1 {
+		return 
+	}
+
+
+	for _, l := range lines {
+		vals := strings.Fields(l)
+
+		if len(vals) == 3 {
+			if vals[1] == "started" {
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("service %s is started, do nothing!!", name))
+			} else if vals[1] == "stopped" {
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("service %s is not started, starting it!!", name))
+				cmd = pfservice + name + " start"
+				ExecShell(cmd, true)
+				break
+			}
+		}
+	}
+
+	return
+
+}

@@ -356,6 +356,16 @@ func CheckMariadbErrorStateNotRecoverable() bool {
 }
 
 
+
+//MairaDB is alive and healthy, restart some service that may failed to start
+//The reason is when Mariadb is not active like bootup time, if Mariadb take a long time to go alive
+//some service will fail to start and never restart again because systemd magic
+func CheckServiceAndStart(){
+	utils.CheckAndStartOneService("haproxy-portal")
+	utils.CheckAndStartOneService("pfdns")
+}
+
+
 func CheckClusterDBHealthy() {
 	alive := 0
 	total := 0
@@ -379,6 +389,7 @@ func CheckClusterDBHealthy() {
 	if alive == total {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster MariaDB is healthy!!"))
 		event.MariadbStatusData.DBIsHealthy = true
+		CheckServiceAndStart()
 		return
 	} else {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster MariaDB is NOT healthy!!"))
