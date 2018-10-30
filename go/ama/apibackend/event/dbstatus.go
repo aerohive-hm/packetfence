@@ -206,7 +206,7 @@ func handleGetDBStatus(r *http.Request, d crud.HandlerData) []byte {
 func ShutdownMariadb() {
 	//gracefully shutdown mariadb, If it is possible to shutdown fail, find reason instead of kill with SIGKILL.
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA trying to shut down MariaDB!!!"))
-	utils.KillProc("pf-mariadb")
+	utils.KillMariaDB()
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA shut down MariaDB!!!"))
 }
 

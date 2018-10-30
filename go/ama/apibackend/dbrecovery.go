@@ -24,7 +24,6 @@ var ctx = context.Background()
 
 
 func GetPeerMariadbRecoveryData(ip string)  {
-	updateOtherNode := false
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/dbstatus", ip)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("get cluster MariaDB recovery data from %s", url))
 	NodeData := event.MariadbNodeInfo{}
@@ -38,25 +37,10 @@ func GetPeerMariadbRecoveryData(ip string)  {
 		return 
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read other node MariaDB recovery data:%s",
-		string(client.RespData)))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read node %s MariaDB recovery data:%s", ip, string(client.RespData)))
 
 	err = json.Unmarshal(client.RespData, &NodeData)
-
-
-	for index, _ := range event.MariadbStatusData.OtherNode {
-		if event.MariadbStatusData.OtherNode[index].IpAddr == NodeData.IpAddr {
-			event.MariadbStatusData.OtherNode[index] = NodeData
-
-			updateOtherNode = true
-			break
-		}
-	}
-
-
-	if !updateOtherNode {
-		event.MariadbStatusData.OtherNode = append(event.MariadbStatusData.OtherNode, NodeData)
-	}
+	event.MariadbStatusData.OtherNode = append(event.MariadbStatusData.OtherNode, NodeData)
 
 	return 
 }
@@ -112,6 +96,7 @@ func NotifyClusterBootStrapChange(state string) error {
 
 func GetOtherNodesData() {
 
+	event.MariadbStatusData.OtherNode = []event.MariadbNodeInfo{}
 	nodes := a3config.ClusterNew().FetchNodesInfo()
 	for _, n := range nodes {
 		if n.IpAddr == utils.GetOwnMGTIp() {
@@ -120,7 +105,7 @@ func GetOtherNodesData() {
 		GetPeerMariadbRecoveryData(n.IpAddr)
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("My store MariaDB recovery data %v", event.MariadbStatusData))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("current cluster MariaDB recovery data %v", event.MariadbStatusData))
 
 }
 

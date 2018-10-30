@@ -121,6 +121,24 @@ func KillProc(proc string) {
 	waitProcStop(proc)
 }
 
+//special case, after kill, check mysqld process quit or not
+func KillMariaDB() {
+	cmd := "pgrep pf-mariadb"
+	out, err := ExecShell(cmd, true)
+	if err != nil {
+		return
+	}
+
+	pids := strings.Split(out, "\n")
+	for _, pid := range pids {
+		if pid != "" {
+			ExecShell(`kill ` + pid, true)
+		}
+	}
+
+	waitProcStop("mysqld")
+}
+
 func updateEtcd() {
 	cmds := []string{
 		`systemctl stop packetfence-etcd`,
