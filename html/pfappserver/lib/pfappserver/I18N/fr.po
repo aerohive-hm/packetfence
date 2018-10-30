@@ -11821,7 +11821,7 @@ msgstr "Port à utiliser pour l'Unified API"
 
 # conf/documentation.conf (interface.type options)
 msgid "portal"
-msgstr "portail"
+msgstr "Portail"
 
 # conf/documentation.conf
 msgid "ports"
