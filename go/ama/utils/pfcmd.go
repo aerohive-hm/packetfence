@@ -1,13 +1,14 @@
 package utils
 
 import (
-	"time"
 	"fmt"
 	"regexp"
-	"github.com/inverse-inc/packetfence/go/ama"
-	"github.com/inverse-inc/packetfence/go/log"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/inverse-inc/packetfence/go/ama"
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 const (
@@ -24,7 +25,7 @@ type Service struct {
 
 func pfExpire(ns string) {
 	cmd := pfconfig + " expire " + ns
-	ExecShell(cmd)
+	ExecShell(cmd, true)
 }
 
 func ReloadConfig() {
@@ -33,11 +34,11 @@ func ReloadConfig() {
 
 func restartPfconfig() (string, error) {
 	cmd := `setsid sudo service packetfence-config restart 2>&1`
-	return ExecShell(cmd)
+	return ExecShell(cmd, true)
 }
 
 func serviceCmdBackground(cmd string) (string, error) {
-	return ExecShell("setsid " + cmd + " &>/dev/null &")
+	return ExecShell("setsid "+cmd+" &>/dev/null &", true)
 }
 
 func UpdatePfServices() []Clis {
@@ -79,7 +80,7 @@ func initStandAloneDb() {
 	}
 	ExecCmds(cmds)
 	waitProcStop("mysqld")
-	ExecShell(`systemctl start packetfence-mariadb`)
+	ExecShell(`systemctl start packetfence-mariadb`, true)
 }
 
 // only Start Services during initial setup
@@ -104,12 +105,6 @@ func InitStartService(isCluster bool) error {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
-	//TODO: need to restart http server? abort web service?
-	//cmds := []string{
-	//	pfservice + "httpd.admin restart",
-	//}
-	//ExecCmds(cmds)
-
 	return nil
 }
 
@@ -121,7 +116,6 @@ func ForceNewCluster() {
 	}
 	ExecCmds(cmds)
 	waitProcStop("mysqld")
-
 
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
@@ -188,7 +182,7 @@ func SyncFromPrimary(ip, user, pass string) {
 	ExecCmds(cmds)
 	waitProcStop("pfconfig")
 
-	ExecShell(`systemctl start packetfence-config`)
+	ExecShell(`systemctl start packetfence-config`, true)
 	waitProcStart("pfconfig")
 
 	ama.SetClusterStatus(ama.SyncDB)
@@ -205,14 +199,6 @@ func SyncFromPrimary(ip, user, pass string) {
 	ama.SetClusterStatus(ama.SyncFinished)
 }
 
-func RecoverDB() {
-	killPorc("pf-mariadb")
-	cmds := []string{
-		`systemctl restart packetfence-mariadb`,
-	}
-
-	ExecCmds(cmds)
-}
 
 func RestartKeepAlived() {
 	cmds := []string{
@@ -234,7 +220,7 @@ func RemoveFromCluster() {
 
 func ServiceStatus() string {
 	cmd := pfservice + "pf status"
-	ret, _ := ExecShell(cmd)
+	ret, _ := ExecShell(cmd, false)
 	lines := strings.Split(ret, "\n")
 
 	if len(lines) < 1 {
@@ -266,12 +252,12 @@ func ServiceStatus() string {
 
 func SyncFromMaster(file string) error {
 	cmd := A3Root + `/bin/cluster/sync --as-master --file=` + file
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	return err
 }
 
-func checkAndRestartNTPSync()  {
-	out, err := ExecShell(`timedatectl status`)
+func checkAndRestartNTPSync() {
+	out, err := ExecShell(`timedatectl status`, false)
 	if err != nil {
 		return
 	}
@@ -287,7 +273,9 @@ func checkAndRestartNTPSync()  {
 		}
 		ExecCmds(cmds)
 	} else {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("NTP already synchronized"))
+		if !ama.SystemNTPSynced {
+			log.LoggerWContext(ctx).Info(fmt.Sprintf("NTP already synchronized"))
+		}
 		ama.SystemNTPSynced = true
 	}
 
@@ -295,7 +283,7 @@ func checkAndRestartNTPSync()  {
 }
 
 // Make sure NTP synchronized successfully, or else the admin account will have problem to login
-func ForceNTPsynchronized() {  
+func ForceNTPsynchronized() {
 	ticker := time.NewTicker(time.Duration(30) * time.Second)
 	defer ticker.Stop()
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check NTP synchronized status"))
@@ -304,10 +292,36 @@ func ForceNTPsynchronized() {
 		return
 	}
 
-	for _ = range ticker.C {		
+	for _ = range ticker.C {
 		checkAndRestartNTPSync()
-		if ama.SystemNTPSynced {
-			break
+	}
+}
+
+func CheckAndStartOneService(name string)  {
+	cmd := pfservice + name + " status"
+	ret, _ := ExecShell(cmd, true)
+	lines := strings.Split(ret, "\n")
+
+	if len(lines) < 1 {
+		return 
+	}
+
+
+	for _, l := range lines {
+		vals := strings.Fields(l)
+
+		if len(vals) == 3 {
+			if vals[1] == "started" {
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("service %s is started, do nothing!!", name))
+			} else if vals[1] == "stopped" {
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("service %s is not started, starting it!!", name))
+				cmd = pfservice + name + " start"
+				ExecShell(cmd, true)
+				break
+			}
 		}
 	}
+
+	return
+
 }

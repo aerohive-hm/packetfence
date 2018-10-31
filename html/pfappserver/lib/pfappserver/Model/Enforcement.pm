@@ -19,14 +19,14 @@ use namespace::autoclean;
 extends 'Catalyst::Model';
 
 # TODO: Should migrate theses into a database table with some flags for the mechanisms
-my @mechanisms           = qw/vlan inline option webauth/;
+my @mechanisms           = qw/vlan webauth radius/;
 # TODO once we display option we should move 'other' over to there
 my %types   = (
     vlan        => [ 'management', 'vlan-registration', 'vlan-isolation'],
-    inline      => [ 'management', 'inline', 'inlinel2', 'inlinel3' ], # inline is kept for backwards compat.
+#    inline      => [ 'management', 'inline', 'inlinel2', 'inlinel3' ], # inline is kept for backwards compat.
 #    option      => [ 'high-availability', 'dhcp-listener', 'monitor' ],
     webauth     => ['management', 'portal'],
-    other       => ['dns-enforcement'],
+#    other       => ['dns-enforcement'],
     radius      => ['management'],
 );
 
@@ -69,7 +69,7 @@ sub getAvailableTypes {
         foreach my $i (keys %$interfaces) {
             next if ($i eq $interface);
             # Don't return "management" if it's already set for an interface
-            push(@exclusions, 'management') if ($interfaces->{$i}->{type} eq 'management');
+            push(@exclusions, 'management') if ($interfaces->{$i}->{type} =~ /management/);
         }
     }
     foreach my $m (@mechanisms) {
@@ -80,8 +80,6 @@ sub getAvailableTypes {
             }
         }
     }
-    @available_types = sort @available_types;
-    push(@available_types, 'other');
 
     return \@available_types;
 }

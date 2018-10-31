@@ -48,7 +48,7 @@ func CreateVlanIface(ifname string, vlan string) error {
 	}
 
 	cmd := fmt.Sprintf("sudo vconfig add %s %s", ifname, vlan)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -85,7 +85,7 @@ func DelVlanIface(ifname string) error {
 	}
 
 	cmd := fmt.Sprintf("sudo vconfig rem %s", ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func DelVlanIface(ifname string) error {
 
 func SetIfaceUp(ifname string) error {
 	cmd := fmt.Sprintf("sudo ip link set %s up", ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -117,7 +117,7 @@ func SetIfaceDown(ifname string) int {
 	}
 
 	cmd := fmt.Sprintf("sudo ip link set %s down", ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return -1
 	}
@@ -135,7 +135,7 @@ func IfaceExists(ifname string) bool {
 
 func IsIpExists(ifname, ip string) bool {
 	cmd := fmt.Sprintf("sudo arping -c 3 -w 1 -f -I %s -D %s", ifname, ip)
-	out, err := ExecShell(cmd)
+	out, err := ExecShell(cmd, true)
 	fmt.Println("cmd", cmd)
 
 	if err != nil {
@@ -159,7 +159,7 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 		cmd += " " + ifname
 	}
 
-	out, err := ExecShell(cmd)
+	out, err := ExecShell(cmd, false)
 	if err != nil {
 		fmt.Println("exec error")
 		return nil, -1
@@ -188,7 +188,7 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 
 	updateIface := func(item *Iface, val []string) error {
 		cmd = ipcmd["addr"] + " " + item.Name
-		out, err = ExecShell(cmd)
+		out, err = ExecShell(cmd, false)
 		if err != nil {
 			return err
 		}
@@ -223,7 +223,7 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 func SetIfaceIIpAddr(ifname, ip, mask string) error {
 	i := NetmaskStr2Len(mask)
 	cmd := fmt.Sprintf("sudo ip addr add %s/%d broadcast 255.255.255.255 dev %s", ip, i, ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -231,7 +231,7 @@ func SetIfaceIIpAddr(ifname, ip, mask string) error {
 }
 func DelIfaceIIpAddr(ifname, ip string) error {
 	cmd := fmt.Sprintf("sudo ip addr del %s dev %s", ip, ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -312,7 +312,7 @@ func IsSameIpRange(ip1, ip2, mask string) bool {
 func setInterfaceGateway(ifname, gateway string) error {
 	//cmd := fmt.Sprintf("sudo route add default gw %s %s", gateway, ifname)
 	cmd := fmt.Sprintf("sudo ip route replace to default via %s dev %s", gateway, ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		log.LoggerWContext(context.Background()).Info("exec" + cmd + "error")
 		return err
@@ -432,7 +432,7 @@ func doUpdateEthIface(ifname, ip, oldip, mask, gateway string) error {
 
 // check if we are vip owner
 func IsManagement(vip string) bool {
-	out, err := ExecShell("sudo ip -4 -o addr show")
+	out, err := ExecShell("sudo ip -4 -o addr show", false)
 	if err != nil {
 		return false
 	}

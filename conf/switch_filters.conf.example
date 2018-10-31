@@ -152,8 +152,8 @@
 # Param(x) can be:
 # - any device configuration parameter to override (Only available for radius_authorize scope)
 #
-# Device can be:
-# - any device module
+# Switch can be:
+# - any switch module
 #
 # -------------------------
 #

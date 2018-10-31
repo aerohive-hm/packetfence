@@ -79,7 +79,7 @@ func ResetGrastateData() {
 	MariadbStatusData.MyUUID = ""
 	MariadbStatusData.ViewID = ""
 
-	utils.ExecShell(`rm -fr /var/lib/mysql/grastate.dat.bak`)
+	utils.ExecShell(`rm -fr /var/lib/mysql/grastate.dat.bak`, true)
 }
 
 
@@ -92,31 +92,31 @@ func GetMyMariadbRecoveryData() {
 	//if grastate.dat.bak exist, the node should think itself is safe to bootstrap
 	
 	if utils.IsFileExist("/var/lib/mysql/grastate.dat.bak") {
-			result, _ = utils.ExecShell(`sed -n '/safe_to_bootstrap:/ p' /var/lib/mysql/grastate.dat.bak | sed -r 's/\s*safe_to_bootstrap:\s*//'`)
+			result, _ = utils.ExecShell(`sed -n '/safe_to_bootstrap:/ p' /var/lib/mysql/grastate.dat.bak | sed -r 's/\s*safe_to_bootstrap:\s*//'`, false)
 			result = strings.TrimRight(result, "\n")
 			MariadbStatusData.SafeToBootstrap, _ = strconv.Atoi(result)
-			result, _ = utils.ExecShell(`sed -n '/seqno:/ p' /var/lib/mysql/grastate.dat.bak | sed -r 's/\s*seqno:\s*//'`)
+			result, _ = utils.ExecShell(`sed -n '/seqno:/ p' /var/lib/mysql/grastate.dat.bak | sed -r 's/\s*seqno:\s*//'`, false)
 			result = strings.TrimRight(result, "\n")
 			MariadbStatusData.GrastateSeqno, _ = strconv.ParseInt(result, 10, 64)
-			utils.ExecShell(`rm -fr /var/lib/mysql/grastate.dat.bak`)
+			utils.ExecShell(`rm -fr /var/lib/mysql/grastate.dat.bak`, true)
 	} else {
-			result, _ = utils.ExecShell(`sed -n '/safe_to_bootstrap:/ p' /var/lib/mysql/grastate.dat | sed -r 's/\s*safe_to_bootstrap:\s*//'`)
+			result, _ = utils.ExecShell(`sed -n '/safe_to_bootstrap:/ p' /var/lib/mysql/grastate.dat | sed -r 's/\s*safe_to_bootstrap:\s*//'`, false)
 			result = strings.TrimRight(result, "\n")
 			MariadbStatusData.SafeToBootstrap, _ = strconv.Atoi(result)
-			result, _ = utils.ExecShell(`sed -n '/seqno:/ p' /var/lib/mysql/grastate.dat | sed -r 's/\s*seqno:\s*//'`)
+			result, _ = utils.ExecShell(`sed -n '/seqno:/ p' /var/lib/mysql/grastate.dat | sed -r 's/\s*seqno:\s*//'`, false)
 			result = strings.TrimRight(result, "\n")
 			MariadbStatusData.GrastateSeqno, _ = strconv.ParseInt(result, 10, 64)
 	}
 	MariadbStatusData.ReadGrastated = true
 	
 
-	result, _ = utils.ExecShell(`sed -n '/my_uuid:/ p' /var/lib/mysql/gvwstate.dat | sed -r 's/^.*my_uuid:\s*//'`)
+	result, _ = utils.ExecShell(`sed -n '/my_uuid:/ p' /var/lib/mysql/gvwstate.dat | sed -r 's/^.*my_uuid:\s*//'`, false)
 	result = strings.TrimRight(result, "\n")
 	MariadbStatusData.MyUUID = result
-	result, _ = utils.ExecShell(`sed -n '/view_id:/ p' /var/lib/mysql/gvwstate.dat | sed -r 's/^.*view_id:\s*[0-9]*\s*//;s/\s*[0-9]*\s*$//'`)
+	result, _ = utils.ExecShell(`sed -n '/view_id:/ p' /var/lib/mysql/gvwstate.dat | sed -r 's/^.*view_id:\s*[0-9]*\s*//;s/\s*[0-9]*\s*$//'`, false)
 	result = strings.TrimRight(result, "\n")
 	MariadbStatusData.ViewID = result
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("My store mariadb recovery data %v", MariadbStatusData))
+	
 
 	return
 }
@@ -139,6 +139,10 @@ func MariadbIsActive() bool {
 		return false
 	} 
 
+	if !MariadbStatusData.DBIsHealthy {
+		log.LoggerWContext(ctx).Info(result)
+	}
+
 	if !a3config.ClusterNew().CheckClusterEnable() {
 		return true
 	}
@@ -147,10 +151,10 @@ func MariadbIsActive() bool {
 		return true
 	} 
 
-	if strings.Contains(result, "Disconnected") && ClusterNodesCnt() == 1 {
+	if strings.Contains(result, "Disconnected") && ClusterNodesCnt() == 1 {		
 		return true
 	}
-	
+
 	return false
 }
 
@@ -199,19 +203,21 @@ func handleGetDBStatus(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
-func KillMysqld() {
-	utils.ExecShell(`(ps -ef | grep mysqld | grep -v grep | awk '{print $2}' | xargs kill -9) &>/dev/null`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Killed Mariadb!!!"))
+func ShutdownMariadb() {
+	//gracefully shutdown mariadb, If it is possible to shutdown fail, find reason instead of kill with SIGKILL.
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA trying to shut down MariaDB!!!"))
+	utils.KillMariaDB()
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA shut down MariaDB!!!"))
 }
 
 func ModifygrastateFileSafeToBootstrap() {
-	utils.ExecShell(`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 1/' /var/lib/mysql/grastate.dat`)
+	utils.ExecShell(`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 1/' /var/lib/mysql/grastate.dat`, true)
 	MariadbStatusData.SafeToBootstrap = 1
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA modify safe_to_bootstrap=1 for /var/lib/mysql/grastate.dat!!!"))
 }
 
 func ModifygrastateFileNotSafeToBootstrap() {
-	utils.ExecShell(`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 0/' /var/lib/mysql/grastate.dat`)
+	utils.ExecShell(`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 0/' /var/lib/mysql/grastate.dat`, true)
 	MariadbStatusData.SafeToBootstrap = 0
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA modify safe_to_bootstrap=0 for /var/lib/mysql/grastate.dat!!!"))
 }
@@ -219,14 +225,14 @@ func ModifygrastateFileNotSafeToBootstrap() {
 
 
 func RecoveryStartedMariadb() {
-	utils.ExecShell(`systemctl start packetfence-mariadb.service`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA Starting Mariadb!!!"))
+	utils.ExecShell(`systemctl start packetfence-mariadb.service`, true)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA started MariaDB!!!"))
 }
 
 
 
 func RestartMariadb(safeToBootstrap bool) {
-	KillMysqld()
+	ShutdownMariadb()
 	if safeToBootstrap {
 		ModifygrastateFileSafeToBootstrap()
 	} else {
@@ -246,10 +252,10 @@ func handleUpdateDBStatus(r *http.Request, d crud.HandlerData) []byte {
 		return []byte(err.Error())
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive mariadb state %s from %s", statusData.State, statusData.SendIp))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive MariaDB state %s from %s", statusData.State, statusData.SendIp))
 	switch {
 	case statusData.State == "StopYourDB":
-		KillMysqld()
+		ShutdownMariadb()
 	case statusData.State == "YouAreNotSafeToBootstrap":
 		RestartMariadb(false)		
 	default:

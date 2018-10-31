@@ -24,9 +24,8 @@ var ctx = context.Background()
 
 
 func GetPeerMariadbRecoveryData(ip string)  {
-	updateOtherNode := false
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/dbstatus", ip)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("get cluster mariadb recovery data from %s", url))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("get cluster MariaDB recovery data from %s", url))
 	NodeData := event.MariadbNodeInfo{}
 	
 	client := new(apibackclient.Client)
@@ -38,33 +37,11 @@ func GetPeerMariadbRecoveryData(ip string)  {
 		return 
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read mariadb recovery data:%s",
-		string(client.RespData)))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read node %s MariaDB recovery data:%s", ip, string(client.RespData)))
 
 	err = json.Unmarshal(client.RespData, &NodeData)
+	event.MariadbStatusData.OtherNode = append(event.MariadbStatusData.OtherNode, NodeData)
 
-
-	for index, _ := range event.MariadbStatusData.OtherNode {
-		if event.MariadbStatusData.OtherNode[index].IpAddr == NodeData.IpAddr {
-			//node.DBState = NodeData.DBState
-			//node.GrastateSeqno = NodeData.GrastateSeqno
-			//node.SafeToBootstrap = NodeData.SafeToBootstrap
-			//node.MyUUID = NodeData.MyUUID
-			//node.ViewID = NodeData.ViewID
-			event.MariadbStatusData.OtherNode[index] = NodeData
-
-			updateOtherNode = true
-			break
-		}
-	}
-
-
-	if !updateOtherNode {
-		event.MariadbStatusData.OtherNode = append(event.MariadbStatusData.OtherNode, NodeData)
-	}
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("My store mariadb recovery data %v", event.MariadbStatusData))
-	
-	// GET status from all peer nodes
 	return 
 }
 
@@ -78,7 +55,7 @@ func SendMariadbRecoveryState(ip, State string) error {
 	data.SendIp = utils.GetOwnMGTIp()
 
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/dbstatus", ip)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Post mariadb state change to %s", url))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Post MariaDB state change to %s", url))
 
 
 	client := new(apibackclient.Client)
@@ -119,6 +96,7 @@ func NotifyClusterBootStrapChange(state string) error {
 
 func GetOtherNodesData() {
 
+	event.MariadbStatusData.OtherNode = []event.MariadbNodeInfo{}
 	nodes := a3config.ClusterNew().FetchNodesInfo()
 	for _, n := range nodes {
 		if n.IpAddr == utils.GetOwnMGTIp() {
@@ -126,6 +104,8 @@ func GetOtherNodesData() {
 		}
 		GetPeerMariadbRecoveryData(n.IpAddr)
 	}
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("current cluster MariaDB recovery data %v", event.MariadbStatusData))
 
 }
 
@@ -314,19 +294,8 @@ func IamMostAdvancedNode() bool {
 }
 
 
-
-//check if mysqld already start
-func MysqldIsExisted() bool {
-	result, _ := utils.ExecShell(`ps -ef | grep mysqld | grep -v grep`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mysqld exist or not return=%s!!!", result))
-	if len(result) == 0 {
-		return false
-	}
-	return true
-}
-
 func MariadbStartNewCluster() bool {
-	result, err := utils.ExecShell(`ps -ef | grep mysqld | grep -v grep | sed -n '/wsrep-new-cluster/ p'`)
+	result, err := utils.ExecShell(`ps -ef | grep mysqld | grep -v grep | sed -n '/wsrep-new-cluster/ p'`, true)
 	if err != nil {
 		return false
 	}
@@ -341,12 +310,14 @@ func MariadbStartNewCluster() bool {
 //check mariadb_error.log
 //add more case check later
 func CheckMariadbErrorTCLOG() bool {
-	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log | sed -n '/restart, or delete tc log and start mysqld with --tc-heuristic-recover/ p'`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
+	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log | sed -n '/restart, or delete tc log and start mysqld with --tc-heuristic-recover/ p'`, true)
+
 	if len(result) == 0 {
 		return false
 	}
-	utils.ExecShell(`rm -fr /var/lib/mysql/tc.log`)
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
+	utils.ExecShell(`rm -fr /var/lib/mysql/tc.log`, true)
 	return true
 }
 
@@ -354,11 +325,11 @@ func CheckMariadbErrorTCLOG() bool {
 //check mariadb_error.log
 //add more case check later
 func CheckMariadbErrorAddressInUse() bool {
-	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log|sed -n '/gcs connect failed: Address already in use/ p'`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
+	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log|sed -n '/gcs connect failed: Address already in use/ p'`, true)
 	if len(result) == 0 {
 		return false
 	}
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
 	return true
 }
 
@@ -366,21 +337,32 @@ func CheckMariadbErrorAddressInUse() bool {
 //check mariadb_error.log
 //add more case check later
 func CheckMariadbErrorStateNotRecoverable() bool {
-	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log|sed -n '/gcs connect failed: State not recoverable/ p'`)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
+	result, _ := utils.ExecShell(`tail -n 50 /usr/local/pf/logs/mariadb_error.log|sed -n '/gcs connect failed: State not recoverable/ p'`, true)
+
 	if len(result) == 0 {
 		return false
 	}
 
-	result, _ = utils.ExecShell(`cat /var/lib/mysql/gvwstate.dat`)
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check mariadb_error.log return=%s!!!", result))
+	result, _ = utils.ExecShell(`cat /var/lib/mysql/gvwstate.dat`, true)
 	
 	if len(result) == 0 {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("empty file: /var/lib/mysql/gvwstate.dat, delete it!!!"))
-		utils.ExecShell(`rm -fr /var/lib/mysql/gvwstate.dat`)
+		utils.ExecShell(`rm -fr /var/lib/mysql/gvwstate.dat`, true)
 		
 	}
 	
 	return false
+}
+
+
+
+//MairaDB is alive and healthy, restart some service that may failed to start
+//The reason is when Mariadb is not active like bootup time, if Mariadb take a long time to go alive
+//some service will fail to start and never restart again because systemd magic
+func CheckServiceAndStart(){
+	utils.CheckAndStartOneService("haproxy-portal")
+	utils.CheckAndStartOneService("pfdns")
 }
 
 
@@ -405,11 +387,12 @@ func CheckClusterDBHealthy() {
 	GetOtherNodesData()	
 	
 	if alive == total {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster mariadb is healthy!!"))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster MariaDB is healthy!!"))
 		event.MariadbStatusData.DBIsHealthy = true
+		CheckServiceAndStart()
 		return
 	} else {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster mariadb is NOT healthy!!"))
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("Cluster MariaDB is NOT healthy!!"))
 		if !IamSafeToBootstrap() {
 			event.RestartMariadb(false)
 		}
@@ -424,7 +407,7 @@ func CheckClusterDBHealthy() {
 	}
 
 	if dbgoodCnt == total {
-		log.LoggerWContext(ctx).Error(fmt.Sprintf("cluster mariadb are split-brain, My brain have %s, do something here!!!", dbClusterList))
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("cluster MariaDB are split-brain, my brain have %s, do something here!!!", dbClusterList))
 		return
 	}
 
@@ -448,7 +431,7 @@ func CheckErrorAndRestartProcess() bool {
 // Only monitor Mariadb do right starting and modify related parameters
 // But don't start or stop Mariadb here actively
 func MariadbStatusCheck() {	
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Start Check Mariadb status Timer"))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Start Check MariaDB status Timer"))
 	ticker := time.NewTicker(time.Duration(20) * time.Second)
 	defer ticker.Stop()
 
@@ -477,9 +460,11 @@ func MariadbStatusCheck() {
 			event.MariadbStatusData.DBState = event.MariadbFail
 			event.GetMyMariadbRecoveryData()
 			GetOtherNodesData()
+	
 
 			//mariadb not start yet or initial setup mode, do nothing now
-			if !MysqldIsExisted()  {
+			if !utils.IsProcAlive("mysqld")  {
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("mysqld process is not starting!!!"))
 				continue
 			}
 
@@ -519,7 +504,7 @@ func MariadbStatusCheck() {
 				//Why I can't join, something wrong?
 				if HaveOtherNodeDbAvailiable() {
 					//TODO check mariadb-error.log to find some reason
-					log.LoggerWContext(ctx).Info(fmt.Sprintf("Other node mariadb is good, Why I can't join, something wrong"))
+					log.LoggerWContext(ctx).Info(fmt.Sprintf("Other node MariaDB is good, why I can't join, something wrong"))
 					continue
 					
 				}
