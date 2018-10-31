@@ -510,7 +510,7 @@ sub _insert_data {
     #change the device_type from "AeroHive Hive WAP" to "AeroHive WAP"
     if ((${sendtable} eq 'node') &&
     ($data{'device_type'} eq "AeroHive Hive WAP")){
-		$data{'device_type'} = "AeroHive WAP";
+		$data{'device_type'} = "AeroHive AP";
     }
     
     my %ama_data = %data;
