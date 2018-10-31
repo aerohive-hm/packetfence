@@ -2,6 +2,7 @@
 #*
 # Except this file
 !.gitignore
+!conf/caddy-services/a3-ama.conf
 
 # Unwanted IDE/OS stuff
 .DS_Store
