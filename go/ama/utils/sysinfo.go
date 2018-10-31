@@ -89,6 +89,7 @@ func waitProcStop(proc string) {
 		if err != nil {
 			break
 		}
+		log.LoggerWContext(context.Background()).Info(fmt.Sprintf("Waiting process %s shut down!", proc))
 		time.Sleep(time.Duration(3) * time.Second)
 	}
 }
@@ -118,6 +119,24 @@ func KillProc(proc string) {
 	}
 
 	waitProcStop(proc)
+}
+
+//special case, after kill, check mysqld process quit or not
+func KillMariaDB() {
+	cmd := "pgrep pf-mariadb"
+	out, err := ExecShell(cmd, true)
+	if err != nil {
+		return
+	}
+
+	pids := strings.Split(out, "\n")
+	for _, pid := range pids {
+		if pid != "" {
+			ExecShell(`kill ` + pid, true)
+		}
+	}
+
+	waitProcStop("mysqld")
 }
 
 func updateEtcd() {

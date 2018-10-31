@@ -506,6 +506,13 @@ sub _insert_data {
 
     # Send tables contents to AMA for Aerohive reporting
     my $sendtable = $self->table;
+
+    #change the device_type from "AeroHive Hive WAP" to "AeroHive WAP"
+    if ((${sendtable} eq 'node') &&
+    ($data{'device_type'} eq "AeroHive Hive WAP")){
+		$data{'device_type'} = "AeroHive AP";
+    }
+    
     my %ama_data = %data;
     if ((${sendtable} eq 'node') ||
        (${sendtable} eq 'node_category') ||

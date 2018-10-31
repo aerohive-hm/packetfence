@@ -10991,7 +10991,7 @@ msgstr ""
 
 # conf/documentation.conf (interface.type options)
 msgid "portal"
-msgstr ""
+msgstr "Portal"
 
 # conf/documentation.conf
 msgid "ports"
