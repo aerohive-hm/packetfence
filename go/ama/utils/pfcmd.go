@@ -3,7 +3,6 @@ package utils
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -38,6 +37,7 @@ func restartPfconfig() (string, error) {
 }
 
 func serviceCmdBackground(cmd string) (string, error) {
+
 	return ExecShell("setsid "+cmd+" &>/dev/null &", true)
 }
 
@@ -100,12 +100,38 @@ func InitStartService(isCluster bool) error {
 	}
 	waitProcStart("mysqld")
 
-	out, err = serviceCmdBackground(pfservice + "pf start")
-	if err != nil {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
-	}
+	go PfServiceStart()
 
 	return nil
+}
+
+func checkPfService() bool {
+	var score int
+	if ama.PfServicePercentage == 100 {
+		getPfServiceStop()
+		goto END
+	}
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check pf status."))
+
+	score = getServiceStartedProc()
+	if score < ama.PfServicePercentage {
+		return false
+	}
+	ama.PfServicePercentage = score
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("update PfServicePercentage = %d", score))
+	if ama.PfServicePercentage < 100 {
+		return false
+	}
+
+END:
+	if IsFileExist(A3CurrentlyAt) {
+		return true
+	}
+
+	UpdateCurrentlyAt()
+	//go ExecShell(`pfcmd service iptables restart`, true)
+	return true
 }
 
 func ForceNewCluster() {
@@ -199,7 +225,6 @@ func SyncFromPrimary(ip, user, pass string) {
 	ama.SetClusterStatus(ama.SyncFinished)
 }
 
-
 func RestartKeepAlived() {
 	cmds := []string{
 		pfcmd + "configreload hard",
@@ -218,17 +243,27 @@ func RemoveFromCluster() {
 	ExecCmds(cmds)
 }
 
-func ServiceStatus() string {
+type pfcallback func([]string) interface{}
+
+func getPfSerStatus() []string {
 	cmd := pfservice + "pf status"
 	ret, _ := ExecShell(cmd, false)
 	lines := strings.Split(ret, "\n")
 
 	if len(lines) < 1 {
-		return ""
+		return nil
 	}
+	return lines
+}
 
+func getServiceStartedProc() int {
 	toBeStarted := 0
 	started := 0
+
+	lines := getPfSerStatus()
+	if lines == nil {
+		return 0
+	}
 
 	for _, l := range lines {
 		vals := strings.Fields(l)
@@ -244,9 +279,31 @@ func ServiceStatus() string {
 	}
 
 	if toBeStarted > 0 {
-		return strconv.Itoa(started * 100 / toBeStarted)
+		return started * 100 / toBeStarted
 	} else {
-		return ""
+		return 100
+	}
+}
+
+func getPfServiceStop() {
+	lines := getPfSerStatus()
+	if lines == nil {
+		return
+	}
+
+	for _, l := range lines {
+		vals := strings.Fields(l)
+		if len(vals) != 3 {
+			return
+		}
+
+		if vals[1] != "stopped" {
+			continue
+		}
+		re := regexp.MustCompile(`packetfence-([\w-]+)\.service`)
+		ret := re.FindStringSubmatch(vals[0])
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("pf start failed: %s", ret[1]))
+		ExecShell(fmt.Sprintf(`pfcmd service %s start`, ret[1]), false)
 	}
 }
 
@@ -297,15 +354,14 @@ func ForceNTPsynchronized() {
 	}
 }
 
-func CheckAndStartOneService(name string)  {
+func CheckAndStartOneService(name string) {
 	cmd := pfservice + name + " status"
 	ret, _ := ExecShell(cmd, true)
 	lines := strings.Split(ret, "\n")
 
 	if len(lines) < 1 {
-		return 
+		return
 	}
-
 
 	for _, l := range lines {
 		vals := strings.Fields(l)
@@ -324,4 +380,11 @@ func CheckAndStartOneService(name string)  {
 
 	return
 
+}
+
+func PfServiceStart() {
+	log.LoggerWContext(ctx).Info("start Timer to check pf status")
+	go Timer(checkPfService, 12)
+	ExecShell(A3Root+"/bin/pfcmd service pf start", true)
+	ama.PfServicePercentage = 100
 }
