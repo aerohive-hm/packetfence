@@ -3,7 +3,6 @@ package utils
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -38,7 +37,10 @@ func restartPfconfig() (string, error) {
 }
 
 func serviceCmdBackground(cmd string) (string, error) {
-	return ExecShell("setsid "+cmd+" &>/dev/null &", true)
+
+	str, err := ExecShell("setsid "+cmd+" &>/dev/null", true)
+	ama.PfService = 100
+	return str, err
 }
 
 func UpdatePfServices() []Clis {
@@ -100,12 +102,40 @@ func InitStartService(isCluster bool) error {
 	}
 	waitProcStart("mysqld")
 
-	out, err = serviceCmdBackground(pfservice + "pf start")
-	if err != nil {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
-	}
+	go serviceCmdBackground(pfservice + "pf start")
+	log.LoggerWContext(ctx).Info("start Timer to check pf status")
+	Timer(checkPfService, 12)
 
 	return nil
+}
+
+func checkPfService() bool {
+	var score int
+	if ama.PfService == 100 {
+		getPfServiceStop()
+		goto END
+	}
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check pf status."))
+
+	score = getServiceStartProc()
+	if score < ama.PfService {
+		return false
+	}
+	ama.PfService = score
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("update PfService = %d", score))
+	if ama.PfService < 100 {
+		return false
+	}
+
+END:
+	if IsFileExist(A3CurrentlyAt) {
+		return true
+	}
+
+	UpdateCurrentlyAt()
+	//go ExecShell(`pfcmd service iptables restart`, true)
+	return true
 }
 
 func ForceNewCluster() {
@@ -218,17 +248,27 @@ func RemoveFromCluster() {
 	ExecCmds(cmds)
 }
 
-func ServiceStatus() string {
+type pfcallback func([]string) interface{}
+
+func getPfSerStatus() []string {
 	cmd := pfservice + "pf status"
 	ret, _ := ExecShell(cmd, false)
 	lines := strings.Split(ret, "\n")
 
 	if len(lines) < 1 {
-		return ""
+		return nil
 	}
+	return lines
+}
 
+func getServiceStartProc() int {
 	toBeStarted := 0
 	started := 0
+
+	lines := getPfSerStatus()
+	if lines == nil {
+		return 0
+	}
 
 	for _, l := range lines {
 		vals := strings.Fields(l)
@@ -244,9 +284,31 @@ func ServiceStatus() string {
 	}
 
 	if toBeStarted > 0 {
-		return strconv.Itoa(started * 100 / toBeStarted)
+		return started * 100 / toBeStarted
 	} else {
-		return ""
+		return 100
+	}
+}
+
+func getPfServiceStop() {
+	lines := getPfSerStatus()
+	if lines == nil {
+		return
+	}
+
+	for _, l := range lines {
+		vals := strings.Fields(l)
+		if len(vals) != 3 {
+			return
+		}
+
+		if vals[1] != "stopped" {
+			continue
+		}
+		re := regexp.MustCompile(`packetfence-([\w-]+)\.service`)
+		ret := re.FindStringSubmatch(vals[0])
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("pf start failed: %s", ret[1]))
+		ExecShell(fmt.Sprintf(`pfcmd service %s start`, ret[1]), false)
 	}
 }
 
