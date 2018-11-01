@@ -41,7 +41,7 @@ var ServiceStartPercentage = "0"
 var SystemNTPSynced = false
 
 // percentage of pfcmd service
-var PfService = 0
+var PfServicePercentage = 0
 
 // if we are vip owner
 var IsManagement = false

@@ -38,9 +38,7 @@ func restartPfconfig() (string, error) {
 
 func serviceCmdBackground(cmd string) (string, error) {
 
-	str, err := ExecShell("setsid "+cmd+" &>/dev/null", true)
-	ama.PfService = 100
-	return str, err
+	return ExecShell("setsid "+cmd+" &>/dev/null &", true)
 }
 
 func UpdatePfServices() []Clis {
@@ -102,29 +100,27 @@ func InitStartService(isCluster bool) error {
 	}
 	waitProcStart("mysqld")
 
-	go serviceCmdBackground(pfservice + "pf start")
-	log.LoggerWContext(ctx).Info("start Timer to check pf status")
-	Timer(checkPfService, 12)
+	go PfServiceStart()
 
 	return nil
 }
 
 func checkPfService() bool {
 	var score int
-	if ama.PfService == 100 {
+	if ama.PfServicePercentage == 100 {
 		getPfServiceStop()
 		goto END
 	}
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check pf status."))
 
-	score = getServiceStartProc()
-	if score < ama.PfService {
+	score = getServiceStartedProc()
+	if score < ama.PfServicePercentage {
 		return false
 	}
-	ama.PfService = score
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("update PfService = %d", score))
-	if ama.PfService < 100 {
+	ama.PfServicePercentage = score
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("update PfServicePercentage = %d", score))
+	if ama.PfServicePercentage < 100 {
 		return false
 	}
 
@@ -229,7 +225,6 @@ func SyncFromPrimary(ip, user, pass string) {
 	ama.SetClusterStatus(ama.SyncFinished)
 }
 
-
 func RestartKeepAlived() {
 	cmds := []string{
 		pfcmd + "configreload hard",
@@ -261,7 +256,7 @@ func getPfSerStatus() []string {
 	return lines
 }
 
-func getServiceStartProc() int {
+func getServiceStartedProc() int {
 	toBeStarted := 0
 	started := 0
 
@@ -359,15 +354,14 @@ func ForceNTPsynchronized() {
 	}
 }
 
-func CheckAndStartOneService(name string)  {
+func CheckAndStartOneService(name string) {
 	cmd := pfservice + name + " status"
 	ret, _ := ExecShell(cmd, true)
 	lines := strings.Split(ret, "\n")
 
 	if len(lines) < 1 {
-		return 
+		return
 	}
-
 
 	for _, l := range lines {
 		vals := strings.Fields(l)
@@ -386,4 +380,11 @@ func CheckAndStartOneService(name string)  {
 
 	return
 
+}
+
+func PfServiceStart() {
+	log.LoggerWContext(ctx).Info("start Timer to check pf status")
+	go Timer(checkPfService, 12)
+	ExecShell(A3Root+"/bin/pfcmd service pf start", true)
+	ama.PfServicePercentage = 100
 }

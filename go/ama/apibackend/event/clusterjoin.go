@@ -146,12 +146,11 @@ func ActiveSyncFromPrimary(ip, user, password string) {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("start to sync from primary=%s and restart necessary service", ip))
 	utils.SyncFromPrimary(ip, user, password)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("notify to primary with FinishSync and start pf service"))
-	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start", true)
+	utils.PfServiceStart()
 	utils.ExecShell(`systemctl restart packetfence-api-frontend`, true)
 	utils.ExecShell(`systemctl restart packetfence-httpd.admin`, true)
 	a3share.SendClusterSync(ip, a3share.FinishSync)
 	ama.ClearClusterStatus()
 
 	utils.UpdateCurrentlyAt()
-	utils.ExecShell(`pfcmd service iptables restart`, true)
 }

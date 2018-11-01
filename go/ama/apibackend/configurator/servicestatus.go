@@ -25,5 +25,5 @@ func ServicesNew(ctx context.Context) crud.SectionCmd {
 }
 
 func handleGetServiceStatus(r *http.Request, d crud.HandlerData) []byte {
-	return []byte(fmt.Sprintf(`{"code":"ok", "percentage":"%d"}`, ama.PfService))
+	return []byte(fmt.Sprintf(`{"code":"ok", "percentage":"%d"}`, ama.PfServicePercentage))
 }
