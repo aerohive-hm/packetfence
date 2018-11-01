@@ -3,7 +3,7 @@
 <thead>
   <tr>
     <th>[% l('Device') %]</th>
-    <th>[% l('Device Mac') %]</th>
+    <th>[% l('Device MAC') %]</th>
     <th>[% l('Connection Type') %]</th>
     <th>[% l('Connection Sub Type') %]</th>
     <th>[% l('Username') %]</th>

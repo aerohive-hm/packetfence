@@ -1,13 +1,14 @@
 package utils
 
 import (
-	//"errors"
 	"fmt"
-	//"regexp"
-	"github.com/inverse-inc/packetfence/go/ama"
-	"github.com/inverse-inc/packetfence/go/log"
+	"regexp"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/inverse-inc/packetfence/go/ama"
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 const (
@@ -24,7 +25,7 @@ type Service struct {
 
 func pfExpire(ns string) {
 	cmd := pfconfig + " expire " + ns
-	ExecShell(cmd)
+	ExecShell(cmd, true)
 }
 
 func ReloadConfig() {
@@ -33,11 +34,11 @@ func ReloadConfig() {
 
 func restartPfconfig() (string, error) {
 	cmd := `setsid sudo service packetfence-config restart 2>&1`
-	return ExecShell(cmd)
+	return ExecShell(cmd, true)
 }
 
 func serviceCmdBackground(cmd string) (string, error) {
-	return ExecShell("setsid " + cmd + " &>/dev/null &")
+	return ExecShell("setsid "+cmd+" &>/dev/null &", true)
 }
 
 func UpdatePfServices() []Clis {
@@ -79,7 +80,7 @@ func initStandAloneDb() {
 	}
 	ExecCmds(cmds)
 	waitProcStop("mysqld")
-	ExecShell(`systemctl start packetfence-mariadb`)
+	ExecShell(`systemctl start packetfence-mariadb`, true)
 }
 
 // only Start Services during initial setup
@@ -104,12 +105,6 @@ func InitStartService(isCluster bool) error {
 		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
 	}
 
-	//TODO: need to restart http server? abort web service?
-	//cmds := []string{
-	//	pfservice + "httpd.admin restart",
-	//}
-	//ExecCmds(cmds)
-
 	return nil
 }
 
@@ -124,7 +119,8 @@ func ForceNewCluster() {
 
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
-		A3Root + `/sbin/pf-mariadb --force-new-cluster &>/dev/null &`,
+		`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 1/' /var/lib/mysql/grastate.dat`,
+		"systemctl start packetfence-mariadb",
 	}
 	ExecCmds(cmds)
 	waitProcStart("mysqld")
@@ -186,7 +182,7 @@ func SyncFromPrimary(ip, user, pass string) {
 	ExecCmds(cmds)
 	waitProcStop("pfconfig")
 
-	ExecShell(`systemctl start packetfence-config`)
+	ExecShell(`systemctl start packetfence-config`, true)
 	waitProcStart("pfconfig")
 
 	ama.SetClusterStatus(ama.SyncDB)
@@ -203,15 +199,6 @@ func SyncFromPrimary(ip, user, pass string) {
 	ama.SetClusterStatus(ama.SyncFinished)
 }
 
-func RecoverDB() {
-	killPorc("pf-mariadb")
-	cmds := []string{
-		`systemctl restart packetfence-mariadb`,
-		//pfservice + "pf restart",
-	}
-
-	ExecCmds(cmds)
-}
 
 func RestartKeepAlived() {
 	cmds := []string{
@@ -233,39 +220,108 @@ func RemoveFromCluster() {
 
 func ServiceStatus() string {
 	cmd := pfservice + "pf status"
-	ret, _ := ExecShell(cmd)
+	ret, _ := ExecShell(cmd, false)
 	lines := strings.Split(ret, "\n")
+
 	if len(lines) < 1 {
 		return ""
 	}
 
 	toBeStarted := 0
 	started := 0
+
 	for _, l := range lines {
-		vals := strings.Split(l, "|")
-		if len(vals) < 3 {
-			continue
-		}
-		i, err := strconv.Atoi(vals[1])
-		if err != nil {
-			continue
-		}
+		vals := strings.Fields(l)
 
-		toBeStarted += i
-
-		i, err = strconv.Atoi(vals[2])
-		if err != nil || i <= 0 {
-			continue
+		if len(vals) == 3 {
+			if vals[1] == "started" {
+				toBeStarted += 1
+				started += 1
+			} else if vals[1] == "stopped" {
+				toBeStarted += 1
+			}
 		}
-		started++
 	}
 
-	percent := strconv.Itoa((started + 1) * 100 / toBeStarted)
-	return percent
+	if toBeStarted > 0 {
+		return strconv.Itoa(started * 100 / toBeStarted)
+	} else {
+		return ""
+	}
 }
 
 func SyncFromMaster(file string) error {
 	cmd := A3Root + `/bin/cluster/sync --as-master --file=` + file
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	return err
+}
+
+func checkAndRestartNTPSync() {
+	out, err := ExecShell(`timedatectl status`, false)
+	if err != nil {
+		return
+	}
+
+	re := regexp.MustCompile(`NTP synchronized: yes`)
+	ret := re.FindAllStringSubmatch(out, -1)
+
+	if len(ret) == 0 {
+		log.LoggerWContext(ctx).Info(fmt.Sprintf("NTP NOT synchronized, restart NTP"))
+		cmds := []string{
+			`timedatectl set-ntp false`,
+			`timedatectl set-ntp true`,
+		}
+		ExecCmds(cmds)
+	} else {
+		if !ama.SystemNTPSynced {
+			log.LoggerWContext(ctx).Info(fmt.Sprintf("NTP already synchronized"))
+		}
+		ama.SystemNTPSynced = true
+	}
+
+	return
+}
+
+// Make sure NTP synchronized successfully, or else the admin account will have problem to login
+func ForceNTPsynchronized() {
+	ticker := time.NewTicker(time.Duration(30) * time.Second)
+	defer ticker.Stop()
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check NTP synchronized status"))
+	checkAndRestartNTPSync()
+	if ama.SystemNTPSynced {
+		return
+	}
+
+	for _ = range ticker.C {
+		checkAndRestartNTPSync()
+	}
+}
+
+func CheckAndStartOneService(name string)  {
+	cmd := pfservice + name + " status"
+	ret, _ := ExecShell(cmd, true)
+	lines := strings.Split(ret, "\n")
+
+	if len(lines) < 1 {
+		return 
+	}
+
+
+	for _, l := range lines {
+		vals := strings.Fields(l)
+
+		if len(vals) == 3 {
+			if vals[1] == "started" {
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("service %s is started, do nothing!!", name))
+			} else if vals[1] == "stopped" {
+				log.LoggerWContext(ctx).Info(fmt.Sprintf("service %s is not started, starting it!!", name))
+				cmd = pfservice + name + " start"
+				ExecShell(cmd, true)
+				break
+			}
+		}
+	}
+
+	return
+
 }

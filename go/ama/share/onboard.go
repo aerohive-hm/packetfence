@@ -91,7 +91,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	onboardingData.IpMode = "STATIC"
 	onboardingData.DefaultGateway = utils.GetA3DefaultGW()
 	onboardingData.SoftwareVersion = utils.GetA3Version()
-	onboardingData.SystemUptime = time.Now().UTC().UnixNano() / int64(time.Millisecond)
+	onboardingData.SystemUptime = time.Now().UTC().UnixNano() / int64(time.Millisecond) - utils.GetSysUptime()
 	//onboardingData.ClusterPrimary = amadb.IsPrimaryCluster()
 	managementIface, errint := utils.GetIfaceList("eth0")
 	if errint < 0 {

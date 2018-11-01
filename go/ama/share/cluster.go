@@ -15,7 +15,7 @@ import (
 )
 
 const (
-    NotifySync      = "NotifySync"
+	NotifySync       = "NotifySync"
 	StopService      = "StopServices"
 	StartSync        = "StartSync"
 	FinishSync       = "FinishSync"
@@ -58,7 +58,6 @@ func SendClusterSync(ip, Status string) error {
 	return err
 }
 
-
 func CheckClusterNodeStatus(status string) error {
 	ctx := context.Background()
 	nodeList := a3config.ClusterNew().FetchNodesInfo()
@@ -72,14 +71,12 @@ func CheckClusterNodeStatus(status string) error {
 		err := SendClusterSync(node.IpAddr, status)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
-			return err;
+			return err
 		}
 	}
 
 	return nil
 }
-
-
 
 func NotifyClusterStatus(status string) error {
 	ctx := context.Background()
@@ -99,6 +96,32 @@ func NotifyClusterStatus(status string) error {
 	}
 
 	return nil
+}
+
+func GetPrimaryClusterStatus(ctx context.Context) (error, a3config.ClusterStatusData) {
+
+	url := fmt.Sprintf("https://%s:9999/a3/api/v1/configuration/cluster/status", a3config.ReadClusterPrimary())
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read cluster status data from %s", url))
+	clusterstatusData := a3config.ClusterStatusData{}
+	client := new(apibackclient.Client)
+	client.Host = a3config.ReadClusterPrimary()
+
+	err := client.ClusterSend("GET", url, "")
+	if err != nil {
+		log.LoggerWContext(ctx).Error(err.Error())
+		return err, clusterstatusData
+	}
+
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read primary cluster status data:%s",
+		string(client.RespData)))
+
+	err = json.Unmarshal(client.RespData, &clusterstatusData)
+	if err != nil {
+		return err, clusterstatusData
+	}
+
+	return err, clusterstatusData
+
 }
 
 func GetPrimaryNetworksData(ctx context.Context) (error, a3config.NetworksData) {
@@ -171,7 +194,7 @@ func UpdatePrimaryNetworksData(ctx context.Context, clusterData a3config.Cluster
 	}
 
 	if RespData.Code != "ok" {
-		err = errors.New("return code is not ok from Primary server.")
+		err = errors.New(RespData.Msg)
 		return err, RespData
 	}
 

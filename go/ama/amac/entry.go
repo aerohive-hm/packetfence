@@ -126,6 +126,9 @@ func GetConnStatus() int {
 func Entry(ctx context.Context) {
 	var msg MsgStru
 
+	//check NTP sync or not
+	go utils.ForceNTPsynchronized()
+	
 	//check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
 	if GlobalSwitch == "enable" {
 		//trying to connect to the cloud when damon start
@@ -158,14 +161,6 @@ func Entry(ctx context.Context) {
 		select {
 		case msg = <-MsgChannel:
 			handleMsgFromUi(ctx, msg)
-
-		default:
-			status := GetConnStatus()
-			if status == AMA_STATUS_ONBOARDING_SUC {
-				time.Sleep(5 * time.Second)
-			} else {
-				time.Sleep(1 * time.Second)
-			}
 		}
 	}
 }
@@ -273,8 +268,17 @@ func keepaliveToRdc(ctx context.Context) {
 				continue
 			}
 		}
-		//Check the connect status, if not connected, do nothing
+		/*
+			Check the connect status, if a node join in cluster but onboarding to
+			cloud fail, if not increase the timeoutCount, program will no way to
+			try to onboarding to cloud, customer need to hit the "unlink", then "link"
+			button to trigger a onboarding  behavior, but this operation will take affect
+			for the entire cluser, so it should be better if the AMA can keep trying
+			to onboarding to the cloud actiely.
+		*/
 		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
+			timeoutCount++
+			log.LoggerWContext(ctx).Info(fmt.Sprintf("Enable the cloud integration, but status is not connected, keepalive timeout %d", timeoutCount))
 			continue
 		}
 
@@ -300,7 +304,6 @@ func keepaliveToRdc(ctx context.Context) {
 			continue
 		}
 		AmacSendEventSuccessCounter++
-		timeoutCount = 0
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.LoggerWContext(ctx).Info(string(body))
 
@@ -308,6 +311,7 @@ func keepaliveToRdc(ctx context.Context) {
 		if statusCode == 200 {
 			//Dispatch the data coming with keepalive reponses
 			dispathMsgFromRdc(ctx, []byte(body))
+			timeoutCount = 0
 		} else {
 			timeoutCount++
 			resp.Body.Close()
@@ -336,7 +340,6 @@ func dispathMsgFromRdc(ctx context.Context, message []byte) {
 			//RDC token need to write file, if process restart we can read it
 			dst := fmt.Sprintf("Bearer %s", resMsg.Data["token"])
 			UpdateRdcToken(ctx, dst, false)
-			rdcTokenStr = resMsg.Data["token"]
 		}
 	}
 	return

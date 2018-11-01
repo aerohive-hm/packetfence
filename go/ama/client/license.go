@@ -9,7 +9,7 @@ import (
 )
 
 
-func VerifyLicense(key string) ([]byte, error) {
+func VerifyLicense(key string) ([]byte, error, int) {
 	a3Cfg := a3config.A3ReadFull("PF", "A3")["A3"]
 
 	c := new(Client)
@@ -19,10 +19,10 @@ func VerifyLicense(key string) ([]byte, error) {
 	body := fmt.Sprintf(`{"systemId":"%s", "key":"%s"}`, sysId, key)
 
 	err := c.Call("POST", url, body)
-	return c.RespData, err
+	return c.RespData, err, c.Status
 }
 
-func RecordEula(timestamp string) ([]byte, error) {
+func RecordEula(timestamp string) ([]byte, error, int) {
 	a3Cfg := a3config.A3ReadFull("PF", "A3")["A3"]
 
 	c := new(Client)
@@ -31,5 +31,5 @@ func RecordEula(timestamp string) ([]byte, error) {
 	body := fmt.Sprintf(`{"timestamp":"%s"}`, timestamp)
 
 	err := c.Call("POST", url, body)
-	return c.RespData, err
+	return c.RespData, err, c.Status
 }

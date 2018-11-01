@@ -8,13 +8,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
-
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
+	"net/http"
 )
 
 type AdminUserInfo struct {
@@ -47,7 +47,7 @@ func hashPassword(password string) string {
 	return ""
 }
 
-/* replace is better than insert because it does not need to check if pid exsit or not */
+/* replace is better than insert because it does not need to check if pid exist or not */
 const (
 	sqlCmd = `replace into password(pid,password,valid_from,expiration,access_level)` +
 		`values('%s','%s','%s','%s','%s')`
@@ -112,6 +112,11 @@ func handleGetAdminUserPost(r *http.Request, d crud.HandlerData) []byte {
 
 	if utils.IsFileZero(utils.A3Root + "/conf/pf.conf") {
 		err = errors.New("System is starting up, please wait a moment.")
+		goto END
+	}
+
+	if !ama.SystemNTPSynced {
+		err = errors.New("System NTP is not synchronized, please wait a moment or restart the A3 again.")
 		goto END
 	}
 

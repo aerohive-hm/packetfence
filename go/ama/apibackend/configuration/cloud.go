@@ -225,6 +225,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	err := json.Unmarshal(d.ReqData, postInfo)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("unmarshal error: " + err.Error())
+		ret = "Parsing posted cloud info failed"
 		goto END
 	}
 
@@ -239,6 +240,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 			err := tmpDB.DbInit()
 			if err != nil {
 				log.LoggerWContext(ctx).Error("Open database error: " + err.Error())
+				ret = "Opening database failed"
 				goto END
 			}
 			db := tmpDB.Db
@@ -258,6 +260,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		result, msg := amac.UpdateMsgToRdcSyn(ctx, amac.RemoveNodeFromCluster, sysIDs)
 		if result < 0 {
 			log.LoggerWContext(ctx).Error("UpdateMsgToRdcSyn failed:" + msg)
+			ret = "Updating message to RDC failed"
 			goto END
 		}
 	
@@ -265,7 +268,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		event.Data = "disable"
 		amac.MsgChannel <- *event
 		code = "ok"
-		ret = "disable cloud integration successfully"
+		ret = "Disable cloud integration successfully"
 
 		ownMgtIp := utils.GetOwnMGTIp()
 		for _, node := range nodeList {
@@ -282,18 +285,21 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	err = a3config.UpdateCloudConf(a3config.GDCUrl, s)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update cloud GDC URL error: " + err.Error())
+		ret = "Updating cloud GDC URL failed"
 		goto END
 	}
 
 	err = a3config.UpdateCloudConf(a3config.User, postInfo.User)
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update cloud username error: " + err.Error())
+		ret = "Updating cloud username failed"
 		goto END
 	}
 
 	err = a3config.UpdateCloudConf(a3config.Switch, "enable")
 	if err != nil {
 		log.LoggerWContext(ctx).Error("Update cloud config error: " + err.Error())
+		ret = "Updating cloud configuration failed"
 		goto END
 	}
 

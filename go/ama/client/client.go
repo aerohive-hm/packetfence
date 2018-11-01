@@ -82,7 +82,6 @@ func (c *Client) Call(method, url string, body string) error {
 	ctx := log.LoggerNewContext(context.Background())
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintln(method, url))
-	log.LoggerWContext(ctx).Info(fmt.Sprintln(body))
 	r, err := c.buildRequest(method, url, body)
 	if err != nil {
 		return err

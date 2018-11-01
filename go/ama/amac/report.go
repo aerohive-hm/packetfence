@@ -159,7 +159,16 @@ func radAcctFieldHandle(t *report.RadacctParseStruct) report.RadacctParseStruct 
 	case "Interim-Update-Username":
 		//do nothing
 	}
-	//t.AcctStatusType = ""
+
+	/*
+		If serviceType eq Call-Check, the username will be MAC address
+		Which from the MAC authen, the radacc-update packet will overwrite
+		the username of portal authentication. If ServiceType is Framed-User
+		means this is a 802.1X username, we should push this info to cloud.
+	*/
+	if t.ServiceType == "Call-Check" {
+		t.UserName = ""
+	}
 
 	return *t
 }
@@ -228,9 +237,12 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		case "radius_audit_log":
 			var t report.RadauditParseStruct
 			err = json.Unmarshal(singleMsg.([]byte), &t)
-			t.AuthStatus = t.AuthType
+			if t.AuthStatus == "allow" {
+				t.AuthStatus = "Accept"
+			} else {
+				t.AuthStatus = "Reject"
+			}
 			t.TimeStamp = fmt.Sprintf("%d", time.Now().UTC().UnixNano()/(int64(time.Millisecond)*1000))
-			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		case "radacct":
 			var t report.RadacctParseStruct

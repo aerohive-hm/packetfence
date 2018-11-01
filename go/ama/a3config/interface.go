@@ -39,7 +39,11 @@ func GetIfaceType(ifname string) string {
 	/*if vlan  type is portal ,should get type form pf.conf*/
 	iftype := GetIfaceElementVlaue(ifname, "type")
 	if iftype == "" {
-		return ""
+		if strings.Contains(ifname, ".") {
+			return ""
+		} else {
+			return "MANAGEMENT"
+		}
 	}
 	s := strings.Split(strings.ToUpper(iftype), ",")
 	return s[0]
@@ -50,9 +54,11 @@ func GetIfaceServices(ifname string) []string {
 	services := []string{}
 	iftype := GetIfaceElementVlaue(ifname, "type")
 	if iftype == "" {
+		if !strings.Contains(ifname, ".") {
+			services = append(services, "RADIUS")
+		}
 		return services
 	}
-
 	s := strings.Split(strings.ToUpper(iftype), ",")
 	for _, value := range s {
 		if value == "HIGH-AVAILABILITY" {
@@ -76,10 +82,10 @@ func CheckCreateIfValid(i Item) error {
 	if !isvlan {
 		return nil
 	}
-	/*check new inteface if exsit*/
+	/*check new inteface if exist*/
 	ifname := ChangeUiIfname(i.Name, i.Prefix)
 	if utils.IfaceExists(ifname) {
-		msg = fmt.Sprintf("%s is exsit in system", i.Name)
+		msg = fmt.Sprintf("%s is exist in system", i.Name)
 		return errors.New(msg)
 	}
 	return nil

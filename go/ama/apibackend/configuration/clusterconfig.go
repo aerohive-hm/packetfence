@@ -111,17 +111,17 @@ func GetClusterInfoData(ctx context.Context, clusterdata *a3config.ClusterInfoDa
 		clusterNode := new(a3config.ClusterNodeItem)
 		if node.IpAddr == ownMgtIp {
 			clusterNode.NodeType = "Master"
+			clusterNode.Status = "Active"
 		} else {
 			clusterNode.NodeType = "Member"
+			if strings.Contains(dbClusterList, node.IpAddr) {
+				clusterNode.Status = "Active" //get from DB
+			} else {
+				clusterNode.Status = "Inactive"
+			}
 		}
 		clusterNode.Hostname = node.Hostname
 		clusterNode.IpAddr = node.IpAddr
-
-		if strings.Contains(dbClusterList, node.IpAddr) {
-			clusterNode.Status = "Active" //get from DB
-		} else {
-			clusterNode.Status = "Inactive"
-		}
 
 		clusterdata.Nodes = append(clusterdata.Nodes, *clusterNode)
 	}

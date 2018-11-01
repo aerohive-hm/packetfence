@@ -13,12 +13,14 @@ import (
 
 	"github.com/inverse-inc/packetfence/go/coredns/plugin"
 	"github.com/inverse-inc/packetfence/go/coredns/request"
-	"github.com/inverse-inc/packetfence/go/database"
+	"github.com/inverse-inc/packetfence/go/db"
 	"github.com/inverse-inc/packetfence/go/filter_client"
+	"github.com/inverse-inc/packetfence/go/sharedutils"
 	"github.com/inverse-inc/packetfence/go/unifiedapiclient"
 	cache "github.com/patrickmn/go-cache"
 	//Import mysql driver
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
 	"github.com/miekg/dns"
 	"golang.org/x/net/context"
@@ -60,7 +62,7 @@ type dbConf struct {
 	DB         string `json:"db"`
 }
 
-func (pf *pfdns) Ip2Mac(ip string, ipVersion int) (string, error) {
+func (pf *pfdns) Ip2Mac(ctx context.Context, ip string, ipVersion int) (string, error) {
 	var (
 		mac string
 		err error
@@ -72,18 +74,18 @@ func (pf *pfdns) Ip2Mac(ip string, ipVersion int) (string, error) {
 	}
 
 	if err != nil {
-		fmt.Printf("ERROR pfdns Ip2Mac (ipv%d) mac for %s not found %s\n", ipVersion, ip, err)
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Ip2Mac (ipv%d) mac for %s not found %s\n", ipVersion, ip, err))
 	}
 
 	return mac, err
 }
 
-func (pf *pfdns) HasViolations(mac string) bool {
+func (pf *pfdns) HasViolations(ctx context.Context, mac string) bool {
 	violation := false
 	var violationCount int
 	err := pf.Violation.QueryRow(mac, 1).Scan(&violationCount)
 	if err != nil {
-		fmt.Printf("ERROR pfdns HasViolation %s %s\n", mac, err)
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("HasViolation %s %s\n", mac, err))
 	} else if violationCount != 0 {
 		violation = true
 	}
@@ -111,29 +113,58 @@ func (pf *pfdns) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 		ipVersion = 4
 	}
 
-	mac, err := pf.Ip2Mac(srcIP, ipVersion)
+	mac, err := pf.Ip2Mac(ctx, srcIP, ipVersion)
 	if err != nil {
-		fmt.Printf("ERROR cannot find mac for ip %s\n", srcIP)
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("ERROR cannot find mac for ip %s\n", srcIP))
 	}
 
-	violation := pf.HasViolations(mac)
-	if violation {
-		// Passthrough bypass
-		for k, v := range pf.FqdnIsolationPort {
-			if k.MatchString(state.QName()) {
-				answer, _ := pf.LocalResolver(state)
-				for _, ans := range answer.Answer {
+	// Domain bypass
+	for k, v := range pf.FqdnDomainPort {
+		if k.MatchString(state.QName()) {
+			answer, err := pf.LocalResolver(state)
+			if err != nil {
+				log.LoggerWContext(ctx).Error("Local resolver error for fqdn" + state.QName() + " with the following error" + err.Error())
+			} else {
+				for _, ans := range append(answer.Answer, answer.Extra...) {
 					switch ansb := ans.(type) {
 					case *dns.A:
 						for _, valeur := range v {
-							if err := pf.SetPassthrough(ctx, "passthrough_isolation", ansb.A.String(), valeur, false); err != nil {
-								fmt.Println("Not able to contact Unified API to adjust passthroughs", err)
+							if err := pf.SetPassthrough(ctx, "passthrough", ansb.A.String(), valeur, true); err != nil {
+								log.LoggerWContext(ctx).Error(fmt.Sprintf("Not able to contact localhost for setPassthrough %s", err))
 							}
 						}
 					}
 				}
-				fmt.Println(srcIP + " : " + mac + " isolation passthrough")
-				return pf.Next.ServeDNS(ctx, w, r)
+				log.LoggerWContext(ctx).Debug(srcIP + " : " + mac + " Domain bypass for fqdn " + state.QName())
+				w.WriteMsg(answer)
+			}
+			return 0, nil
+		}
+	}
+
+	violation := pf.HasViolations(ctx, mac)
+	if violation {
+		// Passthrough bypass
+		for k, v := range pf.FqdnIsolationPort {
+			if k.MatchString(state.QName()) {
+				answer, err := pf.LocalResolver(state)
+				if err != nil {
+					log.LoggerWContext(ctx).Error("Local resolver error for fqdn" + state.QName() + " with the following error" + err.Error())
+				} else {
+					for _, ans := range append(answer.Answer, answer.Extra...) {
+						switch ansb := ans.(type) {
+						case *dns.A:
+							for _, valeur := range v {
+								if err := pf.SetPassthrough(ctx, "passthrough_isolation", ansb.A.String(), valeur, false); err != nil {
+									log.LoggerWContext(ctx).Error(fmt.Sprintf("Not able to contact Unified API to adjust passthroughs: %s", err))
+								}
+							}
+						}
+					}
+					log.LoggerWContext(ctx).Debug(srcIP + " : " + mac + " isolation passthrough  for fqdn " + state.QName())
+					w.WriteMsg(answer)
+				}
+				return 0, nil
 			}
 		}
 	}
@@ -141,38 +172,25 @@ func (pf *pfdns) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 	// Passthrough bypass
 	for k, v := range pf.FqdnPort {
 		if k.MatchString(state.QName()) {
-			answer, _ := pf.LocalResolver(state)
-			for _, ans := range answer.Answer {
-				switch ansb := ans.(type) {
-				case *dns.A:
-					for _, valeur := range v {
-						if err := pf.SetPassthrough(ctx, "passthrough", ansb.A.String(), valeur, false); err != nil {
-							fmt.Println("Not able to contact Unified API to adjust passthroughs", err)
+			answer, err := pf.LocalResolver(state)
+			if err != nil {
+				log.LoggerWContext(ctx).Error("Local resolver error for fqdn" + state.QName() + " with the following error" + err.Error())
+			} else {
+				for _, ans := range append(answer.Answer, answer.Extra...) {
+					switch ansb := ans.(type) {
+					case *dns.A:
+						for _, valeur := range v {
+							if err := pf.SetPassthrough(ctx, "passthrough", ansb.A.String(), valeur, false); err != nil {
+								log.LoggerWContext(ctx).Error(fmt.Sprintf("Not able to contact Unified API to adjust passthroughs %s", err))
+							}
 						}
 					}
-				}
-			}
-			fmt.Println(srcIP + " : " + mac + " passthrough")
-			return pf.Next.ServeDNS(ctx, w, r)
-		}
-	}
 
-	// Domain bypass
-	for k, v := range pf.FqdnDomainPort {
-		if k.MatchString(state.QName()) {
-			answer, _ := pf.LocalResolver(state)
-			for _, ans := range answer.Answer {
-				switch ansb := ans.(type) {
-				case *dns.A:
-					for _, valeur := range v {
-						if err := pf.SetPassthrough(ctx, "passthrough", ansb.A.String(), valeur, true); err != nil {
-							fmt.Println("Not able to contact localhost", err)
-						}
-					}
 				}
+				w.WriteMsg(answer)
+				log.LoggerWContext(ctx).Debug(srcIP + " : " + mac + " passthrough for fqdn " + state.QName())
 			}
-			fmt.Println(srcIP + ":" + mac + " Domain bypass")
-			return pf.Next.ServeDNS(ctx, w, r)
+			return 0, nil
 		}
 	}
 
@@ -192,31 +210,28 @@ func (pf *pfdns) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 
 		case "vlan-registration":
 			Type = "registration"
-		case "dnsenforcement":
+		case "dns-enforcement":
 			Type = "dnsenforcement"
 		}
 
-		switch Type {
-		case "dnsenforcement":
-		case "inline":
-			fmt.Println("Performing inline or DNS enforcement for this device")
-			var status = "unreg"
-			err = pf.Nodedb.QueryRow(mac, 1).Scan(&status)
-			if err != nil {
-				fmt.Printf("ERROR pfdns error getting node status %s %s\n", mac, err)
-			}
-
-			// Defer to the proxy middleware if the device is registered
-			if status == "reg" && !violation {
-				fmt.Println(srcIP + " : " + mac + " serve dns " + state.QName())
-				return pf.Next.ServeDNS(ctx, w, r)
-			}
-		}
-
 		if k.Contains(bIP) {
+			// Register and inline or dns enforcement then resolv
+			switch Type {
+			case "dnsenforcement", "inline":
+				var status = "unreg"
+				err = pf.Nodedb.QueryRow(mac, 1).Scan(&status)
+				if err != nil {
+					log.LoggerWContext(ctx).Error(fmt.Sprintf("error getting node status %s %s\n", mac, err))
+				}
+				// Defer to the proxy middleware if the device is registered
+				if status == "reg" && !violation {
+					log.LoggerWContext(ctx).Debug(srcIP + " : " + mac + " serve dns " + state.QName())
+					return pf.Next.ServeDNS(ctx, w, r)
+				}
+			}
 			answer, found := pf.DNSFilter.Get(state.QName())
 			if found && answer != "null" {
-				fmt.Println("Get answer from the cache for " + state.QName())
+				log.LoggerWContext(ctx).Debug("Get answer from the cache for " + state.QName())
 				rr, _ = dns.NewRR(answer.(string))
 			} else {
 				info, err := pffilter.FilterDns(Type, map[string]interface{}{
@@ -235,13 +250,13 @@ func (pf *pfdns) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 						break
 					}
 				}
-				fmt.Println("Get answer from pffilter for " + state.QName())
+				log.LoggerWContext(ctx).Debug("Get answer from pffilter for " + state.QName())
 				pf.DNSFilter.Set(state.QName(), answer, cache.DefaultExpiration)
 				rr, _ = dns.NewRR(answer)
 			}
 
 			a.Answer = []dns.RR{rr}
-			fmt.Println("DNS Filter matched for MAC " + mac + " IP " + srcIP + " Query " + state.QName())
+			log.LoggerWContext(ctx).Debug("DNS Filter matched for MAC " + mac + " IP " + srcIP + " Query " + state.QName())
 			state.SizeAndDo(a)
 			w.WriteMsg(a)
 			return 0, nil
@@ -254,7 +269,7 @@ func (pf *pfdns) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 		if state.QName() == pf.PortalFQDN {
 			rr.(*dns.A).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeA, Class: state.QClass(), Ttl: 60}
 		} else {
-			rr.(*dns.A).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeA, Class: state.QClass()}
+			rr.(*dns.A).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeA, Class: state.QClass(), Ttl: 15}
 		}
 		for k, v := range pf.Network {
 			if k.Contains(bIP) {
@@ -270,7 +285,7 @@ func (pf *pfdns) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 		if state.QName() == pf.PortalFQDN {
 			rr.(*dns.AAAA).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeAAAA, Class: state.QClass(), Ttl: 60}
 		} else {
-			rr.(*dns.AAAA).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeAAAA, Class: state.QClass()}
+			rr.(*dns.AAAA).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeAAAA, Class: state.QClass(), Ttl: 15}
 		}
 		for k, v := range pf.Network {
 			if k.Contains(bIP) {
@@ -285,6 +300,7 @@ func (pf *pfdns) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 
 	a.Answer = []dns.RR{rr}
 	fmt.Println("Returned portal for MAC " + mac + " with IP " + srcIP)
+	log.LoggerWContext(ctx).Debug("Returned portal for MAC " + mac + " with IP " + srcIP)
 	state.SizeAndDo(a)
 	w.WriteMsg(a)
 
@@ -370,9 +386,8 @@ func (pf *pfdns) DomainPassthroughInit() error {
 	pfconfigdriver.FetchDecodeSocket(ctx, &keyConfDNS)
 
 	for _, v := range keyConfDNS.Keys {
-		// .*_msdcs.
 		rgx, _ := regexp.Compile(".*(_msdcs|_sites)." + v)
-		pf.FqdnDomainPort[rgx] = []string{"udp:88", "udp:123", "udp:135", "135", "udp:137", "udp:138", "139", "udp:389", "udp:445", "445", "udp:464", "464", "tcp:1025", "49155", "49156", "49172"}
+		pf.FqdnDomainPort[rgx] = []string{"udp:88", "udp:123", "udp:135", "tcp:135", "udp:137", "udp:138", "udp:139", "tcp:139", "udp:389", "udp:445", "tcp:445", "udp:464", "tcp:464", "tcp:1025", "udp:49155", "tcp:49155", "udp:49156", "tcp:49156", "udp:49172", "tcp:49172"}
 	}
 
 	return nil
@@ -489,13 +504,10 @@ func (pf *pfdns) DbInit() error {
 	var ctx = context.Background()
 
 	var err error
-	configDatabase := readConfig(ctx)
-	pf.Db = database.ConnectFromConfig(configDatabase)
 
-	if err != nil {
-		// logging the error is handled in connectDB
-		return err
-	}
+	db, err := db.DbFromConfig(ctx)
+	sharedutils.CheckError(err)
+	pf.Db = db
 
 	pf.IP4log, err = pf.Db.Prepare("select mac from ip4log where ip = ? AND tenant_id = ?")
 	if err != nil {
@@ -522,7 +534,7 @@ func (pf *pfdns) DbInit() error {
 	}
 
 	if err != nil {
-		fmt.Printf("Error while connecting to database: %s", err)
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Error while connecting to database: %s", err))
 		return err
 	}
 
@@ -573,7 +585,7 @@ func (pf *pfdns) SetPassthrough(ctx context.Context, passthrough, ip, port strin
 	}, &unifiedapiclient.DummyReply{})
 
 	if err != nil {
-		fmt.Println("Not able to contact Unified API to adjust passthroughs", err)
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Not able to contact Unified API to adjust passthroughs %s", err))
 	} else {
 		pf.IpsetCache.Set(cache_key, 1, cache.DefaultExpiration)
 	}
