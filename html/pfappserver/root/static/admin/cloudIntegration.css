@@ -137,6 +137,6 @@ table{
    display:inline;
 }
 
-i ~ i {
+.legend i ~ .legend i {
 padding-left: 15px;
 }

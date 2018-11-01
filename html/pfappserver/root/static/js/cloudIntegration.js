@@ -50,12 +50,11 @@ function getNodeInfo(){
             if (data.msgtype == "nodesInfo"){
                 $(".disconnected").attr("style", "display: none");
 
-                if (data.body.header.rdcUrl == ""){
-                    $('#rdcUrl').html(data.body.header.rdcUrl);
+                if (data.body.header.rdcUrl === ""){
+                    $('#rdcUrl').html("");
                 } else {
-
+                    $('#rdcUrl').html("Linked with Aerohive Cloud Services at " + "<a href='#' target='_blank'>" + data.body.header.rdcUrl + "</a>");
                 }
-                $('#rdcUrl').html(data.body.header.rdcUrl);
 
                 document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
                 if (data.body.header.region == ""){
