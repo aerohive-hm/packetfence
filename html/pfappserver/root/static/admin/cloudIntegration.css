@@ -16,6 +16,10 @@
   width: 100px;
 }
 
+table{
+  padding-top: 15px;
+}
+
 /* for the spinner  */
 #spin-spinner, #spin-spinner2{
   display: none;
@@ -127,4 +131,12 @@
     margin-bottom: 10px;
     margin-left: 130px;
     margin-top: -7px;
+}
+
+.legend {
+   display:inline;
+}
+
+i ~ i {
+padding-left: 15px;
 }

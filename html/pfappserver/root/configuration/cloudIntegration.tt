@@ -94,7 +94,14 @@
           </span>
         </div>
         <br/><br/>
-        <h6>[% l('Cluster Link Status') %]</h6>
+        <h5>[% l('Cluster Link Status') %]</h5>
+        <div class="legend">
+            <i class="icon-circle icon" style="color:#28a745; font-size:15px; margin: 0 auto;"></i> [% l('Connected') %]
+            <i class="icon-circle icon" style="color:#ffc107; font-size:15px; margin: 0 auto;"></i> [% l('Connecting') %]
+            <i class="icon-circle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i> [% l('Not connected') %]
+            <br>
+        </div>
+        <br>
         <table id="items cloud-cluster-table" class="table items">
           <thead>
             <tr style="background-color: #f4f6f9">
@@ -117,7 +124,7 @@
           <tbody>
             <tr>
               <td class="td-title"><h6>[% l('VHM Name') %]</h6></td>
-              <b><td><span id="vhmId"></span> (<span id="ownerId"></span>)</td></b>
+              <b><td><span id="vhmId"></span><span id="ownerId"></span></td></b>
             </tr>
             <tr>
               <td class="td-title"><h6>[% l('Data Center') %]</h6></td>
@@ -126,6 +133,10 @@
             <tr>
               <td class="td-title"><h6>[% l('Last Contact') %]</h6></td>
               <td id="lastContactTime"></td>
+            </tr>
+            <tr>
+              <td class="td-title"><h6>[% l('Link Status') %]</h6></td>
+              <td id="linkStatus"></td>
             </tr>
           </tbody>
         </table>
