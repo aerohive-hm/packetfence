@@ -100,7 +100,7 @@ func InitStartService(isCluster bool) error {
 	}
 	waitProcStart("mysqld")
 
-	go PfServiceStart()
+	go PfServiceStart(true)
 
 	return nil
 }
@@ -109,7 +109,7 @@ func checkPfService() bool {
 	var score int
 	if ama.PfServicePercentage == 100 {
 		getPfServiceStop()
-		goto END
+		return true
 	}
 
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check pf status."))
@@ -123,14 +123,6 @@ func checkPfService() bool {
 	if ama.PfServicePercentage < 100 {
 		return false
 	}
-
-END:
-	if IsFileExist(A3CurrentlyAt) {
-		return true
-	}
-
-	UpdateCurrentlyAt()
-	//go ExecShell(`pfcmd service iptables restart`, true)
 	return true
 }
 
@@ -382,9 +374,13 @@ func CheckAndStartOneService(name string) {
 
 }
 
-func PfServiceStart() {
+func PfServiceStart(isNew bool) {
 	log.LoggerWContext(ctx).Info("start Timer to check pf status")
 	go Timer(checkPfService, 12)
 	ExecShell(A3Root+"/bin/pfcmd service pf start", true)
-	ama.PfServicePercentage = 100
+	if isNew {
+		UpdateCurrentlyAt()
+		ama.PfServicePercentage = 100
+	}
+
 }
