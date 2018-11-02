@@ -4,10 +4,10 @@
 package a3config
 
 import (
-	"context"
 	"fmt"
 	"regexp"
 
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -157,7 +157,7 @@ func RemoveClusterServer(hostname []string) {
 	}
 
 	if len(ids) > 0 {
-		log.LoggerWContext(context.Background()).Info("to be removed from cluster: ")
+		log.LoggerWContext(ama.Ctx).Info("to be removed from cluster: ")
 		A3Delete("CLUSTER", ids)
 	}
 }
@@ -203,7 +203,7 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 	var keyname string
 
 	if !ClusterNew().CheckClusterEnable() {
-		log.LoggerWContext(context.Background()).Info(fmt.Sprintf(" Cluster Disenabled"))
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf(" Cluster Disenabled"))
 		return nil
 	}
 

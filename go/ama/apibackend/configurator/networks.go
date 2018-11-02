@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	//"fmt"
 	"net/http"
-
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/database"
@@ -69,6 +69,6 @@ func writeSysidToDb() {
 	PrimaryHostname := utils.GetHostname()
 	err := amadb.AddSysIdbyHost(PrimarySysId, PrimaryHostname)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("AddSysIdbyHost error:" + err.Error())
+		log.LoggerWContext(ama.Ctx).Error("AddSysIdbyHost error:" + err.Error())
 	}
 }

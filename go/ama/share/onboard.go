@@ -9,6 +9,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -60,7 +61,6 @@ type A3OnboardingInfo struct {
 	Data   A3OnboardingData   `json:"data"`
 }
 
-var contextOnboard = log.LoggerNewContext(context.Background())
 
 func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	ifaces, errint := utils.GetIfaceList("all")
@@ -128,7 +128,7 @@ func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 func (lic *A3License) GetValue(ctx context.Context) {
 	var context context.Context
 	if ctx == nil {
-		context = contextOnboard
+		context = ama.Ctx
 	} else {
 		context = ctx
 	}
@@ -211,7 +211,7 @@ func GetOnboardingInfo(ctx context.Context) A3OnboardingInfo {
 	onboardInfo := A3OnboardingInfo{}
 
 	if ctx == nil {
-		context = contextOnboard
+		context = ama.Ctx
 	} else {
 		context = ctx
 	}
