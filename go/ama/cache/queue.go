@@ -2,7 +2,7 @@ package cache
 
 import (
 	"github.com/inverse-inc/packetfence/go/log"
-	"context"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"errors"
 )
 
@@ -14,7 +14,7 @@ func (r *RedisPool) Enqueue(queueName string, data []byte) error {
 	if err != nil {
 		return err
 	}
-	log.LoggerWContext(context.Background()).Info("Enqueue succeed!")
+	log.LoggerWContext(ama.Ctx).Info("Enqueue succeed!")
 
 	return nil
 }
@@ -27,7 +27,7 @@ func (r *RedisPool) Dequeue(queueName string) ([]byte, error) {
 	if err != nil {
 		return nil,err
 	}
-	log.LoggerWContext(context.Background()).Info("Dequeue succeed!")
+	log.LoggerWContext(ama.Ctx).Info("Dequeue succeed!")
 
 	return reply.([]byte),nil
 }

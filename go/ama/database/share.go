@@ -1,8 +1,8 @@
 package amadb
 
 import (
-	"context"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -21,7 +21,7 @@ func AddSysIdbyHost(sysid, host string) error {
 }
 
 func QuerySysIdbyHost(hostname string) string {
-	var ctx = context.Background()
+	var ctx = ama.Ctx
 	var sysid string
 
 	tmpDB := new(A3Db)
@@ -60,7 +60,7 @@ func DeleteSysIdbyHost(hostname string) error {
 }
 
 func QueryDBClusterIpSet() string {
-	var ctx = context.Background()
+	var ctx = ama.Ctx
 
 	tmpDB := new(A3Db)
 	err := tmpDB.DbInit()
@@ -86,7 +86,7 @@ func QueryDBClusterIpSet() string {
 
 
 func QueryDBPrimaryStatus() string {
-	var ctx = context.Background()
+	var ctx = ama.Ctx
 
 	tmpDB := new(A3Db)
 	err := tmpDB.DbInit()

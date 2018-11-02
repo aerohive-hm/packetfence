@@ -3,14 +3,13 @@ package utils
 import (
 	"bufio"
 	"bytes"
-	"context"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
-
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -27,7 +26,6 @@ type Clis struct {
 	out    string
 }
 
-var ctx = context.Background()
 
 func ExecShell(s string, dbgFlag bool) (string, error) {
 	cmd := exec.Command("/bin/bash", "-c", s)
@@ -37,9 +35,9 @@ func ExecShell(s string, dbgFlag bool) (string, error) {
 
 	err := cmd.Run()
 	if dbgFlag || err != nil {
-		log.LoggerWContext(ctx).Info(fmt.Sprintln(s))
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintln(s))
 	} else {
-		log.LoggerWContext(ctx).Debug(fmt.Sprintln(s))
+		log.LoggerWContext(ama.Ctx).Debug(fmt.Sprintln(s))
 	}
 	return out.String(), err
 }
@@ -52,8 +50,8 @@ func ExecCmds(cmds []string) []Clis {
 		cli.out, cli.err = ExecShell(cmd, true)
 
 		if cli.err != nil {
-			log.LoggerWContext(ctx).Error(cli.err.Error())
-			log.LoggerWContext(ctx).Error(fmt.Sprintln(cli.out))
+			log.LoggerWContext(ama.Ctx).Error(cli.err.Error())
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintln(cli.out))
 		}
 		result = append(result, cli)
 	}

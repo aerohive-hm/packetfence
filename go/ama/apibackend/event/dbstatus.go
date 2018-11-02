@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -69,7 +70,6 @@ type PostDbStatusData struct {
 }
 
 var MariadbStatusData MariadbRecoveryData
-var ctx = context.Background()
 
 func ResetGrastateData() {
 
@@ -140,7 +140,7 @@ func MariadbIsActive() bool {
 	} 
 
 	if !MariadbStatusData.DBIsHealthy {
-		log.LoggerWContext(ctx).Info("wsrep_cluster_status:" + result)
+		log.LoggerWContext(ama.Ctx).Info("wsrep_cluster_status:" + result)
 	}
 
 	if !a3config.ClusterNew().CheckClusterEnable() {
@@ -197,7 +197,7 @@ func handleGetDBStatus(r *http.Request, d crud.HandlerData) []byte {
 	
 	jsonData, err := json.Marshal(MyInfo)
 	if err != nil {
-		log.LoggerWContext(ctx).Error("marshal error:" + err.Error())
+		log.LoggerWContext(ama.Ctx).Error("marshal error:" + err.Error())
 		return []byte(err.Error())
 	}
 	return jsonData
@@ -205,28 +205,28 @@ func handleGetDBStatus(r *http.Request, d crud.HandlerData) []byte {
 
 func ShutdownMariadb() {
 	//gracefully shutdown mariadb, If it is possible to shutdown fail, find reason instead of kill with SIGKILL.
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA trying to shut down MariaDB!!!"))
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("ama trying to shut down MariaDB!!!"))
 	utils.KillMariaDB()
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA shut down MariaDB!!!"))
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("ama shut down MariaDB!!!"))
 }
 
 func ModifygrastateFileSafeToBootstrap() {
 	utils.ExecShell(`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 1/' /var/lib/mysql/grastate.dat`, true)
 	MariadbStatusData.SafeToBootstrap = 1
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA modify safe_to_bootstrap=1 for /var/lib/mysql/grastate.dat!!!"))
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("ama modify safe_to_bootstrap=1 for /var/lib/mysql/grastate.dat!!!"))
 }
 
 func ModifygrastateFileNotSafeToBootstrap() {
 	utils.ExecShell(`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 0/' /var/lib/mysql/grastate.dat`, true)
 	MariadbStatusData.SafeToBootstrap = 0
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA modify safe_to_bootstrap=0 for /var/lib/mysql/grastate.dat!!!"))
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("ama modify safe_to_bootstrap=0 for /var/lib/mysql/grastate.dat!!!"))
 }
 
 
 
 func RecoveryStartedMariadb() {
 	utils.ExecShell(`systemctl start packetfence-mariadb.service`, true)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA started MariaDB!!!"))
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("ama started MariaDB!!!"))
 }
 
 
@@ -248,11 +248,11 @@ func handleUpdateDBStatus(r *http.Request, d crud.HandlerData) []byte {
 
 	err := json.Unmarshal(d.ReqData, statusData)
 	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
+		log.LoggerWContext(ama.Ctx).Error(err.Error())
 		return []byte(err.Error())
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive MariaDB state %s from %s", statusData.State, statusData.SendIp))
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("receive MariaDB state %s from %s", statusData.State, statusData.SendIp))
 	switch {
 	case statusData.State == "StopYourDB":
 		ShutdownMariadb()

@@ -31,7 +31,6 @@ type SyncData struct {
 }
 
 func SendClusterSync(ip, Status string) error {
-	ctx := context.Background()
 	data := new(SyncData)
 
 	data.Status = Status
@@ -39,27 +38,26 @@ func SendClusterSync(ip, Status string) error {
 	data.SendIp = utils.GetOwnMGTIp()
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("post cluster event sync with: %s", url))
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("post cluster event sync with: %s", url))
 
 	client := new(apibackclient.Client)
 	client.Host = ip
 	jsonData, err := json.Marshal(&data)
 	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
+		log.LoggerWContext(ama.Ctx).Error(err.Error())
 		return err
 	}
 
 	err = client.ClusterSend("POST", url, string(jsonData))
 
 	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
+		log.LoggerWContext(ama.Ctx).Error(err.Error())
 	}
 
 	return err
 }
 
 func CheckClusterNodeStatus(status string) error {
-	ctx := context.Background()
 	nodeList := a3config.ClusterNew().FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 
@@ -70,7 +68,7 @@ func CheckClusterNodeStatus(status string) error {
 
 		err := SendClusterSync(node.IpAddr, status)
 		if err != nil {
-			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintln(err.Error()))
 			return err
 		}
 	}
@@ -79,7 +77,6 @@ func CheckClusterNodeStatus(status string) error {
 }
 
 func NotifyClusterStatus(status string) error {
-	ctx := context.Background()
 	nodeList := a3config.ClusterNew().FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 
@@ -91,7 +88,7 @@ func NotifyClusterStatus(status string) error {
 		ama.UpdateClusterNodeStatus(node.IpAddr, ama.Idle)
 		err := SendClusterSync(node.IpAddr, status)
 		if err != nil {
-			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintln(err.Error()))
 		}
 	}
 

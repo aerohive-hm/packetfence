@@ -102,7 +102,7 @@ END:
 	return resp
 }
 func waitPrimarySync(ip string) error {
-	ctx := context.Background()
+	ctx := ama.Ctx
 	var msg a3share.SyncData
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
 
@@ -142,7 +142,7 @@ func ActiveSyncFromPrimary(ip, user, password string) {
 	if err != nil {
 		return
 	}
-	ctx := context.Background()
+	ctx := ama.Ctx
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("start to sync from primary=%s and restart necessary service", ip))
 	utils.SyncFromPrimary(ip, user, password)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("notify to primary with FinishSync and start pf service"))
