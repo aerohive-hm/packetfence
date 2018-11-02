@@ -25,6 +25,9 @@
         float:left;
         width:160px;
     }
+    .modal-header .close {
+        margin-top: -25px !important;
+    }
   </style>
 </head>
 <div class="modal fade hide in" id="removeModal" tabindex="-1" role="dialog" aria-hidden="true" role="dialog">
