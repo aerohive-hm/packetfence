@@ -168,8 +168,9 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var handler CloudGetHandler
 	ctx := r.Context()
 	switchConf := a3config.ReadCloudConf(a3config.Switch)
+	rdcUrl := a3config.ReadCloudConf(a3config.RDCUrl)
 
-	if switchConf == "enable" {
+	if switchConf == "enable" && len(rdcUrl) != 0 {
 		nodesInfo := new(GetNodesInfo)
 		nodesInfo.getValue(ctx)
 		handler = nodesInfo
@@ -303,6 +304,14 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
+	/* Clear old RDCUrl info before connecting new GDC */
+	err = a3config.UpdateCloudConf(a3config.RDCUrl, "")
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Update RDCURL error: " + err.Error())
+		ret = "Updating RDCURL failed"
+		goto END
+	}
+	
 	result, reason = amac.LoopConnect(ctx, postInfo.Pass)
 	if result == 0 {
 		code = "ok"

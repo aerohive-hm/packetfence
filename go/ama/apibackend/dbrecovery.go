@@ -457,6 +457,10 @@ func MariadbStatusCheck() {
 			if a3config.ClusterNew().CheckClusterEnable() && event.ClusterNodesCnt() > 1 {
 				CheckClusterDBHealthy()
 			}
+
+			if !a3config.ClusterNew().CheckClusterEnable() {
+				event.MariadbStatusData.DBIsHealthy = true 
+			}
 			continue
 		} else {
 			event.MariadbStatusData.DBState = event.MariadbFail

@@ -140,7 +140,7 @@ func MariadbIsActive() bool {
 	} 
 
 	if !MariadbStatusData.DBIsHealthy {
-		log.LoggerWContext(ctx).Info(result)
+		log.LoggerWContext(ctx).Info("wsrep_cluster_status:" + result)
 	}
 
 	if !a3config.ClusterNew().CheckClusterEnable() {
