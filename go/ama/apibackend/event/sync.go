@@ -53,7 +53,7 @@ func handleGetSync(r *http.Request, d crud.HandlerData) []byte {
 }
 
 func handleUpdateSync(r *http.Request, d crud.HandlerData) []byte {
-	var ctx = context.Background()
+	var ctx = r.Context()
 	sync := new(a3share.SyncData)
 	code := "ok"
 	ret := ""

@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"context"
 	"errors"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/log"
 	"regexp"
 	"strconv"
@@ -24,7 +24,7 @@ func GetSysUptime() int64 {
 
 	err := unix.Sysinfo(&sysinfo)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("Get system info failed:" + err.Error())
+		log.LoggerWContext(ama.Ctx).Error("Get system info failed:" + err.Error())
 		return 0
 	}
 
@@ -41,7 +41,7 @@ func GetA3Version() string {
 	return out[:i]
 }
 
-func GetAMAUptime() int64 {
+func GetamaUptime() int64 {
 	return uptime()
 }
 
@@ -89,7 +89,7 @@ func waitProcStop(proc string) {
 		if err != nil {
 			break
 		}
-		log.LoggerWContext(context.Background()).Info(fmt.Sprintf("Waiting process %s shut down!", proc))
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Waiting process %s shut down!", proc))
 		time.Sleep(time.Duration(3) * time.Second)
 	}
 }
@@ -121,9 +121,9 @@ func KillProc(proc string) {
 	waitProcStop(proc)
 }
 
-//special case, after kill, check mysqld process quit or not
-func KillMariaDB() {
-	cmd := "pgrep pf-mariadb"
+
+func ForceKillProc(proc string) {
+	cmd := "pgrep " + proc
 	out, err := ExecShell(cmd, true)
 	if err != nil {
 		return
@@ -132,11 +132,35 @@ func KillMariaDB() {
 	pids := strings.Split(out, "\n")
 	for _, pid := range pids {
 		if pid != "" {
+			ExecShell(`kill -9 ` + pid, true)
+		}
+	}
+
+}
+
+//special case, after kill, check mysqld process quit or not
+func KillMariaDB() {
+	cmd := "pgrep pf-mariadb"
+	out, err := ExecShell(cmd, true)
+	if err != nil {
+		return
+	}
+
+	pidsCnt := 0
+	pids := strings.Split(out, "\n")
+	for _, pid := range pids {
+		if pid != "" {
+			pidsCnt++
 			ExecShell(`kill ` + pid, true)
 		}
 	}
 
-	waitProcStop("mysqld")
+	//there are more than one pf-mariadb, something wrong, kill -9
+	if pidsCnt > 1 {
+		ForceKillProc("mysqld")
+	} else {
+		waitProcStop("mysqld")
+	}
 }
 
 func updateEtcd() {

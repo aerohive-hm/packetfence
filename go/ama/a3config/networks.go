@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -29,7 +29,7 @@ type NetworksData struct {
 	Items         []Item `json:"items,omitempty"`
 }
 
-var contextNetworks = log.LoggerNewContext(context.Background())
+var contextNetworks = ama.Ctx
 var clusterEnableDefault = true
 var Isclusterjoin = false
 
