@@ -49,14 +49,19 @@ function getNodeInfo(){
             data = jQuery.parseJSON(data.A3_data);
             if (data.msgtype == "nodesInfo"){
                 $(".disconnected").attr("style", "display: none");
-                $('#rdcUrl').html(data.body.header.rdcUrl);
+
+                if (data.body.header.rdcUrl === ""){
+                    $('#rdcUrl').html("");
+                } else {
+                    $('#rdcUrl').html("Linked with Aerohive Cloud Services at " + "<a href='#' target='_blank'>" + data.body.header.rdcUrl + "</a>");
+                }
+
                 document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
                 if (data.body.header.region == ""){
                     $('#region').html("unknown");
                 } else {
                     $('#region').html(data.body.header.region);
                 }
-                $('#ownerId').html(data.body.header.ownerId);
                  //if the field lastContactTime exists on the tt file
                 if ($( "#lastContactTime" ).length){
                     if (typeof data.body.data[0].lastContactTime === "undefined"){
@@ -65,7 +70,32 @@ function getNodeInfo(){
                         $('#lastContactTime').html(data.body.data[0].lastContactTime);
                     }
                 }
-                $('#vhmId').html(data.body.header.vhmId);
+                if ($( "#linkStatus" ).length){
+                    if (typeof data.body.data[0].status === "undefined"){
+                    $('#linkStatus').html("unknown");
+                    } else {
+                        if (data.body.data[0].status == "connected"){
+                            $('#linkStatus').html("<i class='icon-circle icon' style='color:#28a745; font-size:15px; margin: 0 auto;'></i> Connected");
+                        } else if (data.body.data[0].status == "connecting") {
+                            $('#linkStatus').html("<i class='icon-circle icon' style='color:#ffc107; font-size:15px; margin: 0 auto;'></i> Connecting");
+                        } else if (data.body.data[0].status == "disconnect") {
+                            $('#linkStatus').html("<i class='icon-circle icon' style='color:#dc3545; font-size:15px; margin: 0 auto;'></i> Not Connected");
+                        } else {
+                            $('#linkStatus').html("<i class='icon-exclamation-triangle icon' style='color:#dc3545; font-size:15px; margin: 0 auto;'></i>");
+                        }
+                    }
+                }
+                if (data.body.header.vhmId == ""){
+                    $('#vhmId').html("unknown");
+                } else {
+                    $('#vhmId').html(data.body.header.vhmId);
+                }
+
+                if (data.body.header.ownerId == ""){
+                    $('#ownerId').html("");
+                } else {
+                    $('#ownerId').html("( " + data.body.header.ownerId + " )");
+                }
 
                 if (data.body.header.mode === "cluster"){ //if it's a cluster
                     $.each(data.body.data, function(i, items){
@@ -76,6 +106,7 @@ function getNodeInfo(){
                             $(this).html('<i class="icon-circle icon" style="color:#28a745; font-size:15px; margin: 0 auto;"></i>');
                         } else if ($(this).text() == "connecting") {
                             $(this).html('<i class="icon-circle icon" style="color:#ffc107; font-size:15px; margin: 0 auto;"></i>');
+
                         } else if ($(this).text() == "disconnect") {
                             $(this).html('<i class="icon-circle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i>');
                         } else {
@@ -198,7 +229,8 @@ function linkAerohiveAccount(){
                 document.getElementById("link-account").disabled = false;
             }
         },
-        error: function(data){
+        error: function(jqXHR, textStatus, errorThrown){
+            $('#spin-spinner').hide();
             data = jQuery.parseJSON(data.A3_data);
             document.getElementById('errorMessage').innerHTML = data.msg;
             $("#error-alert").show();
@@ -206,6 +238,7 @@ function linkAerohiveAccount(){
                 $("#error-alert").slideUp(500);
             }, 3000);
             document.getElementById("unlink-account").disabled = false;
-        }
+        },
+        timeout: 30000 //timeout at 30 seconds
     });
 }
