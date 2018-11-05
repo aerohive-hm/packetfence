@@ -416,14 +416,7 @@ func CheckClusterDBHealthy() {
 		CheckServiceAndStart()
 		return
 	} else {
-		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Cluster MariaDB is NOT healthy!!"))
-		if !IamSafeToBootstrap() && MariadbStartNewCluster() {
-			event.RestartMariadb(false)
-			return
-		} else if IamSafeToBootstrap() && !MariadbStartNewCluster() {
-			event.RestartMariadb(true)
-			return
-		}		
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Cluster MariaDB is NOT healthy now!!"))		
 	}
 		
 
