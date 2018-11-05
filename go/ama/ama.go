@@ -52,6 +52,7 @@ var IsManagement = false
 func init() {
 	ClusterStatus.IsPrimary = false
 	ClusterStatus.Status = Idle
+	Ctx = log.LoggerNewContext(context.Background())
 }
 
 func InitClusterStatus(primary string) {

@@ -31,7 +31,6 @@ type A3apiHandler struct {
 }
 
 func setup(c *caddy.Controller) error {
-	ama.Ctx = log.LoggerNewContext(context.Background())
 	result, _ := utils.ExecShell(`sed -n '/level/ p' /usr/local/pf/conf/caddy-services/a3-ama.conf | sed -r 's/\s*level\s*//'`, true)
 	level := strings.TrimRight(result, "\n")	
 	ama.Ctx = log.LoggerSetLevel(ama.Ctx, strings.ToLower(level))
