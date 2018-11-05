@@ -148,6 +148,26 @@ func IhaveAllOtherNodeInfo() bool {
 	return true
 }
 
+//if the cluster is upgrading, do check MariaDB
+func TheClusterIsUpgrading() bool {
+
+	if !IhaveAllOtherNodeInfo() {
+		return true
+	}
+
+	if event.MariadbStatusData.ClusterUpgrading {
+		return true 
+	}
+
+	for _, node := range event.MariadbStatusData.OtherNode {
+		if node.ClusterUpgrading {
+			return true 
+		}
+	}
+
+	return false
+}
+
 // check if cluster have bootstrap node
 func SafeToBootstrapNodeExist() bool {
 
@@ -381,8 +401,14 @@ func CheckClusterDBHealthy() {
 				alive++
 		} 	
 	}
-
+	event.GetMyMariadbRecoveryData()
 	GetOtherNodesData()	
+
+
+	if TheClusterIsUpgrading() {
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("My MariaDB is good, the cluster is upgrading now!!"))
+		return
+	}
 	
 	if alive == total {
 		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Cluster MariaDB is healthy!!"))
@@ -393,10 +419,11 @@ func CheckClusterDBHealthy() {
 		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Cluster MariaDB is NOT healthy!!"))
 		if !IamSafeToBootstrap() && MariadbStartNewCluster() {
 			event.RestartMariadb(false)
+			return
 		} else if IamSafeToBootstrap() && !MariadbStartNewCluster() {
 			event.RestartMariadb(true)
-		}
-		return
+			return
+		}		
 	}
 		
 
@@ -462,10 +489,15 @@ func MariadbStatusCheck() {
 			continue
 		} else {
 			event.MariadbStatusData.DBState = event.MariadbFail
+			event.MariadbStatusData.DBIsHealthy = false 
 			event.GetMyMariadbRecoveryData()
 			GetOtherNodesData()
 	
-
+			//cluster is upgrading, do nothing now
+			if TheClusterIsUpgrading() {
+				continue
+			}
+			
 			//mariadb not start yet or initial setup mode, do nothing now
 			if !utils.IsProcAlive("mysqld")  {
 				log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("mysqld process is not starting!!!"))

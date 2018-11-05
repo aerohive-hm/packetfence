@@ -48,14 +48,15 @@ type MariadbNodeInfo struct {
 	GrastateSeqno   int64 `json:"grastate_seqno"`
 	SafeToBootstrap int    `json:"safe_to_bootstrap"`
 	MyUUID    string       `json:"myuuid"`
-	ViewID    string       `json:"viewid"`	
+	ViewID    string       `json:"viewid"`
+	ClusterUpgrading bool  `json:"cluster_upgrading"`
 }
 
 type MariadbRecoveryData struct {
 	DBIsHealthy     bool
 	DBState         string
 	IpAddr          string 
-	ReadGrastated   bool  //read once time during DB failed state
+	ClusterUpgrading   bool  //The Cluster is upgrading now
 	GrastateSeqno   int64
 	SafeToBootstrap int
 	MyUUID    string
@@ -75,7 +76,6 @@ func ResetGrastateData() {
 
 	MariadbStatusData.SafeToBootstrap = 0
 	MariadbStatusData.GrastateSeqno = -1
-	MariadbStatusData.ReadGrastated = false
 	MariadbStatusData.MyUUID = ""
 	MariadbStatusData.ViewID = ""
 
@@ -107,7 +107,13 @@ func GetMyMariadbRecoveryData() {
 			result = strings.TrimRight(result, "\n")
 			MariadbStatusData.GrastateSeqno, _ = strconv.ParseInt(result, 10, 64)
 	}
-	MariadbStatusData.ReadGrastated = true
+
+
+	result, _ = utils.ExecShell(`ps -aux | grep a3_cluster_update | grep -v grep`, false)	
+	if len(result) != 0 {
+		MariadbStatusData.ClusterUpgrading = true
+	}
+
 	
 
 	result, _ = utils.ExecShell(`sed -n '/my_uuid:/ p' /var/lib/mysql/gvwstate.dat | sed -r 's/^.*my_uuid:\s*//'`, false)
@@ -194,6 +200,7 @@ func handleGetDBStatus(r *http.Request, d crud.HandlerData) []byte {
 	MyInfo.SafeToBootstrap = MariadbStatusData.SafeToBootstrap
 	MyInfo.MyUUID = MariadbStatusData.MyUUID
 	MyInfo.ViewID = MariadbStatusData.ViewID
+	MyInfo.ClusterUpgrading = MariadbStatusData.ClusterUpgrading
 	
 	jsonData, err := json.Marshal(MyInfo)
 	if err != nil {
