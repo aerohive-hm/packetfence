@@ -134,7 +134,7 @@ func Entry(ctx context.Context) {
 		//trying to connect to the cloud when damon start
 		result := connectToRdcWithoutPara(ctx)
 		if result != 0 {
-			log.LoggerWContext(ctx).Info("Connect to cloud fail, waiting events from UI or other nodes")
+			log.LoggerWContext(ctx).Warn("Connect to cloud fail, waiting events from UI or other nodes")
 		} else {
 			log.LoggerWContext(ctx).Info("Connect to cloud successfully")
 		}
@@ -248,6 +248,7 @@ func keepaliveToRdc(ctx context.Context) {
 			not send the keepalive
 		*/
 		if GlobalSwitch != "enable" {
+			log.LoggerWContext(ctx).Debug("Switch status is not enable, needn't send keepalive to RDC")
 			timeoutCount = 0
 			continue
 		}
@@ -286,11 +287,13 @@ func keepaliveToRdc(ctx context.Context) {
 			_ = UpdateMsgToRdcAsyn(ctx, ClusterStatusUpdate, nil)
 		}
 
-		log.LoggerWContext(ctx).Info("sending the keepalive")
+		log.LoggerWContext(ctx).Debug("sending the keepalive")
 		//url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/poll/%s", utils.GetA3SysId())
 		request, err := http.NewRequest("GET", keepAliveUrl, nil)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
+			timeoutCount++
+			continue
 		}
 
 		//Add header option
@@ -300,12 +303,13 @@ func keepaliveToRdc(ctx context.Context) {
 		AmacSendEventCounter++
 		resp, result := client.Do(request)
 		if result != nil {
+			log.LoggerWContext(ctx).Error(result.Error())
 			timeoutCount++
 			continue
 		}
 		AmacSendEventSuccessCounter++
 		body, _ := ioutil.ReadAll(resp.Body)
-		log.LoggerWContext(ctx).Info(string(body))
+		log.LoggerWContext(ctx).Debug(string(body))
 
 		statusCode := resp.StatusCode
 		if statusCode == 200 {
@@ -313,6 +317,7 @@ func keepaliveToRdc(ctx context.Context) {
 			dispathMsgFromRdc(ctx, []byte(body))
 			timeoutCount = 0
 		} else {
+			log.LoggerWContext(ctx).Warn("The response status code not equal to 200")
 			timeoutCount++
 			resp.Body.Close()
 			continue

@@ -14,6 +14,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/inverse-inc/packetfence/go/ama/share"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
@@ -41,6 +42,7 @@ var (
 	OrgIdStr                  string
 	synMsgUrl                 string
 	asynMsgUrl                string
+	syncUnlinkUrl             string
 	onboardingUrl             string
 	fetchRdcTokenUrl          string
 	fetchRdcTokenUrlForOthers string
@@ -100,10 +102,16 @@ func installRdcUrl(ctx context.Context, rdcUrl string) {
 
 	synMsgUrl = domain + "/amac/rest/v1/report/syn/" + systemId
 	asynMsgUrl = domain + "/amac/rest/v1/report/" + systemId
+	syncUnlinkUrl = domain + "/amac/rest/v1/unlink/" + systemId
+	
 	onboardingUrl = domain + "/amac/rest/v1/onboarding/" + systemId
 	fetchRdcTokenUrl = domain + "/amac/rest/token/apply/" + systemId + "?domain=" + a2
 	fetchRdcTokenUrlForOthers = domain + "/amac/rest/v1/token/" + systemId + "?domain=" + a2
 	keepAliveUrl = domain + "/amac/rest/v1/poll/" + systemId
+	clusterID := a3config.GetClusterId()
+	if clusterID != "" {
+		keepAliveUrl = keepAliveUrl + "?clusterId=" + clusterID
+	}
 	synGdcTokenUrl = fmt.Sprintf("%shm-webapp/security/csrftoken", rdcUrl)
 
 	if ctx != nil {
@@ -316,7 +324,7 @@ func fetchVhmidFromGdc(ctx context.Context, s string) (int, string) {
 	for {
 		request, err := http.NewRequest("GET", vhmidUrl, nil)
 		if err != nil {
-			fmt.Println(err.Error())
+			log.LoggerWContext(ctx).Error(err.Error())
 			return -1, OtherError
 		}
 
@@ -360,7 +368,7 @@ func triggerGdcTokenSync(ctx context.Context) {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("begin to trigger GDC token sync, URL = %s", synGdcTokenUrl))
 	request, err := http.NewRequest("GET", synGdcTokenUrl, nil)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.LoggerWContext(ctx).Error(err.Error())
 		return
 	}
 	//fill the token

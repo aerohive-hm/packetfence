@@ -56,7 +56,7 @@ func syncBasicInfoToRdc(ctx context.Context) {
 	}
     
 	ticker := time.NewTicker(time.Duration(interval) * time.Second)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Sync basic A3 info to RDC with interval %d seconds", interval))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("Sync basic A3 info to RDC with interval %d seconds", interval))
 
 	for _ = range ticker.C {
 		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
@@ -102,7 +102,7 @@ func fillPrimaryUpdateMsg() []PrimaryUpdate {
 
 	msg.Header.SystemID = utils.GetA3SysId()
 	msg.Header.Hostname = utils.GetHostname()
-	msg.Header.ClusterID = utils.GetClusterId()
+	msg.Header.ClusterID = a3config.GetClusterId()
 
 	msg.Data.MsgType = "cluster-status-update"
 	msg.Data.MasterNodeSystemID = utils.GetA3SysId()
@@ -132,16 +132,16 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int, in interface{}) int {
 
 	switch msgType {
 	case NetworkChange:
-		log.LoggerWContext(ctx).Info("begin to send initerface change to RDC")
+		log.LoggerWContext(ctx).Debug("begin to send initerface change to RDC")
 		nodeInfo = a3share.GetIntChgInfo(ctx)
 	case LicenseInfoChange:
-		log.LoggerWContext(ctx).Info("begin to send license update to RDC")
+		log.LoggerWContext(ctx).Debug("begin to send license update to RDC")
 		nodeInfo = a3share.GetLicenseUpdateInfo(ctx)
 	case ClusterStatusUpdate:
-		log.LoggerWContext(ctx).Info("begin to send cluster status update to RDC")
+		log.LoggerWContext(ctx).Debug("begin to send cluster status update to RDC")
 		nodeInfo = fillPrimaryUpdateMsg()
 	case SyncBasicInfo:
-		log.LoggerWContext(ctx).Info("Sync basic A3 info to RDC")
+		log.LoggerWContext(ctx).Debug("Sync basic A3 info to RDC")
 		nodeInfo = fillBasicA3InfoMsg(ctx)
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")
@@ -167,8 +167,8 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int, in interface{}) int {
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %d", resp.StatusCode))
-		log.LoggerWContext(ctx).Info(string(body))
+		log.LoggerWContext(ctx).Debug(fmt.Sprintf("receive the response %d", resp.StatusCode))
+		log.LoggerWContext(ctx).Debug(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
 		/*
@@ -230,26 +230,29 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, s
 	
 	var nodeInfo interface{}
 
-	if synMsgUrl == "" {
-		log.LoggerWContext(ctx).Error("RDC URL is NULL")
-		return -1, UrlIsNull
-	}
+	var syncUrl string = ""
 
 	switch msgType {
 	case RemoveNodeFromCluster:
 		systemIdArray := in.([]string)
 		nodeInfo = a3share.FillRemoveNodeInfo(ctx, systemIdArray)
+		syncUrl = syncUnlinkUrl
 
 	default:
 		log.LoggerWContext(ctx).Error("unexpected message")
 	}
 
+	if syncUrl == "" {
+		log.LoggerWContext(ctx).Error("RDC URL is NULL")
+		return -1, UrlIsNull
+	}
+
 	data, _ := json.Marshal(nodeInfo)
-	log.LoggerWContext(ctx).Info("begin to send remove node msg to RDC")
-	log.LoggerWContext(ctx).Info(string(data))
+	log.LoggerWContext(ctx).Debug("begin to send remove node msg to RDC")
+	log.LoggerWContext(ctx).Debug(string(data))
 	reader := bytes.NewReader(data)
 	for {
-		request, err := http.NewRequest("POST", synMsgUrl, reader)
+		request, err := http.NewRequest("POST", syncUrl, reader)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
 			return -1, OtherError
@@ -260,13 +263,13 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, s
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
-			log.LoggerWContext(ctx).Info(err.Error())
+			log.LoggerWContext(ctx).Error(err.Error())
 			return -1, SrvNoResponse
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %d", resp.StatusCode))
-		log.LoggerWContext(ctx).Info(string(body))
+		log.LoggerWContext(ctx).Debug(fmt.Sprintf("receive the response %d", resp.StatusCode))
+		log.LoggerWContext(ctx).Debug(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
 		/*

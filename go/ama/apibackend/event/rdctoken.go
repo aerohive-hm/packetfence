@@ -69,13 +69,13 @@ func handlePostToken(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	cloudInfo := amac.CloudInfo{}
 
-	log.LoggerWContext(ctx).Info("into handlePost Cloud info")
+	log.LoggerWContext(ctx).Debug("into handlePost Cloud info")
 	err := json.Unmarshal(d.ReqData, &cloudInfo)
 	if err != nil {
 		return []byte(err.Error())
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("%+v", cloudInfo))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("%+v", cloudInfo))
 
 	if len(cloudInfo.Token) != 0 {
 		amac.UpdateRdcToken(ctx, cloudInfo.Token, true)

@@ -80,7 +80,7 @@ func buildA3apiHandler(ctx context.Context) (A3apiHandler, error) {
 func (h A3apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	ctx := r.Context()
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA REST URL path %s", r.URL.Path))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("AMA REST URL path %s", r.URL.Path))
 	sections := strings.Split(r.URL.Path, "/") //r.URL.Path: 
 	if len(sections) > 2 && sections[1] == "configurator" {
 		if apibackend.HandleRedirect(w, r) == "redirect"  {

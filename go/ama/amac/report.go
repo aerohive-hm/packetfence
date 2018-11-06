@@ -11,6 +11,7 @@ import (
 	"github.com/inverse-inc/packetfence/go/ama/cache"
 	"github.com/inverse-inc/packetfence/go/ama/report"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
+	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/log"
 	"io/ioutil"
 	"net/http"
@@ -62,7 +63,7 @@ type ReportSysInfoMessage struct {
 func fillReportHeader(header *ReportHeader) {
 	header.Hostname = utils.GetHostname()
 	header.SystemID = utils.GetA3SysId()
-	header.ClusterID = utils.GetClusterId()
+	header.ClusterID = a3config.GetClusterId()
 }
 
 func sendReport2Cloud(ctx context.Context, reportMsg []interface{}) int {
@@ -87,13 +88,13 @@ func sendReport2Cloud(ctx context.Context, reportMsg []interface{}) int {
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := client.Do(request)
 		if err != nil {
-			log.LoggerWContext(ctx).Info(err.Error())
+			log.LoggerWContext(ctx).Error(err.Error())
 			return -1
 		}
 		AmacSendEventSuccessCounter++
 		body, _ := ioutil.ReadAll(resp.Body)
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %d", resp.StatusCode))
-		log.LoggerWContext(ctx).Info(string(body))
+		log.LoggerWContext(ctx).Debug(fmt.Sprintf("receive the response %d", resp.StatusCode))
+		log.LoggerWContext(ctx).Debug(string(body))
 		statusCode := resp.StatusCode
 		resp.Body.Close()
 		/*
@@ -192,7 +193,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 		return nil, -1
 	}
 	if len(msgQue) == 0 {
-		log.LoggerWContext(ctx).Info("msgQue len is 0, no DB messages")
+		log.LoggerWContext(ctx).Debug("msgQue len is 0, no DB messages")
 		return nil, 0
 	}
 	log.LoggerWContext(ctx).Debug(fmt.Sprintf("get %d messages from msgQue", len(msgQue)))
@@ -256,7 +257,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 			//log.LoggerWContext(ctx).Error(fmt.Sprintf("t: %+v", t))
 			temp = t
 		default:
-			log.LoggerWContext(ctx).Error("unknown table, skip")
+			log.LoggerWContext(ctx).Debug("unknown table, skip")
 			continue
 		}
 
@@ -307,7 +308,7 @@ func reportRoutine(ctx context.Context) {
 	// create a ticker for report
 	ticker := time.NewTicker(time.Duration(ReportInterval) * time.Second)
 	failCount := 0
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", ReportInterval))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("read the report interval %d seconds", ReportInterval))
 	for _ = range ticker.C {
 		/*
 			check if allow to the connect to cloud, if not,
