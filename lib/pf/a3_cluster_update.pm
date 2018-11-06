@@ -373,6 +373,51 @@ sub _check_post_process_file {
   return @post_process_files;
 }
 
+
+=head2 _check_post_process_before_file
+
+check the exist of post process before files
+
+=cut
+
+sub _check_post_process_before_file {
+  my @update_path_list = @_;
+  my @post_process_files;
+  for (0..$#update_path_list-1) {
+    push @post_process_files, "post_process_before-".$update_path_list[$_]."-".$update_path_list[$_+1];
+  }
+  _commit_cluster_update_log('The post process files before that need to be applied are ' . join(',',@post_process_files));
+  foreach (@post_process_files) {
+    if (! -e $A3_POST_PROCESS_DIR."/".$_) {
+      _commit_cluster_update_log("The post process script for $_ does not exist, fatal!!");
+      exit $fail_code;
+    }
+  }
+  return @post_process_files;
+}
+
+=head2 _check_post_process_after_file
+
+check the exist of post process after files
+
+=cut
+
+sub _check_post_process_after_file {
+  my @update_path_list = @_;
+  my @post_process_files;
+  for (0..$#update_path_list-1) {
+    push @post_process_files, "post_process_after-".$update_path_list[$_]."-".$update_path_list[$_+1];
+  }
+  _commit_cluster_update_log('The post process files after that need to be applied are ' . join(',',@post_process_files));
+  foreach (@post_process_files) {
+    if (! -e $A3_POST_PROCESS_DIR."/".$_) {
+      _commit_cluster_update_log("The post process script for $_ does not exist, fatal!!");
+      exit $fail_code;
+    }
+  }
+  return @post_process_files;
+}
+
 =head2 get_versions
 
 get from and to version from backup file
@@ -510,6 +555,45 @@ sub post_process {
   }
 
   _commit_cluster_update_log("Finished applying post process step!");
+}
+
+
+=head2 post_process_before
+
+apply post process before
+
+=cut
+
+sub post_process_before {
+  my @update_path_list = _generate_update_patch_list();
+  my @post_process_files = _check_post_process_before_file(@update_path_list);
+  
+  foreach my $post_file (@post_process_files) {
+    if (call_system_cmd("$A3_POST_PROCESS_DIR/$post_file") !=0) {
+      A3_Warn("Call $post_file step with exit code non 0, please investigate!");
+    }
+  }
+
+  _commit_cluster_update_log("Finished applying post process before step!");
+}
+
+=head2 post_process_after
+
+apply post process after
+
+=cut
+
+sub post_process_after {
+  my @update_path_list = _generate_update_patch_list();
+  my @post_process_files = _check_post_process_after_file(@update_path_list);
+  
+  foreach my $post_file (@post_process_files) {
+    if (call_system_cmd("$A3_POST_PROCESS_DIR/$post_file") !=0) {
+      A3_Warn("Call $post_file step with exit code non 0, please investigate!");
+    }
+  }
+
+  _commit_cluster_update_log("Finished applying post process after step!");
 }
 
 =head2 post_update
