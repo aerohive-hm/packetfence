@@ -3,3 +3,6 @@ update_log_file=/usr/local/pf/logs/a3_cluster_update.log
 echo "restart a3 api backend in post process" >> $update_log_file
 systemctl stop a3-api-backend
 systemctl start a3-ama
+systemctl restart a3-nodeapp
+sleep 5
+echo "finish actions in post process" >> $update_log_file
