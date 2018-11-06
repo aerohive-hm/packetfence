@@ -363,9 +363,9 @@ for my $ip (@remains_nodes_ip_to_update) {
 
 # for customized modification after cluster update done, call this plugin
 for my $node_ip (@all_nodes_ip) {
-    $ret = pf::a3_cluster_update::remote_api_call_post($node_ip, 'a3/post_process', {});
+    $ret = pf::a3_cluster_update::remote_api_call_post($node_ip, 'a3/post_process', {'opts'=>['before']});
     if ($ret != 0) {
-      commit_cluster_update_log("Post process on node $node_ip, please check detail log on peer node");
+      commit_cluster_update_log("Post process before on node $node_ip, please check detail log on peer node");
       commit_progress_log("error at $node_ip");
     }
 }
@@ -373,13 +373,6 @@ for my $node_ip (@all_nodes_ip) {
 restart_pf_all_services();
 
 #call this after pf started
-for my $node_ip (@all_nodes_ip) {
-    $ret = pf::a3_cluster_update::remote_api_call_post($node_ip, 'a3/post_process', {'opts'=>['before']});
-    if ($ret != 0) {
-      commit_cluster_update_log("Post process before on node $node_ip, please check detail log on peer node");
-      commit_progress_log("error at $node_ip");
-    }
-}
 for my $node_ip (@all_nodes_ip) {
     $ret = pf::a3_cluster_update::remote_api_call_post($node_ip, 'a3/post_process', {'opts'=>['after']});
     if ($ret != 0) {
