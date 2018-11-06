@@ -316,6 +316,7 @@ func keepaliveToRdc(ctx context.Context) {
 			//Dispatch the data coming with keepalive reponses
 			dispathMsgFromRdc(ctx, []byte(body))
 			timeoutCount = 0
+			resp.Body.Close()
 		} else {
 			log.LoggerWContext(ctx).Warn("The response status code not equal to 200")
 			timeoutCount++

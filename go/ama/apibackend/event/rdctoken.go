@@ -69,7 +69,6 @@ func handlePostToken(r *http.Request, d crud.HandlerData) []byte {
 	ctx := r.Context()
 	cloudInfo := amac.CloudInfo{}
 
-	log.LoggerWContext(ctx).Debug("into handlePost Cloud info")
 	err := json.Unmarshal(d.ReqData, &cloudInfo)
 	if err != nil {
 		return []byte(err.Error())

@@ -23,7 +23,6 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"time"
 )
 
 var (
@@ -320,9 +319,7 @@ func distributeToSingleNode(ctx context.Context, mem a3config.NodeInfo, selfRene
 		if statusCode == 200 {
 			return
 		} else if statusCode == 504 { //Gateway Timeout
-			//keep on trying to post util success
-			time.Sleep(5 * time.Second)
-			//continue
+			log.LoggerWContext(ctx).Error("Distribute RDC token to node " + mem.IpAddr + " failed")
 			return
 		}
 		//Other errors will return

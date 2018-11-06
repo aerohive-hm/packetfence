@@ -108,8 +108,7 @@ func sendReport2Cloud(ctx context.Context, reportMsg []interface{}) int {
 				continue
 			} else {
 				//not get the token, return and wait for the event from UI or other nodes
-				log.LoggerWContext(ctx).Error(fmt.Sprintf("get token fail"))
-				log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message faile, server(RDC) respons the code %d", statusCode))
+				log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message faile, server(RDC) respons the code %d, RDC token:%s", statusCode, rdcTokenStr))
 				return -1
 			}
 		} else if statusCode == 200 {
@@ -308,7 +307,7 @@ func reportRoutine(ctx context.Context) {
 	// create a ticker for report
 	ticker := time.NewTicker(time.Duration(ReportInterval) * time.Second)
 	failCount := 0
-	log.LoggerWContext(ctx).Debug(fmt.Sprintf("read the report interval %d seconds", ReportInterval))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("read the report interval %d seconds", ReportInterval))
 	for _ = range ticker.C {
 		/*
 			check if allow to the connect to cloud, if not,

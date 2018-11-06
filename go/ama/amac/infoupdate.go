@@ -176,6 +176,7 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int, in interface{}) int {
 			from the other nodes
 		*/
 		if statusCode == 401 {
+			log.LoggerWContext(ctx).Debug("Authentication failed, current RDC token is:" + rdcTokenStr)
 			result := ReqTokenFromOtherNodes(ctx, nil)
 			//result == 0 means get the token, try to onboarding again
 			if result == 0 {
@@ -277,6 +278,7 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, s
 			from the other nodes
 		*/
 		if statusCode == 401 {
+			log.LoggerWContext(ctx).Debug("Authentication failed, current RDC token is:" + rdcTokenStr)
 			result := ReqTokenFromOtherNodes(ctx, nil)
 			//result == 0 means get the token, try to onboarding again
 			if result == 0 {

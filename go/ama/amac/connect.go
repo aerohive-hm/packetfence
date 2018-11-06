@@ -170,6 +170,7 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 				return -1, connRes.Data.ErrorMessage
 			}
 		} else if statusCode == 401 {
+			log.LoggerWContext(ctx).Debug("Authentication failed, current RDC token is:" + rdcTokenStr)
 			resp.Body.Close()
 			/*
 				statusCode = 401 means authenticate fail, need to request valid RDC token
