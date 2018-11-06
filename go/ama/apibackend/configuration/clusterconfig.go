@@ -47,12 +47,12 @@ func handleGetClusterInfo(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
-func restartService() {
+func restartService() error {
 	//restart keepalived service
 	utils.RestartKeepAlived()
 	//notify other node sync configuration and restart keepalived
 	utils.SyncFromMaster(utils.A3Root + `/conf/pf.conf`)
-	a3share.NotifyClusterStatus(a3share.UpdateConf)
+	return a3share.NotifyClusterStatus(a3share.UpdateConf)
 }
 
 func handlePostClusterInfo(r *http.Request, d crud.HandlerData) []byte {

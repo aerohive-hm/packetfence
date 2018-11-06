@@ -120,15 +120,21 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	}
 
 	if len(removeData.Hostname) == 0 {
-		retMsg = "no hostname specified!."
+		retMsg = "No hostname specified!."
 		goto END
 	}
 
 	if ama.IsClusterJoinMode() {
-		retMsg = "the server is removing another cluster, please wait for a moment."
+		retMsg = "The server is removing another cluster, please wait for a moment."
 		goto END
 	}
-
+	//check if all cluster nodes are alive or not
+	err = a3share.NotifyClusterStatus(a3share.NotifySync)
+	if err != nil {
+		log.LoggerWContext(ctx).Info(fmt.Sprintln(err.Error()))
+		retMsg = "Some of the members are offline."
+		goto END
+	}
 	//If the removing node is myself, POST remove event to other node to do for me
 	hostname = utils.GetHostname()
 	for _, h := range removeData.Hostname {
@@ -148,7 +154,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("Try to remove cluster node = %v", removeData.Hostname))
 	rc = removeServerOnLocal(removeData.Hostname)
 	if !rc {
-		retMsg = "invalid hostname"
+		retMsg = "Invalid hostname"
 		goto END
 	}
 	go syncRemove2Other(ctx, sysids)

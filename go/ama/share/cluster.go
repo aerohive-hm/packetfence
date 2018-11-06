@@ -15,6 +15,7 @@ import (
 )
 
 const (
+	// it's a probe to check if the members are alive.
 	NotifySync       = "NotifySync"
 	StopService      = "StopServices"
 	StartSync        = "StartSync"
@@ -57,41 +58,41 @@ func SendClusterSync(ip, Status string) error {
 	return err
 }
 
-func CheckClusterNodeStatus(status string) error {
-	nodeList := a3config.ClusterNew().FetchNodesInfo()
-	ownMgtIp := utils.GetOwnMGTIp()
-
-	for _, node := range nodeList {
-		if node.IpAddr == ownMgtIp {
-			continue
-		}
-
-		err := SendClusterSync(node.IpAddr, status)
-		if err != nil {
-			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintln(err.Error()))
-			return err
-		}
-	}
-
-	return nil
-}
-
 func NotifyClusterStatus(status string) error {
 	nodeList := a3config.ClusterNew().FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 
+	counter := 0
+	errInfo := ""
+	ret := make(chan error)
+
 	for _, node := range nodeList {
 		if node.IpAddr == ownMgtIp {
 			continue
 		}
 
-		ama.UpdateClusterNodeStatus(node.IpAddr, ama.Idle)
-		err := SendClusterSync(node.IpAddr, status)
-		if err != nil {
-			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintln(err.Error()))
+		go func(ip, status string) {
+			if status == NotifySync {
+				ama.UpdateClusterNodeStatus(ip, ama.Idle)
+			}
+
+			ret <- SendClusterSync(ip, status)
+		}(node.IpAddr, status)
+
+		counter++
+	}
+
+	for ; counter > 0; counter-- {
+		e := <-ret
+		if e != nil {
+			//log.LoggerWContext(ama.Ctx).Error(fmt.Sprintln(e.Error()))
+			errInfo += e.Error() + "\n"
 		}
 	}
 
+	if len(errInfo) > 0 {
+		return errors.New(errInfo)
+	}
 	return nil
 }
 
