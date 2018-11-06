@@ -1423,6 +1423,8 @@ fi
 %dir                    /usr/local/pf/a3_update
 %attr(0755, root, root) /usr/local/pf/a3_update/A3_Cluster.js
 %attr(0755, root, root) /usr/local/pf/a3_update/a3_cluster_update.pl
+%attr(0755, root, root) /usr/local/pf/a3_update/restart_nodeapp_wrapper.js
+%attr(0755, root, root) /usr/local/pf/a3_update/restart_nodeapp_wrapper.sh
 %attr(0644, root, root) /usr/local/pf/a3_update/package.json
 %attr(0755, root, root) /usr/local/pf/a3_update/post_process/*
 %dir                    /usr/local/pf/var
