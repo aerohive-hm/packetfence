@@ -65,8 +65,8 @@ func InitClusterStatus(primary string) {
 		ClusterStatus.Status = Waitng2Sync
 		ClusterStatus.SyncCounter = 0
 	}
-	log.LoggerWContext(Ctx).Error(fmt.Sprintln("init: "))
-	log.LoggerWContext(Ctx).Error(fmt.Sprintln(ClusterStatus))
+	log.LoggerWContext(Ctx).Info(fmt.Sprintln("init cluster setup status: "))
+	log.LoggerWContext(Ctx).Info(fmt.Sprintln(ClusterStatus))
 }
 
 func ClearClusterStatus() {
