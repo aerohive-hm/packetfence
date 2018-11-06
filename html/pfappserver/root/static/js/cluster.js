@@ -9,12 +9,17 @@ $(document).ready(function(){
     //to change submit info
     document.getElementById("submitNewClusterInfo").onclick = function(e){
         e.preventDefault();
-        if (($("#vrid").val() < 1 || $("#vrid").val() > 255)){
-            document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must be between 1 to 255.";
-            $("#error-alert").show();
-            setTimeout(function(){
-                $("#error-alert").slideUp(500);
-            }, 3000);
+        if ($("#vrid").val() != ""){
+          //if vrid is not empty
+            if (($("#vrid").val() < 1 || $("#vrid").val() > 255)){
+                document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must be between 1 to 255.";
+                $("#error-alert").show();
+                setTimeout(function(){
+                    $("#error-alert").slideUp(500);
+                }, 3000);
+            } else {
+               submitClusterInfo();
+            }
         } else {
             submitClusterInfo();
         }
