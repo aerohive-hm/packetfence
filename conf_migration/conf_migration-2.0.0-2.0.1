@@ -1,3 +1,6 @@
 #!/bin/sh
 update_log_file=/usr/local/pf/logs/a3_cluster_update.log
-echo "Dummy 2.0.0 to 2.0.1 in conf migration" >> $update_log_file
+#A3-883
+#As we don't know how that changed the ownship, we just set it explictly
+/usr/bin/chown pf:pf /usr/local/pf/conf/ssl/server.crt 
+/usr/bin/chown pf:pf /usr/local/pf/conf/ssl/server.key
