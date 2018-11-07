@@ -170,7 +170,7 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 				return -1, connRes.Data.ErrorMessage
 			}
 		} else if statusCode == 401 {
-			log.LoggerWContext(ctx).Debug("Authentication failed, current RDC token is:" + rdcTokenStr)
+			log.LoggerWContext(ctx).Error("Authentication failed, current RDC token is:" + rdcTokenStr)
 			resp.Body.Close()
 			/*
 				statusCode = 401 means authenticate fail, need to request valid RDC token
@@ -185,6 +185,7 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 				return -1, AuthFail
 			}
 		}
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Onboarding failed, the response status code is:%d", statusCode))
 		resp.Body.Close()
 		return -1, OtherError
 	}
@@ -197,7 +198,7 @@ func onbordingToRdc(ctx context.Context) (int, string) {
 */
 func connectToRdcWithoutPara(ctx context.Context) int {
 	if GetConnStatus() == AMA_STATUS_ONBOARDING_SUC {
-		log.LoggerWContext(ctx).Info("Current status is onboarding successful, don't need to onboard again.")
+		log.LoggerWContext(ctx).Info("Onboarding successfully, don't need to onboard again.")
 		return 0
 	}
 	//Read the local RDC token, if exist, not send request to other nodes
@@ -267,7 +268,7 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 	body := fmt.Sprintf("grant_type=password&client_id=browser&client_secret=secret&username=%s&password=%s", userName, password)
 
 	log.LoggerWContext(ctx).Info("begin to fetch GDC token")
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("tokenUrl:%s,userName:%s,password:%s", tokenUrl, userName, password))
+	log.LoggerWContext(ctx).Info(fmt.Sprintf("tokenUrl:%s,userName:%s", tokenUrl, userName))
 	for {
 		request, err := http.NewRequest("POST", tokenUrl, strings.NewReader(body))
 		if err != nil {
@@ -300,6 +301,7 @@ func fetchTokenFromGdc(ctx context.Context) (string, string) {
 			gdcTokenStr = fmt.Sprintf("Bearer %s", dat["access_token"].(string))
 			return gdcTokenStr, ConnCloudSuc
 		} else if statusCode == 404 {
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Fetch token from GDC failed, status code is:%d", statusCode))
 			return "", ErrorMsgFromSrv
 		} else {
 			log.LoggerWContext(ctx).Error(fmt.Sprintf("Server(GDC) respons the code %d, please check the credential", statusCode))
