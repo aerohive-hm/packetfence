@@ -84,6 +84,15 @@ func update(pass string) error {
 		ReportInterval, _ = strconv.Atoi(reportIntervalStr)
 	}
 
+	//If not specify the sync interval, write default value to conf
+	syncIntervalStr := a3config.ReadCloudConf(a3config.SyncInterval)
+	if syncIntervalStr == "" {
+		err := a3config.UpdateCloudConf(a3config.SyncInterval, "3600") //3600 second by default
+		if err != nil {
+			return errors.New("Set sync interval failed")
+		}
+	}
+	
 	GlobalSwitch = a3config.ReadCloudConf(a3config.Switch)
 
 	return nil

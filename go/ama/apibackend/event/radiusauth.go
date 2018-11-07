@@ -57,7 +57,6 @@ func handlePostRadAuthReq(r *http.Request, d crud.HandlerData) []byte {
 	radReq := report.RadauditOriData{}
 
 	ReportCounter.recvCounter++
-	log.LoggerWContext(ctx).Error("into handlePostRadAuthReq")
 
 	log.LoggerWContext(ctx).Debug(fmt.Sprintf("receive radius_audit_log report: %d", ReportCounter.recvCounter))
 	log.LoggerWContext(ctx).Debug(string(d.ReqData))
