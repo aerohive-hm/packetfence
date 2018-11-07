@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -18,7 +19,7 @@ import (
 )
 
 var httpClient = http.Client{
-	Timeout: time.Duration(15) * time.Second,
+	Timeout: time.Duration(20) * time.Second,
 }
 
 type Client struct {
