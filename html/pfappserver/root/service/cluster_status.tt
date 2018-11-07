@@ -3,7 +3,7 @@
     <thead>
       <tr>
         <th>[% l('Daemon') %]</th>
-        [% FOREACH server IN servers %]
+        [% FOREACH server IN servers.sort %]
         <th>
           <a href="https://[% config_cluster.$server.management_ip %]:1443" target="_blank">
             [% server %]

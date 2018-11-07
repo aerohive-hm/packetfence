@@ -9,8 +9,8 @@
 package cache
 
 import (
-	"context"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/log"
 	"sync"
 )
@@ -24,7 +24,7 @@ func CacheTableInfo(tableId string, value []byte) (int, error) {
 	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
+		log.LoggerWContext(ama.Ctx).Error("New Redis Pool failed")
 		mu.Unlock()
 
 		return 0, err
@@ -35,21 +35,21 @@ func CacheTableInfo(tableId string, value []byte) (int, error) {
 
 	_, err = c.Do("SET", tableId, string(value))
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("SET key %s failed", tableId))
+		log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("SET key %s failed", tableId))
 		mu.Unlock()
 		return 0, err
 	}
 
 	_, err = c.Do("SADD", tableSets, tableId)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("ADD table %s failed", tableId))
+		log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("ADD table %s failed", tableId))
 		mu.Unlock()
 		return 0, err
 	}
 
 	count, err := c.Do("SCARD", tableSets)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("Get sets count failed")
+		log.LoggerWContext(ama.Ctx).Error("Get sets count failed")
 		mu.Unlock()
 		return 0, err
 	}
@@ -65,7 +65,7 @@ func FetchTablesInfo(count int) ([]interface{}, error) {
 	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
+		log.LoggerWContext(ama.Ctx).Error("New Redis Pool failed")
 		mu.Unlock()
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func FetchTablesInfo(count int) ([]interface{}, error) {
 
 	number, err := c.Do("SCARD", tableSets)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("Get sets count failed")
+		log.LoggerWContext(ama.Ctx).Error("Get sets count failed")
 		mu.Unlock()
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func FetchTablesInfo(count int) ([]interface{}, error) {
 		max = int(number.(int64))
 	}
 	if max == 0 {
-		log.LoggerWContext(context.Background()).Info("No memeber in sets:", tableSets)
+		log.LoggerWContext(ama.Ctx).Info("No memeber in sets:", tableSets)
 		mu.Unlock()
 		return tables, nil
 	}
@@ -92,30 +92,30 @@ func FetchTablesInfo(count int) ([]interface{}, error) {
 	for i := 0; i < max; i++ {
 		tableId, err := c.Do("SRANDMEMBER", tableSets)
 		if err != nil {
-			log.LoggerWContext(context.Background()).Error("SRANDMEMBER", tableSets, "failed")
+			log.LoggerWContext(ama.Ctx).Error("SRANDMEMBER", tableSets, "failed")
 			continue
 		}
 
 		table, err := c.Do("GET", string(tableId.([]byte)))
 		if err != nil {
-			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("Get %s failed", string(tableId.([]byte))))
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("Get %s failed", string(tableId.([]byte))))
 			continue
 		}
 		if table == nil {
-			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("table == nil, key:%s", string(tableId.([]byte))))
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("table == nil, key:%s", string(tableId.([]byte))))
 		} else {
 			tables = append(tables, table)
 		}
 
 		_, err = c.Do("DEL", string(tableId.([]byte)))
 		if err != nil {
-			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("DEL %s failed", string(tableId.([]byte))))
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("DEL %s failed", string(tableId.([]byte))))
 			continue
 		}
 
 		_, err = c.Do("SREM", tableSets, string(tableId.([]byte)))
 		if err != nil {
-			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("Remove %s from table sets failed", string(tableId.([]byte))))
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("Remove %s from table sets failed", string(tableId.([]byte))))
 			continue
 		}
 	}
@@ -128,7 +128,7 @@ func RedisTablesCount() (int, error) {
 	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
+		log.LoggerWContext(ama.Ctx).Error("New Redis Pool failed")
 		mu.Unlock()
 		return 0, err
 	}
@@ -138,7 +138,7 @@ func RedisTablesCount() (int, error) {
 
 	count, err := c.Do("SCARD", tableSets)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("Get sets count failed")
+		log.LoggerWContext(ama.Ctx).Error("Get sets count failed")
 		mu.Unlock()
 		return 0, err
 	}
@@ -151,7 +151,7 @@ func CacheTableInfoInOrder(tableId string, value []byte) (int, error) {
 	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
+		log.LoggerWContext(ama.Ctx).Error("New Redis Pool failed")
 		mu.Unlock()
 		return 0, err
 	}
@@ -161,14 +161,14 @@ func CacheTableInfoInOrder(tableId string, value []byte) (int, error) {
 
 	_, err = c.Do("SET", tableId, string(value))
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("SET key %s failed", tableId))
+		log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("SET key %s failed", tableId))
 		mu.Unlock()
 		return 0, err
 	}
 
 	count, err := c.Do("SADD", tableSets, tableId)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error(fmt.Sprintf("ADD table %s failed", tableId))
+		log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("ADD table %s failed", tableId))
 		mu.Unlock()
 		return 0, err
 	}
@@ -178,12 +178,12 @@ func CacheTableInfoInOrder(tableId string, value []byte) (int, error) {
 	if count.(int64) == 0 {
 		_, err = c.Do("LREM", tableQueue, 0, tableId)
 		if err != nil {
-			log.LoggerWContext(context.Background()).Error("Remove repeating element failed:" + err.Error())
+			log.LoggerWContext(ama.Ctx).Error("Remove repeating element failed:" + err.Error())
 		}
 	}
 	num, err := c.Do("RPUSH", tableQueue, tableId)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("Enqueue failed:" + err.Error())
+		log.LoggerWContext(ama.Ctx).Error("Enqueue failed:" + err.Error())
 		mu.Unlock()
 		return 0, err
 	}
@@ -199,7 +199,7 @@ func FetchTablesInfoInOrder(count int) ([]interface{}, error) {
 	mu.Lock()
 	r, err := NewRedisPool("", "")
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("New Redis Pool failed")
+		log.LoggerWContext(ama.Ctx).Error("New Redis Pool failed")
 		mu.Unlock()
 		return nil, err
 	}
@@ -209,7 +209,7 @@ func FetchTablesInfoInOrder(count int) ([]interface{}, error) {
 
 	number, err := c.Do("llen", tableQueue)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Error("Get queue length failed")
+		log.LoggerWContext(ama.Ctx).Error("Get queue length failed")
 		mu.Unlock()
 		return nil, err
 	}
@@ -218,7 +218,7 @@ func FetchTablesInfoInOrder(count int) ([]interface{}, error) {
 		max = int(number.(int64))
 	}
 	if max == 0 {
-		log.LoggerWContext(context.Background()).Info("No memeber in sets:", tableSets)
+		log.LoggerWContext(ama.Ctx).Info("No memeber in sets:", tableSets)
 		mu.Unlock()
 		return tables, nil
 	}
@@ -226,30 +226,30 @@ func FetchTablesInfoInOrder(count int) ([]interface{}, error) {
 	for i := 0; i < max; i++ {
 		tableId, err := c.Do("LPOP", tableQueue)
 		if err != nil {
-			log.LoggerWContext(context.Background()).Error("Dequeue", tableQueue, "failed")
+			log.LoggerWContext(ama.Ctx).Error("Dequeue", tableQueue, "failed")
 			continue
 		}
 
 		table, err := c.Do("GET", string(tableId.([]byte)))
 		if err != nil {
-			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("Get %s failed", string(tableId.([]byte))))
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("Get %s failed", string(tableId.([]byte))))
 			continue
 		}
 		if table == nil {
-			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("table is nill, key:%s", string(tableId.([]byte))))
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("table is nill, key:%s", string(tableId.([]byte))))
 		} else {
 			tables = append(tables, table)
 		}
 
 		_, err = c.Do("DEL", string(tableId.([]byte)))
 		if err != nil {
-			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("DEL %s failed", string(tableId.([]byte))))
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("DEL %s failed", string(tableId.([]byte))))
 			continue
 		}
 
 		_, err = c.Do("SREM", tableSets, string(tableId.([]byte)))
 		if err != nil {
-			log.LoggerWContext(context.Background()).Error(fmt.Sprintf("Remove %s from table sets failed", string(tableId.([]byte))))
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintf("Remove %s from table sets failed", string(tableId.([]byte))))
 			continue
 		}
 	}

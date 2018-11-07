@@ -2,14 +2,11 @@ package configurator
 
 import (
 	"context"
-	//	"encoding/json"
 	"fmt"
 	"net/http"
-	//	"strconv"
 
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
-	"github.com/inverse-inc/packetfence/go/ama/utils"
-	//	"github.com/inverse-inc/packetfence/go/log"
 )
 
 type Service struct {
@@ -28,19 +25,5 @@ func ServicesNew(ctx context.Context) crud.SectionCmd {
 }
 
 func handleGetServiceStatus(r *http.Request, d crud.HandlerData) []byte {
-	//var ctx = r.Context()
-	code := "ok"
-
-	msg := utils.ServiceStatus()
-	if msg == "" {
-		code = "fail"
-	}
-
-	if msg == "100" &&
-		!utils.IsFileExist(utils.A3CurrentlyAt) {
-		utils.UpdateCurrentlyAt()
-		go utils.ExecShell(`pfcmd service iptables restart`, true)
-	}
-
-	return []byte(fmt.Sprintf(`{"code":"%s", "percentage":"%s"}`, code, msg))
+	return []byte(fmt.Sprintf(`{"code":"ok", "percentage":"%d"}`, ama.PfServicePercentage))
 }

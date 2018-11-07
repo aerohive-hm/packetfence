@@ -617,7 +617,9 @@ if [ "$1" = "2"   ]; then
     /usr/bin/systemctl disable packetfence-config
     /usr/bin/systemctl disable packetfence.service
     /usr/bin/systemctl disable packetfence-haproxy.service
-    /usr/bin/systemctl isolate packetfence-base.target
+    #the isolate this will bring up some services(like pf-db service) which cause the late
+    #operation for cluster update process failure, so just skip it during upgrade 
+    #/usr/bin/systemctl isolate packetfence-base.target
 fi
 
 if ! /usr/bin/id pf &>/dev/null; then
@@ -672,7 +674,8 @@ fi
 
 /usr/bin/mkdir -p /var/log/journal/
 echo "Restarting journald to enable persistent logging"
-/bin/systemctl restart systemd-journald
+#stop restart, as which will cause systemd like nodeapp to restart 
+#/bin/systemctl restart systemd-journald
 
 if [ `systemctl get-default` = "packetfence-cluster.target" ]; then
     echo "This is an upgrade on a clustered system. We don't change the default systemd target."
@@ -894,7 +897,7 @@ fi
 # Don't launch it during image building stage, otherwise all image has same DB root password
 if [ "$1" = "2" ]; then
   /bin/systemctl start packetfence-httpd.admin
-  /bin/systemctl restart a3-ama
+  #/bin/systemctl restart a3-ama
 fi
 
 echo Installation complete
@@ -1354,7 +1357,8 @@ fi
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Config/Switch.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Config/System.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Configuration.pm
-%config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Configurator.pm
+%exclude                /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Configurator.pm
+%exclude                /usr/local/pf/html/pfappserver/lib/pfappserver/PacketFence/Controller/Configuration.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Config/Wrix.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/DB.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Graph.pm
@@ -1420,6 +1424,8 @@ fi
 %dir                    /usr/local/pf/a3_update
 %attr(0755, root, root) /usr/local/pf/a3_update/A3_Cluster.js
 %attr(0755, root, root) /usr/local/pf/a3_update/a3_cluster_update.pl
+%attr(0755, root, root) /usr/local/pf/a3_update/restart_nodeapp_wrapper.js
+%attr(0755, root, root) /usr/local/pf/a3_update/restart_nodeapp_wrapper.sh
 %attr(0644, root, root) /usr/local/pf/a3_update/package.json
 %attr(0755, root, root) /usr/local/pf/a3_update/post_process/*
 %dir                    /usr/local/pf/var

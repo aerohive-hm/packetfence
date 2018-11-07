@@ -116,7 +116,7 @@ func readRdcToken(ctx context.Context) string {
 
 func UpdateRdcToken(ctx context.Context, s string, reOnboard bool) {
 	tokenLock.Lock()
-	file, error := os.OpenFile("/usr/local/pf/conf/token.txt", os.O_RDWR|os.O_CREATE, 0600)
+	file, error := os.OpenFile("/usr/local/pf/conf/token.txt", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if error != nil {
 		log.LoggerWContext(ctx).Error(error.Error())
 		tokenLock.Unlock()
