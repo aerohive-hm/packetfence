@@ -36,14 +36,10 @@ func handleGetClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	return nil
 }
 
-// remove Cluster server on local
-func removeServerOnLocal(hostname []string) bool {
-
-	ama.InitClusterStatus("primary")
-
+func getIpByHost(hostname []string) map[string]string {
 	nodes := a3config.ClusterNew().FetchNodesInfo()
+	ips := make(map[string]string)
 
-	var ips []string
 	for _, h := range hostname {
 		ip := ""
 		for _, n := range nodes {
@@ -54,12 +50,36 @@ func removeServerOnLocal(hostname []string) bool {
 		}
 
 		if ip == "" {
+			continue
+		}
+		ips[h] = ip
+	}
+	return ips
+}
+
+// remove Cluster server on local
+func removeServerOnLocal(hostname []string) bool {
+
+	ama.InitClusterStatus("primary")
+
+	nodes := a3config.ClusterNew().FetchNodesInfoHash()
+
+	var ips []string
+	for _, h := range hostname {
+		ip := ""
+		ip, ok := nodes[h]
+		if !ok {
 			ama.ClearClusterStatus()
 			return false
 		}
+
 		ips = append(ips, ip)
 		/*delete sysid by hostname in db*/
 		amadb.DeleteSysIdbyHost(h)
+	}
+	if ips == nil {
+		ama.ClearClusterStatus()
+		return false
 	}
 
 	for _, ip := range ips {
@@ -75,10 +95,12 @@ func removeServerOnLocal(hostname []string) bool {
 func syncRemove2Other(ctx context.Context, sysids []string) {
 	//remove other nodes
 	//notify other nodes to stopService
-	err := a3share.NotifyClusterStatus(a3share.StopService)
-	if err != nil {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("post event sync to stopService failed"))
-		return
+	ret := a3share.NotifyClusterStatus(a3share.StopService)
+	for ip, err := range ret {
+		if err != nil {
+			log.LoggerWContext(ctx).Info(fmt.Sprintf("fail to get response from %s", ip))
+			// ToDo: add rollback recovery
+		}
 	}
 
 	// force-new-cluster process
@@ -111,6 +133,9 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	var rc bool
 	var hostname string
 	var sysids []string
+	var ret map[string]error
+	var ips map[string]string
+	var ip string
 
 	err := json.Unmarshal(d.ReqData, removeData)
 	if err != nil {
@@ -129,11 +154,20 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 	//check if all cluster nodes are alive or not
-	err = a3share.NotifyClusterStatus(a3share.NotifySync)
-	if err != nil {
-		log.LoggerWContext(ctx).Info(fmt.Sprintln(err.Error()))
-		retMsg = "Some of the members are offline."
-		goto END
+	ips = getIpByHost(removeData.Hostname)
+	ret = a3share.NotifyClusterStatus(a3share.NotifySync)
+	for ip, err = range ret {
+		if err == nil {
+			continue
+		}
+		for _, v := range ips {
+			if v == ip {
+				continue
+			}
+			log.LoggerWContext(ctx).Info(fmt.Sprintln(err.Error()))
+			retMsg = "Some of the members are offline."
+			goto END
+		}
 	}
 	//If the removing node is myself, POST remove event to other node to do for me
 	hostname = utils.GetHostname()

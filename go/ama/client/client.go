@@ -156,7 +156,7 @@ func (c *Client) ClusterSend(method, url string, body string) error {
 			return err
 		}
 	}
-	c.Timeout = 15
+	c.Timeout = 30
 
 	return c.Call(method, url, body)
 }

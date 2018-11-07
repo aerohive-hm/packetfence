@@ -111,6 +111,25 @@ func (sections Section) FetchNodesInfo() []NodeInfo {
 	return nodes
 }
 
+func (sections Section) FetchNodesInfoHash() map[string]string {
+	if sections == nil {
+		return nil
+	}
+	nodes := make(map[string]string)
+	for secName, kvpair := range sections {
+		if secName == "CLUSTER" {
+			continue
+		}
+
+		for k, v := range kvpair {
+			if k == "management_ip" {
+				nodes[secName] = v
+			}
+		}
+	}
+	return nodes
+}
+
 func DeletePrimaryClusterconf(i Item) error {
 	isvlan := VlanInface(i.Name)
 	ifname := ChangeUiIfname(i.Name, i.Prefix)

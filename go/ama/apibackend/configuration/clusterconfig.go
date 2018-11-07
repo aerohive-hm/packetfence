@@ -47,7 +47,7 @@ func handleGetClusterInfo(r *http.Request, d crud.HandlerData) []byte {
 	return jsonData
 }
 
-func restartService() error {
+func restartService() map[string]error {
 	//restart keepalived service
 	utils.RestartKeepAlived()
 	//notify other node sync configuration and restart keepalived

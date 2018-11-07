@@ -31,6 +31,11 @@ type SyncData struct {
 	SendIp string `json:"ip"`
 }
 
+type syncErr struct {
+	Ip  string
+	Err error
+}
+
 func SendClusterSync(ip, Status string) error {
 	data := new(SyncData)
 
@@ -42,6 +47,9 @@ func SendClusterSync(ip, Status string) error {
 	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("post cluster event sync with: %s", url))
 
 	client := new(apibackclient.Client)
+	if Status == NotifySync {
+		client.Timeout = 15
+	}
 	client.Host = ip
 	jsonData, err := json.Marshal(&data)
 	if err != nil {
@@ -58,13 +66,13 @@ func SendClusterSync(ip, Status string) error {
 	return err
 }
 
-func NotifyClusterStatus(status string) error {
+func NotifyClusterStatus(status string) map[string]error {
 	nodeList := a3config.ClusterNew().FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
 
 	counter := 0
-	errInfo := ""
-	ret := make(chan error)
+	resp := make(map[string]error)
+	ret := make(chan syncErr)
 
 	for _, node := range nodeList {
 		if node.IpAddr == ownMgtIp {
@@ -76,7 +84,8 @@ func NotifyClusterStatus(status string) error {
 				ama.UpdateClusterNodeStatus(ip, ama.Idle)
 			}
 
-			ret <- SendClusterSync(ip, status)
+			err := SendClusterSync(ip, status)
+			ret <- syncErr{ip, err}
 		}(node.IpAddr, status)
 
 		counter++
@@ -84,16 +93,12 @@ func NotifyClusterStatus(status string) error {
 
 	for ; counter > 0; counter-- {
 		e := <-ret
-		if e != nil {
+		if e.Err != nil {
 			//log.LoggerWContext(ama.Ctx).Error(fmt.Sprintln(e.Error()))
-			errInfo += e.Error() + "\n"
+			resp[e.Ip] = e.Err
 		}
 	}
-
-	if len(errInfo) > 0 {
-		return errors.New(errInfo)
-	}
-	return nil
+	return resp
 }
 
 func GetPrimaryClusterStatus(ctx context.Context) (error, a3config.ClusterStatusData) {
