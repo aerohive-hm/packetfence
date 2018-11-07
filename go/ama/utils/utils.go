@@ -62,11 +62,14 @@ func ExecCmds(cmds []string) []Clis {
 func execCommand(cmdName string, params []string) bool {
 	cmd := exec.Command(cmdName, params...)
 
-	fmt.Println(cmd.Args)
+	for _,arg := range cmd.Args {
+		log.LoggerWContext(ama.Ctx).Debug(arg)
+	}
+	
 	stdout, err := cmd.StdoutPipe()
 
 	if err != nil {
-		fmt.Println(err)
+		log.LoggerWContext(ama.Ctx).Error(err.Error())
 		return false
 	}
 
@@ -78,7 +81,7 @@ func execCommand(cmdName string, params []string) bool {
 		if err != nil || io.EOF == err {
 			break
 		}
-		fmt.Println(line)
+		log.LoggerWContext(ama.Ctx).Debug(line)
 	}
 
 	cmd.Wait()
@@ -121,11 +124,11 @@ func CreateClusterId() error {
 	}
 	clusterid := GenClusterID()
 
-	fmt.Println(len(clusterid), clusterid)
+	log.LoggerWContext(ama.Ctx).Debug("Created cluster ID:" + clusterid)
 	cmd := fmt.Sprintf(`echo -n "%s" > %s`, clusterid, path)
 	_, err = ExecShell(cmd, true)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
+		log.LoggerWContext(ama.Ctx).Error(err.Error())
 		return err
 	}
 	return nil
@@ -135,7 +138,7 @@ func GetClusterId() string {
 	cmd := "cat /usr/local/pf/conf/clusterid.conf"
 	out, err := ExecShell(cmd, false)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
+		log.LoggerWContext(ama.Ctx).Error(cmd + ":exec error")
 		return ""
 	}
 	return out
@@ -145,7 +148,7 @@ func UseDefaultClusterConf() error {
 	cmd := "cp -f /usr/local/pf/conf/cluster.conf.example /usr/local/pf/conf/cluster.conf"
 	_, err := ExecShell(cmd, true)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
+		log.LoggerWContext(ama.Ctx).Error(cmd + ":exec error")
 		return err
 	}
 	/*delete clusterid.conf at same time*/
@@ -154,7 +157,7 @@ func UseDefaultClusterConf() error {
 		cmd = "rm -f /usr/local/pf/conf/clusterid.conf"
 		_, err = ExecShell(cmd, true)
 		if err != nil {
-			fmt.Println("%s:exec error", cmd)
+			log.LoggerWContext(ama.Ctx).Error(cmd + ":exec error")
 			return err
 		}
 	}
@@ -168,7 +171,7 @@ func ClearFileContent(path string) error {
 		cmd := "> " + path
 		_, err := ExecShell(cmd, true)
 		if err != nil {
-			fmt.Println("%s:exec error", cmd)
+			log.LoggerWContext(ama.Ctx).Error(cmd + ":exec error")
 			return err
 		}
 	}
@@ -178,7 +181,7 @@ func DeleteFile(path string) error {
 	cmd := "rm -f " + path
 	_, err := ExecShell(cmd, true)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
+		log.LoggerWContext(ama.Ctx).Error(cmd + ":exec error")
 		return err
 	}
 	return nil

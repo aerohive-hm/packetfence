@@ -5,11 +5,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
-	"strings"
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
+	"strconv"
+	"strings"
 )
 
 type Item struct {
@@ -148,6 +148,7 @@ func UpdateNetworksData(ctx context.Context, networksData NetworksData) error {
 		log.LoggerWContext(ctx).Error("UpdateItemsValue error:" + err.Error())
 		return err
 	}
+	go restartNetwork()
 	return err
 }
 
@@ -321,6 +322,11 @@ func CheckItemValid(ctx context.Context, enable bool, items []Item) error {
 		return err
 	}
 	return nil
+}
+
+func restartNetwork() {
+	/*need restart network*/
+	utils.ExecShell(`systemctl restart network`, true)
 }
 
 func DeleteItemBlankChar(ctx context.Context, items []Item) []Item {

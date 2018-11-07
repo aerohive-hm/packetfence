@@ -238,3 +238,10 @@ func UpdateClusterFile() {
 		`/usr/local/pf/conf/clusterid.conf" >> /usr/local/pf/conf/cluster-files.txt`
 	utils.ExecShell(cmd, true)
 }
+
+func GetClusterId() string {
+	if ClusterNew().CheckClusterEnable() {
+		return utils.GetClusterId()
+	}
+	return ""
+}

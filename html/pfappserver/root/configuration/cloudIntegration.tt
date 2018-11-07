@@ -75,7 +75,7 @@
           <tbody>
             <tr>
               <td class="td-title"><h6>[% l('VHM Name') %]</h6></td>
-              <td><span id="vhmId"></span> (<span id="ownerId"> </span>)</td>
+              <td><span id="vhmId"></span> <span id="ownerId"> </span></td>
             </tr>
             <tr>
               <td class="td-title"><h6>[% l('Data Center') %]</h6></td>

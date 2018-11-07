@@ -89,11 +89,20 @@ function submitClusterInfo(){
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
             $('input').val('');
-            document.getElementById('successMessage').innerHTML = "Successfully updated the cluster info.";
-            $("#success-alert").show();
-            setTimeout(function(){
-                $("#success-alert").slideUp(500);
-            }, 3000);
+            console.log(data.code);
+            if (data.code === "fail"){
+                document.getElementById('errorMessage').innerHTML = data.msg;
+                $("#error-alert").show();
+                setTimeout(function(){
+                    $("#error-alert").slideUp(500);
+                }, 3000);
+            } else {
+                document.getElementById('successMessage').innerHTML = "Successfully updated the cluster info.";
+                $("#success-alert").show();
+                setTimeout(function(){
+                    $("#success-alert").slideUp(500);
+                }, 3000);
+            }
         },
         error: function(data){
             data = jQuery.parseJSON(data.A3_data);
