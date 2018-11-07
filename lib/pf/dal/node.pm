@@ -146,6 +146,14 @@ _insert_data
 
 sub _insert_data {
     my ($self) = @_;
+    my $fields = $self->_insertable_fields;
+    foreach my $field (@$fields) {
+        if (($field eq 'device_type') && ($self->{$field} eq 'AeroHive Hive WAP')) {
+            $self->{$field} = 'Aerohive AP';
+            last;
+        }
+    }
+    
     my ($status, $data) = $self->SUPER::_insert_data;
     if (is_error($status)) {
         return $status, $data;

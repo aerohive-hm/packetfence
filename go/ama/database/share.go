@@ -1,8 +1,8 @@
 package amadb
 
 import (
-	"context"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -21,7 +21,7 @@ func AddSysIdbyHost(sysid, host string) error {
 }
 
 func QuerySysIdbyHost(hostname string) string {
-	var ctx = context.Background()
+	var ctx = ama.Ctx
 	var sysid string
 
 	tmpDB := new(A3Db)
@@ -40,7 +40,7 @@ func QuerySysIdbyHost(hostname string) string {
 		log.LoggerWContext(ctx).Error("Query database system_id error: " + err.Error())
 		return ""
 	}
-	log.LoggerWContext(ctx).Info("Query system_id: " + sysid)
+	log.LoggerWContext(ctx).Debug("Query system_id: " + sysid)
 	return sysid
 }
 
@@ -60,7 +60,7 @@ func DeleteSysIdbyHost(hostname string) error {
 }
 
 func QueryDBClusterIpSet() string {
-	var ctx = context.Background()
+	var ctx = ama.Ctx
 
 	tmpDB := new(A3Db)
 	err := tmpDB.DbInit()
@@ -79,14 +79,14 @@ func QueryDBClusterIpSet() string {
 		return ""
 	}
 
-	log.LoggerWContext(ctx).Info("Query wsrep_incoming_addresses: " + strValue)
+	log.LoggerWContext(ctx).Debug("Query wsrep_incoming_addresses: " + strValue)
 
 	return strValue
 }
 
 
 func QueryDBPrimaryStatus() string {
-	var ctx = context.Background()
+	var ctx = ama.Ctx
 
 	tmpDB := new(A3Db)
 	err := tmpDB.DbInit()

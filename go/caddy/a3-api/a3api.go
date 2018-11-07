@@ -10,7 +10,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/amac"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend"
 )
 
@@ -29,17 +31,13 @@ type A3apiHandler struct {
 }
 
 func setup(c *caddy.Controller) error {
-	ctx := log.LoggerNewContext(context.Background())
-	/*
-		for c.Next() {
-			if !c.NextArg() {
-				return ArgErr()
-			}
-			val := c.Val()
-		}
-	*/
+	ama.Ctx = log.LoggerNewContext(context.Background())
+	result, _ := utils.ExecShell(`sed -n '/level/ p' /usr/local/pf/conf/caddy-services/a3-ama.conf | sed -r 's/\s*level\s*//'`, true)
+	level := strings.TrimRight(result, "\n")	
+	ama.Ctx = log.LoggerSetLevel(ama.Ctx, strings.ToLower(level))
 
-	A3api, err := buildA3apiHandler(ctx)
+
+	A3api, err := buildA3apiHandler(ama.Ctx)
 
 	if err != nil {
 		return err
@@ -50,7 +48,7 @@ func setup(c *caddy.Controller) error {
 		goroutine must be started before the cloud integration
 		setup flow
 	*/
-	go amac.Entry(ctx)
+	go amac.Entry(ama.Ctx)
 	go apibackend.MariadbStatusCheck()
 
 	httpserver.GetConfig(c).AddMiddleware(func(next httpserver.Handler) httpserver.Handler {
@@ -58,7 +56,7 @@ func setup(c *caddy.Controller) error {
 		return A3api
 	})
 
-	log.LoggerWContext(ctx).Info("a3-api setup success.")
+	log.LoggerWContext(ama.Ctx).Info("a3-api setup success.")
 
 	return nil
 }
@@ -82,7 +80,7 @@ func buildA3apiHandler(ctx context.Context) (A3apiHandler, error) {
 func (h A3apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	ctx := r.Context()
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("AMA REST URL path %s", r.URL.Path))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("AMA REST URL path %s", r.URL.Path))
 	sections := strings.Split(r.URL.Path, "/") //r.URL.Path: 
 	if len(sections) > 2 && sections[1] == "configurator" {
 		if apibackend.HandleRedirect(w, r) == "redirect"  {

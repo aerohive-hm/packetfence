@@ -3,14 +3,13 @@ package utils
 import (
 	"bufio"
 	"bytes"
-	"context"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
-
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -27,7 +26,6 @@ type Clis struct {
 	out    string
 }
 
-var ctx = context.Background()
 
 func ExecShell(s string, dbgFlag bool) (string, error) {
 	cmd := exec.Command("/bin/bash", "-c", s)
@@ -37,9 +35,9 @@ func ExecShell(s string, dbgFlag bool) (string, error) {
 
 	err := cmd.Run()
 	if dbgFlag || err != nil {
-		log.LoggerWContext(ctx).Info(fmt.Sprintln(s))
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintln(s))
 	} else {
-		log.LoggerWContext(ctx).Debug(fmt.Sprintln(s))
+		log.LoggerWContext(ama.Ctx).Debug(fmt.Sprintln(s))
 	}
 	return out.String(), err
 }
@@ -52,8 +50,8 @@ func ExecCmds(cmds []string) []Clis {
 		cli.out, cli.err = ExecShell(cmd, true)
 
 		if cli.err != nil {
-			log.LoggerWContext(ctx).Error(cli.err.Error())
-			log.LoggerWContext(ctx).Error(fmt.Sprintln(cli.out))
+			log.LoggerWContext(ama.Ctx).Error(cli.err.Error())
+			log.LoggerWContext(ama.Ctx).Error(fmt.Sprintln(cli.out))
 		}
 		result = append(result, cli)
 	}
@@ -64,11 +62,14 @@ func ExecCmds(cmds []string) []Clis {
 func execCommand(cmdName string, params []string) bool {
 	cmd := exec.Command(cmdName, params...)
 
-	fmt.Println(cmd.Args)
+	for _,arg := range cmd.Args {
+		log.LoggerWContext(ama.Ctx).Debug(arg)
+	}
+	
 	stdout, err := cmd.StdoutPipe()
 
 	if err != nil {
-		fmt.Println(err)
+		log.LoggerWContext(ama.Ctx).Error(err.Error())
 		return false
 	}
 
@@ -80,7 +81,7 @@ func execCommand(cmdName string, params []string) bool {
 		if err != nil || io.EOF == err {
 			break
 		}
-		fmt.Println(line)
+		log.LoggerWContext(ama.Ctx).Debug(line)
 	}
 
 	cmd.Wait()
@@ -123,11 +124,11 @@ func CreateClusterId() error {
 	}
 	clusterid := GenClusterID()
 
-	fmt.Println(len(clusterid), clusterid)
+	log.LoggerWContext(ama.Ctx).Debug("Created cluster ID:" + clusterid)
 	cmd := fmt.Sprintf(`echo -n "%s" > %s`, clusterid, path)
 	_, err = ExecShell(cmd, true)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
+		log.LoggerWContext(ama.Ctx).Error(err.Error())
 		return err
 	}
 	return nil
@@ -137,7 +138,7 @@ func GetClusterId() string {
 	cmd := "cat /usr/local/pf/conf/clusterid.conf"
 	out, err := ExecShell(cmd, false)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
+		log.LoggerWContext(ama.Ctx).Error(cmd + ":exec error")
 		return ""
 	}
 	return out
@@ -147,7 +148,7 @@ func UseDefaultClusterConf() error {
 	cmd := "cp -f /usr/local/pf/conf/cluster.conf.example /usr/local/pf/conf/cluster.conf"
 	_, err := ExecShell(cmd, true)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
+		log.LoggerWContext(ama.Ctx).Error(cmd + ":exec error")
 		return err
 	}
 	/*delete clusterid.conf at same time*/
@@ -156,7 +157,7 @@ func UseDefaultClusterConf() error {
 		cmd = "rm -f /usr/local/pf/conf/clusterid.conf"
 		_, err = ExecShell(cmd, true)
 		if err != nil {
-			fmt.Println("%s:exec error", cmd)
+			log.LoggerWContext(ama.Ctx).Error(cmd + ":exec error")
 			return err
 		}
 	}
@@ -170,7 +171,7 @@ func ClearFileContent(path string) error {
 		cmd := "> " + path
 		_, err := ExecShell(cmd, true)
 		if err != nil {
-			fmt.Println("%s:exec error", cmd)
+			log.LoggerWContext(ama.Ctx).Error(cmd + ":exec error")
 			return err
 		}
 	}
@@ -180,7 +181,7 @@ func DeleteFile(path string) error {
 	cmd := "rm -f " + path
 	_, err := ExecShell(cmd, true)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
+		log.LoggerWContext(ama.Ctx).Error(cmd + ":exec error")
 		return err
 	}
 	return nil

@@ -3,7 +3,6 @@ package utils
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -38,6 +37,7 @@ func restartPfconfig() (string, error) {
 }
 
 func serviceCmdBackground(cmd string) (string, error) {
+
 	return ExecShell("setsid "+cmd+" &>/dev/null &", true)
 }
 
@@ -89,7 +89,7 @@ func InitStartService(isCluster bool) error {
 
 	out, err := restartPfconfig()
 	if err != nil {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
+		log.LoggerWContext(ama.Ctx).Error(fmt.Sprintln(out))
 	}
 
 	waitProcStart("pfconfig")
@@ -100,12 +100,30 @@ func InitStartService(isCluster bool) error {
 	}
 	waitProcStart("mysqld")
 
-	out, err = serviceCmdBackground(pfservice + "pf start")
-	if err != nil {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
-	}
+	go PfServiceStart(true)
 
 	return nil
+}
+
+func checkPfService() bool {
+	var score int
+	if ama.PfServicePercentage == 100 {
+		getPfServiceStop()
+		return true
+	}
+
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Check pf status."))
+
+	score = getServiceStartedProc()
+	if score < ama.PfServicePercentage {
+		return false
+	}
+	ama.PfServicePercentage = score
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("update PfServicePercentage = %d", score))
+	if ama.PfServicePercentage < 100 {
+		return false
+	}
+	return true
 }
 
 func ForceNewCluster() {
@@ -133,7 +151,7 @@ func ForceNewCluster() {
 	ExecCmds(cmds)
 	ama.IsManagement = false
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintln("ForceNewCluster tasks done"))
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintln("ForceNewCluster tasks done"))
 
 	ama.SetClusterStatus(ama.Ready4Sync)
 }
@@ -199,7 +217,6 @@ func SyncFromPrimary(ip, user, pass string) {
 	ama.SetClusterStatus(ama.SyncFinished)
 }
 
-
 func RestartKeepAlived() {
 	cmds := []string{
 		pfcmd + "configreload hard",
@@ -218,17 +235,27 @@ func RemoveFromCluster() {
 	ExecCmds(cmds)
 }
 
-func ServiceStatus() string {
+type pfcallback func([]string) interface{}
+
+func getPfSerStatus() []string {
 	cmd := pfservice + "pf status"
 	ret, _ := ExecShell(cmd, false)
 	lines := strings.Split(ret, "\n")
 
 	if len(lines) < 1 {
-		return ""
+		return nil
 	}
+	return lines
+}
 
+func getServiceStartedProc() int {
 	toBeStarted := 0
 	started := 0
+
+	lines := getPfSerStatus()
+	if lines == nil {
+		return 0
+	}
 
 	for _, l := range lines {
 		vals := strings.Fields(l)
@@ -244,9 +271,31 @@ func ServiceStatus() string {
 	}
 
 	if toBeStarted > 0 {
-		return strconv.Itoa(started * 100 / toBeStarted)
+		return started * 100 / toBeStarted
 	} else {
-		return ""
+		return 100
+	}
+}
+
+func getPfServiceStop() {
+	lines := getPfSerStatus()
+	if lines == nil {
+		return
+	}
+
+	for _, l := range lines {
+		vals := strings.Fields(l)
+		if len(vals) != 3 {
+			return
+		}
+
+		if vals[1] != "stopped" {
+			continue
+		}
+		re := regexp.MustCompile(`packetfence-([\w-]+)\.service`)
+		ret := re.FindStringSubmatch(vals[0])
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("pf start failed: %s", ret[1]))
+		ExecShell(fmt.Sprintf(`pfcmd service %s start`, ret[1]), false)
 	}
 }
 
@@ -266,7 +315,7 @@ func checkAndRestartNTPSync() {
 	ret := re.FindAllStringSubmatch(out, -1)
 
 	if len(ret) == 0 {
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("NTP NOT synchronized, restart NTP"))
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("NTP NOT synchronized, restart NTP"))
 		cmds := []string{
 			`timedatectl set-ntp false`,
 			`timedatectl set-ntp true`,
@@ -274,7 +323,7 @@ func checkAndRestartNTPSync() {
 		ExecCmds(cmds)
 	} else {
 		if !ama.SystemNTPSynced {
-			log.LoggerWContext(ctx).Info(fmt.Sprintf("NTP already synchronized"))
+			log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("NTP already synchronized"))
 		}
 		ama.SystemNTPSynced = true
 	}
@@ -286,7 +335,7 @@ func checkAndRestartNTPSync() {
 func ForceNTPsynchronized() {
 	ticker := time.NewTicker(time.Duration(30) * time.Second)
 	defer ticker.Stop()
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Check NTP synchronized status"))
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Check NTP synchronized status"))
 	checkAndRestartNTPSync()
 	if ama.SystemNTPSynced {
 		return
@@ -297,24 +346,23 @@ func ForceNTPsynchronized() {
 	}
 }
 
-func CheckAndStartOneService(name string)  {
+func CheckAndStartOneService(name string) {
 	cmd := pfservice + name + " status"
 	ret, _ := ExecShell(cmd, true)
 	lines := strings.Split(ret, "\n")
 
 	if len(lines) < 1 {
-		return 
+		return
 	}
-
 
 	for _, l := range lines {
 		vals := strings.Fields(l)
 
 		if len(vals) == 3 {
 			if vals[1] == "started" {
-				log.LoggerWContext(ctx).Info(fmt.Sprintf("service %s is started, do nothing!!", name))
+				log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("service %s is started, do nothing!!", name))
 			} else if vals[1] == "stopped" {
-				log.LoggerWContext(ctx).Info(fmt.Sprintf("service %s is not started, starting it!!", name))
+				log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("service %s is not started, starting it!!", name))
 				cmd = pfservice + name + " start"
 				ExecShell(cmd, true)
 				break
@@ -323,5 +371,17 @@ func CheckAndStartOneService(name string)  {
 	}
 
 	return
+
+}
+
+
+func PfServiceStart(isNew bool) {
+	log.LoggerWContext(ama.Ctx).Info("start Timer to check pf status")
+	go Timer(checkPfService, 12)
+	ExecShell(A3Root+"/bin/pfcmd service pf start", true)
+	if isNew {
+		UpdateCurrentlyAt()
+		ama.PfServicePercentage = 100
+	}
 
 }

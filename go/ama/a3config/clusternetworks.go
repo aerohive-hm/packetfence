@@ -105,8 +105,7 @@ func UpdateClusterNetworksData(ctx context.Context, networksData ClusterNetworks
 			return err
 		}
 	}
-
 	ama.InitClusterStatus("server")
-
+	go restartNetwork()
 	return err
 }

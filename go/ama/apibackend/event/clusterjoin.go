@@ -41,17 +41,15 @@ func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 |-send event/cluster/sync start
 */
 func prepareClusterNodeJoin() {
-	err := a3share.NotifyClusterStatus(a3share.StopService)
-	if err != nil {
-		return
+	ret := a3share.NotifyClusterStatus(a3share.StopService)
+	for _, err := range ret {
+		if err != nil {
+			// ToDo: add rollback recovery
+			log.LoggerWContext(ama.Ctx).Info(fmt.Sprintln(err.Error()))
+		}
 	}
-
 	utils.ForceNewCluster()
 	a3share.NotifyClusterStatus(a3share.StartSync)
-}
-
-func StartClusterNodejoining() {
-
 }
 
 func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
@@ -59,6 +57,7 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	clusterData := new(a3config.ClusterNetworksData)
 	var respdata a3config.ClusterEventRespData
 	var resp []byte
+	var ret map[string]error
 
 	err := json.Unmarshal(d.ReqData, clusterData)
 	if err != nil {
@@ -71,9 +70,13 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	}
 	ama.InitClusterStatus("primary")
 
-	//check cluster node alive or not
-	err = a3share.CheckClusterNodeStatus(a3share.NotifySync)
-	if err != nil {
+	//check if all cluster nodes are alive or not
+	ret = a3share.NotifyClusterStatus(a3share.NotifySync)
+	for _, err = range ret {
+		if err == nil {
+			continue
+		}
+		log.LoggerWContext(ctx).Info(fmt.Sprintln(err.Error()))
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("post event sync to NotifySync failed, someone offline"))
 		goto END
 	}
@@ -102,7 +105,7 @@ END:
 	return resp
 }
 func waitPrimarySync(ip string) error {
-	ctx := context.Background()
+	ctx := ama.Ctx
 	var msg a3share.SyncData
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
 
@@ -142,16 +145,17 @@ func ActiveSyncFromPrimary(ip, user, password string) {
 	if err != nil {
 		return
 	}
-	ctx := context.Background()
+	ctx := ama.Ctx
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("start to sync from primary=%s and restart necessary service", ip))
 	utils.SyncFromPrimary(ip, user, password)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("notify to primary with FinishSync and start pf service"))
-	utils.ExecShell(utils.A3Root + "/bin/pfcmd service pf start", true)
+	utils.PfServiceStart(false)
 	utils.ExecShell(`systemctl restart packetfence-api-frontend`, true)
 	utils.ExecShell(`systemctl restart packetfence-httpd.admin`, true)
 	a3share.SendClusterSync(ip, a3share.FinishSync)
-	ama.ClearClusterStatus()
 
 	utils.UpdateCurrentlyAt()
-	utils.ExecShell(`pfcmd service iptables restart`, true)
+	ama.ClearClusterStatus()
+	ama.PfServicePercentage = 100
+
 }

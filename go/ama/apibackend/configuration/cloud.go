@@ -134,7 +134,7 @@ func (nodes *GetNodesInfo) getValue(ctx context.Context) {
 		other.Hostname = amaStatus.Hostname
 		other.Status = amaStatus.Status
 		other.LastContactTime = amaStatus.LastConnTime
-		log.LoggerWContext(ctx).Info(fmt.Sprintf("Fetch node %s info: %s,%s,%s", node.IpAddr, other.Hostname, other.Status, other.LastContactTime))
+		log.LoggerWContext(ctx).Debug(fmt.Sprintf("Fetch node %s info: %s,%s,%s", node.IpAddr, other.Hostname, other.Status, other.LastContactTime))
 		nodes.Body.Data = append(nodes.Body.Data, other)
 	}
 }
@@ -143,7 +143,7 @@ func (conf *GetCloudConf) getValue(ctx context.Context) {
 	conf.MsgType = "cloudConf"
 	conf.Body.GdcUrl = a3config.ReadCloudConf(a3config.GDCUrl)
 	conf.Body.User = a3config.ReadCloudConf(a3config.User)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Fetch cloud conf info: %s,%s", conf.Body.GdcUrl, conf.Body.User))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("Fetch cloud conf info: %s,%s", conf.Body.GdcUrl, conf.Body.User))
 }
 
 func (nodesInfo *GetNodesInfo) convertToJson(ctx context.Context) []byte {
@@ -168,8 +168,9 @@ func handleGetCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	var handler CloudGetHandler
 	ctx := r.Context()
 	switchConf := a3config.ReadCloudConf(a3config.Switch)
+	rdcUrl := a3config.ReadCloudConf(a3config.RDCUrl)
 
-	if switchConf == "enable" {
+	if switchConf == "enable" && len(rdcUrl) != 0 {
 		nodesInfo := new(GetNodesInfo)
 		nodesInfo.getValue(ctx)
 		handler = nodesInfo
@@ -218,7 +219,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 	code := "fail"
 	event := new(amac.MsgStru)
 
-	log.LoggerWContext(ctx).Info("int HandlePostCloudInfo")
+	log.LoggerWContext(ctx).Debug("int HandlePostCloudInfo")
 
 	ret = ""
 
@@ -252,7 +253,7 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 					log.LoggerWContext(ctx).Error(fmt.Sprintf("Fetch systemID from mysql for hostname %s failed.", node.Hostname))
 					continue
 				}
-				log.LoggerWContext(ctx).Info(fmt.Sprintf("Fetch systemID succeddfully: %s:%s.", node.Hostname, sysId))
+				log.LoggerWContext(ctx).Debug(fmt.Sprintf("Fetch systemID succeddfully: %s:%s.", node.Hostname, sysId))
 				sysIDs = append(sysIDs, sysId)
 			}
 		}
@@ -303,6 +304,14 @@ func HandlePostCloudInfo(r *http.Request, d crud.HandlerData) []byte {
 		goto END
 	}
 
+	/* Clear old RDCUrl info before connecting new GDC */
+	err = a3config.UpdateCloudConf(a3config.RDCUrl, "")
+	if err != nil {
+		log.LoggerWContext(ctx).Error("Update RDCURL error: " + err.Error())
+		ret = "Updating RDCURL failed"
+		goto END
+	}
+	
 	result, reason = amac.LoopConnect(ctx, postInfo.Pass)
 	if result == 0 {
 		code = "ok"
@@ -331,7 +340,7 @@ END:
 func ReqAMAStatusfromOneNode(ctx context.Context, node a3config.NodeInfo) *event.AMAStatus {
 	amaInfo := event.AMAStatus{}
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/ama/status", node.IpAddr)
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Query AMA info from node %s", node.IpAddr))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("Query AMA info from node %s", node.IpAddr))
 
 	client := new(innerClient.Client)
 	client.Host = node.IpAddr

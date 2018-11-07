@@ -15,6 +15,7 @@ import (
 )
 
 const (
+	// it's a probe to check if the members are alive.
 	NotifySync       = "NotifySync"
 	StopService      = "StopServices"
 	StartSync        = "StartSync"
@@ -30,8 +31,12 @@ type SyncData struct {
 	SendIp string `json:"ip"`
 }
 
+type syncErr struct {
+	Ip  string
+	Err error
+}
+
 func SendClusterSync(ip, Status string) error {
-	ctx := context.Background()
 	data := new(SyncData)
 
 	data.Status = Status
@@ -39,69 +44,67 @@ func SendClusterSync(ip, Status string) error {
 	data.SendIp = utils.GetOwnMGTIp()
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/event/cluster/sync", ip)
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("post cluster event sync with: %s", url))
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("post cluster event sync with: %s", url))
 
 	client := new(apibackclient.Client)
+	if Status == NotifySync {
+		client.Timeout = 15
+	}
 	client.Host = ip
 	jsonData, err := json.Marshal(&data)
 	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
+		log.LoggerWContext(ama.Ctx).Error(err.Error())
 		return err
 	}
 
 	err = client.ClusterSend("POST", url, string(jsonData))
 
 	if err != nil {
-		log.LoggerWContext(ctx).Error(err.Error())
+		log.LoggerWContext(ama.Ctx).Error(err.Error())
 	}
 
 	return err
 }
 
-func CheckClusterNodeStatus(status string) error {
-	ctx := context.Background()
+func NotifyClusterStatus(status string) map[string]error {
 	nodeList := a3config.ClusterNew().FetchNodesInfo()
 	ownMgtIp := utils.GetOwnMGTIp()
+
+	counter := 0
+	resp := make(map[string]error)
+	ret := make(chan syncErr)
 
 	for _, node := range nodeList {
 		if node.IpAddr == ownMgtIp {
 			continue
 		}
 
-		err := SendClusterSync(node.IpAddr, status)
-		if err != nil {
-			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
-			return err
-		}
+		go func(ip, status string) {
+			if status == NotifySync {
+				ama.UpdateClusterNodeStatus(ip, ama.Idle)
+			}
+
+			err := SendClusterSync(ip, status)
+			ret <- syncErr{ip, err}
+		}(node.IpAddr, status)
+
+		counter++
 	}
 
-	return nil
-}
-
-func NotifyClusterStatus(status string) error {
-	ctx := context.Background()
-	nodeList := a3config.ClusterNew().FetchNodesInfo()
-	ownMgtIp := utils.GetOwnMGTIp()
-
-	for _, node := range nodeList {
-		if node.IpAddr == ownMgtIp {
-			continue
-		}
-
-		ama.UpdateClusterNodeStatus(node.IpAddr, ama.Idle)
-		err := SendClusterSync(node.IpAddr, status)
-		if err != nil {
-			log.LoggerWContext(ctx).Error(fmt.Sprintln(err.Error()))
+	for ; counter > 0; counter-- {
+		e := <-ret
+		if e.Err != nil {
+			//log.LoggerWContext(ama.Ctx).Error(fmt.Sprintln(e.Error()))
+			resp[e.Ip] = e.Err
 		}
 	}
-
-	return nil
+	return resp
 }
 
 func GetPrimaryClusterStatus(ctx context.Context) (error, a3config.ClusterStatusData) {
 
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/configuration/cluster/status", a3config.ReadClusterPrimary())
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read cluster status data from %s", url))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("read cluster status data from %s", url))
 	clusterstatusData := a3config.ClusterStatusData{}
 	client := new(apibackclient.Client)
 	client.Host = a3config.ReadClusterPrimary()
@@ -112,7 +115,7 @@ func GetPrimaryClusterStatus(ctx context.Context) (error, a3config.ClusterStatus
 		return err, clusterstatusData
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read primary cluster status data:%s",
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("read primary cluster status data:%s",
 		string(client.RespData)))
 
 	err = json.Unmarshal(client.RespData, &clusterstatusData)
@@ -127,7 +130,7 @@ func GetPrimaryClusterStatus(ctx context.Context) (error, a3config.ClusterStatus
 func GetPrimaryNetworksData(ctx context.Context) (error, a3config.NetworksData) {
 
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/configurator/networks", a3config.ReadClusterPrimary())
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read cluster network data from %s", url))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("read cluster network data from %s", url))
 	networkData := a3config.NetworksData{}
 	client := new(apibackclient.Client)
 	client.Host = a3config.ReadClusterPrimary()
@@ -138,7 +141,7 @@ func GetPrimaryNetworksData(ctx context.Context) (error, a3config.NetworksData) 
 		return err, networkData
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read primary network data:%s",
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("read primary network data:%s",
 		string(client.RespData)))
 
 	err = json.Unmarshal(client.RespData, &networkData)

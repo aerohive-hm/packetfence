@@ -89,7 +89,7 @@ func handleGetCommandStatus(r *http.Request, d crud.HandlerData) []byte {
 }
 
 func handlePostCommandStatus(r *http.Request, d crud.HandlerData) []byte {
-	var ctx = context.Background()
+	var ctx = r.Context()
 	code := "ok"
 	ret := ""
 
