@@ -40,7 +40,7 @@ func QuerySysIdbyHost(hostname string) string {
 		log.LoggerWContext(ctx).Error("Query database system_id error: " + err.Error())
 		return ""
 	}
-	log.LoggerWContext(ctx).Info("Query system_id: " + sysid)
+	log.LoggerWContext(ctx).Debug("Query system_id: " + sysid)
 	return sysid
 }
 
@@ -79,7 +79,7 @@ func QueryDBClusterIpSet() string {
 		return ""
 	}
 
-	log.LoggerWContext(ctx).Info("Query wsrep_incoming_addresses: " + strValue)
+	log.LoggerWContext(ctx).Debug("Query wsrep_incoming_addresses: " + strValue)
 
 	return strValue
 }

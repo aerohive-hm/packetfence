@@ -98,7 +98,7 @@ func NotifyClusterStatus(status string) error {
 func GetPrimaryClusterStatus(ctx context.Context) (error, a3config.ClusterStatusData) {
 
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/configuration/cluster/status", a3config.ReadClusterPrimary())
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read cluster status data from %s", url))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("read cluster status data from %s", url))
 	clusterstatusData := a3config.ClusterStatusData{}
 	client := new(apibackclient.Client)
 	client.Host = a3config.ReadClusterPrimary()
@@ -109,7 +109,7 @@ func GetPrimaryClusterStatus(ctx context.Context) (error, a3config.ClusterStatus
 		return err, clusterstatusData
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read primary cluster status data:%s",
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("read primary cluster status data:%s",
 		string(client.RespData)))
 
 	err = json.Unmarshal(client.RespData, &clusterstatusData)
@@ -124,7 +124,7 @@ func GetPrimaryClusterStatus(ctx context.Context) (error, a3config.ClusterStatus
 func GetPrimaryNetworksData(ctx context.Context) (error, a3config.NetworksData) {
 
 	url := fmt.Sprintf("https://%s:9999/a3/api/v1/configurator/networks", a3config.ReadClusterPrimary())
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read cluster network data from %s", url))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("read cluster network data from %s", url))
 	networkData := a3config.NetworksData{}
 	client := new(apibackclient.Client)
 	client.Host = a3config.ReadClusterPrimary()
@@ -135,7 +135,7 @@ func GetPrimaryNetworksData(ctx context.Context) (error, a3config.NetworksData) 
 		return err, networkData
 	}
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("read primary network data:%s",
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("read primary network data:%s",
 		string(client.RespData)))
 
 	err = json.Unmarshal(client.RespData, &networkData)

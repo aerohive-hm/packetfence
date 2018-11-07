@@ -136,7 +136,7 @@ func IfaceExists(ifname string) bool {
 func IsIpExists(ifname, ip string) bool {
 	cmd := fmt.Sprintf("sudo arping -c 3 -w 1 -f -I %s -D %s", ifname, ip)
 	out, err := ExecShell(cmd, true)
-	fmt.Println("cmd", cmd)
+	log.LoggerWContext(ama.Ctx).Debug("cmd:" + cmd)
 
 	if err != nil {
 		return true
@@ -161,7 +161,7 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 
 	out, err := ExecShell(cmd, false)
 	if err != nil {
-		fmt.Println("exec error")
+		log.LoggerWContext(ama.Ctx).Error("exec error")
 		return nil, -1
 	}
 
@@ -314,7 +314,7 @@ func setInterfaceGateway(ifname, gateway string) error {
 	cmd := fmt.Sprintf("sudo ip route replace to default via %s dev %s", gateway, ifname)
 	_, err := ExecShell(cmd, true)
 	if err != nil {
-		log.LoggerWContext(ama.Ctx).Info("exec" + cmd + "error")
+		log.LoggerWContext(ama.Ctx).Error("exec" + cmd + "error")
 		return err
 	}
 
@@ -338,7 +338,7 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 		if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
 			/*check ip if is exist*/
 			info := fmt.Sprintf("UpdateVlanIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
-			log.LoggerWContext(ama.Ctx).Info(info)
+			log.LoggerWContext(ama.Ctx).Debug(info)
 			if !IsIfaceActive(ifname) {
 				err = SetIfaceUp(ifname)
 				if err != nil {
@@ -388,7 +388,7 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 	oldmasklen, _ := strconv.Atoi(oldmask)
 	if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
 		info := fmt.Sprintf("UpdateEthIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
-		log.LoggerWContext(ama.Ctx).Info(info)
+		log.LoggerWContext(ama.Ctx).Debug(info)
 		/*new ip must be the same net range with the old ip */
 		if !IsSameIpRange(ip, oldip, mask) {
 			msg := fmt.Sprintf("new ip(%s) is not same net range with oldip(%s)", ip, oldip)
@@ -410,17 +410,17 @@ func doUpdateEthIface(ifname, ip, oldip, mask, gateway string) error {
 	if err != nil {
 		return err
 	}
-	log.LoggerWContext(ama.Ctx).Info("DelIfaceIIpAddr OK:")
+	log.LoggerWContext(ama.Ctx).Debug("DelIfaceIIpAddr OK:")
 	err = SetIfaceIIpAddr(ifname, ip, mask)
 	if err != nil {
 		return err
 	}
-	log.LoggerWContext(ama.Ctx).Info("SetIfaceIIpAddr OK:")
+	log.LoggerWContext(ama.Ctx).Debug("SetIfaceIIpAddr OK:")
 	err = setInterfaceGateway(ifname, gateway)
 	if err != nil {
 		return err
 	}
-	log.LoggerWContext(ama.Ctx).Info("setInterfaceGateway OK:")
+	log.LoggerWContext(ama.Ctx).Debug("setInterfaceGateway OK:")
 	if !IsIfaceActive(ifname) {
 		err = SetIfaceUp(ifname)
 		if err != nil {

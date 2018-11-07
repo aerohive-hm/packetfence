@@ -84,7 +84,7 @@ func FetchTablesInfo(count int) ([]interface{}, error) {
 		max = int(number.(int64))
 	}
 	if max == 0 {
-		log.LoggerWContext(ama.Ctx).Info("No memeber in sets:", tableSets)
+		log.LoggerWContext(ama.Ctx).Debug("No memeber in sets:", tableSets)
 		mu.Unlock()
 		return tables, nil
 	}
@@ -218,7 +218,7 @@ func FetchTablesInfoInOrder(count int) ([]interface{}, error) {
 		max = int(number.(int64))
 	}
 	if max == 0 {
-		log.LoggerWContext(ama.Ctx).Info("No memeber in sets:", tableSets)
+		log.LoggerWContext(ama.Ctx).Debug("No memeber in sets:", tableSets)
 		mu.Unlock()
 		return tables, nil
 	}
