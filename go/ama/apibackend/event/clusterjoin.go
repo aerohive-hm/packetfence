@@ -41,17 +41,15 @@ func ClusterJoinNew(ctx context.Context) crud.SectionCmd {
 |-send event/cluster/sync start
 */
 func prepareClusterNodeJoin() {
-	err := a3share.NotifyClusterStatus(a3share.StopService)
-	if err != nil {
-		return
+	ret := a3share.NotifyClusterStatus(a3share.StopService)
+	for _, err := range ret {
+		if err != nil {
+			// ToDo: add rollback recovery
+			log.LoggerWContext(ama.Ctx).Info(fmt.Sprintln(err.Error()))
+		}
 	}
-
 	utils.ForceNewCluster()
 	a3share.NotifyClusterStatus(a3share.StartSync)
-}
-
-func StartClusterNodejoining() {
-
 }
 
 func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
@@ -59,6 +57,7 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	clusterData := new(a3config.ClusterNetworksData)
 	var respdata a3config.ClusterEventRespData
 	var resp []byte
+	var ret map[string]error
 
 	err := json.Unmarshal(d.ReqData, clusterData)
 	if err != nil {
@@ -71,9 +70,13 @@ func handleUpdateEventClusterJoin(r *http.Request, d crud.HandlerData) []byte {
 	}
 	ama.InitClusterStatus("primary")
 
-	//check cluster node alive or not
-	err = a3share.CheckClusterNodeStatus(a3share.NotifySync)
-	if err != nil {
+	//check if all cluster nodes are alive or not
+	ret = a3share.NotifyClusterStatus(a3share.NotifySync)
+	for _, err = range ret {
+		if err == nil {
+			continue
+		}
+		log.LoggerWContext(ctx).Info(fmt.Sprintln(err.Error()))
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("post event sync to NotifySync failed, someone offline"))
 		goto END
 	}

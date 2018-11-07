@@ -23,7 +23,6 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"time"
 )
 
 var (
@@ -104,7 +103,7 @@ func readRdcToken(ctx context.Context) string {
 	tokenLock.Lock()
 	file, error := os.OpenFile("/usr/local/pf/conf/token.txt", os.O_RDWR|os.O_CREATE, 0600)
 	if error != nil {
-		fmt.Println(error)
+		log.LoggerWContext(ctx).Error(error.Error())
 	}
 	content, _ := ioutil.ReadAll(file)
 	file.Close()
@@ -196,7 +195,7 @@ func ReqTokenForOtherNode(ctx context.Context, node NodeInfo) tokenResData {
 
 	body, _ := ioutil.ReadAll(resp.Body)
 	log.LoggerWContext(ctx).Info(fmt.Sprintf("receive the response %s", resp.Status))
-	log.LoggerWContext(ctx).Info(string(body))
+	log.LoggerWContext(ctx).Debug(string(body))
 
 	statusCode := resp.StatusCode
 	//Unmarshal only when statusCode equal 200
@@ -320,11 +319,10 @@ func distributeToSingleNode(ctx context.Context, mem a3config.NodeInfo, selfRene
 		if statusCode == 200 {
 			return
 		} else if statusCode == 504 { //Gateway Timeout
-			//keep on trying to post util success
-			time.Sleep(5 * time.Second)
-			//continue
+			log.LoggerWContext(ctx).Error("Distribute RDC token to node " + mem.IpAddr + " failed")
 			return
 		}
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Distribute RDC token to node %s failed, response status code %d", mem.IpAddr, statusCode))
 		//Other errors will return
 		return
 	}
@@ -364,7 +362,7 @@ func fillRdcTokenReqHeader(node *NodeInfo) rdcTokenReqFromRdc {
 		rdcTokenReq.Header.SystemID = node.SystemID
 		rdcTokenReq.Header.Hostname = node.Hostname
 	}
-	rdcTokenReq.Header.ClusterID = utils.GetClusterId()
+	rdcTokenReq.Header.ClusterID = a3config.GetClusterId()
 
 	return rdcTokenReq
 }
@@ -395,7 +393,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	}
 
 	//Taking the GDC token to request a RDC token
-	log.LoggerWContext(ctx).Info(fmt.Sprintf("Including the GDC token %s", gdcTokenStr))
+	log.LoggerWContext(ctx).Debug(fmt.Sprintf("Including the GDC token %s", gdcTokenStr))
 	request.Header.Add("Authorization", gdcTokenStr)
 	request.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(request)
@@ -405,7 +403,7 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
-	log.LoggerWContext(ctx).Info(string(body))
+	log.LoggerWContext(ctx).Debug(string(body))
 
 	statusCode := resp.StatusCode
 
@@ -458,8 +456,10 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 
 		return dst, ConnCloudSuc
 	} else if statusCode == 401 {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Fetch token from RDC failed, status code: %d, reason: %s", statusCode, AuthFail))
 		return "", AuthFail
 	} else if statusCode == 403 {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Fetch token from RDC failed, status code: %d, reason: %s", statusCode, LimitedAccess))
 		return "", LimitedAccess
 	}
 	log.LoggerWContext(ctx).Error(fmt.Sprintf("Server(RDC) respons the code %d, please check the credential", statusCode))

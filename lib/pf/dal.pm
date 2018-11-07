@@ -511,7 +511,6 @@ sub _insert_data {
        (${sendtable} eq 'node_category') ||
        (${sendtable} eq 'violation') ||
        (${sendtable} eq 'locationlog') ||
-       (${sendtable} eq 'class') ||
        (${sendtable} eq 'ip4log')) {
 
         $self->logger->debug("DB table ${sendtable} changing data:" .Dumper(\%ama_data));
