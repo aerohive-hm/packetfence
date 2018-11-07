@@ -54,7 +54,6 @@ function updateKeyTable(userKeyInput) {
                $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
                $("#licenseCapa").load(window.location + " #licenseCapa");
                $("#trialIndicator").load(window.location + " #trialIndicator");
-               $("#nav").load(window.location + " #trialIndicator");
            }
            return true;
         }).fail(function(xhr, status, error){
@@ -93,6 +92,7 @@ function userSubmitEula(){
         $('#eulaModal').modal('hide');
         $(".modal-backdrop").hide();
         $(".licenseTrialText").hide();
+        //reload the nav after user accepts eula
         $("body").load(window.location + "#nav");
     }).fail(function(xhr, status, error){
         console.log(error);

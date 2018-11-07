@@ -1357,7 +1357,8 @@ fi
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Config/Switch.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Config/System.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Configuration.pm
-%config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Configurator.pm
+%exclude                /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Configurator.pm
+%exclude                /usr/local/pf/html/pfappserver/lib/pfappserver/PacketFence/Controller/Configuration.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Config/Wrix.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/DB.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Graph.pm
