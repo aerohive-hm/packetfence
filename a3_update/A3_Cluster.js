@@ -262,15 +262,16 @@ app.post("/a3/apply_conf_migration", function(req, res){
 
 app.post("/a3/post_process", function(req, res){
     var params = get_post_params(req);
+    let opts = params[2];
     var ret = verify_credential(params[0], params[1], res);
     if (ret == 0) {
-	if (opts[0] == 'before') {
-            let opts = assemble_opts('pf::a3_cluster_update::post_process_before()');
+	if ((typeof opts !== 'undefined') && opts[0] == 'after') {
+            let opts = assemble_opts('pf::a3_cluster_update::post_process_after()');
             audit_log("the cmd to run is "+perl+" "+opts);
             simple_promise_chain_call(perl, opts, res);
         }
-        else if (opts[0] == 'after') {
-            let opts = assemble_opts('pf::a3_cluster_update::post_process_after()');
+        else {
+            let opts = assemble_opts('pf::a3_cluster_update::post_process()');
             audit_log("the cmd to run is "+perl+" "+opts);
             simple_promise_chain_call(perl, opts, res);
         }
