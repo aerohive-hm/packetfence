@@ -318,7 +318,7 @@ func keepaliveToRdc(ctx context.Context) {
 			timeoutCount = 0
 			resp.Body.Close()
 		} else {
-			log.LoggerWContext(ctx).Warn("The response status code not equal to 200")
+			log.LoggerWContext(ctx).Warn(fmt.Sprintf("The response status code not equal to 200, status code is:%d", statusCode))
 			timeoutCount++
 			resp.Body.Close()
 			continue

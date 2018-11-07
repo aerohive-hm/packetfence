@@ -322,6 +322,7 @@ func distributeToSingleNode(ctx context.Context, mem a3config.NodeInfo, selfRene
 			log.LoggerWContext(ctx).Error("Distribute RDC token to node " + mem.IpAddr + " failed")
 			return
 		}
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Distribute RDC token to node %s failed, response status code %d", mem.IpAddr, statusCode))
 		//Other errors will return
 		return
 	}
@@ -455,8 +456,10 @@ func fetchTokenFromRdc(ctx context.Context) (string, string) {
 
 		return dst, ConnCloudSuc
 	} else if statusCode == 401 {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Fetch token from RDC failed, status code: %d, reason: %s", statusCode, AuthFail))
 		return "", AuthFail
 	} else if statusCode == 403 {
+		log.LoggerWContext(ctx).Error(fmt.Sprintf("Fetch token from RDC failed, status code: %d, reason: %s", statusCode, LimitedAccess))
 		return "", LimitedAccess
 	}
 	log.LoggerWContext(ctx).Error(fmt.Sprintf("Server(RDC) respons the code %d, please check the credential", statusCode))

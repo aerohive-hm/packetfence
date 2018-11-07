@@ -132,7 +132,7 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int, in interface{}) int {
 
 	switch msgType {
 	case NetworkChange:
-		log.LoggerWContext(ctx).Debug("begin to send initerface change to RDC")
+		log.LoggerWContext(ctx).Debug("begin to send interface change to RDC")
 		nodeInfo = a3share.GetIntChgInfo(ctx)
 	case LicenseInfoChange:
 		log.LoggerWContext(ctx).Debug("begin to send license update to RDC")
@@ -183,13 +183,13 @@ func UpdateMsgToRdcAsyn(ctx context.Context, msgType int, in interface{}) int {
 				continue
 			} else {
 				//not get the token, return and wait for the event from UI or other nodes
-				log.LoggerWContext(ctx).Error(InvalidToken)
+				log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message(Type=%d) to cloud failed , server(RDC) respons the code %d, rdcToken:%s", msgType, statusCode, rdcTokenStr))
 				return result
 			}
 		} else if statusCode == 200 {
 			return 0
 		} else {
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("Update message faile, server(RDC) respons the code %d", statusCode))
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message(Type=%d) to cloud failed, server(RDC) respons the code %d", msgType, statusCode))
 			return -1
 		}
 		return 0
@@ -285,13 +285,13 @@ func UpdateMsgToRdcSyn(ctx context.Context, msgType int, in interface{}) (int, s
 				continue
 			} else {
 				//not get the token, return and wait for the event from UI or other nodes
-				log.LoggerWContext(ctx).Error(fmt.Sprintf("Update message faile, server(RDC) respons the code %d", statusCode))
+				log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message(Type=%d) to cloud failed, server(RDC) respons the code %d, rdcToken:%s", msgType, statusCode, rdcTokenStr))
 				return -1, InvalidToken
 			}
 		} else if statusCode == 200 {
 			return 0, getSuccPrompt(msgType)
 		} else {
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("Update message faile, server(RDC) respons the code %d", statusCode))
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message(Type=%d) to cloud failed, server(RDC) respons the code %d", msgType, statusCode))
 			return -1, getFailPrompt(msgType)
 		}
 	}
