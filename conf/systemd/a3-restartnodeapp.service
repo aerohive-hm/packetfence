@@ -1,0 +1,8 @@
+[Unit]
+Description=A3 Software Restart NodeAPP Service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/pf/a3_update/restart_a3nodeapp.sh
+KillMode=none
