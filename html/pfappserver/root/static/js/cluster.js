@@ -131,13 +131,13 @@ function removeClusterNode(nodeArray){
             getClusterStatusInfo();
             $("#cluster-management-table").load("#cluster-management-table-tbody");
             if (data.code === "fail"){
-              document.getElementById('errorMessage').innerHTML = "Failed to remove nodes(s)";
+              document.getElementById('errorMessage').innerHTML = data.msg;
               $("#error-alert").show();
               setTimeout(function(){
                   $("#error-alert").slideUp(500);
               }, 3000);
             } else {
-              document.getElementById('successMessage').innerHTML = "Successfully removed nodes(s)";
+              document.getElementById('successMessage').innerHTML = "Successfully removed node(s)";
               $("#success-alert").show();
               setTimeout(function(){
                   $("#success-alert").slideUp(500);
