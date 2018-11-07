@@ -25,6 +25,7 @@ $(document).ready(function(){
         }
     }
 
+    //loads the cluster table
     $("#cluster-management-table-tbody tr").remove();
     $("#net-interfaces-table-tbody tr").remove();
     getClusterStatusInfo();
@@ -51,8 +52,9 @@ $(document).ready(function(){
           }
         }
     }
-
+    setInterval("getClusterStatusInfo()", 10000);
 });
+
 
 //function to get the number of cluster nodes checked in table
 function getCheckedNodes(inputTbody){
