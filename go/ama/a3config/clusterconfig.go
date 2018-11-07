@@ -111,6 +111,25 @@ func (sections Section) FetchNodesInfo() []NodeInfo {
 	return nodes
 }
 
+func (sections Section) FetchNodesInfoHash() map[string]string {
+	if sections == nil {
+		return nil
+	}
+	nodes := make(map[string]string)
+	for secName, kvpair := range sections {
+		if secName == "CLUSTER" {
+			continue
+		}
+
+		for k, v := range kvpair {
+			if k == "management_ip" {
+				nodes[secName] = v
+			}
+		}
+	}
+	return nodes
+}
+
 func DeletePrimaryClusterconf(i Item) error {
 	isvlan := VlanInface(i.Name)
 	ifname := ChangeUiIfname(i.Name, i.Prefix)
@@ -237,4 +256,11 @@ func UpdateClusterFile() {
 	cmd := `echo -e "\n/usr/local/pf/conf/cloud.conf\n` +
 		`/usr/local/pf/conf/clusterid.conf" >> /usr/local/pf/conf/cluster-files.txt`
 	utils.ExecShell(cmd, true)
+}
+
+func GetClusterId() string {
+	if ClusterNew().CheckClusterEnable() {
+		return utils.GetClusterId()
+	}
+	return ""
 }

@@ -75,7 +75,7 @@ func dbFromConfig() (*sql.DB, error) {
 func (db *A3Db) DbInit() error {
 	tdb, err := dbFromConfig()
 	if err != nil {
-		fmt.Println(err.Error())
+		log.LoggerWContext(ama.Ctx).Error(err.Error())
 	}
 	db.Db = tdb
 	return err

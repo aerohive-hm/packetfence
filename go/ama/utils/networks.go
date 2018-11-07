@@ -4,6 +4,8 @@ package utils
 import (
 	"fmt"
 	"strings"
+	"github.com/inverse-inc/packetfence/go/ama"
+	"github.com/inverse-inc/packetfence/go/log"
 )
 
 // Get A3 default gateway
@@ -13,7 +15,7 @@ func GetA3DefaultGW() string {
 	// result looks like: default via 10.155.61.254 dev eth0 proto static metric 100
 	result, err := ExecShell(cmd, false)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
+		log.LoggerWContext(ama.Ctx).Error(cmd + ":exec error")
 		return ""
 	}
 
