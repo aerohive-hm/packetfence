@@ -136,6 +136,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	var ret map[string]error
 	var ips map[string]string
 	var ip string
+	var foundIp bool
 
 	err := json.Unmarshal(d.ReqData, removeData)
 	if err != nil {
@@ -153,23 +154,35 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 		retMsg = "The server is removing another cluster, please wait for a moment."
 		goto END
 	}
-	//check if all cluster nodes are alive or not
+
+	/*
+	  if one of the nodes in cluster is offline and not in the
+	  remove list, then we cann't perform this request
+	*/
 	ips = getIpByHost(removeData.Hostname)
 	ret = a3share.NotifyClusterStatus(a3share.NotifySync)
 	for ip, err = range ret {
 		if err == nil {
 			continue
 		}
+
+		foundIp = false
 		for _, v := range ips {
 			if v == ip {
-				continue
+				foundIp = true
+				break
 			}
+		}
+
+		if !foundIp {
 			log.LoggerWContext(ctx).Info(fmt.Sprintln(err.Error()))
 			retMsg = "Some of the members are offline."
 			goto END
 		}
 	}
-	//If the removing node is myself, POST remove event to other node to do for me
+	/*
+	  If the removing node is the primary node, not allowed.
+	*/
 	hostname = utils.GetHostname()
 	for _, h := range removeData.Hostname {
 		if h != hostname {
