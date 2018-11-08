@@ -68,7 +68,7 @@
               </div>
               <label style="float:left; width:160px;"> </label>
               <button class="btn btn-primary submit" id="submitNewClusterInfo">[% l('Save') %]</button>
-              <button type="reset" class="btn">[% l('Reset') %]</button>
+              <button class="btn" id="reset-form">[% l('Reset') %]</button>
           </form>
           <br/>
           <br/>

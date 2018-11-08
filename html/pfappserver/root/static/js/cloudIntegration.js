@@ -229,7 +229,7 @@ function linkAerohiveAccount(){
                 document.getElementById("link-account").disabled = false;
             }
         },
-        error: function(jqXHR, textStatus, errorThrown){
+        error: function(data){
             $('#spin-spinner').hide();
             data = jQuery.parseJSON(data.A3_data);
             document.getElementById('errorMessage').innerHTML = data.msg;

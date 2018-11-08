@@ -13,22 +13,25 @@ $(document).ready(function(){
 
         if ( $("#vrid").val() != "" ){
           //if vrid is not empty
-            if (($("#vrid").val() < 1 || $("#vrid").val() > 255)){
-                document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must be between 1 to 255.";
+            if (nofloatingregex.test(document.getElementById("vrid").value)){
+              //if vrid value is an integer, non floating
+                if (($("#vrid").val() < 1 || $("#vrid").val() > 255)){
+                    //if vrid is outside the boundary of 1 - 255
+                    document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must be an integer between 1 to 255.";
+                    $("#error-alert").show();
+                    setTimeout(function(){
+                        $("#error-alert").slideUp(500);
+                    }, 3000);
+                } else {
+                    submitClusterInfo();
+                }
+            } else {
+              console.log("value is not an integetr");
+                document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must contain only integers, no decimals.";
                 $("#error-alert").show();
                 setTimeout(function(){
                     $("#error-alert").slideUp(500);
                 }, 3000);
-            } else {
-               if(nofloatingregex.test(document.getElementById("vrid").value)){
-                   submitClusterInfo();
-               } else {
-                   document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must contain only integers, no decimals.";
-                   $("#error-alert").show();
-                   setTimeout(function(){
-                       $("#error-alert").slideUp(500);
-                   }, 3000);
-               }
             }
         }
         else if ( $("#sharedkey").val() != "" ){
@@ -65,6 +68,14 @@ $(document).ready(function(){
           }
         }
     }
+
+    //reseting the form to original values from file
+    document.getElementById('reset-form').onclick = function(e){
+        e.preventDefault();
+        getClusterStatusInfo();
+    }
+
+    //will update the table every 10 seconds to get the current status of node connection
     setInterval("getClusterStatusInfo()", 10000);
 });
 
