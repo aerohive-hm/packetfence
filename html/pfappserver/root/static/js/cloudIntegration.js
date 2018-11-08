@@ -79,7 +79,7 @@ function getNodeInfo(){
                         } else if (data.body.data[0].status == "connecting") {
                             $('#linkStatus').html("<i class='icon-circle icon' style='color:#ffc107; font-size:15px; margin: 0 auto;'></i> Connecting");
                         } else if (data.body.data[0].status == "disconnect") {
-                            $('#linkStatus').html("<i class='icon-circle icon' style='color:#dc3545; font-size:15px; margin: 0 auto;'></i> Not Connected");
+                            $('#linkStatus').html("<i class='icon-circle icon' style='color:#dc3545; font-size:15px; margin: 0 auto;'></i> Disconnected");
                         } else {
                             $('#linkStatus').html("<i class='icon-exclamation-triangle icon' style='color:#dc3545; font-size:15px; margin: 0 auto;'></i>");
                         }
@@ -229,7 +229,7 @@ function linkAerohiveAccount(){
                 document.getElementById("link-account").disabled = false;
             }
         },
-        error: function(jqXHR, textStatus, errorThrown){
+        error: function(data){
             $('#spin-spinner').hide();
             data = jQuery.parseJSON(data.A3_data);
             document.getElementById('errorMessage').innerHTML = data.msg;
