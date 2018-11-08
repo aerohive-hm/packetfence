@@ -280,3 +280,15 @@ button, input, select, textarea {
     padding-bottom: 20px;
   }
 }
+
+/*styling for the html/pfappserver/lib/pfappserver/Base/Form/Role/Defaults*/
+.list-defaults-group{
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+  color: #3a87ad;
+  border-radius: 3px;
+  padding: 8px 35px 8px 14px;
+  margin-bottom: 20px;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+  border: 1px solid #fbeed5;
+}
