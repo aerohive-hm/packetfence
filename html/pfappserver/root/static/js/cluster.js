@@ -9,7 +9,9 @@ $(document).ready(function(){
     //to change submit info
     document.getElementById("submitNewClusterInfo").onclick = function(e){
         e.preventDefault();
-        if ($("#vrid").val() != ""){
+        var nofloatingregex = /^[1-9]\d*$/;
+
+        if ( $("#vrid").val() != "" ){
           //if vrid is not empty
             if (($("#vrid").val() < 1 || $("#vrid").val() > 255)){
                 document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must be between 1 to 255.";
@@ -18,8 +20,19 @@ $(document).ready(function(){
                     $("#error-alert").slideUp(500);
                 }, 3000);
             } else {
-               submitClusterInfo();
+               if(nofloatingregex.test(document.getElementById("vrid").value)){
+                   submitClusterInfo();
+               } else {
+                   document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must contain only integers, no decimals.";
+                   $("#error-alert").show();
+                   setTimeout(function(){
+                       $("#error-alert").slideUp(500);
+                   }, 3000);
+               }
             }
+        }
+        else if ( $("#sharedkey").val() != "" ){
+            submitClusterInfo();
         } else {
             submitClusterInfo();
         }
@@ -104,6 +117,7 @@ function submitClusterInfo(){
                 setTimeout(function(){
                     $("#success-alert").slideUp(500);
                 }, 3000);
+                getClusterStatusInfo();
             }
         },
         error: function(data){
@@ -166,6 +180,9 @@ function getClusterStatusInfo(){
         url: base_url + '/ama/cluster',
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
+            var vridvalue = data.vrid; $("#vrid").val(vridvalue);
+            var sharedkeyvalue = data.sharedkey; $("#sharedkey").val(sharedkeyvalue);
+
             $("#cluster-management-table-tbody tr").remove();
             $("#net-interfaces-table-tbody tr").remove();
             //cluster management table
