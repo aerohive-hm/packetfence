@@ -136,6 +136,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	var ret map[string]error
 	var ips map[string]string
 	var ip string
+	var foundIp bool
 
 	err := json.Unmarshal(d.ReqData, removeData)
 	if err != nil {
@@ -160,10 +161,16 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 		if err == nil {
 			continue
 		}
+
+		foundIp = false
 		for _, v := range ips {
 			if v == ip {
-				continue
+				foundIp = true
+				break
 			}
+		}
+
+		if !foundIp {
 			log.LoggerWContext(ctx).Info(fmt.Sprintln(err.Error()))
 			retMsg = "Some of the members are offline."
 			goto END
