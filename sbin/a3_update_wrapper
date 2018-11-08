@@ -33,3 +33,5 @@ fi
 /usr/bin/sleep 30
 
 /usr/bin/rm -f /usr/local/pf/var/run/update.lock
+
+/usr/bin/systemctl start packetfence-httpd.admin
