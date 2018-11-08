@@ -154,7 +154,11 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 		retMsg = "The server is removing another cluster, please wait for a moment."
 		goto END
 	}
-	//check if all cluster nodes are alive or not
+
+	/*
+	  if one of the nodes in cluster is offline and not in the
+	  remove list, then we cann't perform this request
+	*/
 	ips = getIpByHost(removeData.Hostname)
 	ret = a3share.NotifyClusterStatus(a3share.NotifySync)
 	for ip, err = range ret {
@@ -176,7 +180,9 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 			goto END
 		}
 	}
-	//If the removing node is myself, POST remove event to other node to do for me
+	/*
+	  If the removing node is the primary node, not allowed.
+	*/
 	hostname = utils.GetHostname()
 	for _, h := range removeData.Hostname {
 		if h != hostname {
