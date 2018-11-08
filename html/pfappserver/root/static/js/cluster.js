@@ -26,7 +26,6 @@ $(document).ready(function(){
                     submitClusterInfo();
                 }
             } else {
-              console.log("value is not an integetr");
                 document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must contain only integers, no decimals.";
                 $("#error-alert").show();
                 setTimeout(function(){
@@ -115,7 +114,6 @@ function submitClusterInfo(){
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
             $('input').val('');
-            console.log(data.code);
             if (data.code === "fail"){
                 document.getElementById('errorMessage').innerHTML = data.msg;
                 $("#error-alert").show();
