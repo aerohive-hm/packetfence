@@ -136,7 +136,7 @@
             </tr>
             <tr>
               <td class="td-title"><h6>[% l('Link Status') %]</h6></td>
-              <td><span id="linkStatus"></span> <span>Connected</span> <span>Connecting</span> <span>Disconnected</span></td>
+              <td><span id="linkStatus"></span></td>
             </tr>
           </tbody>
         </table>
