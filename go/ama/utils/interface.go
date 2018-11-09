@@ -161,7 +161,6 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 
 	out, err := ExecShell(cmd, false)
 	if err != nil {
-		fmt.Println("exec error")
 		return nil, -1
 	}
 
