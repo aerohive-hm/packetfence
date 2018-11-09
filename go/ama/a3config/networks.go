@@ -207,11 +207,6 @@ func CheckItemIpValid(ctx context.Context, enable bool, items []Item) error {
 	return nil
 }
 
-func GetPrefixIP(i Item) string {
-	ifname := strings.ToLower(i.Prefix)
-	ip, _ := utils.GetifaceIpInfo(ifname)
-	return ip
-}
 func CheckItemTypeValid(ctx context.Context, items []Item) error {
 	msg := ""
 	for _, i := range items {
