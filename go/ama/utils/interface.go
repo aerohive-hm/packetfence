@@ -193,14 +193,20 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 		}
 		re = `\binet (([^\/]+)\/\d+)`
 		r := regexp.MustCompile(re)
-		str := r.FindStringSubmatch(out)
+		str := r.FindAllStringSubmatch(out, -1)
 		if len(str) == 0 {
 			return err
 		}
 
-		ipmask := strings.Split(str[1], "/")
-		item.IpAddr = ipmask[0]
-		item.NetMask = ipmask[1]
+		for _, ip := range str {
+			ipmask := strings.Split(ip[1], "/")
+			// only the vip has mask with 32
+			if ipmask[1] == "32" {
+				continue
+			}
+			item.IpAddr = ipmask[0]
+			item.NetMask = ipmask[1]
+		}
 		return nil
 	}
 

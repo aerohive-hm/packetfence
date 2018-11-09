@@ -53,7 +53,7 @@ function getNodeInfo(){
                 if (data.body.header.rdcUrl === ""){
                     $('#rdcUrl').html("");
                 } else {
-                    $('#rdcUrl').html("Linked with Aerohive Cloud Services at " + "<a href='#' target='_blank'>" + data.body.header.rdcUrl + "</a>");
+                    $('#rdcUrl').html("Linked with Aerohive Cloud Services at " + "<a href='" + data.body.header.rdcUrl + "' target='_blank'>" + data.body.header.rdcUrl + "</a>");
                 }
 
                 document.getElementById("rdcUrl").href = data.body.header.rdcUrl;
