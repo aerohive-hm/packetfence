@@ -472,6 +472,7 @@ sub post_update {
     }
   }
 
+  commit_progress_log("done!");
 }
 
 #to align with cluster update with post_process and post_process_after
