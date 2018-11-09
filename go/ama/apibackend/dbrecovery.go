@@ -406,7 +406,7 @@ func CheckClusterDBHealthy() {
 
 
 	if TheClusterIsUpgrading() {
-		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("My MariaDB is good, the cluster is upgrading now!!"))
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("My MariaDB is good, the cluster is upgrading or I don't have all nodes information!!"))
 		return
 	}
 	

@@ -1900,9 +1900,9 @@ msgstr "Connexions"
 
 # html/pfappserver/root/configuration/cloudIntegration.tt
 msgid "Connected"
-msgstr "Actuellement connecté"
+msgstr "Connecté"
 
-msgid "Not connected"
+msgid "Disconnected"
 msgstr "Pas connecté"
 
 msgid "Connecting"

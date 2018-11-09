@@ -9,22 +9,38 @@ $(document).ready(function(){
     //to change submit info
     document.getElementById("submitNewClusterInfo").onclick = function(e){
         e.preventDefault();
-        if ($("#vrid").val() != ""){
+        var nofloatingregex = /^[1-9]\d*$/;
+
+        if ( $("#vrid").val() != "" ){
           //if vrid is not empty
-            if (($("#vrid").val() < 1 || $("#vrid").val() > 255)){
-                document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must be between 1 to 255.";
+            if (nofloatingregex.test(document.getElementById("vrid").value)){
+              //if vrid value is an integer, non floating
+                if (($("#vrid").val() < 1 || $("#vrid").val() > 255)){
+                    //if vrid is outside the boundary of 1 - 255
+                    document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must be an integer between 1 to 255.";
+                    $("#error-alert").show();
+                    setTimeout(function(){
+                        $("#error-alert").slideUp(500);
+                    }, 3000);
+                } else {
+                    submitClusterInfo();
+                }
+            } else {
+                document.getElementById('errorMessage').innerHTML = "The Virtual Router ID must contain only integers, no decimals.";
                 $("#error-alert").show();
                 setTimeout(function(){
                     $("#error-alert").slideUp(500);
                 }, 3000);
-            } else {
-               submitClusterInfo();
             }
+        }
+        else if ( $("#sharedkey").val() != "" ){
+            submitClusterInfo();
         } else {
             submitClusterInfo();
         }
     }
 
+    //loads the cluster table
     $("#cluster-management-table-tbody tr").remove();
     $("#net-interfaces-table-tbody tr").remove();
     getClusterStatusInfo();
@@ -52,7 +68,16 @@ $(document).ready(function(){
         }
     }
 
+    //reseting the form to original values from file
+    document.getElementById('reset-form').onclick = function(e){
+        e.preventDefault();
+        getClusterStatusInfo();
+    }
+
+    //will update the table every 10 seconds to get the current status of node connection
+    setInterval("getClusterStatusInfo()", 10000);
 });
+
 
 //function to get the number of cluster nodes checked in table
 function getCheckedNodes(inputTbody){
@@ -89,7 +114,6 @@ function submitClusterInfo(){
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
             $('input').val('');
-            console.log(data.code);
             if (data.code === "fail"){
                 document.getElementById('errorMessage').innerHTML = data.msg;
                 $("#error-alert").show();
@@ -102,6 +126,7 @@ function submitClusterInfo(){
                 setTimeout(function(){
                     $("#success-alert").slideUp(500);
                 }, 3000);
+                getClusterStatusInfo();
             }
         },
         error: function(data){
@@ -131,13 +156,13 @@ function removeClusterNode(nodeArray){
             getClusterStatusInfo();
             $("#cluster-management-table").load("#cluster-management-table-tbody");
             if (data.code === "fail"){
-              document.getElementById('errorMessage').innerHTML = "Failed to remove nodes(s)";
+              document.getElementById('errorMessage').innerHTML = data.msg;
               $("#error-alert").show();
               setTimeout(function(){
                   $("#error-alert").slideUp(500);
               }, 3000);
             } else {
-              document.getElementById('successMessage').innerHTML = "Successfully removed nodes(s)";
+              document.getElementById('successMessage').innerHTML = "Successfully removed node(s)";
               $("#success-alert").show();
               setTimeout(function(){
                   $("#success-alert").slideUp(500);
@@ -164,6 +189,9 @@ function getClusterStatusInfo(){
         url: base_url + '/ama/cluster',
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
+            var vridvalue = data.vrid; $("#vrid").val(vridvalue);
+            var sharedkeyvalue = data.sharedkey; $("#sharedkey").val(sharedkeyvalue);
+
             $("#cluster-management-table-tbody tr").remove();
             $("#net-interfaces-table-tbody tr").remove();
             //cluster management table

@@ -24,6 +24,9 @@ my (@all_nodes_ip, @all_nodes_hostname, @remains_nodes_ip_to_update, @remains_no
 sub commit_cluster_update_log {
   my $msg = shift @_;
   my $current_time = POSIX::strftime("%Y-%m-%d %H:%M:%S",localtime);
+  my $ofh = select UPDATE_CLUSTER_LOG;
+  $| = 1;
+  select $ofh;
   print UPDATE_CLUSTER_LOG "[ $current_time ] $msg\n";
 }
 

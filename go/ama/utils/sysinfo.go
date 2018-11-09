@@ -94,6 +94,26 @@ func waitProcStop(proc string) {
 	}
 }
 
+func waitProcStopOK(proc string, timeout int) bool {
+	waitingTime := timeout
+	ok := true
+	for {
+		_, err := ExecShell(`pgrep ` + proc, true)
+		if err != nil {
+			break
+		}
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Waiting process %s shut down!", proc))
+		time.Sleep(time.Duration(3) * time.Second)
+		waitingTime -= 3
+		if waitingTime <= 0 {
+			ok = false
+			break
+		}		
+	}
+
+	return ok
+}
+
 func waitProcStart(proc string) {
 	for {
 		_, err := ExecShell(`pgrep ` + proc, true)
@@ -146,21 +166,17 @@ func KillMariaDB() {
 		return
 	}
 
-	pidsCnt := 0
 	pids := strings.Split(out, "\n")
 	for _, pid := range pids {
 		if pid != "" {
-			pidsCnt++
 			ExecShell(`kill ` + pid, true)
 		}
 	}
 
-	//there are more than one pf-mariadb, something wrong, kill -9
-	if pidsCnt > 1 {
+	//mysqld can't be shut down gracefully, something wrong, kill with -9
+	if !waitProcStopOK("mysqld", 30) {
 		ForceKillProc("mysqld")
-	} else {
-		waitProcStop("mysqld")
-	}
+	} 
 }
 
 func updateEtcd() {

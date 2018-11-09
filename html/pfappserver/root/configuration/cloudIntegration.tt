@@ -98,7 +98,7 @@
         <div class="legend">
             <i class="icon-circle icon" style="color:#28a745; font-size:15px; margin: 0 auto;"></i> [% l('Connected') %]
             <i class="icon-circle icon" style="color:#ffc107; font-size:15px; margin: 0 auto;"></i> [% l('Connecting') %]
-            <i class="icon-circle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i> [% l('Not connected') %]
+            <i class="icon-circle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i> [% l('Disconnected') %]
             <br>
         </div>
         <br>
@@ -136,7 +136,7 @@
             </tr>
             <tr>
               <td class="td-title"><h6>[% l('Link Status') %]</h6></td>
-              <td id="linkStatus"></td>
+              <td><span id="linkStatus"></span> <span>Connected</span> <span>Connecting</span> <span>Disconnected</span></td>
             </tr>
           </tbody>
         </table>

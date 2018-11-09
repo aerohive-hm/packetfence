@@ -108,13 +108,13 @@ func sendReport2Cloud(ctx context.Context, reportMsg []interface{}) int {
 				continue
 			} else {
 				//not get the token, return and wait for the event from UI or other nodes
-				log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message faile, server(RDC) respons the code %d, RDC token:%s", statusCode, rdcTokenStr))
+				log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending report failed, server(RDC) respons the code %d, RDC token:%s", statusCode, rdcTokenStr))
 				return -1
 			}
 		} else if statusCode == 200 {
 			return 0
 		} else {
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending message faile, server(RDC) respons the code %d", statusCode))
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending report failed, server(RDC) respons the code %d", statusCode))
 			return -1
 		}
 	}
@@ -274,7 +274,7 @@ func ReportDbTable(ctx context.Context, sendFlag bool) (interface{}, int) {
 
 		res := sendReport2Cloud(ctx, reportArray)
 		if res != 0 {
-			log.LoggerWContext(ctx).Info("Send to report messages fail when the cache table overflow")
+			log.LoggerWContext(ctx).Error("Sending report messages to cloud failed when the cache table overflow")
 			return nil, -1
 		} else {
 			return nil, 0
@@ -325,8 +325,7 @@ func reportRoutine(ctx context.Context) {
 		reportArray := make([]interface{}, 0)
 		dbMsg, resDb := ReportDbTable(ctx, false)
 		if resDb != 0 {
-			failCount++
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
+			log.LoggerWContext(ctx).Error("Reporting DB data to cloud failed")
 		} else {
 			if dbMsg != nil {
 				reportArray = append(reportArray, dbMsg)
@@ -335,8 +334,7 @@ func reportRoutine(ctx context.Context) {
 
 		sysMsg, resSys := reportSysInfo(ctx)
 		if resSys != 0 {
-			failCount++
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("Reporting data to cloud fail %d times", failCount))
+			log.LoggerWContext(ctx).Error("Reporting system data to cloud failed")
 		} else {
 			if sysMsg != nil {
 				reportArray = append(reportArray, sysMsg)
@@ -344,7 +342,8 @@ func reportRoutine(ctx context.Context) {
 		}
 		res := sendReport2Cloud(ctx, reportArray)
 		if res != 0 {
-			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending report data to cloud fail"))
+			failCount++
+			log.LoggerWContext(ctx).Error(fmt.Sprintf("Sending report data to cloud fail times: %d", failCount))
 		}
 	}
 }
