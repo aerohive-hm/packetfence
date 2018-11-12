@@ -33,6 +33,7 @@ Readonly::Scalar my $A3_PROGRESS_LOG_FILE => "$A3_HTML_DIR/update/a3_update.prog
 Readonly::Scalar my $A3_DBINFO_FILE       => "$A3_CONF_DIR/dbinfo.A3";
 Readonly::Scalar my $A3_UPDATE_DB_DUMP    => "$TMP_DIR/A3_db.sql";
 Readonly::Scalar my $A3_UPDATE_APP_DUMP   => "$TMP_DIR/A3_app.tar.gz";
+Readonly::Scalar my $A3_BK_VER_FILE       => "$TMP_DIR/a3_bk_ver_file";
 
 # Binaries
 Readonly::Scalar my $AWK_BIN              => "$BIN_DIR/awk";
@@ -267,6 +268,14 @@ sub get_to_version {
 
 sub execute_app_update {
   my @all_pkgs;
+  #backup previous A3 version
+  open my $fh, ">", "$A3_BK_VER_FILE";
+  my $bk_ver = pf::version::version_get_current();
+  print $fh "bk_version=$bk_ver"."|";
+  my $to_ver = get_to_version();
+  print $fh "to_version=$to_ver\n";
+  close $fh;
+
   my $cmd = "$YUM_BIN update ";
   open CMD, '-|',  "$YUM_BIN list $a3_pkg*    \\
                   | $SED_BIN '1,/Available/d' \\
