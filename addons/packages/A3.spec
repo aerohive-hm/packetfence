@@ -497,6 +497,7 @@ popd
 %{__install} -D -m0644 conf/systemd/a3-httpd.update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-httpd.update.service
 %{__install} -D -m0644 conf/systemd/a3-ama.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-ama.service
 %{__install} -D -m0644 conf/systemd/a3-nodeapp.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-nodeapp.service
+%{__install} -D -m0644 conf/systemd/a3-restartnodeapp.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-restartnodeapp.service
 
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons/AD
@@ -1424,8 +1425,7 @@ fi
 %dir                    /usr/local/pf/a3_update
 %attr(0755, root, root) /usr/local/pf/a3_update/A3_Cluster.js
 %attr(0755, root, root) /usr/local/pf/a3_update/a3_cluster_update.pl
-%attr(0755, root, root) /usr/local/pf/a3_update/restart_nodeapp_wrapper.js
-%attr(0755, root, root) /usr/local/pf/a3_update/restart_nodeapp_wrapper.sh
+%attr(0755, root, root) /usr/local/pf/a3_update/restart_a3nodeapp.sh
 %attr(0644, root, root) /usr/local/pf/a3_update/package.json
 %attr(0755, root, root) /usr/local/pf/a3_update/post_process/*
 %dir                    /usr/local/pf/var
