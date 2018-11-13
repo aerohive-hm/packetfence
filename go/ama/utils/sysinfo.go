@@ -3,10 +3,13 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama"
+	"github.com/inverse-inc/packetfence/go/log"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+	"golang.org/x/sys/unix"
 )
 
 type SysHealth struct {
@@ -15,27 +18,38 @@ type SysHealth struct {
 	MemUsed  float64
 }
 
+//The returned value using Millisecond as the unit
+func GetSysUptime() int64 {
+	var sysinfo unix.Sysinfo_t
+
+	err := unix.Sysinfo(&sysinfo)
+	if err != nil {
+		log.LoggerWContext(ama.Ctx).Error("Get system info failed:" + err.Error())
+		return 0
+	}
+
+	return sysinfo.Uptime * 1000
+}
+
 func GetA3Version() string {
 	cmd := "pfcmd version"
-	out, err := ExecShell(cmd)
+	out, err := ExecShell(cmd, false)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
 		return ""
 	}
 	i := strings.Index(out, "\n")
 	return out[:i]
 }
 
-func GetSysUptime() int64 {
+func GetamaUptime() int64 {
 	return uptime()
 }
 
 func GetA3SysId() string {
 	cmd := "cat /etc/A3.systemid"
 
-	out, err := ExecShell(cmd)
+	out, err := ExecShell(cmd, false)
 	if err != nil {
-		fmt.Println("%s:exec error", cmd)
 		return ""
 	}
 	return out
@@ -43,7 +57,7 @@ func GetA3SysId() string {
 
 func SetHostname(hostname string) error {
 	cmd := fmt.Sprintf(`hostnamectl set-hostname "%s" --static`, hostname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		msg := fmt.Sprintf("set hostname (%s) failed, please check if it is valid", hostname)
 		return errors.New(msg)
@@ -51,19 +65,18 @@ func SetHostname(hostname string) error {
 	cmds := []string{
 		`sed -i -r "s/HOSTNAME=[-_\.A-Za-z0-9]+/HOSTNAME=` +
 			hostname + `/" /etc/sysconfig/network`,
-		fmt.Sprintf(`echo 127.0.0.1 %s >> /etc/hosts`, hostname),
 	}
 	ExecCmds(cmds)
 	return nil
 }
 
 func GetHostname() string {
-	h, _ := ExecShell(`hostname`)
+	h, _ := ExecShell(`hostname`, false)
 	return strings.TrimRight(h, "\n")
 }
 
-func isProcAlive(proc string) bool {
-	_, err := ExecShell(`pgrep ` + proc)
+func IsProcAlive(proc string) bool {
+	_, err := ExecShell(`pgrep ` + proc, false)
 	if err == nil {
 		return true
 	}
@@ -72,17 +85,38 @@ func isProcAlive(proc string) bool {
 
 func waitProcStop(proc string) {
 	for {
-		_, err := ExecShell(`pgrep ` + proc)
+		_, err := ExecShell(`pgrep ` + proc, true)
 		if err != nil {
 			break
 		}
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Waiting process %s shut down!", proc))
 		time.Sleep(time.Duration(3) * time.Second)
 	}
 }
 
+func waitProcStopOK(proc string, timeout int) bool {
+	waitingTime := timeout
+	ok := true
+	for {
+		_, err := ExecShell(`pgrep ` + proc, true)
+		if err != nil {
+			break
+		}
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Waiting process %s shut down!", proc))
+		time.Sleep(time.Duration(3) * time.Second)
+		waitingTime -= 3
+		if waitingTime <= 0 {
+			ok = false
+			break
+		}		
+	}
+
+	return ok
+}
+
 func waitProcStart(proc string) {
 	for {
-		_, err := ExecShell(`pgrep ` + proc)
+		_, err := ExecShell(`pgrep ` + proc, true)
 		if err == nil {
 			break
 		}
@@ -90,9 +124,9 @@ func waitProcStart(proc string) {
 	}
 }
 
-func killPorc(proc string) {
+func KillProc(proc string) {
 	cmd := "pgrep " + proc
-	out, err := ExecShell(cmd)
+	out, err := ExecShell(cmd, true)
 	if err != nil {
 		return
 	}
@@ -100,11 +134,49 @@ func killPorc(proc string) {
 	pids := strings.Split(out, "\n")
 	for _, pid := range pids {
 		if pid != "" {
-			ExecShell(`kill ` + pid)
+			ExecShell(`kill ` + pid, true)
 		}
 	}
 
 	waitProcStop(proc)
+}
+
+
+func ForceKillProc(proc string) {
+	cmd := "pgrep " + proc
+	out, err := ExecShell(cmd, true)
+	if err != nil {
+		return
+	}
+
+	pids := strings.Split(out, "\n")
+	for _, pid := range pids {
+		if pid != "" {
+			ExecShell(`kill -9 ` + pid, true)
+		}
+	}
+
+}
+
+//special case, after kill, check mysqld process quit or not
+func KillMariaDB() {
+	cmd := "pgrep pf-mariadb"
+	out, err := ExecShell(cmd, true)
+	if err != nil {
+		return
+	}
+
+	pids := strings.Split(out, "\n")
+	for _, pid := range pids {
+		if pid != "" {
+			ExecShell(`kill ` + pid, true)
+		}
+	}
+
+	//mysqld can't be shut down gracefully, something wrong, kill with -9
+	if !waitProcStopOK("mysqld", 30) {
+		ForceKillProc("mysqld")
+	} 
 }
 
 func updateEtcd() {
@@ -161,7 +233,7 @@ func getMemInfo(buf string) (memTotal, memUsed float64) {
 
 func GetCpuMem() SysHealth {
 	var info SysHealth
-	out, err := ExecShell(`top -b -n 1 | head -n 5`)
+	out, err := ExecShell(`top -b -n 1 | head -n 5`, false)
 	if err != nil {
 		return SysHealth{}
 	}

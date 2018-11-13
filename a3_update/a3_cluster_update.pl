@@ -24,6 +24,9 @@ my (@all_nodes_ip, @all_nodes_hostname, @remains_nodes_ip_to_update, @remains_no
 sub commit_cluster_update_log {
   my $msg = shift @_;
   my $current_time = POSIX::strftime("%Y-%m-%d %H:%M:%S",localtime);
+  my $ofh = select UPDATE_CLUSTER_LOG;
+  $| = 1;
+  select $ofh;
   print UPDATE_CLUSTER_LOG "[ $current_time ] $msg\n";
 }
 
@@ -365,12 +368,21 @@ for my $ip (@remains_nodes_ip_to_update) {
 for my $node_ip (@all_nodes_ip) {
     $ret = pf::a3_cluster_update::remote_api_call_post($node_ip, 'a3/post_process', {});
     if ($ret != 0) {
-      commit_cluster_update_log("Post process on node $node_ip, please check detail log on peer node");
+      commit_cluster_update_log("Post process before on node $node_ip, please check detail log on peer node");
       commit_progress_log("error at $node_ip");
     }
 }
 
 restart_pf_all_services();
+
+#call this after pf started
+for my $node_ip (@all_nodes_ip) {
+    $ret = pf::a3_cluster_update::remote_api_call_post($node_ip, 'a3/post_process', {'opts'=>['after']});
+    if ($ret != 0) {
+      commit_cluster_update_log("Post process after on node $node_ip, please check detail log on peer node");
+      commit_progress_log("error at $node_ip");
+    }
+}
 
 #Finish update
 print "\nThe whole update process finished, please resume the pf service!!\n";

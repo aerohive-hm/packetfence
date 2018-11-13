@@ -1898,6 +1898,16 @@ msgstr "Délai de connexion"
 msgid "Connections"
 msgstr "Connexions"
 
+# html/pfappserver/root/configuration/cloudIntegration.tt
+msgid "Connected"
+msgstr "Connecté"
+
+msgid "Disconnected"
+msgstr "Pas connecté"
+
+msgid "Connecting"
+msgstr "Se connectent"
+
 # html/pfappserver/lib/pfappserver/PacketFence/Controller/Graph.pm
 msgid "Connections Types"
 msgstr "Types de Connexions"
@@ -8021,8 +8031,8 @@ msgid "Switch description"
 msgstr "Description du commutateur"
 
 # html/pfappserver/root/config/filters/index.tt
-msgid "Switch filters"
-msgstr "Filtres de commutateurs"
+msgid "Device filters"
+msgstr "Filtres de appareils"
 
 # html/pfappserver/root/node/tab_Location_view.tt
 # html/pfappserver/root/node/view.tt
@@ -11752,6 +11762,10 @@ msgid "pfdetect_type_fortianalyser"
 msgstr "FortiAnalyzer"
 
 # pf::factory::detect::parser (Detect Parsers)
+msgid "pfdetect_type_nexpose"
+msgstr "Nexpose"
+
+# pf::factory::detect::parser (Detect Parsers)
 msgid "pfdetect_type_regex"
 msgstr "regex"
 
@@ -11817,7 +11831,7 @@ msgstr "Port à utiliser pour l'Unified API"
 
 # conf/documentation.conf (interface.type options)
 msgid "portal"
-msgstr "portail"
+msgstr "Portail"
 
 # conf/documentation.conf
 msgid "ports"

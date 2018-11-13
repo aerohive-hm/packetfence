@@ -1,36 +1,36 @@
 $(document).ready(function(){
     // applyKeyButton();
-  $('.agreeToEula').click(function() {
-      //changes checkbox to submit button
-      $(".agree").slideUp();
-      $(".agree").delay(3000);
-      $(".submitAgreement").slideDown();
-  });
-  $('.submitAgreement').click(function(){
-      userSubmitEula();
-  });
+    $('.agreeToEula').click(function() {
+        //changes checkbox to submit button
+        $(".agree").slideUp();
+        $(".agree").delay(3000);
+        $(".submitAgreement").slideDown();
+    });
+    $('.submitAgreement').click(function(){
+        userSubmitEula();
+    });
 
-  $("#applyKey").click(function(e){
-    e.preventDefault();
-    document.getElementById("applyKey").disabled = false;
-    var userKeyInput = document.getElementById('keyInput').value;
-    var keyCorrectRegex = checkKeyInput(userKeyInput);
-    if (keyCorrectRegex == true){
-        $(".errMsg").css('display', 'none');
-        $("#keyInput").css('border','1px solid #dfdfdf');
-        updateKeyTable(userKeyInput);
-        document.getElementById('keyInput').value ='';
-        return true;
-    } else {
-        document.getElementById('keyInput').value = userKeyInput;
-        document.getElementById('errorMessage').innerHTML = "The key entered needs to be in format XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX";
-        $(".alert-danger").show(); // use slide down for animation
-        setTimeout(function (){
-          $(".alert-danger").slideUp(500);
-        }, 3000);
-        return false;
-    }
-  });
+    $("#applyKey").click(function(e){
+        e.preventDefault();
+        document.getElementById("applyKey").disabled = false;
+        var userKeyInput = document.getElementById('keyInput').value;
+        var keyCorrectRegex = checkKeyInput(userKeyInput);
+        if (keyCorrectRegex == true){
+            $(".errMsg").css('display', 'none');
+            $("#keyInput").css('border','1px solid #dfdfdf');
+            updateKeyTable(userKeyInput);
+            document.getElementById('keyInput').value ='';
+            return true;
+        } else {
+            document.getElementById('keyInput').value = userKeyInput;
+            document.getElementById('errorMessage').innerHTML = "The key entered needs to be in format XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX";
+            $(".alert-danger").show(); // use slide down for animation
+            setTimeout(function (){
+              $(".alert-danger").slideUp(500);
+            }, 3000);
+            return false;
+        }
+    });
 });
 
 // update table after checking regex
@@ -54,7 +54,6 @@ function updateKeyTable(userKeyInput) {
                $("#keyLicenseTable").load(window.location + " #keyLicenseTable");
                $("#licenseCapa").load(window.location + " #licenseCapa");
                $("#trialIndicator").load(window.location + " #trialIndicator");
-               $("#nav").load(window.location + " #trialIndicator");
            }
            return true;
         }).fail(function(xhr, status, error){
@@ -93,6 +92,8 @@ function userSubmitEula(){
         $('#eulaModal').modal('hide');
         $(".modal-backdrop").hide();
         $(".licenseTrialText").hide();
+        //reload the nav after user accepts eula
+        $("body").load(window.location + "#nav");
     }).fail(function(xhr, status, error){
         console.log(error);
     });

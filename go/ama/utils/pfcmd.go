@@ -1,13 +1,13 @@
 package utils
 
 import (
-	//"errors"
 	"fmt"
-	//"regexp"
+	"regexp"
+	"strings"
+	"time"
+
 	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/log"
-	"strconv"
-	"strings"
 )
 
 const (
@@ -24,7 +24,7 @@ type Service struct {
 
 func pfExpire(ns string) {
 	cmd := pfconfig + " expire " + ns
-	ExecShell(cmd)
+	ExecShell(cmd, true)
 }
 
 func ReloadConfig() {
@@ -33,11 +33,12 @@ func ReloadConfig() {
 
 func restartPfconfig() (string, error) {
 	cmd := `setsid sudo service packetfence-config restart 2>&1`
-	return ExecShell(cmd)
+	return ExecShell(cmd, true)
 }
 
 func serviceCmdBackground(cmd string) (string, error) {
-	return ExecShell("setsid " + cmd + " &>/dev/null &")
+
+	return ExecShell("setsid "+cmd+" &>/dev/null &", true)
 }
 
 func UpdatePfServices() []Clis {
@@ -79,7 +80,7 @@ func initStandAloneDb() {
 	}
 	ExecCmds(cmds)
 	waitProcStop("mysqld")
-	ExecShell(`systemctl start packetfence-mariadb`)
+	ExecShell(`systemctl start packetfence-mariadb`, true)
 }
 
 // only Start Services during initial setup
@@ -88,7 +89,7 @@ func InitStartService(isCluster bool) error {
 
 	out, err := restartPfconfig()
 	if err != nil {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
+		log.LoggerWContext(ama.Ctx).Error(fmt.Sprintln(out))
 	}
 
 	waitProcStart("pfconfig")
@@ -99,18 +100,30 @@ func InitStartService(isCluster bool) error {
 	}
 	waitProcStart("mysqld")
 
-	out, err = serviceCmdBackground(pfservice + "pf start")
-	if err != nil {
-		log.LoggerWContext(ctx).Error(fmt.Sprintln(out))
-	}
-
-	//TODO: need to restart http server? abort web service?
-	//cmds := []string{
-	//	pfservice + "httpd.admin restart",
-	//}
-	//ExecCmds(cmds)
+	go PfServiceStart(true)
 
 	return nil
+}
+
+func checkPfService() bool {
+	var score int
+	if ama.PfServicePercentage == 100 {
+		getPfServiceStop()
+		return true
+	}
+
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Check pf status."))
+
+	score = getServiceStartedProc()
+	if score < ama.PfServicePercentage {
+		return false
+	}
+	ama.PfServicePercentage = score
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("update PfServicePercentage = %d", score))
+	if ama.PfServicePercentage < 100 {
+		return false
+	}
+	return true
 }
 
 func ForceNewCluster() {
@@ -124,7 +137,8 @@ func ForceNewCluster() {
 
 	cmds = []string{
 		pfcmd + "generatemariadbconfig",
-		A3Root + `/sbin/pf-mariadb --force-new-cluster &>/dev/null &`,
+		`sed -i 's/^safe_to_bootstrap.*$/safe_to_bootstrap: 1/' /var/lib/mysql/grastate.dat`,
+		"systemctl start packetfence-mariadb",
 	}
 	ExecCmds(cmds)
 	waitProcStart("mysqld")
@@ -137,7 +151,7 @@ func ForceNewCluster() {
 	ExecCmds(cmds)
 	ama.IsManagement = false
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintln("ForceNewCluster tasks done"))
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintln("ForceNewCluster tasks done"))
 
 	ama.SetClusterStatus(ama.Ready4Sync)
 }
@@ -186,7 +200,7 @@ func SyncFromPrimary(ip, user, pass string) {
 	ExecCmds(cmds)
 	waitProcStop("pfconfig")
 
-	ExecShell(`systemctl start packetfence-config`)
+	ExecShell(`systemctl start packetfence-config`, true)
 	waitProcStart("pfconfig")
 
 	ama.SetClusterStatus(ama.SyncDB)
@@ -201,16 +215,6 @@ func SyncFromPrimary(ip, user, pass string) {
 	ExecCmds(cmds)
 	waitProcStart("mysqld")
 	ama.SetClusterStatus(ama.SyncFinished)
-}
-
-func RecoverDB() {
-	killPorc("pf-mariadb")
-	cmds := []string{
-		`systemctl restart packetfence-mariadb`,
-		//pfservice + "pf restart",
-	}
-
-	ExecCmds(cmds)
 }
 
 func RestartKeepAlived() {
@@ -231,41 +235,153 @@ func RemoveFromCluster() {
 	ExecCmds(cmds)
 }
 
-func ServiceStatus() string {
-	cmd := pfservice + "pf status"
-	ret, _ := ExecShell(cmd)
-	lines := strings.Split(ret, "\n")
-	if len(lines) < 1 {
-		return ""
-	}
+type pfcallback func([]string) interface{}
 
+func getPfSerStatus() []string {
+	cmd := pfservice + "pf status"
+	ret, _ := ExecShell(cmd, false)
+	lines := strings.Split(ret, "\n")
+
+	if len(lines) < 1 {
+		return nil
+	}
+	return lines
+}
+
+func getServiceStartedProc() int {
 	toBeStarted := 0
 	started := 0
-	for _, l := range lines {
-		vals := strings.Split(l, "|")
-		if len(vals) < 3 {
-			continue
-		}
-		i, err := strconv.Atoi(vals[1])
-		if err != nil {
-			continue
-		}
 
-		toBeStarted += i
-
-		i, err = strconv.Atoi(vals[2])
-		if err != nil || i <= 0 {
-			continue
-		}
-		started++
+	lines := getPfSerStatus()
+	if lines == nil {
+		return 0
 	}
 
-	percent := strconv.Itoa((started + 1) * 100 / toBeStarted)
-	return percent
+	for _, l := range lines {
+		vals := strings.Fields(l)
+
+		if len(vals) == 3 {
+			if vals[1] == "started" {
+				toBeStarted += 1
+				started += 1
+			} else if vals[1] == "stopped" {
+				toBeStarted += 1
+			}
+		}
+	}
+
+	if toBeStarted > 0 {
+		return started * 100 / toBeStarted
+	} else {
+		return 100
+	}
+}
+
+func getPfServiceStop() {
+	lines := getPfSerStatus()
+	if lines == nil {
+		return
+	}
+
+	for _, l := range lines {
+		vals := strings.Fields(l)
+		if len(vals) != 3 {
+			return
+		}
+
+		if vals[1] != "stopped" {
+			continue
+		}
+		re := regexp.MustCompile(`packetfence-([\w-]+)\.service`)
+		ret := re.FindStringSubmatch(vals[0])
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("pf start failed: %s", ret[1]))
+		ExecShell(fmt.Sprintf(`pfcmd service %s start`, ret[1]), false)
+	}
 }
 
 func SyncFromMaster(file string) error {
 	cmd := A3Root + `/bin/cluster/sync --as-master --file=` + file
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	return err
+}
+
+func checkAndRestartNTPSync() {
+	out, err := ExecShell(`timedatectl status`, false)
+	if err != nil {
+		return
+	}
+
+	re := regexp.MustCompile(`NTP synchronized: yes`)
+	ret := re.FindAllStringSubmatch(out, -1)
+
+	if len(ret) == 0 {
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("NTP NOT synchronized, restart NTP"))
+		cmds := []string{
+			`timedatectl set-ntp false`,
+			`timedatectl set-ntp true`,
+		}
+		ExecCmds(cmds)
+	} else {
+		if !ama.SystemNTPSynced {
+			log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("NTP already synchronized"))
+		}
+		ama.SystemNTPSynced = true
+	}
+
+	return
+}
+
+// Make sure NTP synchronized successfully, or else the admin account will have problem to login
+func ForceNTPsynchronized() {
+	ticker := time.NewTicker(time.Duration(30) * time.Second)
+	defer ticker.Stop()
+	log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("Check NTP synchronized status"))
+	checkAndRestartNTPSync()
+	if ama.SystemNTPSynced {
+		return
+	}
+
+	for _ = range ticker.C {
+		checkAndRestartNTPSync()
+	}
+}
+
+func CheckAndStartOneService(name string) {
+	cmd := pfservice + name + " status"
+	ret, _ := ExecShell(cmd, true)
+	lines := strings.Split(ret, "\n")
+
+	if len(lines) < 1 {
+		return
+	}
+
+	for _, l := range lines {
+		vals := strings.Fields(l)
+
+		if len(vals) == 3 {
+			if vals[1] == "started" {
+				log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("service %s is started, do nothing!!", name))
+			} else if vals[1] == "stopped" {
+				log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf("service %s is not started, starting it!!", name))
+				cmd = pfservice + name + " start"
+				ExecShell(cmd, true)
+				break
+			}
+		}
+	}
+
+	return
+
+}
+
+
+func PfServiceStart(isNew bool) {
+	log.LoggerWContext(ama.Ctx).Info("start Timer to check pf status")
+	go Timer(checkPfService, 12)
+	ExecShell(A3Root+"/bin/pfcmd service pf start", true)
+	if isNew {
+		UpdateCurrentlyAt()
+		ama.PfServicePercentage = 100
+	}
+
 }

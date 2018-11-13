@@ -24,19 +24,20 @@
                   [% IF listen_ints.size > 0 %]<li class="sidenav-subsection"><a href="#graph/dashboard?tab=dhcp" data-tab="dashboard-tabs/dhcp">DHCP</a></li>[% END %]
                   <li class="sidenav-subsection"><a href="#graph/dashboard?tab=endpoints" data-tab="dashboard-tabs/endpoints">[% l('Endpoints') %]</a></li>
                   <li class="sidenav-subsection"><a href="#graph/dashboard?tab=portal" data-tab="dashboard-tabs/portal">[% l('Portal') %]</a></li>
+                  <li class="sidenav-subsection"><a href="#graph/dashboard?tab=queue" data-tab="dashboard-tabs/queue">[% l('Queue') %]</a></li>
                 </ul>
               </li>
               [%- END %]
               [%- IF can_access("SERVICES") %]
               <li><a href="#service">[% l('Services') %]</a></li>
               [%- END %]
-              [%- IF can_access("SERVICES") && cluster_enabled %]
+              [%- IF can_access("SERVICES") && is_cluster_enabled %]
               <li><a href="#service/cluster_status">[% l('Cluster state') %]</a></li>
               [%- END %]
               [%- IF can_access("SERVICES") %]
               <li class="nav-header">[% l('Queue') %]</li>
               <li><a href="#pfqueue">[% l('Local Queue') %]</a></li>
-              [% IF cluster_enabled %]
+              [% IF is_cluster_enabled %]
               <li><a href="#pfqueue/cluster">[% l('Cluster Queue') %]</a></li>
               [%- END %]
               [%- END %]

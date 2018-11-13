@@ -35,12 +35,10 @@ has_field 'netmask' =>
    element_attr => { 'placeholder' => '255.255.255.0' },
   );
 has_field 'ipv6_address' => (
-    type => 'IP6Address',
-    label => 'IPv6 Address',
+    type => 'Hidden',
 );
 has_field 'ipv6_prefix' => (
-    type=> 'Text',
-    label => 'IPv6 Prefix',
+    type => 'Hidden',
 );
 has_field 'type' =>
   (
@@ -61,11 +59,7 @@ has_field 'additional_listening_daemons' => (
 );
 has_field 'dns' =>
   (
-   type => 'IPAddresses',
-   label => 'DNS',
-   wrapper_attr => { 'class' => 'hide' },
-   tags => { after_element => \&help,
-             help => 'The primary DNS server of your network.' },
+   type => 'Hidden',
   );
 
 has_field 'dhcpd_enabled' =>
@@ -78,42 +72,20 @@ has_field 'dhcpd_enabled' =>
 
 has_field 'high_availability' =>
    (
-    type => 'Toggle',
-    checkbox_value => 1,
-    unchecked_value => 0,
-    default => 0,
+    type => 'Hidden',
    );
 
-has_field 'vip' =>
-  (
-   type => 'IPAddress',
-   label => 'Virtual IP Address',
-  );
-
 has_field 'nat_enabled' => (
-    type => 'Toggle',
-    checkbox_value => 1,
-    unchecked_value => 0,
-    default => 1,
-    label => 'Enable NATting',
+   type => 'Hidden',
 );
 
 has_field 'split_network' => (
-    type => 'Toggle',
-    checkbox_value => 1,
-    unchecked_value => 0,
-    default => 0,
-    label => 'Split network by role',
-    tags => { after_element => \&help,
-             help => 'This will create a small network for each roles.' },
+   type => 'Hidden',
 );
 
 has_field 'reg_network' =>
   (
-   type => 'Text',
-   label => 'Registration IP Address CIDR format',
-   tags => { after_element => \&help,
-             help => 'When split network by role is enabled then this network will be used as the registration network (example: 192.168.0.1/24).' },
+   type => 'Hidden',
   );
 
 
@@ -125,7 +97,8 @@ sub options_type {
     my $self = shift;
 
     # $self->types comes from pfappserver::Model::Enforcement->getAvailableTypes
-    my @types;
+    my @types = ();
+
     if ( defined $self->types ) {
         for my $type ( @{$self->types} ) {
             # we remove inline, even though it may still be in pf.conf for backwards compatibility reasons.
@@ -134,8 +107,7 @@ sub options_type {
         }
     }
 
-
-    return ('none' => 'None', @types);
+    return @types;
 }
 
 =head2 options_additional_listening_daemons

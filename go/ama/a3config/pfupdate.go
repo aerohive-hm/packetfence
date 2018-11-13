@@ -31,9 +31,14 @@ func UpdateHostname(hostname string) error {
 	}
 	s := strings.Split(hostname, ".")
 	domain := defaultDomain
+	if utils.IsOnlyNumStr(s[0]) {
+		return errors.New("hostname can not be only numeric")
+	}
 	if len(s) > 1 {
-		/*contain domain*/
-		domain = strings.Join(s[1:], ".")
+		/*contain domain and can not be only num*/
+		if !utils.IsOnlyNumStr(s[1]) {
+			domain = strings.Join(s[1:], ".")
+		}
 	}
 	err := utils.SetHostname(hostname)
 	if err != nil {
@@ -57,9 +62,9 @@ func UpdateInterface(i Item) error {
 		return err
 	}
 	/*check  ip if the broadcast*/
-	if IsBroadcastIp(i.IpAddr, i.NetMask) {
-		msg := fmt.Sprintf("ip (%s) is broadcast ip", i.IpAddr)
-		return errors.New(msg)
+	err = CheckBroadcastIp(i.IpAddr, i.NetMask)
+	if err != nil {
+		return err
 	}
 
 	if clusterEnableDefault {
@@ -78,13 +83,13 @@ func UpdateInterface(i Item) error {
 					return errors.New(msg)
 				}
 				/*check vip if the broadcast*/
-				if IsBroadcastIp(i.Vip, i.NetMask) {
-					msg := fmt.Sprintf("vip (%s) is broadcast ip", i.Vip)
-					return errors.New(msg)
+				err = CheckBroadcastIp(i.Vip, i.NetMask)
+				if err != nil {
+					return err
 				}
-				/*check vip if exsit*/
-				if IsVipExsit(i) {
-					msg := fmt.Sprintf("%s is exsit in net", i.Vip)
+				/*check vip if existt*/
+				if IsVipExist(i) {
+					msg := fmt.Sprintf("%s is exist in net", i.Vip)
 					return errors.New(msg)
 				}
 			}
@@ -107,7 +112,7 @@ func UpdateInterface(i Item) error {
 	return err
 }
 
-func IsVipExsit(i Item) bool {
+func IsVipExist(i Item) bool {
 	ifname := ChangeUiIfname(i.Name, i.Prefix)
 	del, result := false, false /*need to delete vlan*/
 	if !utils.IfaceExists(ifname) {

@@ -22,7 +22,7 @@ use File::Spec::Functions;
 
 our (
     #Directories
-    $install_dir, $bin_dir, $conf_dir, $lib_dir, $html_dir, $users_cert_dir, $log_dir, $generated_conf_dir, $var_dir,
+    $install_dir, $bin_dir, $sbin_dir, $conf_dir, $lib_dir, $html_dir, $users_cert_dir, $log_dir, $generated_conf_dir, $var_dir,
     $tt_compile_cache_dir, $pfconfig_cache_dir, $domains_chroot_dir, $domains_ntlm_cache_users_dir, $systemd_unit_dir, 
 
     #Config files
@@ -114,7 +114,7 @@ BEGIN {
     @ISA = qw(Exporter);
     # Categorized by feature, pay attention when modifying
     @EXPORT_OK = qw(
-        $install_dir $bin_dir $conf_dir $lib_dir $html_dir $users_cert_dir $log_dir $generated_conf_dir $var_dir
+        $install_dir $bin_dir $sbin_dir $conf_dir $lib_dir $html_dir $users_cert_dir $log_dir $generated_conf_dir $var_dir
         $tt_compile_cache_dir $pfconfig_cache_dir $domains_chroot_dir $domains_ntlm_cache_users_dir $systemd_unit_dir
         $pf_default_file
         $pf_config_file
@@ -191,6 +191,7 @@ $install_dir = '/usr/local/pf';
 
 # TODO bug#920 all application config data should use Readonly to avoid accidental post-startup alterration
 $bin_dir  = catdir( $install_dir,"bin" );
+$sbin_dir = catdir( $install_dir,"sbin" );
 $conf_dir = catdir( $install_dir,"conf" );
 $var_dir  = catdir( $install_dir,"var" );
 $lib_dir  = catdir( $install_dir,"lib" );
@@ -302,7 +303,7 @@ $captiveportal_default_profile_templates_path = catdir ($captiveportal_profile_t
   httpd.proxy.reverse.access httpd.proxy.reverse.error
   httpd.webservices.access httpd.webservices.error
   packetfence.log pfbandwidthd.log pfdetect.log pfqueue.log
-  pfdhcplistener.log pfdns.log pfmon.log pfconfig.log httpd.admin.audit.log
+  pfdhcplistener.log pfdns.log pfmon.log pfconfig.log httpd.admin.audit.log pf-mariadb.log a3-ama.log
 );
 
 @stored_config_files = (

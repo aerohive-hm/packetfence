@@ -4,10 +4,10 @@
 package a3config
 
 import (
-	"context"
 	"fmt"
 	"regexp"
 
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
@@ -111,6 +111,25 @@ func (sections Section) FetchNodesInfo() []NodeInfo {
 	return nodes
 }
 
+func (sections Section) FetchNodesInfoHash() map[string]string {
+	if sections == nil {
+		return nil
+	}
+	nodes := make(map[string]string)
+	for secName, kvpair := range sections {
+		if secName == "CLUSTER" {
+			continue
+		}
+
+		for k, v := range kvpair {
+			if k == "management_ip" {
+				nodes[secName] = v
+			}
+		}
+	}
+	return nodes
+}
+
 func DeletePrimaryClusterconf(i Item) error {
 	isvlan := VlanInface(i.Name)
 	ifname := ChangeUiIfname(i.Name, i.Prefix)
@@ -157,7 +176,7 @@ func RemoveClusterServer(hostname []string) {
 	}
 
 	if len(ids) > 0 {
-		log.LoggerWContext(context.Background()).Info("to be removed from cluster: ")
+		log.LoggerWContext(ama.Ctx).Info("to be removed from cluster: ")
 		A3Delete("CLUSTER", ids)
 	}
 }
@@ -203,7 +222,7 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 	var keyname string
 
 	if !ClusterNew().CheckClusterEnable() {
-		log.LoggerWContext(context.Background()).Info(fmt.Sprintf(" Cluster Disenabled"))
+		log.LoggerWContext(ama.Ctx).Info(fmt.Sprintf(" Cluster Disenabled"))
 		return nil
 	}
 
@@ -236,5 +255,12 @@ func UpdateJoinClusterconf(i Item, hostname string) error {
 func UpdateClusterFile() {
 	cmd := `echo -e "\n/usr/local/pf/conf/cloud.conf\n` +
 		`/usr/local/pf/conf/clusterid.conf" >> /usr/local/pf/conf/cluster-files.txt`
-	utils.ExecShell(cmd)
+	utils.ExecShell(cmd, true)
+}
+
+func GetClusterId() string {
+	if ClusterNew().CheckClusterEnable() {
+		return utils.GetClusterId()
+	}
+	return ""
 }

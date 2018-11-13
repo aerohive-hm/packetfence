@@ -7,6 +7,9 @@ import (
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
+
+var Ctx context.Context
+
 type ClusterPrimaryStatus int
 
 // status of primary server during join
@@ -38,6 +41,10 @@ type ClusterStatusType struct {
 
 var ClusterStatus = ClusterStatusType{}
 var ServiceStartPercentage = "0"
+var SystemNTPSynced = false
+
+// percentage of pfcmd service
+var PfServicePercentage = 0
 
 // if we are vip owner
 var IsManagement = false
@@ -45,10 +52,10 @@ var IsManagement = false
 func init() {
 	ClusterStatus.IsPrimary = false
 	ClusterStatus.Status = Idle
+	Ctx = log.LoggerNewContext(context.Background())
 }
 
 func InitClusterStatus(primary string) {
-	ctx := context.Background()
 	if primary == "primary" {
 		ClusterStatus.IsPrimary = true
 		ClusterStatus.Status = PrepareSync
@@ -58,8 +65,8 @@ func InitClusterStatus(primary string) {
 		ClusterStatus.Status = Waitng2Sync
 		ClusterStatus.SyncCounter = 0
 	}
-	log.LoggerWContext(ctx).Error(fmt.Sprintln("init: "))
-	log.LoggerWContext(ctx).Error(fmt.Sprintln(ClusterStatus))
+	log.LoggerWContext(Ctx).Info(fmt.Sprintln("init cluster setup status: "))
+	log.LoggerWContext(Ctx).Info(fmt.Sprintln(ClusterStatus))
 }
 
 func ClearClusterStatus() {

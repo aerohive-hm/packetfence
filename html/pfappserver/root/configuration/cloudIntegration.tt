@@ -70,12 +70,12 @@
       [% IF is_master_node %]
 <!--if user has a cluster and presses link account: -->
       <div class="linked cluster-cloud" style="display:none;">
-        <h5>[% l('Linked with Aerohive Cloud Services at ') %] <a id="rdcUrl" href="#" target="_blank"></a></h5>
+        <h5 id="rdcUrl"></h5>
         <table id="cloud-info-table">
           <tbody>
             <tr>
               <td class="td-title"><h6>[% l('VHM Name') %]</h6></td>
-              <td><span id="vhmId"></span> (<span id="ownerId"> </span>)</td>
+              <td><span id="vhmId"></span> <span id="ownerId"> </span></td>
             </tr>
             <tr>
               <td class="td-title"><h6>[% l('Data Center') %]</h6></td>
@@ -85,8 +85,23 @@
         </table>
         <br/>
         <button class="btn btn-danger" id="unlink-account">[% l('Unlink from Aerohive Cloud Account') %]</button>
+        <div class="spin-spinner spin-spinner-spinning" id="spin-spinner2">
+          <span class="spinner-circle spinner-dot-spin">
+              <i></i>
+              <i></i>
+              <i></i>
+              <i></i>
+          </span>
+        </div>
         <br/><br/>
-        <h6>[% l('Cluster Link Status') %]</h6>
+        <h5>[% l('Cluster Link Status') %]</h5>
+        <div class="legend">
+            <i class="icon-circle icon" style="color:#28a745; font-size:15px; margin: 0 auto;"></i> [% l('Connected') %]
+            <i class="icon-circle icon" style="color:#ffc107; font-size:15px; margin: 0 auto;"></i> [% l('Connecting') %]
+            <i class="icon-circle icon" style="color:#dc3545; font-size:15px; margin: 0 auto;"></i> [% l('Disconnected') %]
+            <br>
+        </div>
+        <br>
         <table id="items cloud-cluster-table" class="table items">
           <thead>
             <tr style="background-color: #f4f6f9">
@@ -104,12 +119,12 @@
       [% ELSE %]
   <!--if user has standalone and user presses link accounts:-->
       <div class="linked standalone" style="display:none;">
-        <h5>[% l('Linked with Aerohive Cloud Services at ') %] <a id="rdcUrl" href="#" target="_blank"></a></h5>
+        <h5 id="rdcUrl"></h5>
         <table>
           <tbody>
             <tr>
               <td class="td-title"><h6>[% l('VHM Name') %]</h6></td>
-              <b><td><span id="vhmId"></span> (<span id="ownerId"></span>)</td></b>
+              <b><td><span id="vhmId"></span><span id="ownerId"></span></td></b>
             </tr>
             <tr>
               <td class="td-title"><h6>[% l('Data Center') %]</h6></td>
@@ -119,10 +134,22 @@
               <td class="td-title"><h6>[% l('Last Contact') %]</h6></td>
               <td id="lastContactTime"></td>
             </tr>
+            <tr>
+              <td class="td-title"><h6>[% l('Link Status') %]</h6></td>
+              <td><span id="linkStatus"></span></td>
+            </tr>
           </tbody>
         </table>
         <br>
         <button class="btn btn-danger" id="unlink-account">[% l('Unlink from Aerohive Cloud Account') %]</button>
+        <div class="spin-spinner spin-spinner-spinning" id="spin-spinner2">
+          <span class="spinner-circle spinner-dot-spin">
+              <i></i>
+              <i></i>
+              <i></i>
+              <i></i>
+          </span>
+        </div>
       </div>
       [% END %]
     </div>

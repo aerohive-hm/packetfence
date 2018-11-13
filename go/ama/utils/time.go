@@ -7,8 +7,8 @@ import (
 var startTime time.Time
 
 const (
-	StdTimeFormat = "2006-01-02 15:04:05"
-	ExpireTime    = "2038-01-01 00:00:00"
+	StdTimeFormat   = "2006-01-02 15:04:05"
+	ExpireTime      = "2038-01-01 00:00:00"
 	StdTimeiTFormat = "2006-01-02T15:04:05"
 )
 
@@ -32,3 +32,14 @@ func AhNowUtcFormated4License() string {
 	return time.Now().UTC().Format(StdTimeiTFormat)
 }
 
+type callback func() bool
+
+func Timer(cb callback, interval int) {
+	ticker := time.NewTicker(time.Duration(interval) * time.Second)
+	defer ticker.Stop()
+	for _ = range ticker.C {
+		if cb() {
+			break
+		}
+	}
+}

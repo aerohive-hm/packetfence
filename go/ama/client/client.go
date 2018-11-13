@@ -1,7 +1,6 @@
 package apibackclient
 
 import (
-	"context"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
@@ -12,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
@@ -19,7 +19,7 @@ import (
 )
 
 var httpClient = http.Client{
-	Timeout: time.Duration(15) * time.Second,
+	Timeout: time.Duration(20) * time.Second,
 }
 
 type Client struct {
@@ -79,10 +79,8 @@ func (c *Client) ensureRequestComplete(resp *http.Response) {
 
 //path /config/base/baseid
 func (c *Client) Call(method, url string, body string) error {
-	ctx := log.LoggerNewContext(context.Background())
 
-	log.LoggerWContext(ctx).Info(fmt.Sprintln(method, url))
-	log.LoggerWContext(ctx).Info(fmt.Sprintln(body))
+	log.LoggerWContext(ama.Ctx).Debug(fmt.Sprintln(method, url))
 	r, err := c.buildRequest(method, url, body)
 	if err != nil {
 		return err
@@ -103,7 +101,7 @@ func (c *Client) Call(method, url string, body string) error {
 
 	c.RespData = b
 	c.Status = resp.StatusCode
-	log.LoggerWContext(ctx).Info(fmt.Sprintln("Response Code:", c.Status))
+	log.LoggerWContext(ama.Ctx).Debug(fmt.Sprintln("Response Code:", c.Status))
 
 	// Lower than 400 is a success
 	if resp.StatusCode < 400 {
@@ -151,11 +149,10 @@ func (c *Client) ClusterAuth() error {
 }
 
 func (c *Client) ClusterSend(method, url string, body string) error {
-	ctx := context.Background()
 	if c.Token == "" {
 		err := c.ClusterAuth()
 		if err != nil {
-			log.LoggerWContext(ctx).Error(err.Error())
+			log.LoggerWContext(ama.Ctx).Error(err.Error())
 			return err
 		}
 	}

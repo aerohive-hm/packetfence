@@ -8,6 +8,7 @@ use File::Find;
 use Readonly;
 
 use lib '/usr/local/pf/lib';
+use pf::a3_cluster_update;
 use pf::version;
 
 Readonly::Scalar my $TMP_DIR => $ARGV[0];
@@ -32,6 +33,7 @@ Readonly::Scalar my $A3_PROGRESS_LOG_FILE => "$A3_HTML_DIR/update/a3_update.prog
 Readonly::Scalar my $A3_DBINFO_FILE       => "$A3_CONF_DIR/dbinfo.A3";
 Readonly::Scalar my $A3_UPDATE_DB_DUMP    => "$TMP_DIR/A3_db.sql";
 Readonly::Scalar my $A3_UPDATE_APP_DUMP   => "$TMP_DIR/A3_app.tar.gz";
+Readonly::Scalar my $A3_BK_VER_FILE       => "/tmp/a3_bk_ver_file";
 
 # Binaries
 Readonly::Scalar my $AWK_BIN              => "$BIN_DIR/awk";
@@ -266,6 +268,14 @@ sub get_to_version {
 
 sub execute_app_update {
   my @all_pkgs;
+  #backup previous A3 version
+  open my $fh, ">", "$A3_BK_VER_FILE";
+  my $bk_ver = pf::version::version_get_current();
+  print $fh "bk_version=$bk_ver"."|";
+  my $to_ver = get_to_version();
+  print $fh "to_version=$to_ver\n";
+  close $fh;
+
   my $cmd = "$YUM_BIN update ";
   open CMD, '-|',  "$YUM_BIN list $a3_pkg*    \\
                   | $SED_BIN '1,/Available/d' \\
@@ -474,6 +484,23 @@ sub post_update {
   commit_progress_log("done!");
 }
 
+#to align with cluster update with post_process and post_process_after
+sub post_process {
+  my $cmd = "/bin/perl -I/usr/local/pf/lib -Mpf::a3_cluster_update -e 'pf::a3_cluster_update::post_process()'";
+  if (call_system("$cmd >> $A3_UPDATE_LOG_FILE 2>&1") != 0) {
+    commit_progress_log("some error in porst process");
+  }
+}
+
+sub post_process_after {
+  my $cmd = "/bin/perl -I/usr/local/pf/lib -Mpf::a3_cluster_update -e 'pf::a3_cluster_update::post_process_after()'";
+  if (call_system("$cmd >> $A3_UPDATE_LOG_FILE 2>&1") != 0) {
+    commit_progress_log("some error in porst process after");
+  }
+
+  commit_progress_log("done!");
+}
+
 
 set_up();
 check_yum_connectivity();
@@ -483,6 +510,7 @@ if (check_up_to_date()) {
   print "A3 services already up to date\n";
   exit_success();
 }
+
 
 get_to_version();
 dump_db();
@@ -495,6 +523,8 @@ check_conf_migration_file();
 apply_db_update_schema();
 apply_conf_migration();
 find_rpmnew();
+post_process();
 post_update();
+post_process_after();
 
 exit_success();

@@ -1,0 +1,16 @@
+#!/bin/sh
+SSH_CONFIG=/etc/ssh/sshd_config
+IP=`ip addr|grep inet|grep -v 127|grep -v inet6|head -1|awk '{print $2}'|awk -F/ '{print $1}'`
+echo "Mgmt IP is $IP"
+grep "^ListenAddress" $SSH_CONFIG > /dev/null
+if [ $? -eq 0 ]; then
+    sed -i.bak "s/^ListenAddress.*/ListenAddress $IP/" $SSH_CONFIG
+else
+    echo "ListenAddress $IP" >> $SSH_CONFIG
+fi
+
+#Deny netcfg user to ssh
+grep "^DenyUsers netcfg" $SSH_CONFIG > /dev/null
+if [ $? -ne 0 ]; then
+    echo -e "DenyUsers netcfg" >> $SSH_CONFIG
+fi

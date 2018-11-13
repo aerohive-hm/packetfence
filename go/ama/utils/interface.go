@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"context"
 	"errors"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/log"
 	"net"
 	"regexp"
@@ -48,7 +48,7 @@ func CreateVlanIface(ifname string, vlan string) error {
 	}
 
 	cmd := fmt.Sprintf("sudo vconfig add %s %s", ifname, vlan)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -85,7 +85,7 @@ func DelVlanIface(ifname string) error {
 	}
 
 	cmd := fmt.Sprintf("sudo vconfig rem %s", ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func DelVlanIface(ifname string) error {
 
 func SetIfaceUp(ifname string) error {
 	cmd := fmt.Sprintf("sudo ip link set %s up", ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -117,7 +117,7 @@ func SetIfaceDown(ifname string) int {
 	}
 
 	cmd := fmt.Sprintf("sudo ip link set %s down", ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return -1
 	}
@@ -135,8 +135,8 @@ func IfaceExists(ifname string) bool {
 
 func IsIpExists(ifname, ip string) bool {
 	cmd := fmt.Sprintf("sudo arping -c 3 -w 1 -f -I %s -D %s", ifname, ip)
-	out, err := ExecShell(cmd)
-	fmt.Println("cmd", cmd)
+	out, err := ExecShell(cmd, true)
+	log.LoggerWContext(ama.Ctx).Debug("cmd:" + cmd)
 
 	if err != nil {
 		return true
@@ -159,9 +159,8 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 		cmd += " " + ifname
 	}
 
-	out, err := ExecShell(cmd)
+	out, err := ExecShell(cmd, false)
 	if err != nil {
-		fmt.Println("exec error")
 		return nil, -1
 	}
 
@@ -188,20 +187,26 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 
 	updateIface := func(item *Iface, val []string) error {
 		cmd = ipcmd["addr"] + " " + item.Name
-		out, err = ExecShell(cmd)
+		out, err = ExecShell(cmd, false)
 		if err != nil {
 			return err
 		}
 		re = `\binet (([^\/]+)\/\d+)`
 		r := regexp.MustCompile(re)
-		str := r.FindStringSubmatch(out)
+		str := r.FindAllStringSubmatch(out, -1)
 		if len(str) == 0 {
 			return err
 		}
 
-		ipmask := strings.Split(str[1], "/")
-		item.IpAddr = ipmask[0]
-		item.NetMask = ipmask[1]
+		for _, ip := range str {
+			ipmask := strings.Split(ip[1], "/")
+			// only the vip has mask with 32
+			if ipmask[1] == "32" {
+				continue
+			}
+			item.IpAddr = ipmask[0]
+			item.NetMask = ipmask[1]
+		}
 		return nil
 	}
 
@@ -223,7 +228,7 @@ func GetIfaceList(ifname string) ([]Iface, int) {
 func SetIfaceIIpAddr(ifname, ip, mask string) error {
 	i := NetmaskStr2Len(mask)
 	cmd := fmt.Sprintf("sudo ip addr add %s/%d broadcast 255.255.255.255 dev %s", ip, i, ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -231,7 +236,7 @@ func SetIfaceIIpAddr(ifname, ip, mask string) error {
 }
 func DelIfaceIIpAddr(ifname, ip string) error {
 	cmd := fmt.Sprintf("sudo ip addr del %s dev %s", ip, ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -300,8 +305,6 @@ func IpBitwiseAndMask(ip, mask string) string {
 }
 
 func IsSameIpRange(ip1, ip2, mask string) bool {
-	ip1 = ReplaceBlank(ip1)
-	ip2 = ReplaceBlank(ip2)
 	str1 := IpBitwiseAndMask(ip1, mask)
 	str2 := IpBitwiseAndMask(ip2, mask)
 	if str1 == str2 {
@@ -314,9 +317,9 @@ func IsSameIpRange(ip1, ip2, mask string) bool {
 func setInterfaceGateway(ifname, gateway string) error {
 	//cmd := fmt.Sprintf("sudo route add default gw %s %s", gateway, ifname)
 	cmd := fmt.Sprintf("sudo ip route replace to default via %s dev %s", gateway, ifname)
-	_, err := ExecShell(cmd)
+	_, err := ExecShell(cmd, true)
 	if err != nil {
-		log.LoggerWContext(context.Background()).Info("exec" + cmd + "error")
+		log.LoggerWContext(ama.Ctx).Error("exec" + cmd + "error")
 		return err
 	}
 
@@ -338,10 +341,9 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 		oldip, oldmask := GetifaceIpInfo(ifname)
 		oldmasklen, _ := strconv.Atoi(oldmask)
 		if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
-			/*check ip if is exsit*/
+			/*check ip if is exist*/
 			info := fmt.Sprintf("UpdateVlanIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
-			fmt.Println(info)
-			log.LoggerWContext(context.Background()).Info(info)
+			log.LoggerWContext(ama.Ctx).Debug(info)
 			if !IsIfaceActive(ifname) {
 				err = SetIfaceUp(ifname)
 				if err != nil {
@@ -349,7 +351,7 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 				}
 			}
 			if oldip != ip && IsIpExists(ifname, ip) {
-				msg := fmt.Sprintf("%s is exsit in net", ip)
+				msg := fmt.Sprintf("%s is exist in net", ip)
 				return errors.New(msg)
 			}
 			err = DelIfaceIIpAddr(ifname, oldip)
@@ -370,9 +372,9 @@ func UpdateVlanIface(ifname, prefix, vlan, ip, mask string) error {
 				return err
 			}
 		}
-		/*check ip if is exsit*/
+		/*check ip if is exist*/
 		if IsIpExists(ifname, ip) {
-			msg := fmt.Sprintf("%s is exsit in net", ip)
+			msg := fmt.Sprintf("%s is exist in net", ip)
 			DelVlanIface(ifname)
 			return errors.New(msg)
 		}
@@ -391,16 +393,15 @@ func UpdateEthIface(ifname string, ip, mask string) error {
 	oldmasklen, _ := strconv.Atoi(oldmask)
 	if oldip != ip || oldmasklen != NetmaskStr2Len(mask) {
 		info := fmt.Sprintf("UpdateEthIface %s oldip(%s)-->ip(%s), oldmask(%s)-->newmask(%s)", ifname, oldip, ip, NetmaskLen2Str(oldmasklen), mask)
-		fmt.Println(info)
-		log.LoggerWContext(context.Background()).Info(info)
+		log.LoggerWContext(ama.Ctx).Debug(info)
 		/*new ip must be the same net range with the old ip */
 		if !IsSameIpRange(ip, oldip, mask) {
 			msg := fmt.Sprintf("new ip(%s) is not same net range with oldip(%s)", ip, oldip)
 			return errors.New(msg)
 		}
-		/*check ip if is exsit*/
+		/*check ip if is exist*/
 		if oldip != ip && IsIpExists(ifname, ip) {
-			msg := fmt.Sprintf("%s is exsit in net", ip)
+			msg := fmt.Sprintf("%s is exist in net", ip)
 			return errors.New(msg)
 		}
 		go doUpdateEthIface(ifname, ip, oldip, mask, gateway)
@@ -414,17 +415,17 @@ func doUpdateEthIface(ifname, ip, oldip, mask, gateway string) error {
 	if err != nil {
 		return err
 	}
-	log.LoggerWContext(context.Background()).Info("DelIfaceIIpAddr OK:")
+	log.LoggerWContext(ama.Ctx).Debug("DelIfaceIIpAddr OK:")
 	err = SetIfaceIIpAddr(ifname, ip, mask)
 	if err != nil {
 		return err
 	}
-	log.LoggerWContext(context.Background()).Info("SetIfaceIIpAddr OK:")
+	log.LoggerWContext(ama.Ctx).Debug("SetIfaceIIpAddr OK:")
 	err = setInterfaceGateway(ifname, gateway)
 	if err != nil {
 		return err
 	}
-	log.LoggerWContext(context.Background()).Info("setInterfaceGateway OK:")
+	log.LoggerWContext(ama.Ctx).Debug("setInterfaceGateway OK:")
 	if !IsIfaceActive(ifname) {
 		err = SetIfaceUp(ifname)
 		if err != nil {
@@ -436,7 +437,7 @@ func doUpdateEthIface(ifname, ip, oldip, mask, gateway string) error {
 
 // check if we are vip owner
 func IsManagement(vip string) bool {
-	out, err := ExecShell("sudo ip -4 -o addr show")
+	out, err := ExecShell("sudo ip -4 -o addr show", false)
 	if err != nil {
 		return false
 	}
@@ -455,4 +456,10 @@ func IsManagement(vip string) bool {
 		}
 	}
 	return false
+}
+
+func IsOnlyNumStr(str string) bool {
+	r, _ := regexp.Compile("^[0-9]")
+	b := r.MatchString(str)
+	return b
 }

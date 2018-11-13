@@ -1,4 +1,4 @@
-# These rules are predefined in A3 and disconnect device that are coming from a secure connection to an open one.
+# These rules are predefined in A3 and disconnect devices that are coming from a secure connection to an open one.
 
 [pf_wired_mac_auth]
 filter = connection_type

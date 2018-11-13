@@ -649,7 +649,7 @@ sub node_register {
             return (0);
         }
            $logger->info("autoregister a node that is already registered, do nothing.");
-           return 1;
+           return (1);
        }
     }
     else {
@@ -1284,7 +1284,7 @@ Returns the number of currently registered, online nodes
 
 sub node_count_active {
     my $count_sql = <<'END_SQL';
-SELECT COUNT(*)
+SELECT COUNT(DISTINCT node.mac)
   FROM node,radacct
  WHERE node.mac = radacct.callingstationid
    AND node.status = 'reg'

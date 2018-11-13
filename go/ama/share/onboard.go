@@ -9,6 +9,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/database"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
@@ -60,7 +61,6 @@ type A3OnboardingInfo struct {
 	Data   A3OnboardingData   `json:"data"`
 }
 
-var contextOnboard = log.LoggerNewContext(context.Background())
 
 func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	ifaces, errint := utils.GetIfaceList("all")
@@ -91,7 +91,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 	onboardingData.IpMode = "STATIC"
 	onboardingData.DefaultGateway = utils.GetA3DefaultGW()
 	onboardingData.SoftwareVersion = utils.GetA3Version()
-	onboardingData.SystemUptime = time.Now().UTC().UnixNano() / int64(time.Millisecond)
+	onboardingData.SystemUptime = time.Now().UTC().UnixNano() / int64(time.Millisecond) - utils.GetSysUptime()
 	//onboardingData.ClusterPrimary = amadb.IsPrimaryCluster()
 	managementIface, errint := utils.GetIfaceList("eth0")
 	if errint < 0 {
@@ -118,7 +118,7 @@ func (onboardingData *A3OnboardingData) GetValue(ctx context.Context) {
 func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 	onboardHeader.Hostname = utils.GetHostname()
 	onboardHeader.SystemID = utils.GetA3SysId()
-	onboardHeader.ClusterID = utils.GetClusterId()
+	onboardHeader.ClusterID = a3config.GetClusterId()
 
 	//When onboarding, Cloud will assign a unique messageid, so we could just make it empty;
 	//onboardHeader.MessageID = ""
@@ -128,7 +128,7 @@ func (onboardHeader *A3OnboardingHeader) GetValue(ctx context.Context) {
 func (lic *A3License) GetValue(ctx context.Context) {
 	var context context.Context
 	if ctx == nil {
-		context = contextOnboard
+		context = ama.Ctx
 	} else {
 		context = ctx
 	}
@@ -145,7 +145,7 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	//Fetch LicensedCapacity data
 	results, err := db.Query("SELECT endpoint_count FROM a3_entitlement where TO_DAYS(NOW()) < TO_DAYS(sub_end) AND type != 'Trial'")
 	if err != nil {
-		log.LoggerWContext(context).Error("Query database error: " + err.Error())
+		log.LoggerWContext(context).Warn("Query database error: " + err.Error())
 	} else {
 		defer results.Close()
 		for results.Next() {
@@ -171,7 +171,7 @@ func (lic *A3License) GetValue(ctx context.Context) {
 	row := db.QueryRow("SELECT max(sub_end) FROM a3_entitlement where type != 'Trial'")
 	err = row.Scan(&times)
 	if err != nil {
-		log.LoggerWContext(context).Error("Query database error: " + err.Error())
+		log.LoggerWContext(context).Warn("Query database error: " + err.Error())
 	} else {
 		lic.NextExpirationDate = times.UnixNano() / int64(time.Millisecond)
 	}
@@ -211,7 +211,7 @@ func GetOnboardingInfo(ctx context.Context) A3OnboardingInfo {
 	onboardInfo := A3OnboardingInfo{}
 
 	if ctx == nil {
-		context = contextOnboard
+		context = ama.Ctx
 	} else {
 		context = ctx
 	}

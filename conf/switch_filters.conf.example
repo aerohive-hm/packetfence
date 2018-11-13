@@ -1,4 +1,4 @@
-# Switch Filter Configuration
+# Device Filter Configuration
 # ===========================
 #
 # Scopes
@@ -8,7 +8,7 @@
 # - external_portal: Used when an endpoint hit the captive portal for web authentication
 #
 #
-# A "SWITCH Filter" configuration is mainly constituted of two (2) parts; rules(s)/condition(s) and action(s)
+# A "Device Filter" configuration is mainly constituted of two (2) parts; rules(s)/condition(s) and action(s)
 # Some working examples covering useful use cases can be found at the bottom of this file
 #
 #
@@ -108,7 +108,7 @@
 #     owner.category
 #     radius_request
 #     params
-# 
+#
 # Operator can be:
 #     is
 #     is_not
@@ -150,7 +150,7 @@
 #
 #
 # Param(x) can be:
-# - any switch configuration parameter to override (Only available for radius_authorize scope)
+# - any device configuration parameter to override (Only available for radius_authorize scope)
 #
 # Switch can be:
 # - any switch module

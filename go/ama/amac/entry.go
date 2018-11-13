@@ -126,12 +126,15 @@ func GetConnStatus() int {
 func Entry(ctx context.Context) {
 	var msg MsgStru
 
+	//check NTP sync or not
+	go utils.ForceNTPsynchronized()
+	
 	//check if enable the cloud integraton, if no, skip the connectToRdcWithoutPara()
 	if GlobalSwitch == "enable" {
 		//trying to connect to the cloud when damon start
 		result := connectToRdcWithoutPara(ctx)
 		if result != 0 {
-			log.LoggerWContext(ctx).Info("Connect to cloud fail, waiting events from UI or other nodes")
+			log.LoggerWContext(ctx).Warn("Connect to cloud fail, waiting events from UI or other nodes")
 		} else {
 			log.LoggerWContext(ctx).Info("Connect to cloud successfully")
 		}
@@ -158,14 +161,6 @@ func Entry(ctx context.Context) {
 		select {
 		case msg = <-MsgChannel:
 			handleMsgFromUi(ctx, msg)
-
-		default:
-			status := GetConnStatus()
-			if status == AMA_STATUS_ONBOARDING_SUC {
-				time.Sleep(5 * time.Second)
-			} else {
-				time.Sleep(1 * time.Second)
-			}
 		}
 	}
 }
@@ -253,6 +248,7 @@ func keepaliveToRdc(ctx context.Context) {
 			not send the keepalive
 		*/
 		if GlobalSwitch != "enable" {
+			log.LoggerWContext(ctx).Debug("Switch status is not enable, needn't send keepalive to RDC")
 			timeoutCount = 0
 			continue
 		}
@@ -273,8 +269,17 @@ func keepaliveToRdc(ctx context.Context) {
 				continue
 			}
 		}
-		//Check the connect status, if not connected, do nothing
+		/*
+			Check the connect status, if a node join in cluster but onboarding to
+			cloud fail, if not increase the timeoutCount, program will no way to
+			try to onboarding to cloud, customer need to hit the "unlink", then "link"
+			button to trigger a onboarding  behavior, but this operation will take affect
+			for the entire cluser, so it should be better if the AMA can keep trying
+			to onboarding to the cloud actiely.
+		*/
 		if GetConnStatus() != AMA_STATUS_ONBOARDING_SUC {
+			timeoutCount++
+			log.LoggerWContext(ctx).Info(fmt.Sprintf("Enable the cloud integration, but status is not connected, keepalive timeout %d", timeoutCount))
 			continue
 		}
 
@@ -282,11 +287,13 @@ func keepaliveToRdc(ctx context.Context) {
 			_ = UpdateMsgToRdcAsyn(ctx, ClusterStatusUpdate, nil)
 		}
 
-		log.LoggerWContext(ctx).Info("sending the keepalive")
+		log.LoggerWContext(ctx).Debug("sending the keepalive")
 		//url := fmt.Sprintf("http://10.155.23.116:8008/rest/v1/poll/%s", utils.GetA3SysId())
 		request, err := http.NewRequest("GET", keepAliveUrl, nil)
 		if err != nil {
 			log.LoggerWContext(ctx).Error(err.Error())
+			timeoutCount++
+			continue
 		}
 
 		//Add header option
@@ -296,19 +303,22 @@ func keepaliveToRdc(ctx context.Context) {
 		AmacSendEventCounter++
 		resp, result := client.Do(request)
 		if result != nil {
+			log.LoggerWContext(ctx).Error(result.Error())
 			timeoutCount++
 			continue
 		}
 		AmacSendEventSuccessCounter++
-		timeoutCount = 0
 		body, _ := ioutil.ReadAll(resp.Body)
-		log.LoggerWContext(ctx).Info(string(body))
+		log.LoggerWContext(ctx).Debug(string(body))
 
 		statusCode := resp.StatusCode
 		if statusCode == 200 {
 			//Dispatch the data coming with keepalive reponses
 			dispathMsgFromRdc(ctx, []byte(body))
+			timeoutCount = 0
+			resp.Body.Close()
 		} else {
+			log.LoggerWContext(ctx).Warn(fmt.Sprintf("The response status code not equal to 200, status code is:%d", statusCode))
 			timeoutCount++
 			resp.Body.Close()
 			continue
@@ -336,7 +346,6 @@ func dispathMsgFromRdc(ctx context.Context, message []byte) {
 			//RDC token need to write file, if process restart we can read it
 			dst := fmt.Sprintf("Bearer %s", resMsg.Data["token"])
 			UpdateRdcToken(ctx, dst, false)
-			rdcTokenStr = resMsg.Data["token"]
 		}
 	}
 	return

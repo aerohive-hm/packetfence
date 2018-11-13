@@ -28,7 +28,7 @@ sub defaults_list {
         $content .= "<span class=\"label label-info\" >$element</span>";
     }
     if ($self->get_tag('defaults')) {
-        return sprintf("<div class='list-defaults alert alert-info'><strong>Built-in $id :</strong> %s</div>", $content);
+        return sprintf("<div class='list-defaults list-defaults-group'><strong>Built-in $id :</strong> %s</div>", $content);
     }
 }
 

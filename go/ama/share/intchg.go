@@ -4,9 +4,9 @@ package a3share
 import (
 	"context"
 	"fmt"
+	"github.com/inverse-inc/packetfence/go/ama"
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/utils"
-	"github.com/inverse-inc/packetfence/go/log"
 	"strconv"
 )
 
@@ -55,7 +55,6 @@ func (intChgData *A3IntChgData) GetValue() {
 	intChgData.DefaultGateway = utils.GetA3DefaultGW()
 }
 
-var contextIntChg = log.LoggerNewContext(context.Background())
 
 func GetIntChgInfo(ctx context.Context) []A3IntChgInfo {
 	var context context.Context
@@ -63,7 +62,7 @@ func GetIntChgInfo(ctx context.Context) []A3IntChgInfo {
 	intChgInfo := A3IntChgInfo{}
 
 	if ctx == nil {
-		context = contextIntChg
+		context = ama.Ctx
 	} else {
 		context = ctx
 	}

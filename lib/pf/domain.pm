@@ -192,6 +192,12 @@ sub generate_smb_conf {
         pf_run("/usr/bin/sudo touch /etc/samba/$domain.conf");
         pf_run("/usr/bin/sudo /bin/chown pf.pf /etc/samba/$domain.conf");
         my $fname = untaint_chain("/etc/samba/$domain.conf");
+
+        #only support 15 letters for AD join
+        if (length($vars{'server_name'}) > 15) {
+             $vars{'server_name'} = substr($vars{'server_name'}, 0, 15);
+        }
+        
         $template->process("/usr/local/pf/addons/AD/smb.tt", \%vars, $fname) || $logger->error("Can't generate samba configuration for $domain : ".$template->error());
     }
 }

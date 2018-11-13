@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="[% c.uri_for('/static/css/styles.css') %]">
     <link rel="stylesheet" href="[% c.uri_for('/static/app/application.css') %]">
     <link rel="stylesheet" href="[% c.uri_for('/static/admin/common.css') %]">
+
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
          <script src="[% c.uri_for('/static/app/html5.js') %]"></script>
@@ -26,6 +27,7 @@
   </head>
   [% SET SHOW_READONLY_ERROR = c.user_allowed_in_admin() && readonly_mode %]
   <body[% IF SHOW_READONLY_ERROR %] class="navbar-error"[% END %]>
+
     <div class="alert alert-block hide">
       <button class="close" data-dismiss="alert">&times;</button>
       <strong>[% l('Warning!') %]</strong> <span></span>
@@ -130,10 +132,12 @@
                   <li class="disabled"><a href="#" disabled><b>[% l('Click a task to run/re-run') %]</b></a></li>
                   <li id="checkup_task"><a href="" id="checkup_task_toggle">[% l('Perform checkup') %]</a></li>
                   <li id="fixpermissions_task"><a href="" id="fixpermissions_task_toggle">[% l('Fix permissions') %]</a></li>
-                  [% IF is_usage_over_capacity or is_entitlement_expired  %]
-                    <li id="upgrade_task"><a style="color: #c3c3c3; cursor: not-allowed;">[% l('Update software') %]</a></li>
-                  [% ELSE %]
-                    <li id="upgrade_task"><a href="[% c.uri_for(c.controller('Admin').action_for('update')) %]" id="upgrade_task_toggle">[% l('Update software') %]</a></li>
+                  [% IF is_master_node or !is_cluster_enabled %]
+                      [% IF is_usage_over_capacity or is_entitlement_expired  %]
+                        <li id="upgrade_task"><a style="color: #c3c3c3; cursor: not-allowed;">[% l('Update software') %]</a></li>
+                      [% ELSE %]
+                        <li id="upgrade_task"><a href="[% c.uri_for(c.controller('Admin').action_for('update')) %]" id="upgrade_task_toggle">[% l('Update software') %]</a></li>
+                      [% END %]
                   [% END %]
                 </ul>
               </li>
@@ -144,7 +148,7 @@
                   <li><a id="logout" href="[% c.uri_for(c.controller('Admin').action_for('logout')) %]"><i class="icon-off"></i> [% l('Log out') %]</a></li>
                 </ul>
               </li>
-              <li class="user_info" style="padding-top: 20px; text-transform: lowercase !important; color: #F4F6F9; padding-left: 10px; padding-right:5px;">
+              <li class="user_info">
                 <span>[% c.user | html %]</span>
               </li>
 	          </ul>

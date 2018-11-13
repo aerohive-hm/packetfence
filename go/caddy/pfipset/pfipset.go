@@ -11,10 +11,11 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/inverse-inc/packetfence/go/caddy/caddy"
 	"github.com/inverse-inc/packetfence/go/caddy/caddy/caddyhttp/httpserver"
-	"github.com/inverse-inc/packetfence/go/database"
+	"github.com/inverse-inc/packetfence/go/db"
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/inverse-inc/packetfence/go/panichandler"
 	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
+	"github.com/inverse-inc/packetfence/go/sharedutils"
 )
 
 // Queue value
@@ -43,7 +44,6 @@ type PfipsetHandler struct {
 func setup(c *caddy.Controller) error {
 	ctx := log.LoggerNewContext(context.Background())
 
-	pfconfigdriver.PfconfigPool.AddStruct(ctx, &pfconfigdriver.Config.PfConf.Database)
 	pfconfigdriver.PfconfigPool.AddStruct(ctx, &pfconfigdriver.Config.Cluster.HostsIp)
 
 	pfipset, err := buildPfipsetHandler(ctx)
@@ -96,7 +96,9 @@ func buildPfipsetHandler(ctx context.Context) (PfipsetHandler, error) {
 
 	pfipset.IPSET.detectType(ctx)
 
-	pfipset.database = database.ConnectFromConfig(pfconfigdriver.Config.PfConf.Database)
+	db, err := db.DbFromConfig(ctx)
+	sharedutils.CheckError(err)
+	pfipset.database = db
 
 	// Reload the set from the database each 5 minutes
 	// TODO: have this time configurable
@@ -104,8 +106,30 @@ func buildPfipsetHandler(ctx context.Context) (PfipsetHandler, error) {
 		// Create a new context just for this goroutine
 		ctx := context.WithValue(ctx, "dummy", "dummy")
 		for {
-			pfipset.IPSET.initIPSet(ctx, pfipset.database)
-			log.LoggerWContext(ctx).Info("Reloading ipsets")
+			var Inline bool
+			Inline = false
+			var keyConfNet pfconfigdriver.PfconfigKeys
+			keyConfNet.PfconfigNS = "config::Network"
+			keyConfNet.PfconfigHostnameOverlay = "yes"
+
+			pfconfigdriver.FetchDecodeSocket(ctx, &keyConfNet)
+
+			for _, key := range keyConfNet.Keys {
+				var ConfNet pfconfigdriver.RessourseNetworkConf
+				ConfNet.PfconfigHashNS = key
+
+				pfconfigdriver.FetchDecodeSocket(ctx, &ConfNet)
+
+				if ConfNet.Type == "inline" {
+					Inline = true
+				}
+			}
+			if Inline {
+				pfipset.IPSET.initIPSet(ctx, pfipset.database)
+				log.LoggerWContext(ctx).Info("Reloading ipsets")
+			} else {
+				log.LoggerWContext(ctx).Info("No Inline Network bypass ipsets reload")
+			}
 			time.Sleep(300 * time.Second)
 		}
 	}()

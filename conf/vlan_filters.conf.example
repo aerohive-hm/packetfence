@@ -112,7 +112,7 @@
 #     owner.unregdate
 #     owner.category
 #     radius_request
-# 
+#
 # Operator can be:
 #     is
 #     is_not
@@ -181,7 +181,7 @@
 # --------
 #
 # - When A3 tries to get the normal VLAN for the node and if the category of the node is
-# the default one, we return the role "nointernet" (which you will have configured in the switch configuration).
+# the default one, we return the role "nointernet" (which you will have configured in the device configuration).
 # [category]
 # filter = node_info.category
 # operator = is
@@ -194,7 +194,7 @@
 #
 # - When A3 tries to get the normal VLAN for the node and if the category of the node is
 # the default one and the ssid is OpenWrt-SECURE and the time is between 11am and 2pm from Monday to Friday,
-# we return the role "nointernet" (which you will have configured in the switch configuration).
+# we return the role "nointernet" (which you will have configured in the device configuration).
 # [2]
 # filter = node_info.category
 # operator = match
@@ -237,9 +237,9 @@
 # role = default
 #
 #
-# - This will autoregister machine auth on ethernet EAP or EAP-TLS connection and refuse 
-# user auth if there wasn't machine auth before (you must add a role machine and a role 
-# REJECT (value: -1) in A3's role and switch configuration.
+# - This will autoregister machine auth on ethernet EAP or EAP-TLS connection and refuse
+# user auth if there wasn't machine auth before (you must add a role machine and a role
+# REJECT (value: -1) in A3's role and device configuration.
 #[EthernetEAP]
 #filter = connection_type
 #operator = is
@@ -321,7 +321,7 @@
 ## There are two ways to detect if the device is an Android phone, either by looking if the device is linked to the "Android OS" device by using its ID (33453) or by its name (Android OS)
 ## Although using device names is more intuitive, they are subject to (very rare) changes, so using the ID is recommended
 ##
-## This would then give us the following condition (note the use of fingerbank::device_is_a) : 
+## This would then give us the following condition (note the use of fingerbank::device_is_a) :
 #[android_by_id]
 #filter = fingerbank_info.device_name
 #operator = fingerbank::device_is_a
@@ -356,4 +356,3 @@
 #[info_for_autoreg_android:android_by_name&version_4_plus&minimum_score]
 #scope = NodeInfoForAutoReg
 #role = default
-

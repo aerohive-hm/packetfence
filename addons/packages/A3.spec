@@ -331,9 +331,9 @@ Requires: %{real_name}-pfcmd-suid = %{version}
 Requires: %{real_name}-config = %{version}-%{rev}%{?dist}
 Requires: %{real_name}-pfcmd-suid = %{version}-%{rev}%{?dist}
 %endif
-Requires: haproxy >= 1.6, keepalived >= 1.3.6
+Requires: haproxy >= 1.8.9, keepalived >= 1.4.3
 # CAUTION: we need to require the version we want for Fingerbank and ensure we don't want anything equal or above the next major release as it can add breaking changes
-Requires: fingerbank >= 4.0.0, fingerbank < 5.0.0
+Requires: fingerbank >= 4.1.0, fingerbank < 5.0.0
 Requires: perl(File::Tempdir)
 Requires: perl(REST::Client)
 Requires: nodejs = 2:6.11.0
@@ -422,12 +422,20 @@ make bin/ntlm_auth_wrapper
 echo %{git_commit} > conf/git_commit_id
 
 # build golang binaries
-addons/packages/build-go.sh build `pwd` `pwd`/bin
+addons/packages/build-go.sh build `pwd` `pwd`/sbin
 
 find -name '*.example' -print0 | while read -d $'\0' file
 do
   cp $file "$(dirname $file)/$(basename $file .example)"
 done
+
+# build UI
+pushd .
+cd html/pfappserver/root/static
+make vendor dev
+grunt --stack dist
+rm -rf bower_components node_modules
+popd
 
 %install
 %{__rm} -rf $RPM_BUILD_ROOT
@@ -487,8 +495,9 @@ done
 %{__install} -D -m0644 conf/systemd/packetfence-pfstats.service $RPM_BUILD_ROOT/usr/lib/systemd/system/packetfence-pfstats.service
 %{__install} -D -m0644 conf/systemd/a3-update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-update.service
 %{__install} -D -m0644 conf/systemd/a3-httpd.update.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-httpd.update.service
-%{__install} -D -m0644 conf/systemd/a3-api-backend.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-api-backend.service
+%{__install} -D -m0644 conf/systemd/a3-ama.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-ama.service
 %{__install} -D -m0644 conf/systemd/a3-nodeapp.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-nodeapp.service
+%{__install} -D -m0644 conf/systemd/a3-restartnodeapp.service $RPM_BUILD_ROOT/usr/lib/systemd/system/a3-restartnodeapp.service
 
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons
 %{__install} -d $RPM_BUILD_ROOT/usr/local/pf/addons/AD
@@ -560,9 +569,9 @@ mkdir $RPM_BUILD_ROOT/usr/local/pf/docs
 mkdir -p $RPM_BUILD_ROOT/usr/local/pf/html/update
 cp docs/pfcmd.help $RPM_BUILD_ROOT/usr/local/pf/docs
 
-mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen
+mv $RPM_BUILD_ROOT/usr/local/pf/sbin/ahpwgen-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahpwgen
 
-mv $RPM_BUILD_ROOT/usr/local/pf/bin/ahusavg-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahusavg
+mv $RPM_BUILD_ROOT/usr/local/pf/sbin/ahusavg-bin $RPM_BUILD_ROOT/usr/local/pf/bin/ahusavg
 
 # Exclude new Vue.js content for now
 rm -rf $RPM_BUILD_ROOT/usr/local/pf/html/pfappserver/root/static.alt/
@@ -608,6 +617,10 @@ if [ "$1" = "2"   ]; then
     /usr/bin/systemctl disable packetfence-redis-cache
     /usr/bin/systemctl disable packetfence-config
     /usr/bin/systemctl disable packetfence.service
+    /usr/bin/systemctl disable packetfence-haproxy.service
+    #the isolate this will bring up some services(like pf-db service) which cause the late
+    #operation for cluster update process failure, so just skip it during upgrade 
+    #/usr/bin/systemctl isolate packetfence-base.target
 fi
 
 if ! /usr/bin/id pf &>/dev/null; then
@@ -657,11 +670,13 @@ fi
 %post -n %{real_name}
 if [ "$1" = "2" ]; then
     /usr/local/pf/bin/pfcmd service pf updatesystemd
+    perl /usr/local/pf/addons/upgrade/add-default-params-to-auth.pl
 fi
 
 /usr/bin/mkdir -p /var/log/journal/
 echo "Restarting journald to enable persistent logging"
-/bin/systemctl restart systemd-journald
+#stop restart, as which will cause systemd like nodeapp to restart 
+#/bin/systemctl restart systemd-journald
 
 if [ `systemctl get-default` = "packetfence-cluster.target" ]; then
     echo "This is an upgrade on a clustered system. We don't change the default systemd target."
@@ -875,14 +890,15 @@ if [ "$1" = "1" ]; then
 fi
 
 /bin/systemctl enable packetfence-httpd.admin
-/bin/systemctl enable a3-api-backend
+/bin/systemctl enable packetfence-iptables
+/bin/systemctl enable a3-ama
 /bin/systemctl enable a3-nodeapp
 
 /usr/local/pf/bin/pfcmd configreload
 # Don't launch it during image building stage, otherwise all image has same DB root password
 if [ "$1" = "2" ]; then
   /bin/systemctl start packetfence-httpd.admin
-  /bin/systemctl restart a3-api-backend
+  #/bin/systemctl restart a3-ama
 fi
 
 echo Installation complete
@@ -995,7 +1011,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3us
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3ma
 %attr(0755, pf, pf)     /usr/local/pf/bin/a3cs
-%attr(0755, pf, pf)     /usr/local/pf/bin/pfhttpd
+%attr(0755, pf, pf)     /usr/local/pf/sbin/pfhttpd
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd.pl
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd_vlan
 %attr(0755, pf, pf)     /usr/local/pf/bin/pftest
@@ -1009,9 +1025,10 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/node
 %attr(0700, root, root) /usr/local/pf/bin/ahpwgen
 %attr(0755, pf, pf)     /usr/local/pf/bin/ahusavg
-%attr(0755, pf, pf)     /usr/local/pf/bin/pfdhcp
-%attr(0755, pf, pf)     /usr/local/pf/bin/pfdns
-%attr(0755, pf, pf)     /usr/local/pf/bin/pfstats
+%attr(0755, pf, pf)     /usr/local/pf/sbin/pfdetect
+%attr(0755, pf, pf)     /usr/local/pf/sbin/pfdhcp
+%attr(0755, pf, pf)     /usr/local/pf/sbin/pfdns
+%attr(0755, pf, pf)     /usr/local/pf/sbin/pfstats
 %doc                    /usr/local/pf/conf/*.example
 %config(noreplace)      /usr/local/pf/conf/adminroles.conf
 %config(noreplace)      /usr/local/pf/conf/allowed_device_oui.txt
@@ -1285,6 +1302,7 @@ fi
                         /usr/local/pf/html/captive-portal/content/shared_mdm_profile.mobileconfig
                         /usr/local/pf/html/captive-portal/content/a3-windows-agent.exe
                         /usr/local/pf/html/captive-portal/content/billing/stripe.js
+                        /usr/local/pf/html/captive-portal/content/billing/authorizenet.js
                         /usr/local/pf/html/captive-portal/content/provisioner/mobileconfig.js
                         /usr/local/pf/html/captive-portal/content/provisioner/sepm.js
                         /usr/local/pf/html/captive-portal/content/release.js
@@ -1340,7 +1358,8 @@ fi
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Config/Switch.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Config/System.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Configuration.pm
-%config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Configurator.pm
+%exclude                /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Configurator.pm
+%exclude                /usr/local/pf/html/pfappserver/lib/pfappserver/PacketFence/Controller/Configurator.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Config/Wrix.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/DB.pm
 %config(noreplace)      /usr/local/pf/html/pfappserver/lib/pfappserver/Controller/Graph.pm
@@ -1371,7 +1390,7 @@ fi
 %config(noreplace)      /usr/local/pf/lib/pf/role/custom.pm
 %config(noreplace)      /usr/local/pf/lib/pf/web/custom.pm
 
-%dir %attr(2755, pf, pf) /usr/local/pf/logs
+%dir %attr(02755, pf, pf) /usr/local/pf/logs
 # logfiles
 %ghost                  %logdir/packetfence.log
 %ghost                  %logdir/snmptrapd.log
@@ -1383,7 +1402,6 @@ fi
 %attr(0700, root, root) /usr/local/pf/sbin/checkdb-A3
 %attr(0700, root, root) /usr/local/pf/sbin/initdb-A3
 %attr(0755, pf, pf)     /usr/local/pf/sbin/pfbandwidthd
-%attr(0755, pf, pf)     /usr/local/pf/sbin/pfdetect
 %attr(0755, pf, pf)     /usr/local/pf/sbin/pfdhcplistener
 %attr(0755, pf, pf)     /usr/local/pf/sbin/pfperl-api
 %attr(0755, pf, pf)     /usr/local/pf/sbin/pf-mariadb
@@ -1395,6 +1413,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/sbin/radsniff-wrapper
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update
 %attr(0755, pf, pf)     /usr/local/pf/sbin/a3_update_wrapper
+%attr(0755, root, root) /usr/local/pf/sbin/sshd_config_modify
 %dir                    /usr/local/pf/clish
 %attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish
 %attr(0755, netcfg, netcfg)     /usr/local/pf/clish/clish_wrapper
@@ -1406,6 +1425,7 @@ fi
 %dir                    /usr/local/pf/a3_update
 %attr(0755, root, root) /usr/local/pf/a3_update/A3_Cluster.js
 %attr(0755, root, root) /usr/local/pf/a3_update/a3_cluster_update.pl
+%attr(0755, root, root) /usr/local/pf/a3_update/restart_a3nodeapp.sh
 %attr(0644, root, root) /usr/local/pf/a3_update/package.json
 %attr(0755, root, root) /usr/local/pf/a3_update/post_process/*
 %dir                    /usr/local/pf/var

@@ -8,10 +8,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/inverse-inc/packetfence/go/ama/a3config"
 	"github.com/inverse-inc/packetfence/go/ama/apibackend/crud"
 	"github.com/inverse-inc/packetfence/go/ama/client"
+	"github.com/inverse-inc/packetfence/go/ama/share"
+	"github.com/inverse-inc/packetfence/go/ama/utils"
 	"github.com/inverse-inc/packetfence/go/log"
 )
 
@@ -55,12 +58,56 @@ func handleUpdateJoin(r *http.Request, d crud.HandlerData) []byte {
 	err = client.ClusterAuth()
 	if err != nil {
 		log.LoggerWContext(ctx).Error("ClusterAuth error: " + err.Error())
-		ret := fmt.Sprintf("It can't connect to cluster primary [%s] with adminuser [%s]", join.PrimaryServer, join.Admin)
+		ret = CheckClusterAuthError(err)
 		a3config.DeleteClusterPrimary()
 		return crud.FormPostRely(code, ret)
 	}
+	//check mgt0 ip is the same range with primary eth0 ip
+	_, primaryNetData := a3share.GetPrimaryNetworksData(ctx)
+	netMask := GetEthMaskFromNetworksDate(primaryNetData)
+	mgtip := utils.GetOwnMGTIp()
+	if !utils.IsSameIpRange(join.PrimaryServer, mgtip, netMask) {
+		ret = fmt.Sprintf("mgtip [%s] and primary ip [%s] are not the same net range", mgtip, join.PrimaryServer)
+		a3config.DeleteClusterPrimary()
+		return crud.FormPostRely(code, ret)
+	}
+	//check primary if the standalone
+	_, primaryclusterData := a3share.GetPrimaryClusterStatus(ctx)
+	if !primaryclusterData.Is_cluster {
+		ret = fmt.Sprintf("The A3 server at %s is not part of a cluster", join.PrimaryServer)
+		a3config.DeleteClusterPrimary()
+		return crud.FormPostRely(code, ret)
+	}
+
 	code = "ok"
 	a3config.RecordSetupStep(a3config.StepClusterNetworking, code)
 	a3config.Isclusterjoin = true
 	return crud.FormPostRely(code, ret)
+}
+
+func CheckClusterAuthError(err error) string {
+	ret := ""
+	primaryip := a3config.ReadClusterPrimary()
+	/*Detailedly distinguish error messages for A3-466*/
+	if strings.Contains(err.Error(), "no route to host") {
+		ret = fmt.Sprintf("IP address %s is unreachable", primaryip)
+	} else if strings.Contains(err.Error(), "connection refused") {
+		ret = fmt.Sprintf("Unable to connect to services on host %s", primaryip)
+	} else if strings.Contains(err.Error(), "status code is 401") {
+		ret = fmt.Sprintf("Cluster admin credentials are not correct")
+	} else if strings.Contains(err.Error(), "no such host") {
+		ret = fmt.Sprintf("Unable to resolve host name %s", primaryip)
+	} else {
+		ret = err.Error()
+	}
+	return ret
+}
+
+func GetEthMaskFromNetworksDate(NetworksDate a3config.NetworksData) string {
+	for _, i := range NetworksDate.Items {
+		if i.Name == "eth0" {
+			return i.NetMask
+		}
+	}
+	return "255.255.255.255"
 }

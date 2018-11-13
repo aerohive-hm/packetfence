@@ -33,11 +33,11 @@ func (d ClassReportData) GetTableKey4Redis() string {
 }
 
 func (d ViolationReportData) GetTableKey4Redis() string {
-	return fmt.Sprintf("%s+%d", d.TableName, d.Id)
+	return fmt.Sprintf("%s+%s+%s", d.TableName, d.Vid, d.Mac)
 }
 
 func (d RadauditReportData) GetTableKey4Redis() string {
-	return fmt.Sprintf("%s+%d", d.TableName, d.Id)
+	return fmt.Sprintf("%s+%s+%s", d.TableName, d.UserName, d.Mac)
 }
 
 type ReportData struct {
