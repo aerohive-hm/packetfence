@@ -223,7 +223,7 @@ function getClusterStatusInfo(){
 
             //cluster management table
             $.each(data.nodes, function(i, members){
-                if (members.type === "master"){
+                if (members.type === "Master"){
                     $("#cluster-management-table-tbody").prepend("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td id='linkStatus'>" +  members.status + "</td></tr>");
                 } else {
                     $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' name='cluster-node-select' type='checkbox' value='"+ members.hostname +"'/>" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td id='linkStatus-" + i + "'>" +  members.status + "</td></tr>");
@@ -265,7 +265,7 @@ function updateLinkStatusCluster(){
       success: function(data){
           data = jQuery.parseJSON(data.A3_data);
           $.each(data.nodes, function(i, members){
-              if (members.type === "master"){ $('#linkStatus').text(members.status); /*update master node*/ }
+              if (members.type === "Master"){ $('#linkStatus').text(members.status); /*update master node*/ }
               else { $('#linkStatus-' + i).text(members.status); /*update child cluster nodes*/ }
           });
       },error: function(data){
