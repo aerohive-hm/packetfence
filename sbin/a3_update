@@ -33,7 +33,7 @@ Readonly::Scalar my $A3_PROGRESS_LOG_FILE => "$A3_HTML_DIR/update/a3_update.prog
 Readonly::Scalar my $A3_DBINFO_FILE       => "$A3_CONF_DIR/dbinfo.A3";
 Readonly::Scalar my $A3_UPDATE_DB_DUMP    => "$TMP_DIR/A3_db.sql";
 Readonly::Scalar my $A3_UPDATE_APP_DUMP   => "$TMP_DIR/A3_app.tar.gz";
-Readonly::Scalar my $A3_BK_VER_FILE       => "$TMP_DIR/a3_bk_ver_file";
+Readonly::Scalar my $A3_BK_VER_FILE       => "/tmp/a3_bk_ver_file";
 
 # Binaries
 Readonly::Scalar my $AWK_BIN              => "$BIN_DIR/awk";
