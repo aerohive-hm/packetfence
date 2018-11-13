@@ -5,8 +5,11 @@ $(document).ready(function(){
     //getClusterStatusInfo()
     //submitClusterInfo()
     //removeClusterNode(nodeArray)
+    //updateSharedIdVrid();
+    //updateLinkStatusCluster()
+    //sortjson()
 
-    //to change submit info
+    //to change submitted info for shared key and vrid
     document.getElementById("submitNewClusterInfo").onclick = function(e){
         e.preventDefault();
         var nofloatingregex = /^[1-9]\d*$/;
@@ -44,6 +47,7 @@ $(document).ready(function(){
     $("#cluster-management-table-tbody tr").remove();
     $("#net-interfaces-table-tbody tr").remove();
     getClusterStatusInfo();
+    updateSharedIdVrid();
 
     //button press on trashcan, array, removeClusterNode(), removeClusterNode(nodeArray)
     document.getElementById('remove-node').onclick = function(e){
@@ -71,11 +75,11 @@ $(document).ready(function(){
     //reseting the form to original values from file
     document.getElementById('reset-form').onclick = function(e){
         e.preventDefault();
-        getClusterStatusInfo();
+        updateSharedIdVrid();
     }
 
     //will update the table every 10 seconds to get the current status of node connection
-    setInterval("getClusterStatusInfo()", 10000);
+    setInterval("updateLinkStatusCluster()", 10000);
 });
 
 
@@ -126,7 +130,7 @@ function submitClusterInfo(){
                 setTimeout(function(){
                     $("#success-alert").slideUp(500);
                 }, 3000);
-                getClusterStatusInfo();
+                updateSharedIdVrid();
             }
         },
         error: function(data){
@@ -181,7 +185,31 @@ function removeClusterNode(nodeArray){
     });
 }
 
-//function to get cluster table data
+//this will update the value of the sharedKey and vrid only
+function updateSharedIdVrid(){
+  var base_url = window.location.origin;
+  $.ajax({
+      type: 'GET',
+      url: base_url + '/ama/cluster',
+      success: function(data){
+          data = jQuery.parseJSON(data.A3_data);
+          var vridvalue = data.vrid;
+          $("#vrid").val(vridvalue);
+          var sharedkeyvalue = data.sharedkey;
+          $("#sharedkey").val(sharedkeyvalue);
+      },
+      error: function(data){
+          document.getElementById('errorMessage').innerHTML = "Could not retrieve the shared key and virtual router ID";
+          $("#success-alert").show();
+          setTimeout(function(){
+              $("#success-alert").slideUp(500);
+          }, 3000);
+      }
+    });
+
+}
+
+//function update and create the cluster tables only
 function getClusterStatusInfo(){
     var base_url = window.location.origin;
     $.ajax({
@@ -189,21 +217,19 @@ function getClusterStatusInfo(){
         url: base_url + '/ama/cluster',
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            var vridvalue = data.vrid; $("#vrid").val(vridvalue);
-            var sharedkeyvalue = data.sharedkey; $("#sharedkey").val(sharedkeyvalue);
-
+            data.nodes = sortJSON(data.nodes, 'hostname');
             $("#cluster-management-table-tbody tr").remove();
             $("#net-interfaces-table-tbody tr").remove();
+
             //cluster management table
             $.each(data.nodes, function(i, members){
                 if (members.type === "Master"){
-                    $("#cluster-management-table-tbody").prepend("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
+                    $("#cluster-management-table-tbody").prepend("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td id='linkStatus'>" +  members.status + "</td></tr>");
                 } else {
-
-                    // if (members.status == Inactive)
-                    $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' value='"+ members.hostname +"'/>" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td>" +  members.status + "</td></tr>");
+                    $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' value='"+ members.hostname +"'/>" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td id='linkStatus-" + i + "'>" +  members.status + "</td></tr>");
                 }
             });
+
             //interfaces table
             $.each(data.interfaces, function(ethr, vip) {
                 if(ethr.indexOf('.') !== -1){ //if there is period in eth0
@@ -221,11 +247,38 @@ function getClusterStatusInfo(){
             });
         },
         error: function(data){
-            document.getElementById('errorMessage').innerHTML = "Could not grab the cluster info";
+            document.getElementById('errorMessage').innerHTML = "Could not retrieve the cluster node list";
             $("#success-alert").show();
             setTimeout(function(){
                 $("#success-alert").slideUp(500);
             }, 3000);
         }
+    });
+}
+
+//updates only the linkstatus column for each node
+function updateLinkStatusCluster(){
+  var base_url = window.location.origin;
+  $.ajax({
+      type: 'GET',
+      url: base_url + '/ama/cluster',
+      success: function(data){
+          data = jQuery.parseJSON(data.A3_data);
+          $.each(data.nodes, function(i, members){
+              if (members.type === "Master"){ $('#linkStatus').text(members.status); /*update master node*/ }
+              else { $('#linkStatus-' + i).text(members.status); /*update child cluster nodes*/ }
+          });
+      },error: function(data){
+        console.log("Was not able to update status");
+      }
+    });
+}
+
+//sort json data coming back for child nodes
+function sortJSON(data, key) {
+    return data.sort(function (a, b) {
+        var x = a[key];
+        var y = b[key];
+        if (x < y){ return -1 } else if (x > y){ return 1; } else { return 0; }
     });
 }
