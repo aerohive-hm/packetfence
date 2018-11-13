@@ -199,7 +199,7 @@ function updateSharedIdVrid(){
           $("#sharedkey").val(sharedkeyvalue);
       },
       error: function(data){
-          document.getElementById('errorMessage').innerHTML = "Could not retrieve the Shared key and Virtual router ID";
+          document.getElementById('errorMessage').innerHTML = "Could not retrieve the shared key and virtual router ID";
           $("#success-alert").show();
           setTimeout(function(){
               $("#success-alert").slideUp(500);
