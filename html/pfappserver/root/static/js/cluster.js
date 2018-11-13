@@ -226,7 +226,7 @@ function getClusterStatusInfo(){
                 if (members.type === "Master"){
                     $("#cluster-management-table-tbody").prepend("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td id='linkStatus'>" +  members.status + "</td></tr>");
                 } else {
-                    $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' name='cluster-node-select' type='checkbox' value='"+ members.hostname +"'/>" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td id='linkStatus-" + i + "'>" +  members.status + "</td></tr>");
+                    $("#cluster-management-table-tbody").append("<tr><td>" + "<input id='delete-cluster-node' type='checkbox' value='"+ members.hostname +"'/>" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td id='linkStatus-" + i + "'>" +  members.status + "</td></tr>");
                 }
             });
 
