@@ -5,10 +5,11 @@ $(document).ready(function(){
     //getClusterStatusInfo()
     //submitClusterInfo()
     //removeClusterNode(nodeArray)
+    //updateSharedIdVrid();
+    //updateLinkStatusCluster()
+    //sortjson()
 
-    // saveCheckboxStatus();
-    // returnStoredCheckboxStatus();
-    //to change submit info
+    //to change submitted info for shared key and vrid
     document.getElementById("submitNewClusterInfo").onclick = function(e){
         e.preventDefault();
         var nofloatingregex = /^[1-9]\d*$/;
@@ -74,7 +75,6 @@ $(document).ready(function(){
     //reseting the form to original values from file
     document.getElementById('reset-form').onclick = function(e){
         e.preventDefault();
-        // getClusterStatusInfo();
         updateSharedIdVrid();
     }
 
