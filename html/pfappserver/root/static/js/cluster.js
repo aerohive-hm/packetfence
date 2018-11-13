@@ -1,55 +1,3 @@
-var sampleData = {
-    "sharedkey":"aerohive",
-    "vrid":"100",
-// the following is GET only
-    "interfaces":[
-        {
-            "name":"eth0",
-            "vip":"10.0.123.254"
-        },
-        {
-            "name":"eth0.10",
-            "vip":"192.168.10.254"
-        },
-        {
-            "name":"eth1",
-            "vip":"10.0.234.254"
-        }
-    ],
-    "nodes": [
-        {
-            "hostname":"a3_node1.aerohive.com",
-            "ipaddr":"10.155.100.1",
-            "type":"master",
-            "status":"active"
-        },
-        {
-            "hostname":"a3_node9.aerohive.com",
-            "ipaddr":"10.155.100.2",
-            "type":"slave",
-            "status":"active"
-        },
-        {
-            "hostname":"a3_node3.aerohive.com",
-            "ipaddr":"10.155.100.3",
-            "type":"slave",
-            "status":"active"
-        },
-        {
-            "hostname":"a3_node5.aerohive.com",
-            "ipaddr":"10.155.100.3",
-            "type":"slave",
-            "status":"inactive"
-        },
-        {
-            "hostname":"a3_node2.aerohive.com",
-            "ipaddr":"10.155.100.3",
-            "type":"slave",
-            "status":"inactive"
-        }
-    ]
-};
-
 
 $(document).ready(function(){
     //functions in this file:
@@ -269,12 +217,12 @@ function getClusterStatusInfo(){
         url: base_url + '/ama/cluster',
         success: function(data){
             data = jQuery.parseJSON(data.A3_data);
-            sampleData.nodes = sortJSON(sampleData.nodes, 'hostname');
+            data.nodes = sortJSON(data.nodes, 'hostname');
             $("#cluster-management-table-tbody tr").remove();
             $("#net-interfaces-table-tbody tr").remove();
 
             //cluster management table
-            $.each(sampleData.nodes, function(i, members){
+            $.each(data.nodes, function(i, members){
                 if (members.type === "master"){
                     $("#cluster-management-table-tbody").prepend("<tr><td>" + "" + "</td><td>" + members.hostname + "</td><td>" + members.ipaddr + "</td><td>" +  members.type + "</td><td id='linkStatus'>" +  members.status + "</td></tr>");
                 } else {
@@ -316,7 +264,7 @@ function updateLinkStatusCluster(){
       url: base_url + '/ama/cluster',
       success: function(data){
           data = jQuery.parseJSON(data.A3_data);
-          $.each(sampleData.nodes, function(i, members){
+          $.each(data.nodes, function(i, members){
               if (members.type === "master"){ $('#linkStatus').text(members.status); /*update master node*/ }
               else { $('#linkStatus-' + i).text(members.status); /*update child cluster nodes*/ }
           });
