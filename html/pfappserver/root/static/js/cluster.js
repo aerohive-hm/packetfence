@@ -247,7 +247,7 @@ function getClusterStatusInfo(){
             });
         },
         error: function(data){
-            document.getElementById('errorMessage').innerHTML = "Could not retrieve the cluster info";
+            document.getElementById('errorMessage').innerHTML = "Could not retrieve the cluster node list";
             $("#success-alert").show();
             setTimeout(function(){
                 $("#success-alert").slideUp(500);
