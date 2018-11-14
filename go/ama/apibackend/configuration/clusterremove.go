@@ -60,8 +60,6 @@ func getIpByHost(hostname []string) map[string]string {
 // remove Cluster server on local
 func removeServerOnLocal(hostname []string) bool {
 
-	ama.InitClusterStatus("primary")
-
 	nodes := a3config.ClusterNew().FetchNodesInfoHash()
 
 	var ips []string
@@ -69,7 +67,6 @@ func removeServerOnLocal(hostname []string) bool {
 		ip := ""
 		ip, ok := nodes[h]
 		if !ok {
-			ama.ClearClusterStatus()
 			return false
 		}
 
@@ -78,7 +75,6 @@ func removeServerOnLocal(hostname []string) bool {
 		amadb.DeleteSysIdbyHost(h)
 	}
 	if ips == nil {
-		ama.ClearClusterStatus()
 		return false
 	}
 
@@ -159,6 +155,8 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	  if one of the nodes in cluster is offline and not in the
 	  remove list, then we cann't perform this request
 	*/
+
+	ama.InitClusterStatus("primary")
 	ips = getIpByHost(removeData.Hostname)
 	ret = a3share.NotifyClusterStatus(a3share.NotifySync)
 	for ip, err = range ret {
@@ -177,6 +175,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 		if !foundIp {
 			log.LoggerWContext(ctx).Info(fmt.Sprintln(err.Error()))
 			retMsg = "Some of the members are offline."
+			ama.ClearClusterStatus()
 			goto END
 		}
 	}
@@ -195,6 +194,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 		log.LoggerWContext(ctx).Info(fmt.Sprintf("Try to remove myself, " +
 			"login another server to do remove."))
 		retMsg = "Try to remove self, login another server to do remove."
+		ama.ClearClusterStatus()
 		goto END
 	}
 
@@ -202,6 +202,7 @@ func handlePostClusterRemove(r *http.Request, d crud.HandlerData) []byte {
 	rc = removeServerOnLocal(removeData.Hostname)
 	if !rc {
 		retMsg = "Invalid hostname"
+		ama.ClearClusterStatus()
 		goto END
 	}
 	go syncRemove2Other(ctx, sysids)
