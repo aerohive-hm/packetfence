@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"log"
 	"net"
 	"os"
@@ -206,7 +205,7 @@ func (h *iphdr) checksum() {
 // sendUnicastDHCP create a udp packet and stores it in an
 // Ethernet frame, and sends the frame over a raw socket to attempt to wake
 // a machine.
-func sendUnicastDHCP(dhcp []byte, dstIP net.Addr, srcIP net.IP) error {
+func sendUnicastDHCP(dhcp []byte, dstIP net.Addr, srcIP net.IP, giAddr net.IP, Local bool) error {
 
 	s, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_RAW, syscall.IPPROTO_RAW)
 	if err != nil {
@@ -214,11 +213,22 @@ func sendUnicastDHCP(dhcp []byte, dstIP net.Addr, srcIP net.IP) error {
 	}
 
 	proto := 17
-
+	var port int
 	ipStr, portStr, _ := net.SplitHostPort(dstIP.String())
-	port, _ := strconv.Atoi(portStr)
+	if Local {
+		port, _ = strconv.Atoi(portStr)
+	} else {
+		port = int(67)
+	}
+	// Keep as is for futur test
+	if !(net.ParseIP(ipStr).Equal(giAddr)) {
+		if !(giAddr.Equal(net.IPv4zero)) {
+			ipStr = giAddr.String()
+		}
+	}
 
 	udpsrc := uint(67)
+
 	udpdst := port
 
 	udp := udphdr{
@@ -273,7 +283,7 @@ func sendUnicastDHCP(dhcp []byte, dstIP net.Addr, srcIP net.IP) error {
 	// Send packet to target
 	err = syscall.Close(s)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error closing the socket: %v\n", err)
+		log.Fatal("error closing the socket: ", err)
 		os.Exit(1)
 	}
 	return err

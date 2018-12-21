@@ -12,7 +12,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/api-frontend/aaa"
 	"github.com/inverse-inc/packetfence/go/caddy/caddy"
 	"github.com/inverse-inc/packetfence/go/caddy/caddy/caddyhttp/httpserver"
-	"github.com/inverse-inc/packetfence/go/db"
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/inverse-inc/packetfence/go/panichandler"
 	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
@@ -96,12 +95,7 @@ func buildApiAAAHandler(ctx context.Context) (ApiAAAHandler, error) {
 		apiAAA.webservicesBackend.SetUser(pfconfigdriver.Config.PfConf.Webservices.User, pfconfigdriver.Config.PfConf.Webservices.Pass)
 	}
 
-	db, err := db.DbFromConfig(ctx)
-	sharedutils.CheckError(err)
-
-	apiAAA.authentication.AddAuthenticationBackend(aaa.NewDbAuthenticationBackend(ctx, db, "api_user"))
-
-	url, err := url.Parse("http://localhost:8080/api/v1/authentication/admin_authentication")
+	url, err := url.Parse("http://127.0.0.1:8080/api/v1/authentication/admin_authentication")
 	sharedutils.CheckError(err)
 	apiAAA.authentication.AddAuthenticationBackend(aaa.NewPfAuthenticationBackend(ctx, url, false))
 
@@ -188,6 +182,10 @@ func (h ApiAAAHandler) handleTokenInfo(w http.ResponseWriter, r *http.Request, p
 }
 
 func (h ApiAAAHandler) HandleAAA(w http.ResponseWriter, r *http.Request) bool {
+	if aaa.IsPathPublic(r.URL.Path) {
+		return true
+	}
+
 	ctx := r.Context()
 	auth, err := h.authentication.BearerRequestIsAuthorized(ctx, r)
 

@@ -16,6 +16,7 @@ use strict;
 use warnings;
 use Mojo::Base qw(pf::UnifiedApi::Controller::RestRoute);
 use pf::UnifiedApi::OpenAPI::Generator::Config;
+use Mojo::Util qw(url_unescape);
 
 has 'config_store_class';
 has 'form_class';
@@ -24,7 +25,13 @@ has 'openapi_generator_class' => 'pf::UnifiedApi::OpenAPI::Generator::Config';
 sub list {
     my ($self) = @_;
     my $cs = $self->config_store;
-    $self->render(json => {items => $cs->readAll('id')}, status => 200);
+    $self->render(json => {items => $self->items}, status => 200);
+}
+
+sub items {
+    my ($self) = @_;
+    my $cs = $self->config_store;
+    return $cs->readAll('id');
 }
 
 sub config_store {
@@ -43,10 +50,6 @@ sub form {
     $self->form_class->new(@$parameters);
 }
 
-sub create_form {
-    my ($self, $form_class, $parameters) = @_;
-}
-
 sub resource {
     my ($self) = @_;
     my $id = $self->id;
@@ -62,7 +65,7 @@ sub get {
     my ($self) = @_;
     my $item = $self->item;
     if ($item) {
-        return $self->render(json => {item => $item});
+        return $self->render(json => {item => $item}, status => 200);
     }
     return;
 }
@@ -74,7 +77,7 @@ sub item {
 
 sub id {
     my ($self) = @_;
-    $self->stash->{$self->primary_key};
+    url_unescape($self->stash->{$self->primary_key});
 }
 
 sub item_from_store {
@@ -90,7 +93,9 @@ sub cleanup_item {
     }
 
     $form->process(init_object => $item);
-    return $form->value;
+    $item = $form->value;
+    $item->{not_deletable} = $self->config_store->is_section_in_import($item->{id}) ? $self->json_false : $self->json_true;
+    return $item;
 }
 
 sub create {
@@ -120,7 +125,7 @@ sub create {
     $cs->create($id, $item);
     $cs->commit;
     $self->res->headers->location($self->make_location_url($id));
-    $self->render(status => 201, text => '');
+    $self->render(status => 201, json => {});
 }
 
 sub validate_item {
@@ -135,13 +140,26 @@ sub validate_item {
         return $form->value;
     }
 
+    $self->render_error(422, "Unable to validate", $self->format_form_errors($form));
+    return undef;
+}
+
+
+=head2 format_form_errors
+
+format_form_errors
+
+=cut
+
+sub format_form_errors {
+    my ($self, $form) = @_;
     my $field_errors = $form->field_errors;
     my @errors;
     while (my ($k,$v) = each %$field_errors) {
-        push @errors, {$k => $v};
+        push @errors, {field => $k, message => $v};
     }
-    $self->render_error(422, "Unable to validate", \@errors);
-    return undef;
+
+    return \@errors;
 }
 
 sub make_location_url {
@@ -159,7 +177,7 @@ sub remove {
     }
 
     $cs->commit;
-    return $self->render_empty();
+    return $self->render(json => {}, status => 200);
 }
 
 sub update {

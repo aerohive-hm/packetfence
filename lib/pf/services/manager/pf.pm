@@ -16,9 +16,11 @@ pf::services::manager::pf
 
 use strict;
 use warnings;
+use Term::ANSIColor;
 use Moo;
-use pf::constants qw($TRUE);
+use pf::constants qw($TRUE $FALSE);
 use pf::log;
+use pf::util::console;
 use pf::cluster;
 extends 'pf::services::manager';
 
@@ -63,15 +65,75 @@ sub _build_launcher {
     }
 }
 
+
 sub print_status {
     my ($self) = @_;
     my @output = `systemctl --all --no-pager`;
     my $header = shift @output;
-    for (@output) {
-        print if /packetfence.+\.service/;
+    my $colors = pf::util::console::colors();
+    my $pid;
+    my @manager;
+    my $isManaged;
+    for my $output (@output) {
+        if ($output =~ /(packetfence-(.+)\.service)\s+loaded\s+active/) {
+            my $service = $1;
+            my $main_service = $2;
+            my $sub_service = $main_service;
+            if ($sub_service =~ /(radiusd).*/) {
+                $sub_service = $1;
+            }
+            my @service = grep {$_ =~ /$sub_service/} @pf::services::ALL_SERVICES;
+            if (@service == 0) {
+                $pid = $self->sub_pid($service);
+            } else {
+                @manager = grep { $_->name eq $main_service } pf::services::getManagers(\@service);
+                $pid = $manager[0]->pid;
+            }
+            $service .= (" " x (50 - length($service)));
+            print "$service\t$colors->{success}started   ${pid}$colors->{reset}\n";
+        } elsif ($output =~ /(packetfence-(.+)\.service)\s+loaded\s+(inactive|failed)/) {
+            $pid = 0;
+            my $service = $1;
+            my $main_service = $2;
+            my $sub_service = $main_service;
+            if ($sub_service =~ /(radiusd).*/) {
+                $sub_service = $1;
+            }
+            my @service = grep {$_ =~ /$sub_service/} @pf::services::ALL_SERVICES;
+            if (@service == 0) {
+                $pid = $self->sub_pid($service);
+                $isManaged = $FALSE;
+            } else {
+                @manager = grep { $_->name eq $main_service } pf::services::getManagers(\@service);
+                if (@manager) {
+                    $pid = $manager[0]->pid;
+                    $isManaged = $manager[0]->isManaged;
+                }
+            }
+            $service .= (" " x (50 - length($service)));
+            if (@manager && $isManaged && !$manager[0]->optional) {
+                print "$service\t$colors->{error}stopped   ${pid}$colors->{reset}\n";
+            } else {
+                print "$service\t$colors->{warning}stopped   ${pid}$colors->{reset}\n";
+            }
+        }
     }
 }
 
+
+sub sub_pid {
+    my ($self, $service) = @_;
+    my $logger = get_logger();
+    my $pid = `sudo systemctl show -p MainPID $service`;
+    chomp $pid;
+    $pid = (split(/=/, $pid))[1];
+    if (defined $pid) {
+        $logger->debug("sudo systemctl $service returned $pid");
+    } else {
+        $logger->error("Error getting pid for $service");
+    }
+    return $pid;
+}
 
 sub pid {
     my ($self) = @_;

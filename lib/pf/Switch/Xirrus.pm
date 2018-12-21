@@ -40,12 +40,14 @@ use pf::config qw(
     $MAC
     $SSID
     $WIRELESS_MAC_AUTH
+    $WEBAUTH_WIRELESS
 );
 use pf::constants;
 use pf::node;
 use pf::Switch::constants;
 use pf::util;
 use pf::util::radius qw(perform_disconnect);
+use pf::constants::role qw($REJECT_ROLE);
 
 use base ('pf::Switch');
 
@@ -354,14 +356,9 @@ sub returnRadiusAccessAccept {
         my $violation = pf::violation::violation_view_top($args->{'mac'});
         # if user is unregistered or is in violation then we reject him to show him the captive portal
         if ( $node->{status} eq $pf::node::STATUS_UNREGISTERED || defined($violation) ){
-            $logger->info("is unregistered. Refusing access to force the eCWP");
-            my $radius_reply_ref = {
-                'Tunnel-Medium-Type' => $RADIUS::ETHERNET,
-                'Tunnel-Type' => $RADIUS::VLAN,
-                'Tunnel-Private-Group-ID' => -1,
-            };
-            ($radius_reply_ref, $status) = $filter->handleAnswerInRule($rule,$args,$radius_reply_ref);
-            return [$status, %$radius_reply_ref];
+            $logger->info("[$args->{'mac'}] is unregistered. Refusing access to force the eCWP");
+            $args->{user_role} = $REJECT_ROLE;
+            $self->handleRadiusDeny();
         }
         else{
             $logger->info("Returning ACCEPT");
@@ -399,6 +396,7 @@ sub parseExternalPortalRequest {
         redirect_url            => $req->param('userurl'),
         status_code             => '200',
         synchronize_locationlog => $TRUE,
+        connection_type         => $WEBAUTH_WIRELESS,
     );
 
     return \%params;

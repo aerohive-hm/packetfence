@@ -40,7 +40,7 @@ The main definition block
 
 has_block 'definition' =>
   (
-    render_list => [qw(id description root_module status preregistration autoregister reuse_dot1x_credentials dot1x_recompute_role_from_portal dpsk default_psk_key)],
+    render_list => [qw(id description root_module preregistration autoregister reuse_dot1x_credentials dot1x_recompute_role_from_portal dpsk default_psk_key unreg_on_acct_stop)],
   );
 
 =head2 captive_portal
@@ -226,8 +226,26 @@ has_field 'default_psk_key' =>
   (
    type => 'Text',
    label => 'Default PSK key',
+   minlength => 8,
    tags => { after_element => \&help,
              help => 'This is the default PSK key when you enable DPSK on this connection profile. The minimum length is eight characters.' },
+  );
+
+=head2 unreg_on_acct_stop
+
+Controls whether or not this connection profile will unregister a devices on accounting stop
+
+=cut
+
+has_field 'unreg_on_acct_stop' =>
+  (
+   type => 'Toggle',
+   label => 'Automatically deregister devices on accounting stop',
+   checkbox_value => 'enabled',
+   unchecked_value => 'disabled',
+   default => 'disabled',
+   tags => { after_element => \&help,
+             help => 'This activates automatic deregistation of devices for the profile if PacketFence receives a RADIUS accounting stop.' },
   );
 
 =head2 sources
@@ -457,23 +475,6 @@ has_field 'access_registration_when_registered' =>
    unchecked_value => 'disabled',
    tags => { after_element => \&help,
              help => 'This allows already registered users to be able to re-register their device by first accessing the status page and then accessing the portal. This is useful to allow users to extend their access even though they are already registered.' },
-  );
-
-=head2 status
-
-The status of the profile if it is enabled or disabled
-
-=cut
-
-has_field 'status' =>
-  (
-   type => 'Toggle',
-   label => 'Profile is enable/disabled',
-   checkbox_value => 'enabled',
-   unchecked_value => 'disabled',
-   tags => { after_element => \&help,
-             help => 'If profile is disabled it will not used' },
-   default => 'enabled'
   );
 
 =head1 METHODS

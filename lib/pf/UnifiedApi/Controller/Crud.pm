@@ -19,7 +19,8 @@ use Mojo::JSON qw(decode_json);
 use pf::error qw(is_error);
 use pf::log;
 use pf::util qw(expand_csv);
-use pf::UnifiedApi::SearchBuilder;
+use Mojo::Util qw(url_unescape);
+use pf::UnifiedApi::Search::Builder;
 use pf::UnifiedApi::OpenAPI::Generator::Crud;
 
 our %OP_HAS_SUBQUERIES = (
@@ -63,13 +64,22 @@ Example:
 
 has 'parent_primary_key_map' => sub { {} };
 
+=head2 url_parent_ids
+
+url_parent_ids
+
+=cut
+
+has 'url_parent_ids' => sub { [] };
+
+
 =head2 search_builder_class
 
 search_builder_class
 
 =cut
 
-has 'search_builder_class' => "pf::UnifiedApi::SearchBuilder";
+has 'search_builder_class' => "pf::UnifiedApi::Search::Builder";
 
 =head2 openapi_generator_class
 
@@ -117,7 +127,7 @@ sub build_list_search_info {
                 exists $params->{$_}
                   ? ( $_ => $params->{$_} )
                   : ()
-            } qw(limit cursor)
+            } qw(limit cursor with_total_count)
         ),
         (
             map {
@@ -187,7 +197,7 @@ sub get_lookup_info {
 sub render_get {
     my ($self) = @_;
     my $stash = $self->stash;
-    return $self->render(json => { item => $self->item, status => $stash->{status}});
+    return $self->render(json => { item => $self->item }, status => $stash->{status});
 }
 
 =head2 item
@@ -220,6 +230,17 @@ sub create {
     return $self->render_create(
         $self->do_create($self->make_create_data())
     );
+}
+
+=head2 id
+
+Get id of current resource
+
+=cut
+
+sub id {
+    my ($self) = @_;
+    url_unescape($self->stash->{$self->url_param_name});
 }
 
 sub create_error_msg {
@@ -384,7 +405,7 @@ sub build_search_info {
                 exists $data_or_error->{$_}
                   ? ( $_ => $data_or_error->{$_} )
                   : ()
-            } qw(limit query fields sort cursor)
+            } qw(limit query fields sort cursor with_total_count)
         )
     };
 }

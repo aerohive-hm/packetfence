@@ -3,67 +3,48 @@
     <b-card-header>
       <h4 class="mb-0" v-t="'Create Nodes'"></h4>
     </b-card-header>
-    <b-tabs v-model="modeIndex" card>
-
-      <b-tab :title="$t('Single')">
-        <b-form @submit.prevent="create()">
-          <b-form-row align-v="center">
-            <b-col sm="8">
-              <pf-form-input v-model="single.mac" label="MAC"
-                :validation="$v.single.mac" :invalid-feedback="invalidMacFeedback"/>
-              <pf-form-input v-model="single.pid" label="Owner" placeholder="default" validation="$v.single.pid"/>
-              <b-form-group horizontal label-cols="3" :label="$t('Status')">
-                <b-form-select v-model="single.status" :options="statuses"></b-form-select>
-              </b-form-group>
-              <b-form-group horizontal label-cols="3" :label="$t('Role')">
-                <b-form-select v-model="single.category" :options="roles"></b-form-select>
-              </b-form-group>
-              <b-form-group horizontal label-cols="3" :label="$t('Unregistration')">
-                <b-form-row>
-                  <b-col>
-                    <b-form-input type="date" v-model="single.unreg_date"/>
-                  </b-col>
-                  <b-col>
-                    <b-form-input type="time" v-model="single.unreg_time"/>
-                  </b-col>
-                </b-form-row>
-              </b-form-group>
-            </b-col>
-            <b-col sm="4">
-              <b-form-textarea :placeholder="$t('Notes')" v-model="single.notes" rows="8" max-rows="12"></b-form-textarea>
-            </b-col>
-          </b-form-row>
-        </b-form>
-      </b-tab>
-
-      <b-tab :title="$t('Import')">
-        <b-form>
-          <b-form-group horizontal label-cols="3" label="CSV File">
-            <b-form-file v-model="csv.file" accept="text/*" choose-label="Choose a file"></b-form-file>
-          </b-form-group>
-          <b-form-group horizontal label-cols="3" label="Column Delimiter">
-            <b-form-select v-model="csv.delimiter" :options="csv.delimiters"></b-form-select>
-          </b-form-group>
-          <b-form-group horizontal label-cols="3" label="Default Voice Over IP">
-            <b-form-checkbox v-model="csv.voip" value="yes"></b-form-checkbox>
-          </b-form-group>
-          <b-row>
-            <b-col sm="3">{{ $t('Columns Order') }}</b-col>
-            <b-col>
-              <draggable v-model="csv.olumns" :options="{ handle: '.draggable-handle' }">
-                <div class="draggable-item" v-for="(column, index) in csv.columns" :key="column.name">
-                  <span class="draggable-handle">{{ index }}</span>
-                  <b-form-checkbox v-model="column.value" value="1">{{column.text}}</b-form-checkbox>
-                </div>
-              </draggable>
-            </b-col>
-          </b-row>
-        </b-form>
-      </b-tab>
-    </b-tabs>
-
-    <b-card-footer align="right" @mouseenter="$v.$touch()">
-      <b-button variant="outline-primary" :disabled="invalidForm" @click="create()">
+    <div class="card-body">
+      <b-form @submit.prevent="create()">
+        <b-form-row align-v="center">
+          <b-col sm="12">
+            <pf-form-input :column-label="$t('MAC')"
+              v-model="single.mac"
+              :filter="globals.regExp.stringMac"
+              :validation="$v.single.mac"
+            />
+            <pf-form-autocomplete :column-label="$t('Owner')"
+              v-model="single.pid"
+              :suggestions="matchingUsers"
+              :validation="$v.single.pid"
+               placeholder="default"
+              @search="searchUsers"
+            />
+            <pf-form-select :column-label="$t('Status')"
+              v-model="single.status"
+              :options="statuses"
+              :validation="$v.single.status"
+            />
+            <pf-form-select :column-label="$t('Role')"
+             v-model="single.category"
+             :options="roles"
+              :validation="$v.single.category"
+            />
+            <pf-form-datetime :column-label="$t('Unregistration')"
+              v-model="single.unregdate"
+              :moments="['1 hours', '1 days', '1 weeks', '1 months', '1 quarters', '1 years']"
+              :validation="$v.single.unregdate"
+            />
+            <pf-form-textarea :column-label="$t('Notes')"
+              v-model="single.notes"
+              :validation="$v.single.notes"
+              rows="3" max-rows="3"
+            />
+          </b-col>
+        </b-form-row>
+      </b-form>
+    </div>
+    <b-card-footer @mouseenter="$v.$touch()">
+      <b-button variant="primary" :disabled="invalidForm" @click="create()">
         <icon name="circle-notch" spin v-show="isLoading"></icon> {{ $t('Create') }}
       </b-button>
     </b-card-footer>
@@ -72,67 +53,81 @@
 </template>
 
 <script>
+import pfFormAutocomplete from '@/components/pfFormAutocomplete'
+import pfFormDatetime from '@/components/pfFormDatetime'
 import pfFormInput from '@/components/pfFormInput'
+import pfFormSelect from '@/components/pfFormSelect'
+import pfFormTextarea from '@/components/pfFormTextarea'
 import draggable from 'vuedraggable'
+import usersApi from '@/views/Users/_api'
+import { pfRegExp as regExp } from '@/globals/pfRegExp'
 import {
   pfSearchConditionType as conditionType,
   pfSearchConditionValues as conditionValues
 } from '@/globals/pfSearch'
+import {
+  required
+} from 'vuelidate/lib/validators'
+import {
+  userExists,
+  nodeExists
+} from '@/globals/pfValidators'
+import {
+  pfDatabaseSchema as schema,
+  buildValidationFromTableSchemas
+} from '@/globals/pfDatabaseSchema'
+
 const { validationMixin } = require('vuelidate')
-const { macAddress, required } = require('vuelidate/lib/validators')
 
 export default {
   name: 'NodesCreate',
   components: {
     draggable,
-    'pf-form-input': pfFormInput
+    'pf-form-autocomplete': pfFormAutocomplete,
+    'pf-form-datetime': pfFormDatetime,
+    'pf-form-input': pfFormInput,
+    'pf-form-select': pfFormSelect,
+    'pf-form-textarea': pfFormTextarea
   },
   mixins: [
     validationMixin
   ],
+  props: {
+    storeName: { // from router
+      type: String,
+      default: null,
+      required: true
+    }
+  },
   data () {
     return {
+      globals: {
+        regExp: regExp,
+        schema: schema
+      },
       modeIndex: 0,
       single: {
         mac: '',
-        status: 'reg',
-        unreg_time: '00:00:00'
+        status: 'reg'
       },
-      csv: {
-        file: null,
-        delimiter: 'comma',
-        delimiters: [
-          { value: 'comma', text: 'Comma' },
-          { value: 'semicolon', text: 'Semicolon' },
-          { value: 'tab', text: 'Tab' }
-        ],
-        voip: null,
-        columns: [
-          { value: '1', name: 'mac', text: 'MAC Address' },
-          { value: '0', name: 'owner', text: 'Owner' },
-          { value: '0', name: 'role', text: 'Role' },
-          { value: '0', name: 'unregdate', text: 'Unregistration Date' }
-        ]
-      }
+      matchingUsers: []
     }
   },
-  validations: {
-    single: {
-      mac: {
-        macAddress: macAddress(),
-        required,
-        isUnique (mac) {
-          if (!this.$v.single.mac.macAddress) return true
-          return this.$store.dispatch('$_nodes/exists', mac).then(results => {
-            return false
-          }).catch(() => {
-            return true
-          })
+  validations () {
+    return {
+      single: buildValidationFromTableSchemas(
+        schema.node, // use `node` table schema
+        {
+          // additional custom validations ...
+          mac: {
+            [this.$i18n.t('MAC address required.')]: required,
+            [this.$i18n.t('MAC address exists.')]: nodeExists
+          },
+          pid: {
+            [this.$i18n.t('Owner does not exist.')]: userExists
+          }
         }
-      }
-    },
-    csv: {
-      file: { required }
+      )
     }
   },
   computed: {
@@ -145,12 +140,6 @@ export default {
     isLoading () {
       return this.$store.getters['$_nodes/isLoading']
     },
-    invalidMacFeedback () {
-      if (!this.$v.single.mac.isUnique) {
-        return 'MAC address already exists'
-      }
-      return 'Enter a valid MAC address'
-    },
     invalidForm () {
       if (this.modeIndex === 0) {
         return this.$v.single.$invalid || this.isLoading
@@ -160,13 +149,39 @@ export default {
     }
   },
   methods: {
+    searchUsers () {
+      const _this = this
+      let body = {
+        limit: 10,
+        fields: ['pid', 'firstname', 'lastname', 'email'],
+        sort: ['pid'],
+        query: {
+          op: 'and',
+          values: [{
+            op: 'or',
+            values: [
+              { field: 'pid', op: 'contains', value: this.single.pid },
+              { field: 'firstname', op: 'contains', value: this.single.pid },
+              { field: 'lastname', op: 'contains', value: this.single.pid },
+              { field: 'email', op: 'contains', value: this.single.pid }
+            ]
+          }]
+        }
+      }
+      usersApi.search(body).then((data) => {
+        _this.matchingUsers = data.items.map(item => item.pid)
+      })
+    },
     create () {
       if (this.modeIndex === 0) {
         this.$store.dispatch('$_nodes/createNode', this.single).then(response => {
-          console.debug('node created')
-        }).catch(err => {
-          console.debug(err)
-          console.debug(this.$store.state.$_nodes.message)
+          this.$store.dispatch('notification/info', { message: this.$i18n.t('Node') + ' ' + this.single.mac + ' ' + this.$i18n.t('created') })
+          this.single = {
+            mac: '',
+            status: 'reg'
+          }
+        }).catch(() => {
+          this.$store.dispatch('notification/danger', { message: this.$store.state[this.storeName].message })
         })
       }
     }
@@ -176,4 +191,3 @@ export default {
   }
 }
 </script>
-

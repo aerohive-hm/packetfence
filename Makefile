@@ -11,7 +11,8 @@ all:
 	@echo ""
 	@echo " 'pdf' will build all guides using the PDF format"
 	@echo " 'PacketFence_Installation_Guide.pdf' will build the Installation guide in PDF"
-	@echo " 'PacketFence_Developers_Guide.pdf' will build the Develoeprs guide in PDF"
+	@echo " 'PacketFence_Clustering_Guide.pdf' will build the Clustering guide in PDF"
+	@echo " 'PacketFence_Developers_Guide.pdf' will build the Developers guide in PDF"
 	@echo " 'PacketFence_Network_Devices_Configuration_Guide.pdf' will build the Network Devices Configuration guide in PDF"
 
 pdf: docs/docbook/xsl/titlepage-fo.xsl docs/docbook/xsl/import-fo.xsl $(patsubst %.asciidoc,%.pdf,$(notdir $(wildcard docs/PacketFence_*.asciidoc)))
@@ -32,7 +33,7 @@ docs/docbook/xsl/import-fo.xsl:
 	</xsl:stylesheet>" \
 	> docs/docbook/xsl/import-fo.xsl
 
-%.pdf : docs/%.asciidoc
+%.pdf : docs/%.asciidoc docs/docbook/xsl/titlepage-fo.xsl docs/docbook/xsl/import-fo.xsl
 	asciidoc \
 		-a docinfo2 \
 		-b docbook \
@@ -55,13 +56,13 @@ html: $(patsubst %.asciidoc,%.html,$(notdir $(wildcard docs/PacketFence_*.asciid
 	asciidoctor \
 		-D docs/html \
 		-n \
+		-a imagesdir=../images \
 		$<
 
 html/pfappserver/root/static/doc:
 	make html
-	mkdir -p docs/html/docs/images/
-	cp -a docs/images/* docs/html/docs/images/
-	mv docs/html html/pfappserver/root/static/doc
+	cp -a docs/html/* html/pfappserver/root/static/doc
+	cp -a docs/images/* html/pfappserver/root/static/images
 
 pfcmd.help:
 	/usr/local/pf/bin/pfcmd help > docs/pfcmd.help
@@ -70,6 +71,12 @@ pfcmd.help:
 
 configurations:
 	find -type f -name '*.example' -print0 | while read -d $$'\0' file; do cp -n $$file "$$(dirname $$file)/$$(basename $$file .example)"; done
+	touch /usr/local/pf/conf/pf.conf
+
+.PHONY: configurations_force
+
+configurations_hard:
+	find -type f -name '*.example' -print0 | while read -d $$'\0' file; do cp $$file "$$(dirname $$file)/$$(basename $$file .example)"; done
 	touch /usr/local/pf/conf/pf.conf
 
 # server certs and keys
@@ -102,14 +109,14 @@ bin/ntlm_auth_wrapper: src/ntlm_auth_wrap.c
 .PHONY:permissions
 
 /etc/sudoers.d/packetfence.sudoers: packetfence.sudoers
-	cp packetfence.sudoers /etc/sudoers.d/packetfence.sudoers
+	cp packetfence.sudoers /etc/sudoers.d/packetfence
 
 .PHONY: sudo
 
 sudo: /etc/sudoers.d/packetfence.sudoers
 
 
-permissions:
+permissions: bin/pfcmd
 	./bin/pfcmd fixpermissions
 
 raddb/certs/server.crt:
@@ -159,7 +166,10 @@ systemd:
 pf-dal:
 	perl /usr/local/pf/addons/dev-helpers/bin/generator-data-access-layer.pl
 
-devel: configurations conf/ssl/server.crt conf/local_secret bin/pfcmd raddb/certs/server.crt sudo translation mysql-schema raddb/sites-enabled fingerbank chown_pf permissions bin/ntlm_auth_wrapper html/pfappserver/root/static/doc
+devel: configurations conf/ssl/server.key conf/ssl/server.crt conf/local_secret bin/pfcmd raddb/certs/server.crt sudo translation mysql-schema raddb/sites-enabled fingerbank chown_pf permissions bin/ntlm_auth_wrapper conf/unified_api_system_pass
 
 test:
 	cd t && ./smoke.t
+
+update_samsung_dns_filter:
+	bash /usr/local/pf/addons/update-samsung-dns-filter.sh

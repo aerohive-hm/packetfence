@@ -14,9 +14,11 @@ use strict;
 use warnings;
 use HTML::FormHandler::Moose;
 extends 'pfappserver::Base::Form';
-with 'pfappserver::Base::Form::Role::Help',
-     'pfappserver::Base::Form::Role::AllowedOptions',
-     'pfappserver::Role::Form::RolesAttribute';
+with qw(
+    pfappserver::Base::Form::Role::Help
+    pfappserver::Base::Form::Role::AllowedOptions
+    pfappserver::Role::Form::RolesAttribute
+);
 
 use pfappserver::Form::Field::DynamicList;
 use pfappserver::Base::Form::Authentication::Action;
@@ -157,6 +159,7 @@ our %EXCLUDE = (
     action_templates => 1,
     local_account => 1,
     create_local_account => 1,
+    password_length => 1,
     local_account_logins => 1,
     stripped_user_name => 1,
     realms => 1,

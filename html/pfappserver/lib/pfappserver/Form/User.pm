@@ -176,12 +176,6 @@ has_field 'nickname' =>
    label => 'nickname',
   );
 
-has_field 'organization' =>
-  (
-   type => 'Text',
-   label => 'organization',
-  );
-
 has_field 'cell_phone' =>
   (
    type => 'Text',
@@ -276,6 +270,7 @@ has_field 'psk' =>
   (
    type => 'Text',
    Label => 'PSK key',
+   minlength => 8,
    tags => { after_element => \&help,
          help => 'Minimum of 8 characters.' },
   );
@@ -297,7 +292,7 @@ has_block 'user' =>
 
 has_block 'miscellaneous' =>
   (
-   render_list => [qw(anniversary birthday gender lang nickname organization cell_phone work_phone title building_number apartment_number room_number psk)]
+   render_list => [qw(anniversary birthday gender lang nickname cell_phone work_phone title building_number apartment_number room_number psk)]
   );
 
 has_block 'custom_fields' =>

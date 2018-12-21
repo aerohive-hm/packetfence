@@ -22,7 +22,7 @@ use pf::file_paths qw(
     $portal_modules_default_config_file
     $portal_modules_config_file
 );
-use Config::IniFiles;
+use pf::IniFiles;
 
 use base 'pfconfig::namespaces::config';
 
@@ -30,7 +30,7 @@ sub init {
     my ($self) = @_;
     $self->{file} = $portal_modules_config_file;
 
-    my $defaults = Config::IniFiles->new( -file => $portal_modules_default_config_file );
+    my $defaults = pf::IniFiles->new( -file => $portal_modules_default_config_file );
     $self->{added_params}->{'-import'} = $defaults;
     $self->{child_resources} = ['resource::PortalModuleReverseLookup'];
 }
@@ -41,7 +41,7 @@ sub build_child {
     my %tmp_cfg = %{$self->{cfg}};
     my %reverseLookup;
     while ( my ($key, $module) = each %tmp_cfg) {
-        $self->expand_list($module, qw(modules custom_fields multi_source_types multi_source_auth_classes multi_source_object_classes));
+        $self->expand_list($module, qw(modules fields_to_save custom_fields multi_source_types multi_source_auth_classes multi_source_object_classes));
         foreach my $field (qw(modules source_id)) {
             my $values = $module->{$field};
             if (ref ($values) eq '') {

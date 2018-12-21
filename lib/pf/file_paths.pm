@@ -22,7 +22,7 @@ use File::Spec::Functions;
 
 our (
     #Directories
-    $install_dir, $bin_dir, $conf_dir, $lib_dir, $html_dir, $users_cert_dir, $log_dir, $generated_conf_dir, $var_dir,
+    $install_dir, $bin_dir, $sbin_dir, $conf_dir, $lib_dir, $html_dir, $users_cert_dir, $log_dir, $generated_conf_dir, $var_dir,
     $tt_compile_cache_dir, $pfconfig_cache_dir, $domains_chroot_dir, $domains_ntlm_cache_users_dir, $systemd_unit_dir, 
 
     #Config files
@@ -81,6 +81,7 @@ our (
     $wmi_config_file,
     $pki_provider_config_file,
     $suricata_categories_file,
+    $nexpose_categories_file,
     $radius_filters_config_file,
     $billing_tiers_config_file,
     $dhcp_filters_config_file,
@@ -114,7 +115,7 @@ BEGIN {
     @ISA = qw(Exporter);
     # Categorized by feature, pay attention when modifying
     @EXPORT_OK = qw(
-        $install_dir $bin_dir $conf_dir $lib_dir $html_dir $users_cert_dir $log_dir $generated_conf_dir $var_dir
+        $install_dir $bin_dir $sbin_dir $conf_dir $lib_dir $html_dir $users_cert_dir $log_dir $generated_conf_dir $var_dir
         $tt_compile_cache_dir $pfconfig_cache_dir $domains_chroot_dir $domains_ntlm_cache_users_dir $systemd_unit_dir
         $pf_default_file
         $pf_config_file
@@ -160,6 +161,7 @@ BEGIN {
         $wmi_config_file
         $pki_provider_config_file
         $suricata_categories_file
+        $nexpose_categories_file
         $radius_filters_config_file
         $billing_tiers_config_file
         $dhcp_filters_config_file
@@ -191,6 +193,7 @@ $install_dir = '/usr/local/pf';
 
 # TODO bug#920 all application config data should use Readonly to avoid accidental post-startup alterration
 $bin_dir  = catdir( $install_dir,"bin" );
+$sbin_dir = catdir( $install_dir,"sbin" );
 $conf_dir = catdir( $install_dir,"conf" );
 $var_dir  = catdir( $install_dir,"var" );
 $lib_dir  = catdir( $install_dir,"lib" );
@@ -211,6 +214,7 @@ $pfcmd_binary = catfile( $bin_dir, "pfcmd" );
 
 $oui_file           = catfile($conf_dir, "oui.txt");
 $suricata_categories_file = catfile($conf_dir, "suricata_categories.txt");
+$nexpose_categories_file = catfile($conf_dir, "nexpose-responses.txt");
 $local_secret_file  = catfile($conf_dir, "local_secret");
 $unified_api_system_pass_file  = catfile($conf_dir, "unified_api_system_pass");
 $pf_doc_file        = catfile($conf_dir, "documentation.conf");

@@ -4,6 +4,8 @@ export default {
   all: params => {
     if (params.sort) {
       params.sort = params.sort.join(',')
+    } else {
+      params.sort = 'mac'
     }
     if (params.fields) {
       params.fields = params.fields.join(',')
@@ -23,27 +25,27 @@ export default {
     })
   },
   fingerbankInfo: mac => {
-    return apiCall.get(`node/${mac}/fingerbank_info`).then(response => {
+    return apiCall.getQuiet(`node/${mac}/fingerbank_info`).then(response => {
       return response.data.item
     })
   },
   ip4logOpen: mac => {
-    return apiCall.get(`ip4logs/open/${mac}`).then(response => {
+    return apiCall.getQuiet(`ip4logs/open/${mac}`).then(response => {
       return response.data.item
     })
   },
   ip4logHistory: mac => {
-    return apiCall.get(`ip4logs/history/${mac}`).then(response => {
+    return apiCall.getQuiet(`ip4logs/history/${mac}`).then(response => {
       return response.data.items
     })
   },
   ip6logOpen: mac => {
-    return apiCall.get(`ip6logs/open/${mac}`).then(response => {
+    return apiCall.getQuiet(`ip6logs/open/${mac}`).then(response => {
       return response.data.item
     })
   },
   ip6logHistory: mac => {
-    return apiCall.get(`ip6logs/history/${mac}`).then(response => {
+    return apiCall.getQuiet(`ip6logs/history/${mac}`).then(response => {
       return response.data.items
     })
   },
@@ -67,6 +69,16 @@ export default {
       return response.data.items
     })
   },
+  dhcpoption82: mac => {
+    const search = {
+      query: { op: 'and', values: [ { field: 'mac', op: 'equals', value: mac } ] },
+      limit: 100,
+      cursor: '0'
+    }
+    return apiCall.post('dhcp_option82s/search', search).then(response => {
+      return response.data.items
+    })
+  },
   createNode: body => {
     return apiCall.post('nodes', body).then(response => {
       return response.data
@@ -80,14 +92,12 @@ export default {
   deleteNode: mac => {
     return apiCall.delete(`node/${mac}`)
   },
-  registerBulkNodes: macs => {
-    const body = { items: macs }
+  registerBulkNodes: body => {
     return apiCall.post('nodes/bulk_register', body).then(response => {
       return response.data
     })
   },
-  deregisterBulkNodes: macs => {
-    const body = { items: macs }
+  deregisterBulkNodes: body => {
     return apiCall.post('nodes/bulk_deregister', body).then(response => {
       return response.data
     })
@@ -97,21 +107,53 @@ export default {
       return response.data
     })
   },
-  clearViolationBulkNodes: macs => {
-    const body = { items: macs }
+  applyViolationBulkNodes: body => {
+    return apiCall.post('nodes/bulk_apply_violation', body).then(response => {
+      return response.data
+    })
+  },
+  clearViolationBulkNodes: body => {
     return apiCall.post('nodes/bulk_close_violations', body).then(response => {
       return response.data
     })
   },
-  reevaluateAccessBulkNodes: macs => {
-    const body = { items: macs }
+  reevaluateAccessBulkNodes: body => {
     return apiCall.post('nodes/bulk_reevaluate_access', body).then(response => {
       return response.data
     })
   },
-  restartSwitchportBulkNodes: macs => {
-    const body = { items: macs }
+  restartSwitchportBulkNodes: body => {
     return apiCall.post('nodes/bulk_restart_switchport', body).then(response => {
+      return response.data
+    })
+  },
+  refreshFingerbankBulkNodes: body => {
+    return apiCall.post('nodes/bulk_fingerbank_refresh', body).then(response => {
+      return response.data
+    })
+  },
+  roleBulkNodes: body => {
+    return apiCall.post('nodes/bulk_apply_role', body).then(response => {
+      return response.data
+    })
+  },
+  bypassRoleBulkNodes: body => {
+    return apiCall.post('nodes/bulk_apply_bypass_role', body).then(response => {
+      return response.data
+    })
+  },
+  reevaluateAccessNode: mac => {
+    return apiCall.postQuiet(`node/${mac}/reevaluate_access`).then(response => {
+      return response.data
+    })
+  },
+  refreshFingerbankNode: mac => {
+    return apiCall.postQuiet(`node/${mac}/fingerbank_refresh`).then(response => {
+      return response.data
+    })
+  },
+  restartSwitchportNode: mac => {
+    return apiCall.postQuiet(`node/${mac}/restart_switchport`).then(response => {
       return response.data
     })
   }

@@ -1,7 +1,8 @@
 <template>
   <b-card no-body>
+    <pf-progress :active="isLoading"></pf-progress>
     <b-card-header>
-      <div class="float-right"><toggle-button v-model="advancedMode">{{ $t('Advanced') }}</toggle-button></div>
+      <div class="float-right"><pf-form-toggle v-model="advancedMode">{{ $t('Advanced') }}</pf-form-toggle></div>
       <h4 class="mb-0" v-t="'Search RADIUS Audit Logs'"></h4>
     </b-card-header>
     <pf-search :quick-with-fields="false" quick-placeholder="Search by MAC or username"
@@ -35,10 +36,14 @@
           </b-container>
         </b-col>
       </b-row>
-      <b-table hover :items="items" :fields="visibleColumns" :sort-by="sortBy" :sort-desc="sortDesc"
-        @sort-changed="onSortingChanged" @row-clicked="onRowClick" no-local-sorting>
+      <b-table class="table-clickable" :items="items" :fields="visibleColumns" :sort-by="sortBy" :sort-desc="sortDesc"
+        @sort-changed="onSortingChanged" @row-clicked="onRowClick"
+        show-empty responsive hover no-local-sorting>
         <template slot="mac" slot-scope="log">
           <mac v-text="log.item.mac"></mac>
+        </template>
+        <template slot="empty">
+          <pf-empty-table :isLoading="isLoading">{{ $t('No log found') }}</pf-empty-table>
         </template>
       </b-table>
     </div>
@@ -46,19 +51,48 @@
 </template>
 
 <script>
-import { pfSearchConditionType as attributeType } from '@/globals/pfSearch'
-import pfBaseSearchable from '@/components/pfBaseSearchable'
+import { pfSearchConditionType as conditionType } from '@/globals/pfSearch'
+import { pfFormatters as formatter } from '@/globals/pfFormatters'
+import pfMixinSearchable from '@/components/pfMixinSearchable'
+import pfProgress from '@/components/pfProgress'
+import pfEmptyTable from '@/components/pfEmptyTable'
 import pfSearch from '@/components/pfSearch'
-import ToggleButton from '@/components/ToggleButton'
+import pfFormToggle from '@/components/pfFormToggle'
 
 export default {
   name: 'RadiusLogsSearch',
-  extends: pfBaseSearchable,
-  searchApiEndpoint: 'radius_audit_logs',
-  defaultSortKeys: ['created_at', 'mac'],
+  mixins: [
+    pfMixinSearchable
+  ],
   components: {
+    'pf-progress': pfProgress,
+    'pf-empty-table': pfEmptyTable,
     'pf-search': pfSearch,
-    'toggle-button': ToggleButton
+    'pf-form-toggle': pfFormToggle
+  },
+  props: {
+    pfMixinSearchableOptions: {
+      type: Object,
+      default: () => ({
+        searchApiEndpoint: 'radius_audit_logs',
+        defaultSortKeys: ['created_at', 'mac'],
+        defaultSearchCondition: {
+          op: 'and',
+          values: [{
+            op: 'or',
+            values: [
+              { field: 'mac', op: 'contains', value: null },
+              { field: 'user_name', op: 'contains', value: null }
+            ]
+          }]
+        },
+        defaultRoute: { name: 'auditing' }
+      })
+    },
+    tableValues: {
+      type: Array,
+      default: () => []
+    }
   },
   data () {
     return {
@@ -67,12 +101,12 @@ export default {
         {
           value: 'user_name',
           text: 'Username',
-          types: [attributeType.SUBSTRING]
+          types: [conditionType.SUBSTRING]
         },
         {
           value: 'mac',
           text: 'MAC Address',
-          types: [attributeType.SUBSTRING]
+          types: [conditionType.SUBSTRING]
         }
       ],
       columns: [
@@ -80,8 +114,8 @@ export default {
           key: 'id',
           label: this.$i18n.t('ID'),
           sortable: true,
-          visible: false,
-          locked: true
+          visible: true,
+          locked: false
         },
         {
           key: 'auth_status',
@@ -117,41 +151,40 @@ export default {
           key: 'created_at',
           label: this.$i18n.t('Created At'),
           sortable: true,
-          visible: true
+          visible: true,
+          formatter: formatter.datetimeIgnoreZero
         }
       ]
     }
   },
   methods: {
-    quickCondition (newCondition) {
-      // Build full condition from quick value;
-      // Called from pfBaseSearchable.onSearch().
+    pfMixinSearchableQuickCondition (quickCondition) {
       return {
-        op: 'or',
+        op: 'and',
         values: [
-          { field: 'mac', op: 'contains', value: newCondition },
-          { field: 'user_name', op: 'contains', value: newCondition }
+          {
+            op: 'or',
+            values: [
+              { field: 'mac', op: 'contains', value: quickCondition },
+              { field: 'user_name', op: 'contains', value: quickCondition }
+            ]
+          }
         ]
       }
     },
+    pfMixinSearchableAdvancedMode (condition) {
+      return condition.values.length > 1 ||
+        condition.values[0].values.filter(v => {
+          return this.pfMixinSearchableOptions.defaultSearchCondition.values[0].values.findIndex(d => {
+            return d.field === v.field && d.op === v.op
+          }) >= 0
+        }).length !== condition.values[0].values.length
+    },
     onRowClick (item, index) {
-      this.$router.push({ name: 'view', params: { id: item.id } })
+      this.$router.push({ name: 'radiuslog', params: { id: item.id } })
     }
   },
   created () {
-    // pfBaseSearchable.created() has been called
-    if (!this.condition) {
-      // Select first field
-      this.initCondition()
-    } else {
-      // Restore selection of advanced mode; check if condition matches a quick search
-      this.advancedMode = !(this.condition.op === 'or' &&
-        this.condition.values.length === 2 &&
-        this.condition.values[0].field === 'mac' &&
-        this.condition.values[0].op === 'contains' &&
-        this.condition.values[1].field === 'user_name' &&
-        this.condition.values[1].op === 'contains')
-    }
   }
 }
 </script>

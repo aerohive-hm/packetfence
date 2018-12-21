@@ -16,17 +16,18 @@ use strict;
 use warnings;
 use Mojo::Base 'pf::UnifiedApi::Controller::Crud';
 use pf::dal::node;
+use pf::fingerbank;
 use pf::node;
 use pf::constants qw($TRUE);
 use pf::dal::violation;
 use pf::error qw(is_error);
 use pf::locationlog qw(locationlog_history_mac locationlog_view_open_mac);
-use pf::UnifiedApi::SearchBuilder::Nodes;
+use pf::UnifiedApi::Search::Builder::Nodes;
 use pf::violation;
 use pf::Connection;
 use pf::SwitchFactory;
 
-has 'search_builder_class' => 'pf::UnifiedApi::SearchBuilder::Nodes';
+has 'search_builder_class' => 'pf::UnifiedApi::Search::Builder::Nodes';
 
 has dal => 'pf::dal::node';
 has url_param_name => 'node_id';
@@ -54,10 +55,10 @@ sub register {
 
     my ($success, $msg) = node_register($mac, $pid, %$data);
     if (!$success) {
-        return $self->render_error(status => 422, "Cannot register $mac" . ($msg ? " $msg" : ""));
+        return $self->render_error(422, "Cannot register $mac" . ($msg ? " $msg" : ""));
     }
 
-    return $self->render_empty;
+    return $self->render(json => {}, status => 200);
 }
 
 =head2 deregister
@@ -76,10 +77,10 @@ sub deregister {
 
     my ($success) = node_deregister($mac, %$data);
     if (!$success) {
-        return $self->render_error(status => 422, "Cannot deregister $mac");
+        return $self->render_error(422, "Cannot deregister $mac");
     }
 
-    return $self->render_empty;
+    return $self->render(json => {}, status => 200);
 }
 
 =head2 bulk_register
@@ -105,7 +106,7 @@ sub bulk_register {
         -with_class => undef,
     );
     if (is_error($status)) {
-        return $self->render_error(status => $status, "Error finding nodes");
+        return $self->render_error($status, "Error finding nodes");
     }
 
     my ($indexes, $results) = bulk_init_results($items);
@@ -163,7 +164,7 @@ sub bulk_deregister {
         -with_class => undef,
     );
     if (is_error($status)) {
-        return $self->render_error(status => $status, "Error finding nodes");
+        return $self->render_error($status, "Error finding nodes");
     }
 
     my ($index, $results) = bulk_init_results($items);
@@ -192,6 +193,22 @@ sub fingerbank_info {
     return $self->render(status => 200, json => { item => pf::node::fingerbank_info($mac) });
 }
 
+=head2 fingerbank_refresh
+
+fingerbank_refresh
+
+=cut
+
+sub fingerbank_refresh {
+    my ($self) = @_;
+    my $mac = $self->stash->{node_id};
+    unless (pf::fingerbank::process($mac, $TRUE)) {
+        return $self->render_error(500, "Couldn't refresh device profiling through Fingerbank");
+    }
+
+    return $self->render(json => {}, status => 200);
+}
+
 =head2 bulk_close_violations
 
 bulk_close_violations
@@ -218,7 +235,7 @@ sub bulk_close_violations {
     );
 
     if (is_error($status)) {
-        return $self->render_error(status => $status, "Error finding nodes");
+        return $self->render_error($status, "Error finding nodes");
     }
 
     my ($indexes, $results) = bulk_init_results($items);
@@ -253,7 +270,7 @@ sub close_violation {
     my $violation_id = $data->{violation_id};
     my $violation = violation_exist_id($violation_id);
     if (!$violation || $violation->{mac} ne $mac ) {
-        return $self->render_error(status => 404, "Error finding violation");
+        return $self->render_error(404, "Error finding violation");
     }
 
     my $result = 0;
@@ -266,7 +283,7 @@ sub close_violation {
         return $self->render_error(500, "Unable to close violation");
     }
 
-    return $self->render_empty();
+    return $self->render(json => {}, status => 200);
 }
 
 =head2 create_error_msg
@@ -297,6 +314,29 @@ sub bulk_reevaluate_access {
     my ($indexes, $results) = bulk_init_results($items);
     for my $mac (@$items) {
         my $result = pf::enforcement::reevaluate_access($mac, "admin_modify");
+        $results->[$indexes->{$mac}]{status} = $result ? "success" : "failed";
+    }
+
+    return $self->render(status => 200, json => { items => $results });
+}
+
+=head2 bulk_fingerbank_refresh
+
+bulk_fingerbank_refresh
+
+=cut
+
+sub bulk_fingerbank_refresh {
+    my ($self) = @_;
+    my ($status, $data) = $self->parse_json;
+    if (is_error($status)) {
+        return $self->render(json => $data, status => $status);
+    }
+
+    my $items = $data->{items} // [];
+    my ($indexes, $results) = bulk_init_results($items);
+    for my $mac (@$items) {
+        my $result = pf::fingerbank::process($mac, $TRUE);
         $results->[$indexes->{$mac}]{status} = $result ? "success" : "failed";
     }
 
@@ -385,14 +425,7 @@ bulk_apply_role
 
 sub bulk_apply_role {
     my ($self) = @_;
-    my ($status, $data) = $self->parse_json;
-    if (is_error($status)) {
-        return $self->render(json => $data, status => $status);
-    }
-
-    my $items = $data->{items} // [];
-    my $role_id = $data->{role_id};
-    return $self->do_bulk_update_field($items, 'category_id', $role_id);
+    return $self->do_bulk_update_field('category_id');
 }
 
 =head2 bulk_apply_bypass_role
@@ -403,14 +436,7 @@ bulk_apply_bypass_role
 
 sub bulk_apply_bypass_role {
     my ($self) = @_;
-    my ($status, $data) = $self->parse_json;
-    if (is_error($status)) {
-        return $self->render(json => $data, status => $status);
-    }
-
-    my $items = $data->{items} // [];
-    my $role_id = $data->{role_id};
-    return $self->do_bulk_update_field($items, 'bypass_role_id', $role_id);
+    return $self->do_bulk_update_field('bypass_role_id');
 }
 
 =head2 do_bulk_update_field
@@ -420,8 +446,15 @@ do_bulk_update_field
 =cut
 
 sub do_bulk_update_field {
-    my ($self, $items, $field, $value) = @_;
-    my ($status, $iter) = $self->dal->search(
+    my ($self, $field) = @_;
+    my ($status, $data) = $self->parse_json;
+    if (is_error($status)) {
+        return $self->render(json => $data, status => $status);
+    }
+
+    my $items = $data->{items} // [];
+    my $value = $data->{$field};
+    ($status, my $iter) = $self->dal->search(
         -columns => [qw(mac)],
         -where => {
             mac => { -in => $items },
@@ -431,7 +464,7 @@ sub do_bulk_update_field {
         -with_class => undef,
     );
     if (is_error($status)) {
-        return $self->render_error(status => $status, "Error finding nodes");
+        return $self->render_error($status, "Error finding nodes");
     }
 
     my ($indexes, $results) = bulk_init_results($items);
@@ -464,7 +497,7 @@ sub restart_switchport {
         return $self->render_error($status, $msg);
     }
 
-    return $self->render_empty();
+    return $self->render(json => {}, status => 200);
 }
 
 =head2 do_restart_switchport
@@ -476,7 +509,7 @@ do_restart_switchport
 sub do_restart_switchport {
     my ($self, $mac) = @_;
     my $ll = locationlog_view_open_mac($mac);
-    unless (my $ll) {
+    unless ($ll) {
         return ($STATUS::NOT_FOUND, "Unable to find node location.");
     }
 
@@ -512,7 +545,7 @@ sub reevaluate_access {
         return $self->render_error($STATUS::UNPROCESSABLE_ENTITY, "unable reevaluate access for $mac");
     }
 
-    return $self->render_empty();
+    return $self->render(json => {}, status => 200);
 }
 
 =head1 AUTHOR

@@ -111,7 +111,7 @@ sub authorize {
     $self->handleNtlmCaching($radius_request);
 
     $logger->debug("instantiating switch");
-    my $switch = pf::SwitchFactory->instantiate({ switch_mac => $switch_mac, switch_ip => $switch_ip, controllerIp => $switch_ip});
+    my $switch = pf::SwitchFactory->instantiate({ switch_mac => $switch_mac, switch_ip => $switch_ip, controllerIp => $switch_ip}, {radius_request => $radius_request});
 
     # is switch object correct?
     if (!$switch) {
@@ -191,10 +191,16 @@ sub authorize {
     # update last_seen of MAC address as some activity from it has been seen
     $node_obj->update_last_seen();
 
+    #define the current connection value to instantiate the correct portal
+    my $options = {};
+
+    $options->{'machine_account'} = '';
+
     # Handling machine auth detection
     if ( defined($user_name) && $user_name =~ /^host\// ) {
         $logger->info("is doing machine auth with account '$user_name'.");
         $node_obj->machine_account($user_name);
+        $options->{'machine_account'} = $user_name;
     }
 
     if (defined($session_id)) {
@@ -228,17 +234,16 @@ sub authorize {
         $args->{'isPhone'} = $FALSE;
     }
 
-    #define the current connection value to instantiate the correct portal
-    my $options = {};
-
-    $options->{'last_connection_sub_type'} = $args->{'connection_sub_type'} if (defined( $args->{'connection_sub_type'}));
-    $options->{'last_connection_type'} = connection_type_to_str($args->{'connection_type'}) if (defined( $args->{'connection_type'}));
-    $options->{'last_switch'}          = $switch_id;
-    $options->{'last_port'}            = $args->{'switch'}->{switch_port} if (defined($args->{'switch'}->{switch_port}));
-    $options->{'last_vlan'}            = $args->{'vlan'} if (defined($args->{'vlan'}));
-    $options->{'last_ssid'}            = $args->{'ssid'} if (defined($args->{'ssid'}));
-    $options->{'last_dot1x_username'}  = $args->{'user_name'} if (defined($args->{'user_name'}));
-    $options->{'realm'}                = $args->{'realm'} if (defined($args->{'realm'}));
+    $options->{'last_connection_sub_type'} = $args->{'connection_sub_type'};
+    $options->{'last_connection_type'}     = connection_type_to_str($args->{'connection_type'});
+    $options->{'last_switch'}              = $switch_id;
+    $options->{'last_port'}                = $args->{'switch'}->{switch_port} if (defined($args->{'switch'}->{switch_port}));
+    $options->{'last_vlan'}                = $args->{'vlan'} if (defined($args->{'vlan'}));
+    $options->{'last_ssid'}                = $args->{'ssid'} if (defined($args->{'ssid'}));
+    $options->{'last_dot1x_username'}      = $args->{'user_name'} if (defined($args->{'user_name'}));
+    $options->{'realm'}               = $args->{'realm'} if (defined($args->{'realm'}));
+    $options->{'radius_request'}      = $args->{'radius_request'};
+    $options->{'fingerbank_info'}     = $args->{'fingerbank_info'};
 
     my $profile = pf::Connection::ProfileFactory->instantiate($args->{'mac'},$options);
     $args->{'profile'} = $profile; 
@@ -258,6 +263,8 @@ sub authorize {
         if (is_error($status)) {
             $logger->error("auto-registration of node failed $status_msg");
             $do_auto_reg = 0;
+            $RAD_REPLY_REF = [ $RADIUS::RLM_MODULE_USERLOCK, ('Reply-Message' => $status_msg) ];
+            goto CLEANUP;
         }
     }
 
@@ -289,6 +296,15 @@ sub authorize {
     $args->{'wasInline'} = $role->{wasInline};
     $args->{'user_role'} = $role->{role};
 
+    my $filter = pf::access_filter::switch->new;
+    my $switch_params = $filter->filter('radius_authorize', $args);
+
+    if (defined($switch_params)) {
+        foreach my $key (keys %{$switch_params}) {
+            $switch->{$key} = $switch_params->{$key};
+        }
+    }
+
     if (isenabled($switch->{_VlanMap})) {
         $vlan = $switch->getVlanByName($role->{role}) if (isenabled($switch->{_VlanMap}));
         $args->{'vlan'} = $vlan;
@@ -315,24 +331,15 @@ sub authorize {
         $switch->_setVlan( $port, $vlan, undef, {} );
     }
 
-    my $filter = pf::access_filter::switch->new;
-    my $switch_params = $filter->filter('radius_authorize', $args);
-
-    if (defined($switch_params)) {
-        foreach my $key (keys %{$switch_params}) {
-            $switch->{$key} = $switch_params->{$key};
-        }
-    }
-
     $RAD_REPLY_REF = $switch->returnRadiusAccessAccept($args);
 
 CLEANUP:
+    if ($do_auto_reg) {
+        pf::registration::finalize_node_registration($node_obj, {}, $options, $pf::constants::realm::RADIUS_CONTEXT);
+    }
     $status = $node_obj->save;
     if (is_error($status)) {
         $logger->error("Cannot save $mac error ($status)");
-    }
-    if ($do_auto_reg) {
-        pf::registration::finalize_node_registration($node_obj);
     }
 
     # cleanup
@@ -378,7 +385,7 @@ sub accounting {
     my ( $switch_mac, $switch_ip, $source_ip, $stripped_user_name, $realm ) = $self->_parseRequest($radius_request);
 
     $logger->debug("instantiating switch");
-    my $switch = pf::SwitchFactory->instantiate( { switch_mac => $switch_mac, switch_ip => $switch_ip, controllerIp => $switch_ip } );
+    my $switch = pf::SwitchFactory->instantiate( { switch_mac => $switch_mac, switch_ip => $switch_ip, controllerIp => $switch_ip }, {radius_request => $radius_request} );
 
     # is switch object correct?
     if ( !$switch ) {
@@ -484,7 +491,7 @@ sub update_locationlog_accounting {
     my ( $switch_mac, $switch_ip, $source_ip, $stripped_user_name, $realm ) = $self->_parseRequest($radius_request);
 
     $logger->debug("instantiating switch");
-    my $switch = pf::SwitchFactory->instantiate( { switch_mac => $switch_mac, switch_ip => $switch_ip, controllerIp => $switch_ip } );
+    my $switch = pf::SwitchFactory->instantiate( { switch_mac => $switch_mac, switch_ip => $switch_ip, controllerIp => $switch_ip }, {radius_request => $radius_request} );
 
     # is switch object correct?
     if ( !$switch ) {
@@ -678,7 +685,7 @@ sub _handleStaticPortSecurityMovement {
         return undef;
     }
 
-    my $oldSwitch = pf::SwitchFactory->instantiate($old_switch_id);
+    my $oldSwitch = pf::SwitchFactory->instantiate($old_switch_id, {radius_request => $args->{radius_request}});
     if (!$oldSwitch) {
         $logger->error("Can not instantiate switch $old_switch_id !");
         return;
@@ -778,7 +785,7 @@ sub switch_access {
     my($switch_mac, $switch_ip,$source_ip,$stripped_user_name,$realm) = $self->_parseRequest($radius_request);
 
     $logger->debug("instantiating switch");
-    my $switch = pf::SwitchFactory->instantiate({ switch_mac => $switch_mac, switch_ip => $switch_ip, controllerIp => $switch_ip});
+    my $switch = pf::SwitchFactory->instantiate({ switch_mac => $switch_mac, switch_ip => $switch_ip, controllerIp => $switch_ip}, {radius_request => $radius_request});
 
     # is switch object correct?
     if (!$switch) {

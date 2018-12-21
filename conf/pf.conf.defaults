@@ -175,7 +175,7 @@ default_access_duration=12h
 #
 # alerting.emailaddr
 #
-# Email address to which notifications of rogue DHCP servers, violations with an action of "email", or any other 
+# Comma-delimited list of email addresses to which notifications of rogue DHCP servers, violations with an action of "email", or any other
 # PacketFence-related message goes to.
 emailaddr=pf@localhost
 #
@@ -348,17 +348,7 @@ pfdhcp=enabled
 # services.pfdhcp_binary
 #
 # Location of the pfdhcp binary.
-pfdhcp_binary=/usr/local/pf/bin/pfdhcp
-#
-# services.etcd
-#
-# Should etcd be managed by PacketFence?
-etcd=enabled
-#
-# services.etcd_binary
-#
-# Location of the etcd binary. Only necessary to change if you are not running the RPMed version.
-etcd_binary=/usr/bin/etcd
+pfdhcp_binary=/usr/local/pf/sbin/pfdhcp
 #
 # services.haproxy-portal
 #
@@ -368,7 +358,7 @@ haproxy-portal=enabled
 # services.haproxy-portal_binary
 #
 # Location of the haproxy-portal binary. Only necessary to change if you are not running the RPMed version.
-haproxy-portal_binary=/usr/sbin/haproxy-systemd-wrapper
+haproxy-portal_binary=/usr/sbin/haproxy
 #
 # services.haproxy-db
 #
@@ -378,7 +368,7 @@ haproxy-db=enabled
 # services.haproxy-db_binary
 #
 # Location of the haproxy-db binary. Only necessary to change if you are not running the RPMed version.
-haproxy-db_binary=/usr/sbin/haproxy-systemd-wrapper
+haproxy-db_binary=/usr/sbin/haproxy
 #
 # services.pffilter
 #
@@ -600,7 +590,7 @@ pfdns=enabled
 # services.pfdns_binary
 #
 # Location of the pfdns binary.
-pfdns_binary=/usr/local/pf/bin/pfdns
+pfdns_binary=/usr/local/pf/sbin/pfdns
 #
 # services.api-frontend
 #
@@ -615,7 +605,7 @@ pfstats=enabled
 # services.pfstats_binary
 #
 # Location of the pfstats binary.
-pfstats_binary=/usr/local/pf/bin/pfstats
+pfstats_binary=/usr/local/pf/sbin/pfstats
 
 [snmp_traps]
 #
@@ -816,6 +806,11 @@ portal_csp_security_headers=enabled
 # Trigger Single-Sign-On (Firewall SSO) on access reevaluation
 sso_on_access_reevaluation=disabled
 #
+# advanced.scan_on_accounting
+#
+# Trigger scan engines on accounting
+scan_on_accounting=disabled
+#
 # advanced.sso_on_accounting
 #
 # Trigger Single-Sign-On (Firewall SSO) on accounting
@@ -824,11 +819,6 @@ sso_on_accounting=disabled
 #
 # Trigger Single-Sign-On (Firewall SSO) on dhcp
 sso_on_dhcp=enabled
-#
-# advanced.unreg_on_accounting_stop
-#
-# Unregister the device on accounting stop
-unreg_on_accounting_stop=disabled
 #
 # advanced.record_accounting_in_sql
 #

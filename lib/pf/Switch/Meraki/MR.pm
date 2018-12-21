@@ -32,9 +32,10 @@ use warnings;
 use base ('pf::Switch');
 
 use pf::constants;
-use pf::config qw($WIRELESS_MAC_AUTH);
+use pf::config qw($WIRELESS_MAC_AUTH $WEBAUTH_WIRELESS);
 use pf::util;
 use pf::node;
+use pf::constants::role qw($REJECT_ROLE);
 
 =head1 SUBROUTINES
 
@@ -82,6 +83,7 @@ sub parseExternalPortalRequest {
         redirect_url            => $req->param('continue_url'),
         status_code             => '200',
         synchronize_locationlog => $TRUE,
+        connection_type         => $WEBAUTH_WIRELESS,
     );
 
     return \%params;
@@ -116,13 +118,8 @@ sub returnRadiusAccessAccept {
         # if user is unregistered or is in violation then we reject him to show him the captive portal
         if ( $node->{status} eq $pf::node::STATUS_UNREGISTERED || defined($violation) ){
             $logger->info("[$args->{'mac'}] is unregistered. Refusing access to force the eCWP");
-            my $radius_reply_ref = {
-                'Tunnel-Medium-Type' => $RADIUS::ETHERNET,
-                'Tunnel-Type' => $RADIUS::VLAN,
-                'Tunnel-Private-Group-ID' => -1,
-            };
-            ($radius_reply_ref, $status) = $filter->handleAnswerInRule($rule,$args,$radius_reply_ref);
-            return [$status, %$radius_reply_ref];
+            $args->{user_role} = $REJECT_ROLE;
+            $self->handleRadiusDeny();
         }
         else{
             $logger->info("Returning ACCEPT");
@@ -141,15 +138,13 @@ sub getAcceptForm {
 
     my $login_url = $portalSession->param("ecwp-original-param-login_url");
     my $html_form = qq[
-        <form name="weblogin_form" method="POST" action="$login_url">
+        <form name="weblogin_form" data-autosubmit="1000" method="POST" action="$login_url">
             <input type="hidden" name="Submit2" value="Submit">
             <input type="hidden" name="username" value="$mac">
             <input type="hidden" name="password" value="$mac">
             <input type="hidden" name="success_url" value="$destination_url">
         </form>
-        <script language="JavaScript" type="text/javascript">
-        window.setTimeout('document.weblogin_form.submit();', 1000);
-        </script>
+        <script src="/content/autosubmit.js" type="text/javascript"></script>
     ];
 
     $logger->debug("Generated the following html form : ".$html_form);

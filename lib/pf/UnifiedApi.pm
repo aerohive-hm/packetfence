@@ -16,9 +16,12 @@ use strict;
 use warnings;
 use Mojo::Base 'Mojolicious';
 use pf::dal;
+use pf::util qw(add_jitter);
 use pf::file_paths qw($log_conf_dir);
 use MojoX::Log::Log4perl;
 use pf::UnifiedApi::Controller;
+our $MAX_REQUEST_HANDLED = 2000;
+our $REQUEST_HANDLED_JITTER = 500;
 
 has commands => sub {
   my $commands = Mojolicious::Commands->new(app => shift);
@@ -62,7 +65,12 @@ our @API_V1_ROUTES = (
                         }
                     },
                 }
-            ]
+            ],
+          subroutes => {
+            unassign_nodes => {
+                post => 'unassign_nodes',
+            },
+          },
         },
     },
     {
@@ -74,7 +82,7 @@ our @API_V1_ROUTES = (
                     qw(
                         register deregister restart_switchport
                         reevaluate_access apply_violation
-                        close_violation
+                        close_violation fingerbank_refresh
                     )
                 ),
                 fingerbank_info => {
@@ -88,13 +96,12 @@ our @API_V1_ROUTES = (
                   qw(
                     search bulk_register bulk_deregister bulk_close_violations
                     bulk_reevaluate_access bulk_restart_switchport bulk_apply_violation
-                    bulk_apply_role bulk_apply_bypass_role
+                    bulk_apply_role bulk_apply_bypass_role bulk_fingerbank_refresh
                   )
             }
         }
     },
     { controller => 'Tenants' },
-    { controller => 'ApiUsers' },
     { controller => 'Locationlogs' },
     ReadonlyEndpoint('NodeCategories'),
     ReadonlyEndpoint('Classes'),
@@ -102,7 +109,7 @@ our @API_V1_ROUTES = (
         controller => 'Violations',
         collection => {
             subroutes    => {
-                'by_mac/:search' => { get => 'by_mac' },                
+                'by_mac/#search' => { get => 'by_mac' },
                 'search' => {
                     'post' => 'search'
                 },
@@ -162,10 +169,27 @@ our @API_V1_ROUTES = (
     {
         controller  => 'Ip4logs',
         collection => {
-            subroutes    => {
-                'history/:search' => { get => 'history' },
-                'archive/:search' => { get => 'archive' },
-                'open/:search' => { get => 'open' }, 
+            subroutes => {
+                'history/#search' => { get => 'history' },
+                'archive/#search' => { get => 'archive' },
+                'open/#search' => { get => 'open' },
+                'mac2ip/#mac' => { get => 'mac2ip' },
+                'ip2mac/#ip'  => { get => 'ip2mac' },
+                'search' => {
+                    'post' => 'search'
+                },
+            },
+        },
+    },
+    {
+        controller  => 'Ip6logs',
+        collection => {
+            subroutes => {
+                'history/#search' => { get => 'history' },
+                'archive/#search' => { get => 'archive' },
+                'open/#search' => { get => 'open' }, 
+                'mac2ip/#mac' => { get => 'mac2ip' },
+                'ip2mac/#ip'  => { get => 'ip2mac' },
                 'search' => {
                     'post' => 'search'
                 },
@@ -215,16 +239,54 @@ our @API_V1_ROUTES = (
         Config::MaintenanceTasks
         Config::PkiProviders
         Config::PortalModules
+        Config::Provisionings
         Config::Realms
         Config::Roles
         Config::Scans
-        Config::Sources
-        Config::Switches
         Config::SwitchGroups
-        Config::SyslogParsers
+        Config::SyslogForwarders
         Config::TrafficShapingPolicies
         Config::Violations
     ),
+    {
+        controller => 'Config::Switches',
+        resource   => {
+            subroutes => {
+                invalidate_cache => {
+                    post => 'invalidate_cache',
+                }
+            }
+        }
+    },
+    {
+        controller => 'Config::Filters',
+        collection => undef,
+        resource => {
+            http_methods => {
+                get => 'get',
+                put => 'replace',
+            },
+            subroutes => undef,
+        },
+    },
+    {
+        controller => 'Config::SyslogParsers',
+        collection => {
+            subroutes => {
+                map { $_ => { post => $_ } } qw(search dry_run)
+            }
+        }
+    },
+    {
+        controller => 'Config::Sources',
+        collection   => {
+            subroutes => {
+                test => {
+                    post => 'test',
+                }
+            }
+        },
+    },
     {
         controller => 'Translations',
         collection => {
@@ -240,13 +302,27 @@ our @API_V1_ROUTES = (
             subroutes => undef,
         },
     },
+    'WrixLocations',
+    {
+        controller => 'Queues',
+        collection => {
+            subroutes    => {
+                'stats' => {
+                    get => 'stats'
+                },
+            },
+        },
+        resource => undef,
+    },
 );
 
 sub startup {
     my ($self) = @_;
     $self->controller_class('pf::UnifiedApi::Controller');
     $self->routes->namespaces(['pf::UnifiedApi::Controller', 'pf::UnifiedApi']);
-    $self->hook(before_dispatch => \&set_tenant_id);
+    $self->hook(before_dispatch => \&before_dispatch_cb);
+    $self->hook(after_dispatch => \&after_dispatch_cb);
+    $self->hook(before_render => \&before_render_cb);
     $self->plugin('pf::UnifiedApi::Plugin::RestCrud');
     $self->setup_api_v1_routes();
     $self->custom_startup_hook();
@@ -256,6 +332,48 @@ sub startup {
     });
 
     return;
+}
+
+=head2 before_render_cb
+
+before_render_cb
+
+=cut
+
+sub before_render_cb {
+    my ($self, $args) = @_;
+    my $json = $args->{json};
+    return unless $json;
+    $json->{status} //= ($args->{status} // 200);
+}
+
+=head2 after_dispatch_cb
+
+after_dispatch_cb
+
+=cut
+
+sub after_dispatch_cb {
+    my ($c) = @_;
+    my $app = $c->app;
+    my $max = $app->{max_requests_handled} //= add_jitter( $MAX_REQUEST_HANDLED, $REQUEST_HANDLED_JITTER );
+    if (++$app->{requests_handled} >= $max) {
+        kill 'QUIT', $$;
+    }
+    return;
+}
+
+=head2 before_dispatch_cb
+
+before_dispatch_cb
+
+=cut
+
+sub before_dispatch_cb {
+    my ($c) = @_;
+    # To allow dispatching with encoded slashes
+    $c->stash->{path} = $c->req->url->path;
+    set_tenant_id($c)
 }
 
 sub setup_api_v1_routes {

@@ -32,8 +32,8 @@ use pf::util::freeradius qw(clean_mac);
 use pfconfig::cached_hash;
 use pf::util::statsd qw(called);
 use pf::StatsD::Timer;
-our %ConfigRealm;
-tie %ConfigRealm, 'pfconfig::cached_hash', 'config::Realm';
+use pf::config::tenant;
+tie our %ConfigRealm, 'pfconfig::cached_hash', 'config::Realm', tenant_id_scoped => 1;
 
 require 5.8.8;
 
@@ -52,19 +52,20 @@ RADIUS calls this method to authorize clients.
 
 sub authorize {
     my $timer = pf::StatsD::Timer->new({ sample_rate => 0.05, 'stat' => "freeradius::" . called() });
+    pf::config::tenant::set_tenant($RAD_CONFIG{'PacketFence-Tenant-Id'});
     # For debugging purposes only
     #&log_request_attributes;
 
     # We try to find the realm that's configured in PacketFence
     my $realm_config;
     my $user_name = $RAD_REQUEST{'TLS-Client-Cert-Common-Name'} || $RAD_REQUEST{'User-Name'};
-    if ($user_name =~ /^host\/([0-9a-zA-Z-]+)\.(.*)$/) {
+    if ($user_name =~ /^host\/([0-9a-zA-Z-_]+)\.(.*)$/) {
         $realm_config = $ConfigRealm{lc($2)};
     } elsif (defined $RAD_REQUEST{"Realm"}) {
         $realm_config = $ConfigRealm{$RAD_REQUEST{"Realm"}};
     }
 
-    if ( (!defined($realm_config) || !defined($realm_config->{domain})) && defined($ConfigRealm{"default"}) ) {
+    if ( !defined($realm_config) && defined($ConfigRealm{"default"}) ) {
         $realm_config = $ConfigRealm{"default"};
     }
 

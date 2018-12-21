@@ -19,7 +19,7 @@ use warnings;
 
 use JSON::MaybeXS;
 use pfconfig::namespaces::config;
-use Config::IniFiles;
+use pf::IniFiles;
 use File::Slurp qw(read_file);
 use pf::log;
 use pf::file_paths qw(
@@ -28,15 +28,9 @@ use pf::file_paths qw(
     $log_dir
 );
 use pf::util;
-use pf::constants::config qw($DEFAULT_SMTP_PORT $DEFAULT_SMTP_PORT_SSL $DEFAULT_SMTP_PORT_TLS);
+use pf::constants::config qw($DEFAULT_SMTP_PORT $DEFAULT_SMTP_PORT_SSL $DEFAULT_SMTP_PORT_TLS %ALERTING_PORTS);
 use List::MoreUtils qw(uniq);
 use DateTime::TimeZone;
-
-our %ALERTING_PORTS = (
-    none => $DEFAULT_SMTP_PORT,
-    ssl => $DEFAULT_SMTP_PORT_SSL,
-    starttls => $DEFAULT_SMTP_PORT_TLS,
-);
 
 use base 'pfconfig::namespaces::config';
 
@@ -46,9 +40,9 @@ sub build {
 
     my %tmp_cfg;
 
-    my $pf_conf_defaults = Config::IniFiles->new( -file => $pf_default_file );
+    my $pf_conf_defaults = pf::IniFiles->new( -file => $pf_default_file );
 
-    tie %tmp_cfg, 'Config::IniFiles', ( -file => $self->{file}, -import => $pf_conf_defaults );
+    tie %tmp_cfg, 'pf::IniFiles', ( -file => $self->{file}, -import => $pf_conf_defaults );
 
     # for pfcmd checkup
     $self->{_file_cfg} = {%tmp_cfg};
@@ -68,13 +62,23 @@ sub build {
 }
 
 sub init {
-    my ($self, $host_id) = @_;
+    my ($self, $host_id, $cluster_name) = @_;
+    # This namespace supports optionnaly specifying the cluster name so that consummers can get the CLUSTER configuration of each cluster
+    # If the cluster_name isn't specified, it falls back to a lookups in the clusters hostname map
+    if($cluster_name) {
+        $self->{cluster_name} = $cluster_name;
+    }
+    else {
+        $self->{cluster_name} = ($host_id ? $self->{cache}->get_cache("resource::clusters_hostname_map")->{$host_id} : undef) // "DEFAULT";
+    }
+
     $self->{file}            = $pf_config_file;
     $self->{default_config}  = $self->{cache}->get_cache('config::PfDefault');
     $self->{doc_config}      = $self->{cache}->get_cache('config::Documentation');
-    $self->{cluster_config}  = $self->{cache}->get_cache('config::Cluster');
 
-    $self->{child_resources} = [ 'resource::CaptivePortal', 'resource::Database', 'resource::fqdn', 'config::Pfdetect', 'resource::trapping_range', 'resource::stats_levels', 'resource::passthroughs', 'resource::isolation_passthroughs' ];
+    $self->{cluster_config}  = $self->{cluster_name} ? $self->{cache}->get_cache("config::Cluster(".$self->{cluster_name}.")") : {};
+
+    $self->{child_resources} = [ 'resource::CaptivePortal', 'resource::Database', 'resource::fqdn', 'config::Pfdetect', 'resource::trapping_range', 'resource::stats_levels', 'resource::passthroughs', 'resource::isolation_passthroughs', 'resource::network_config' ];
     if(defined($host_id)){
         push @{$self->{child_resources}}, "interfaces($host_id)";
     }
@@ -106,7 +110,7 @@ sub build_child {
         }
     }
     elsif(defined($self->{host_id})){
-        $logger->warn("A host was defined for the config::Pf namespace but no cluster configuration was found. This is not a big issue but it's worth noting.")
+        $logger->warn("A host was defined (".$self->{host_id}.") for the config::Pf namespace but no cluster configuration was found. This is not a big issue but it's worth noting.")
     }
 
     my @time_values = grep { my $t = $Doc_Config{$_}{type}; defined $t && $t eq 'time' } keys %Doc_Config;

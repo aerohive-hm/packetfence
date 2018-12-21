@@ -5,7 +5,7 @@
 
 This is an initial draft on how to setup/use the PacketFence Golang libraries.
 
-In order to bootstrap your environment from the version of /usr/local/pf/bin/pfhttpd
+In order to bootstrap your environment from the version of /usr/local/pf/sbin/pfhttpd
 
 ```
 # cd /usr/local/pf/go
@@ -37,6 +37,7 @@ Then pull the dependencies of PacketFence. Be patient as it can take a few minut
 ```
 # cd $GOPATH/src/github.com/inverse-inc/packetfence/go
 # govendor sync
+# yum install ipset-devel
 ```
 
 ## Building the code
@@ -49,7 +50,19 @@ In order to build the caddy HTTP service:
 
 ```
 # make pfhttpd
-# mv pfhttpd /usr/local/pf/bin/
+# mv pfhttpd /usr/local/pf/sbin/
+```
+Do the same to build pfdns, pfdhcp, pfdetect and pfstats:
+
+```
+# make pfdns
+# mv pfdns /usr/local/pf/sbin/
+# make pfdhcp
+# mv pfdhcp /usr/local/pf/sbin/
+# make pfdetect
+# mv pfdetect /usr/local/pf/sbin/
+# make pfstats
+# mv pfstats /usr/local/pf/sbin/
 ```
 
 ## Creating a service
@@ -79,7 +92,7 @@ If your middleware uses statsd, you don't have to configure statsd in your Caddy
 You can start pfhttpd with your Caddyfile using the following command:
 
 ```
-# /usr/local/pf/bin/pfhttpd -conf /usr/local/pf/conf/caddy-services/pfexample.conf
+# /usr/local/pf/sbin/pfhttpd -conf /usr/local/pf/conf/caddy-services/pfexample.conf
 ```
 
 Once you have ascertained that the service is working correctly, you need to create an instance of pf::services::manager for it. You will also need to create a unitfile for it in conf/systemd like the following:
@@ -93,7 +106,7 @@ Before=packetfence-pfexample.service
 
 [Service]
 PIDFile=/usr/local/pf/var/run/pfexample.pid
-ExecStart=/usr/local/pf/bin/pfcaddy -conf /usr/local/pf/conf/caddy-services/pfexample.conf
+ExecStart=/usr/local/pf/sbin/pfhttpd -conf /usr/local/pf/conf/caddy-services/pfexample.conf
 Restart=on-failure
 Slice=packetfence.slice
 

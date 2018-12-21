@@ -1,15 +1,16 @@
 <template>
   <b-card no-body>
+    <pf-progress :active="isLoading"></pf-progress>
     <b-card-header>
-      <div class="float-right"><toggle-button v-model="advancedMode">{{ $t('Advanced') }}</toggle-button></div>
+      <div class="float-right"><pf-form-toggle v-model="advancedMode">{{ $t('Advanced') }}</pf-form-toggle></div>
       <h4 class="mb-0" v-t="'Search Nodes'"></h4>
     </b-card-header>
-    <pf-search :fields="fields" :store="$store" :advanced-mode="advancedMode" :condition="condition"
-      @submit-search="onSearch" @reset-search="onReset"></pf-search>
+    <pf-search :fields="fields" :store="$store" :storeName="storeName" :advanced-mode="advancedMode" :condition="condition"
+      @submit-search="onSearch" @reset-search="onReset" @import-search="onImport"></pf-search>
     <div class="card-body">
       <b-row align-h="between" align-v="center">
         <b-col cols="auto" class="mr-auto">
-          <b-dropdown size="sm" variant="link" :disabled="isLoading || checkedRows.length === 0" no-caret>
+          <b-dropdown size="sm" variant="link" :disabled="isLoading || selectValues.length === 0" no-caret no-flip>
             <template slot="button-content">
               <icon name="cogs" v-b-tooltip.hover.right :title="$t('Actions')"></icon>
             </template>
@@ -27,39 +28,43 @@
             </b-dropdown-item>
             <b-dropdown-item @click="applyBulkReevaluateAccess()">
               <icon class="position-absolute mt-1" name="sync"></icon>
-              <span class="ml-4">{{ $t('Revaluate Access') }}</span>
+              <span class="ml-4">{{ $t('Reevaluate Access') }}</span>
             </b-dropdown-item>
             <b-dropdown-item @click="applyBulkRestartSwitchport()">
               <icon class="position-absolute mt-1" name="retweet"></icon>
               <span class="ml-4">{{ $t('Restart Switchport') }}</span>
             </b-dropdown-item>
+            <b-dropdown-item @click="applyBulkRefreshFingerbank()">
+              <icon class="position-absolute mt-1" name="retweet"></icon>
+              <span class="ml-4">{{ $t('Refresh Fingerbank') }}</span>
+            </b-dropdown-item>
             <b-dropdown-divider></b-dropdown-divider>
             <b-dropdown-header>{{ $t('Apply Role') }}</b-dropdown-header>
-            <b-dropdown-item v-for="role in roles" :key="role.category_id" @click="applyRole(role)" v-b-tooltip.hover.left :title="role.notes">
+            <b-dropdown-item v-for="role in roles" :key="role.category_id" @click="applyBulkRole(role)" v-b-tooltip.hover.left :title="role.notes">
               <span>{{role.name}}</span>
             </b-dropdown-item>
-            <b-dropdown-item @click="applyRole({category_id: null})" v-b-tooltip.hover.left :title="$t('Clear Role')">
+            <b-dropdown-item @click="applyBulkRole({category_id: null})" v-b-tooltip.hover.left :title="$t('Clear Role')">
               <icon class="position-absolute mt-1" name="trash-alt"></icon>
               <span class="ml-4"><em>{{ $t('None') }}</em></span>
             </b-dropdown-item>
             <b-dropdown-divider></b-dropdown-divider>
             <b-dropdown-header>{{ $t('Apply Bypass Role') }}</b-dropdown-header>
-            <b-dropdown-item v-for="role in roles" :key="role.category_id" @click="applyBypassRole(role)" v-b-tooltip.hover.left :title="role.notes">
+            <b-dropdown-item v-for="role in roles" :key="role.category_id" @click="applyBulkBypassRole(role)" v-b-tooltip.hover.left :title="role.notes">
               <span>{{role.name}}</span>
             </b-dropdown-item>
-            <b-dropdown-item @click="applyBypassRole({category_id: null})" v-b-tooltip.hover.left :title="$t('Clear Bypass Role')">
+            <b-dropdown-item @click="applyBulkBypassRole({category_id: null})" v-b-tooltip.hover.left :title="$t('Clear Bypass Role')">
               <icon class="position-absolute mt-1" name="trash-alt"></icon>
               <span class="ml-4"><em>{{ $t('None') }}</em></span>
             </b-dropdown-item>
             <b-dropdown-divider></b-dropdown-divider>
             <b-dropdown-header>{{ $t('Apply Violation') }}</b-dropdown-header>
-            <b-dropdown-item v-for="violation in violations" v-if="violation.enabled ==='Y'" :key="violation.id" @click="applyViolation(violation)" v-b-tooltip.hover.left :title="violation.id">
+            <b-dropdown-item v-for="violation in violations" v-if="violation.enabled ==='Y'" :key="violation.id" @click="applyBulkViolation(violation)" v-b-tooltip.hover.left :title="violation.id">
               <span>{{violation.desc}}</span>
             </b-dropdown-item>
           </b-dropdown>
-          <b-dropdown size="sm" variant="link" boundary="viewport" :disabled="isLoading" no-caret>
+          <b-dropdown size="sm" variant="link" :disabled="isLoading" no-caret no-flip>
             <template slot="button-content">
-              <icon name="columns" v-b-tooltip.hover.right :title="$t('Visible Columns')"></icon>
+              <icon name="columns" v-b-tooltip.hover.right.d1000 :title="$t('Visible Columns')"></icon>
             </template>
             <b-dropdown-item v-for="column in columns" :key="column.key" @click="toggleColumn(column)" :disabled="column.locked">
               <icon class="position-absolute mt-1" name="thumbtack" v-show="column.visible" v-if="column.locked"></icon>
@@ -81,26 +86,46 @@
           </b-container>
         </b-col>
       </b-row>
-      <b-table stacked="sm" :items="items" :fields="visibleColumns" :sort-by="sortBy" :sort-desc="sortDesc"
-        @sort-changed="onSortingChanged" @row-clicked="onRowClick" @head-clicked="clearChecked" hover no-local-sorting v-model="tableValues">
+      <b-table
+        v-model="tableValues"
+        class="table-clickable"
+        :items="items"
+        :fields="visibleColumns"
+        :sort-by="sortBy"
+        :sort-desc="sortDesc"
+        @sort-changed="onSortingChanged"
+        @row-clicked="onRowClick"
+        @head-clicked="clearSelected"
+        show-empty responsive hover no-local-sorting
+      >
         <template slot="HEAD_actions" slot-scope="head">
-          <input type="checkbox" id="checkallnone" v-model="checkedAll" @change="onCheckedAllChange" @click.stop>
-          <b-tooltip target="checkallnone" placement="right" v-if="checkedRows.length === tableValues.length">{{$t('Select None [ALT+N]')}}</b-tooltip>
+          <input type="checkbox" id="checkallnone" v-model="selectAll" @change="onSelectAllChange" @click.stop>
+          <b-tooltip target="checkallnone" placement="right" v-if="selectValues.length === tableValues.length">{{$t('Select None [ALT+N]')}}</b-tooltip>
           <b-tooltip target="checkallnone" placement="right" v-else>{{$t('Select All [ALT+A]')}}</b-tooltip>
         </template>
         <template slot="actions" slot-scope="data">
-          <input type="checkbox" :id="data.value" :value="data.item" v-model="checkedRows" @click.stop="toggleCheckbox($event, data.index)">
-          <icon name="exclamation-triangle" class="ml-1" v-if="tableValues[data.index]._message" v-b-tooltip.hover.right :title="tableValues[data.index]._message"></icon>
+          <div class="text-nowrap">
+            <input type="checkbox" :id="data.value" :value="data.item" v-model="selectValues" @click.stop="onToggleSelected($event, data.index)">
+            <icon name="exclamation-triangle" class="ml-1" v-if="tableValues[data.index]._rowMessage" v-b-tooltip.hover.right :title="tableValues[data.index]._rowMessage"></icon>
+          </div>
         </template>
         <template slot="status" slot-scope="data">
           <b-badge pill variant="success" v-if="data.value === 'reg'">{{ $t('registered') }}</b-badge>
           <b-badge pill variant="light" v-else>{{ $t('unregistered') }}</b-badge>
         </template>
+        <template slot="online" slot-scope="data">
+          <b-badge pill variant="success" v-if="data.value === 'on'">{{ $t('online') }}</b-badge>
+          <b-badge pill variant="danger" v-else-if="data.value === 'off'">{{ $t('offline') }}</b-badge>
+          <b-badge pill variant="info" v-else>{{ $t('unknown') }}</b-badge>
+        </template>
+        <template slot="mac" slot-scope="data">
+          <mac v-text="data.value"></mac>
+        </template>
         <template slot="device_score" slot-scope="data">
           <pf-fingerbank-score :score="data.value"></pf-fingerbank-score>
         </template>
-        <template slot="mac" slot-scope="node">
-          <mac v-text="node.item.mac"></mac>
+        <template slot="empty">
+          <pf-empty-table :isLoading="isLoading">{{ $t('No node found') }}</pf-empty-table>
         </template>
       </b-table>
     </div>
@@ -109,43 +134,46 @@
 
 <script>
 import { pfSearchConditionType as conditionType } from '@/globals/pfSearch'
+import pfEmptyTable from '@/components/pfEmptyTable'
+import { pfFormatters as formatter } from '@/globals/pfFormatters'
+import pfMixinSearchable from '@/components/pfMixinSearchable'
+import pfMixinSelectable from '@/components/pfMixinSelectable'
 import pfFingerbankScore from '@/components/pfFingerbankScore'
-import pfSearch from '@/components/pfSearch'
-import ToggleButton from '@/components/ToggleButton'
+import pfFormToggle from '@/components/pfFormToggle'
+import pfProgress from '@/components/pfProgress'
+import convert from '@/utils/convert'
 
 export default {
   name: 'NodesSearch',
+  mixins: [
+    pfMixinSelectable,
+    pfMixinSearchable
+  ],
   components: {
+    'pf-progress': pfProgress,
+    'pf-empty-table': pfEmptyTable,
     'pf-fingerbank-score': pfFingerbankScore,
-    'pf-search': pfSearch,
-    'toggle-button': ToggleButton
+    'pf-form-toggle': pfFormToggle
   },
   props: {
-    namedSearch: String,
-    tableValues: {
-      type: Array,
-      default: []
-    },
-    checkedRows: {
-      type: Array,
-      default: []
-    },
-    checkedAll: {
-      type: Boolean,
-      default: false
-    },
-    lastIndex: {
-      type: Number,
-      default: null
-    },
-    query: {
+    storeName: { // from router
       type: String,
-      default: null
+      default: null,
+      required: true
+    },
+    pfMixinSearchableOptions: {
+      type: Object,
+      default: () => ({
+        searchApiEndpoint: 'nodes',
+        defaultSortKeys: ['mac'],
+        defaultSearchCondition: { op: 'and', values: [{ op: 'or', values: [{ field: 'mac', op: 'equals', value: null }] }] },
+        defaultRoute: { name: 'nodes' }
+      })
     }
   },
   data () {
     return {
-      advancedMode: false,
+      tableValues: Array,
       /**
        *  Fields on which a search can be defined.
        *  The names must match the database schema.
@@ -154,118 +182,195 @@ export default {
       fields: [ // keys match with b-form-select
         {
           value: 'mac',
-          text: this.$i18n.t('MAC Address [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('MAC Address'),
+          types: [conditionType.SUBSTRING],
+          icon: 'id-card'
         },
         {
           value: 'bypass_role_id',
-          text: this.$i18n.t('Bypass Role [✓]'),
-          types: [conditionType.ROLE, conditionType.SUBSTRING]
+          text: this.$i18n.t('Bypass Role'),
+          types: [conditionType.ROLE, conditionType.SUBSTRING],
+          icon: 'project-diagram'
         },
         {
           value: 'bypass_vlan',
           text: this.$i18n.t('Bypass VLAN [?]'),
-          types: [conditionType.SUBSTRING]
+          types: [conditionType.SUBSTRING],
+          icon: 'project-diagram'
         },
         {
           value: 'computername',
-          text: this.$i18n.t('Computer Name [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('Computer Name'),
+          types: [conditionType.SUBSTRING],
+          icon: 'desktop'
         },
         {
           value: 'locationlog.connection_type',
           text: this.$i18n.t('Connection Type [?]'),
-          types: [conditionType.CONNECTION_TYPE]
+          types: [conditionType.CONNECTION_TYPE],
+          icon: 'plug'
+        },
+        {
+          value: 'detect_date',
+          text: this.$i18n.t('Datetime Detected'),
+          types: [conditionType.DATETIME],
+          icon: 'calendar-alt'
+        },
+        {
+          value: 'regdate',
+          text: this.$i18n.t('Datetime Registered'),
+          types: [conditionType.DATETIME],
+          icon: 'calendar-alt'
+        },
+        {
+          value: 'unregdate',
+          text: this.$i18n.t('Datetime Unregistered'),
+          types: [conditionType.DATETIME],
+          icon: 'calendar-alt'
+        },
+        {
+          value: 'last_arp',
+          text: this.$i18n.t('Datetime Last ARP'),
+          types: [conditionType.DATETIME],
+          icon: 'calendar-alt'
+        },
+        {
+          value: 'last_dhcp',
+          text: this.$i18n.t('Datetime Last DHCP'),
+          types: [conditionType.DATETIME],
+          icon: 'calendar-alt'
         },
         {
           value: 'device_class',
-          text: this.$i18n.t('Device Class [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('Device Class'),
+          types: [conditionType.SUBSTRING],
+          icon: 'barcode'
         },
         {
           value: 'device_manufacturer',
           text: this.$i18n.t('Device Manufacturer [?]'),
-          types: [conditionType.SUBSTRING]
+          types: [conditionType.SUBSTRING],
+          icon: 'barcode'
         },
         {
           value: 'device_type',
-          text: this.$i18n.t('Device Type [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('Device Type'),
+          types: [conditionType.SUBSTRING],
+          icon: 'barcode'
         },
         {
           value: 'ip4log.ip',
-          text: this.$i18n.t('IPv4 Address [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('IPv4 Address'),
+          types: [conditionType.SUBSTRING],
+          icon: 'project-diagram'
         },
         {
           value: 'ip6log.ip',
-          text: this.$i18n.t('IPv6 Address [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('IPv6 Address'),
+          types: [conditionType.SUBSTRING],
+          icon: 'project-diagram'
         },
         {
           value: 'machine_account',
-          text: this.$i18n.t('Machine Account [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('Machine Account'),
+          types: [conditionType.SUBSTRING],
+          icon: 'desktop'
         },
         {
           value: 'notes',
-          text: this.$i18n.t('Notes [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('Notes'),
+          types: [conditionType.SUBSTRING],
+          icon: 'notes-medical'
         },
         {
           value: 'online',
-          text: this.$i18n.t('Online Status [x]'),
-          types: [conditionType.ONLINE]
+          text: this.$i18n.t('Online Status'),
+          types: [conditionType.ONLINE],
+          icon: 'power-off'
         },
         {
           value: 'pid',
-          text: this.$i18n.t('Owner [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('Owner'),
+          types: [conditionType.SUBSTRING],
+          icon: 'user'
         },
         {
           value: 'category_id',
-          text: this.$i18n.t('Role [✓]'),
-          types: [conditionType.ROLE, conditionType.SUBSTRING]
+          text: this.$i18n.t('Role'),
+          types: [conditionType.ROLE, conditionType.SUBSTRING],
+          icon: 'project-diagram'
         },
         {
           value: 'locationlog.switch',
-          text: this.$i18n.t('Source Switch Identifier [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('Source Switch Identifier'),
+          types: [conditionType.SUBSTRING],
+          icon: 'sitemap'
         },
         {
           value: 'locationlog.switch_ip',
-          text: this.$i18n.t('Source Switch IP [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('Source Switch IP'),
+          types: [conditionType.SUBSTRING],
+          icon: 'sitemap'
         },
         {
           value: 'locationlog.switch_mac',
-          text: this.$i18n.t('Source Switch MAC [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('Source Switch MAC'),
+          types: [conditionType.SUBSTRING],
+          icon: 'sitemap'
         },
         {
           value: 'locationlog.ssid',
-          text: this.$i18n.t('SSID [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('SSID'),
+          types: [conditionType.SUBSTRING],
+          icon: 'wifi'
         },
         {
           value: 'user_agent',
-          text: this.$i18n.t('User Agent [✓]'),
-          types: [conditionType.SUBSTRING]
+          text: this.$i18n.t('User Agent'),
+          types: [conditionType.SUBSTRING],
+          icon: 'user-secret'
         },
         {
-          value: 'violation',
-          text: this.$i18n.t('Violation Name [?]'),
-          types: [conditionType.SUBSTRING]
+          value: 'violation.open_vid',
+          text: this.$i18n.t('Violation Open'),
+          types: [conditionType.VIOLATION],
+          icon: 'exclamation-triangle'
         },
         {
-          value: 'violation_status',
-          text: this.$i18n.t('Violation Status [?]'),
-          types: [conditionType.SUBSTRING]
+          value: 'violation.open_count',
+          text: this.$i18n.t('Violation Open Count [Issue #3400]'),
+          types: [conditionType.INTEGER],
+          icon: 'exclamation-triangle'
+        },
+        {
+          value: 'violation.close_vid',
+          text: this.$i18n.t('Violation Closed'),
+          types: [conditionType.VIOLATION],
+          icon: 'exclamation-circle'
+        },
+        {
+          value: 'violation.close_count',
+          text: this.$i18n.t('Violation Close Count [Issue #3400]'),
+          types: [conditionType.INTEGER],
+          icon: 'exclamation-circle'
         },
         {
           value: 'voip',
-          text: this.$i18n.t('VoIP [✓]'),
-          types: [conditionType.VOIP]
+          text: this.$i18n.t('VoIP'),
+          types: [conditionType.YESNO],
+          icon: 'phone'
+        },
+        {
+          value: 'autoreg',
+          text: this.$i18n.t('Auto Registration'),
+          types: [conditionType.YESNO],
+          icon: 'magic'
+        },
+        {
+          value: 'bandwidth_balance',
+          text: this.$i18n.t('Bandwidth Balance'),
+          types: [conditionType.PREFIXMULTIPLE],
+          icon: 'balance-scale'
         }
       ],
       /**
@@ -304,19 +409,25 @@ export default {
           key: 'detect_date',
           label: this.$i18n.t('Detected Date'),
           sortable: true,
-          visible: false
+          visible: false,
+          formatter: formatter.datetimeIgnoreZero,
+          class: 'text-nowrap'
         },
         {
           key: 'regdate',
           label: this.$i18n.t('Registration Date'),
           sortable: true,
-          visible: false
+          visible: false,
+          formatter: formatter.datetimeIgnoreZero,
+          class: 'text-nowrap'
         },
         {
           key: 'unregdate',
           label: this.$i18n.t('Unregistration Date'),
           sortable: true,
-          visible: false
+          visible: false,
+          formatter: formatter.datetimeIgnoreZero,
+          class: 'text-nowrap'
         },
         {
           key: 'computername',
@@ -401,9 +512,7 @@ export default {
           label: this.$i18n.t('Role'),
           sortable: true,
           visible: true,
-          formatter: (value, key, item) => {
-            return this.$store.state.config.roles.filter(role => role.category_id === item.category_id).map(role => role.name)
-          }
+          formatter: formatter.categoryId
         },
         {
           key: 'locationlog.connection_type',
@@ -458,9 +567,7 @@ export default {
           label: this.$i18n.t('Bypass Role'),
           sortable: true,
           visible: false,
-          formatter: (value, key, item) => {
-            return this.$store.state.config.roles.filter(role => role.category_id === item.bypass_role_id).map(role => role.name)
-          }
+          formatter: formatter.bypassRoleId
         },
         {
           key: 'notes',
@@ -478,17 +585,33 @@ export default {
           key: 'last_arp',
           label: this.$i18n.t('Last ARP'),
           sortable: true,
-          visible: false
+          visible: false,
+          formatter: formatter.datetimeIgnoreZero,
+          class: 'text-nowrap'
         },
         {
           key: 'last_dhcp',
           label: this.$i18n.t('Last DHCP'),
           sortable: true,
-          visible: false
+          visible: false,
+          formatter: formatter.datetimeIgnoreZero,
+          class: 'text-nowrap'
         },
         {
           key: 'machine_account',
           label: this.$i18n.t('Machine Account'),
+          sortable: true,
+          visible: false
+        },
+        {
+          key: 'autoreg',
+          label: this.$i18n.t('Auto Registration'),
+          sortable: true,
+          visible: false
+        },
+        {
+          key: 'bandwidth_balance',
+          label: this.$i18n.t('Bandwidth Balance'),
           sortable: true,
           visible: false
         },
@@ -503,36 +626,44 @@ export default {
           label: this.$i18n.t('User Agent'),
           sortable: true,
           visible: false
+        },
+        {
+          key: 'violation.open_vid',
+          label: this.$i18n.t('Violation Open'),
+          sortable: true,
+          visible: false,
+          class: 'text-nowrap',
+          formatter: formatter.violationIdsToDescCsv
+        },
+        {
+          key: 'violation.open_count',
+          label: this.$i18n.t('Violation Open Count'),
+          sortable: true,
+          visible: false,
+          class: 'text-nowrap'
+        },
+        {
+          key: 'violation.close_vid',
+          label: this.$i18n.t('Violation Closed'),
+          sortable: true,
+          visible: false,
+          class: 'text-nowrap',
+          formatter: formatter.violationIdsToDescCsv
+        },
+        {
+          key: 'violation.close_count',
+          label: this.$i18n.t('Violation Closed Count'),
+          sortable: true,
+          visible: false,
+          class: 'text-nowrap'
         }
       ],
-      condition: null,
       requestPage: 1,
       currentPage: 1,
       pageSizeLimit: 10
     }
   },
   computed: {
-    isLoading () {
-      return this.$store.getters['$_nodes/isLoadingResults']
-    },
-    sortBy () {
-      return this.$store.state.$_nodes.searchSortBy
-    },
-    sortDesc () {
-      return this.$store.state.$_nodes.searchSortDesc
-    },
-    visibleColumns () {
-      return this.columns.filter(column => column.visible)
-    },
-    searchFields () {
-      return this.visibleColumns.filter(column => !column.locked).map(column => column.key)
-    },
-    items () {
-      return this.$store.state.$_nodes.items
-    },
-    totalRows () {
-      return this.$store.state.$_nodes.searchMaxPageNumber * this.pageSizeLimit
-    },
     roles () {
       return this.$store.state.config.roles
     },
@@ -541,275 +672,250 @@ export default {
     }
   },
   methods: {
-    onSearch (condition) {
-      let _this = this
-      this.requestPage = 1 // reset to the first page
-      this.$store.dispatch('$_nodes/setSearchQuery', condition)
-      this.$store.dispatch('$_nodes/search', this.requestPage).then(() => {
-        _this.currentPage = _this.requestPage
-        _this.condition = condition
-      }).catch(() => {
-        _this.requestPage = _this.currentPage
-      })
-      this.clearChecked()
-    },
-    onReset () {
-      this.requestPage = 1 // reset to the first page
-      this.$store.dispatch('$_nodes/setSearchQuery', undefined) // reset search
-      this.$store.dispatch('$_nodes/search', this.requestPage)
-      this.clearChecked()
-      this.initSearch()
-    },
-    initSearch () {
-      if (this.query) {
-        try {
-          this.condition = JSON.parse(this.query)
-          this.$store.dispatch('$_nodes/setSearchQuery', this.condition)
-          this.advancedMode = true
-          return
-        } catch (e) {
-          // noop
-        }
-      }
-      this.condition = { op: 'and', values: [{ op: 'or', values: [{ field: this.fields[0].value, op: null, value: null }] }] }
-    },
-    onPageSizeChange () {
-      this.requestPage = 1 // reset to the first page
-      this.$store.dispatch('$_nodes/setSearchPageSize', this.pageSizeLimit)
-      this.$store.dispatch('$_nodes/search', this.requestPage)
-    },
-    onPageChange () {
-      let _this = this
-      this.$store.dispatch('$_nodes/search', this.requestPage).then(() => {
-        _this.currentPage = _this.requestPage
-      }).catch(() => {
-        _this.requestPage = _this.currentPage
-      })
-    },
-    onSortingChanged (params) {
-      this.requestPage = 1 // reset to the first page
-      this.$store.dispatch('$_nodes/setSearchSorting', params)
-      this.$store.dispatch('$_nodes/search', this.requestPage)
-    },
-    toggleColumn (column) {
-      column.visible = !column.visible
-      this.$store.dispatch('$_nodes/setVisibleColumns', this.columns.filter(column => column.visible).map(column => column.key))
-      this.$store.dispatch('$_nodes/setSearchFields', this.searchFields)
-      if (column.visible) {
-        this.$store.dispatch('$_nodes/search', this.requestPage)
-      }
-    },
     onRowClick (item, index) {
       this.$router.push({ name: 'node', params: { mac: item.mac } })
     },
-    onCheckedAllChange (item) {
-      this.checkedRows = this.checkedAll ? this.tableValues : []
-    },
-    clearChecked () {
-      this.checkedAll = false
-      const _this = this
-      this.checkedRows.forEach(function (item, index, items) {
-        _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: item.mac, variant: ''})
-        _this.$store.commit('$_nodes/ITEM_MESSAGE', {mac: item.mac, message: ''})
-      })
-      this.checkedRows = []
-      this.lastIndex = null
-    },
-    toggleCheckbox (event, index) {
-      // support SHIFT+CLICK
-      const lastIndex = this.lastIndex
-      this.lastIndex = index
-      if (lastIndex === null || index === lastIndex || !event.shiftKey) return
-      const subset = this.items.slice(
-        Math.min(index, lastIndex),
-        Math.max(index, lastIndex) + 1
-      )
-      if (event.currentTarget.checked) {
-        this.checkedRows.push(...subset)
-        // remove duplicates
-        this.checkedRows = this.checkedRows.reduce((x, y) => x.includes(y) ? x : [...x, y], [])
-      } else {
-        this.checkedRows = this.checkedRows.reduce((x, y) => subset.includes(y) ? x : [...x, y], [])
-      }
+    pfMixinSearchableAdvancedMode (condition) {
+      return (condition.values.length > 1 || condition.values[0].values.length > 1)
     },
     applyBulkClearViolation () {
-      const _this = this
-      const macs = this.checkedRows.map(item => item.mac)
+      const macs = this.selectValues.map(item => item.mac)
       if (macs.length > 0) {
-        _this.$store.dispatch('$_nodes/clearViolationBulkNodes', macs).then(response => {
-          response.items.forEach(function (item, index, items) {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: item.mac, status: item.status})
-            _this.$store.commit('$_nodes/ITEM_MESSAGE', {mac: item.mac, message: item.message})
+        this.$store.dispatch(`${this.storeName}/clearViolationBulkNodes`, { items: macs }).then(response => {
+          response.items.forEach((item, _index, items) => {
+            let index = this.tableValues.findIndex(node => node.mac === item.mac)
+            this.setRowVariant(index, convert.statusToVariant({ status: item.status }))
+            this.setRowMessage(index, item.message)
+            if (item.message) {
+              this.$store.dispatch('notification/status_' + item.status, { message: this.$i18n.t('Node') + ' ' + item.mac + ': ' + item.message })
+            }
+          })
+          this.$store.dispatch('notification/info', {
+            message: response.items.length + ' ' + this.$i18n.t('nodes cleared'),
+            success: response.items.filter(item => item.status === 'success').length,
+            skipped: response.items.filter(item => item.status === 'skipped').length,
+            failed: response.items.filter(item => item.status === 'failed').length
           })
         }).catch(() => {
-          macs.forEach(function (mac, index) {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: mac, variant: 'danger'})
+          macs.forEach((mac, i) => {
+            let index = this.tableValues.findIndex(node => node.mac === mac)
+            this.setRowVariant(index, 'danger')
           })
         })
       }
     },
     applyBulkRegister () {
-      const _this = this
-      const macs = this.checkedRows.map(item => item.mac)
+      const macs = this.selectValues.map(item => item.mac)
       if (macs.length > 0) {
-        _this.$store.dispatch('$_nodes/registerBulkNodes', macs).then(response => {
-          response.items.forEach(function (item, index, items) {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: item.mac, status: item.status})
-            _this.$store.commit('$_nodes/ITEM_MESSAGE', {mac: item.mac, message: item.message})
+        this.$store.dispatch(`${this.storeName}/registerBulkNodes`, { items: macs }).then(response => {
+          response.items.forEach((item, _index, items) => {
+            let index = this.tableValues.findIndex(node => node.mac === item.mac)
+            this.setRowVariant(index, convert.statusToVariant({ status: item.status }))
+            this.setRowMessage(index, item.message)
+            if (item.message) {
+              this.$store.dispatch('notification/status_' + item.status, { message: this.$i18n.t('Node') + ' ' + item.mac + ': ' + item.message })
+            }
+          })
+          this.$store.dispatch('notification/info', {
+            message: response.items.length + ' ' + this.$i18n.t('nodes registered'),
+            success: response.items.filter(item => item.status === 'success').length,
+            skipped: response.items.filter(item => item.status === 'skipped').length,
+            failed: response.items.filter(item => item.status === 'failed').length
           })
         }).catch(() => {
-          macs.forEach(function (mac, index) {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: mac, variant: 'danger'})
+          macs.forEach((mac, i) => {
+            let index = this.tableValues.findIndex(node => node.mac === mac)
+            this.setRowVariant(index, 'danger')
           })
         })
       }
     },
     applyBulkDeregister () {
-      const _this = this
-      const macs = this.checkedRows.map(item => item.mac)
+      const macs = this.selectValues.map(item => item.mac)
       if (macs.length > 0) {
-        _this.$store.dispatch('$_nodes/deregisterBulkNodes', macs).then(response => {
-          response.items.forEach(function (item, index, items) {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: item.mac, status: item.status})
-            _this.$store.commit('$_nodes/ITEM_MESSAGE', {mac: item.mac, message: item.message})
+        this.$store.dispatch(`${this.storeName}/deregisterBulkNodes`, { items: macs }).then(response => {
+          response.items.forEach((item, _index, items) => {
+            let index = this.tableValues.findIndex(node => node.mac === item.mac)
+            this.setRowVariant(index, convert.statusToVariant({ status: item.status }))
+            this.setRowMessage(index, item.message)
+            if (item.message) {
+              this.$store.dispatch('notification/status_' + item.status, { message: this.$i18n.t('Node') + ' ' + item.mac + ': ' + item.message })
+            }
+          })
+          this.$store.dispatch('notification/info', {
+            message: response.items.length + ' ' + this.$i18n.t('nodes unregistered'),
+            success: response.items.filter(item => item.status === 'success').length,
+            skipped: response.items.filter(item => item.status === 'skipped').length,
+            failed: response.items.filter(item => item.status === 'failed').length
           })
         }).catch(() => {
-          macs.forEach(function (mac, index) {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: mac, variant: 'danger'})
+          macs.forEach((mac, i) => {
+            let index = this.tableValues.findIndex(node => node.mac === mac)
+            this.setRowVariant(index, 'danger')
           })
         })
       }
     },
     applyBulkReevaluateAccess () {
-      const _this = this
-      const macs = this.checkedRows.map(item => item.mac)
+      const macs = this.selectValues.map(item => item.mac)
       if (macs.length > 0) {
-        _this.$store.dispatch('$_nodes/reevaluateAccessBulkNodes', macs).then(response => {
-          response.items.forEach(function (item, index, items) {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: item.mac, status: item.status})
-            _this.$store.commit('$_nodes/ITEM_MESSAGE', {mac: item.mac, message: item.message})
+        this.$store.dispatch(`${this.storeName}/reevaluateAccessBulkNodes`, { items: macs }).then(response => {
+          response.items.forEach((item, _index, items) => {
+            let index = this.tableValues.findIndex(node => node.mac === item.mac)
+            this.setRowVariant(index, convert.statusToVariant({ status: item.status }))
+            this.setRowMessage(index, item.message)
+            if (item.message) {
+              this.$store.dispatch('notification/status_' + item.status, { message: this.$i18n.t('Node') + ' ' + item.mac + ': ' + item.message })
+            }
+          })
+          this.$store.dispatch('notification/info', {
+            message: response.items.length + ' ' + this.$i18n.t('nodes reevaluated'),
+            success: response.items.filter(item => item.status === 'success').length,
+            skipped: response.items.filter(item => item.status === 'skipped').length,
+            failed: response.items.filter(item => item.status === 'failed').length
           })
         }).catch(() => {
-          macs.forEach(function (mac, index) {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: mac, variant: 'danger'})
+          macs.forEach((mac, i) => {
+            let index = this.tableValues.findIndex(node => node.mac === mac)
+            this.setRowVariant(index, 'danger')
           })
         })
       }
     },
     applyBulkRestartSwitchport () {
-      const _this = this
-      const macs = this.checkedRows.map(item => item.mac)
+      const macs = this.selectValues.map(item => item.mac)
       if (macs.length > 0) {
-        _this.$store.dispatch('$_nodes/restartSwitchportBulkNodes', macs).then(response => {
-          response.items.forEach(function (item, index, items) {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: item.mac, status: item.status})
-            _this.$store.commit('$_nodes/ITEM_MESSAGE', {mac: item.mac, message: item.message})
+        this.$store.dispatch(`${this.storeName}/restartSwitchportBulkNodes`, { items: macs }).then(response => {
+          response.items.forEach((item, _index, items) => {
+            let index = this.tableValues.findIndex(node => node.mac === item.mac)
+            this.setRowVariant(index, convert.statusToVariant({ status: item.status }))
+            this.setRowMessage(index, item.message)
+            if (item.message) {
+              this.$store.dispatch('notification/status_' + item.status, { message: this.$i18n.t('Node') + ' ' + item.mac + ': ' + item.message })
+            }
+          })
+          this.$store.dispatch('notification/info', {
+            message: response.items.length + ' ' + this.$i18n.t('node switch ports restarted'),
+            success: response.items.filter(item => item.status === 'success').length,
+            skipped: response.items.filter(item => item.status === 'skipped').length,
+            failed: response.items.filter(item => item.status === 'failed').length
           })
         }).catch(() => {
-          macs.forEach(function (mac, index) {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: mac, variant: 'danger'})
+          macs.forEach((mac, i) => {
+            let index = this.tableValues.findIndex(node => node.mac === mac)
+            this.setRowVariant(index, 'danger')
           })
         })
       }
     },
-    applyRole (role) {
-      const _this = this
-      const macs = this.checkedRows.map(item => item.mac)
+    applyBulkRefreshFingerbank () {
+      const macs = this.selectValues.map(item => item.mac)
       if (macs.length > 0) {
-        macs.forEach(function (mac, index) {
-          _this.$store.dispatch('$_nodes/roleNode', {mac: mac, category_id: role.category_id}).then(response => {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: mac, status: response.status})
-            _this.$store.commit('$_nodes/ITEM_MESSAGE', {mac: mac, message: response.message})
-          }).catch(() => {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: mac, variant: 'danger'})
+        this.$store.dispatch(`${this.storeName}/refreshFingerbankBulkNodes`, { items: macs }).then(response => {
+          response.items.forEach((item, _index, items) => {
+            let index = this.tableValues.findIndex(node => node.mac === item.mac)
+            this.setRowVariant(index, convert.statusToVariant({ status: item.status }))
+            this.setRowMessage(index, item.message)
+            if (item.message) {
+              this.$store.dispatch('notification/status_' + item.status, { message: this.$i18n.t('Node') + ' ' + item.mac + ': ' + item.message })
+            }
+          })
+          this.$store.dispatch('notification/info', {
+            message: response.items.length + ' ' + this.$i18n.t('node profiling refreshed'),
+            success: response.items.filter(item => item.status === 'success').length,
+            skipped: response.items.filter(item => item.status === 'skipped').length,
+            failed: response.items.filter(item => item.status === 'failed').length
+          })
+        }).catch(() => {
+          macs.forEach((mac, i) => {
+            let index = this.tableValues.findIndex(node => node.mac === mac)
+            this.setRowVariant(index, 'danger')
           })
         })
       }
     },
-    applyBypassRole (role) {
-      const _this = this
-      const macs = this.checkedRows.map(item => item.mac)
+    applyBulkRole (role) {
+      const macs = this.selectValues.map(item => item.mac)
       if (macs.length > 0) {
-        macs.forEach(function (mac, index) {
-          _this.$store.dispatch('$_nodes/bypassRoleNode', {mac: mac, bypass_role_id: role.category_id}).then(response => {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: mac, status: response.status})
-            _this.$store.commit('$_nodes/ITEM_MESSAGE', {mac: mac, message: response.message})
-          }).catch(() => {
-            _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: mac, variant: 'danger'})
+        this.$store.dispatch(`${this.storeName}/roleBulkNodes`, { items: macs, category_id: role.category_id }).then(response => {
+          response.items.forEach((item, _index, items) => {
+            let index = this.tableValues.findIndex(node => node.mac === item.mac)
+            this.setRowVariant(index, convert.statusToVariant({ status: item.status }))
+            this.setRowMessage(index, item.message)
+            if (item.message) {
+              this.$store.dispatch('notification/status_' + item.status, { message: this.$i18n.t('Node') + ' ' + item.mac + ': ' + item.message })
+            }
+          })
+          this.$store.dispatch('notification/info', {
+            message: response.items.length + ' ' + this.$i18n.t('node roles updated'),
+            success: response.items.filter(item => item.status === 'success').length,
+            skipped: response.items.filter(item => item.status === 'skipped').length,
+            failed: response.items.filter(item => item.status === 'failed').length
+          })
+        }).catch(() => {
+          macs.forEach((mac, i) => {
+            let index = this.tableValues.findIndex(node => node.mac === mac)
+            this.setRowVariant(index, 'danger')
           })
         })
       }
     },
-    applyViolation (violation) {
-      console.log(['applyViolation', violation, this.checkedRows])
-    },
-    onKeydown (event) {
-      switch (true) {
-        case (event.altKey && event.keyCode === 65): // ALT+A
-          event.preventDefault()
-          this.checkedRows = this.tableValues
-          break
-        case (event.altKey && event.keyCode === 78): // ALT+N
-          event.preventDefault()
-          this.checkedRows = []
-          break
+    applyBulkBypassRole (role) {
+      const macs = this.selectValues.map(item => item.mac)
+      if (macs.length > 0) {
+        this.$store.dispatch(`${this.storeName}/bypassRoleBulkNodes`, { items: macs, bypass_role_id: role.category_id }).then(response => {
+          response.items.forEach((item, _index, items) => {
+            let index = this.tableValues.findIndex(node => node.mac === item.mac)
+            this.setRowVariant(index, convert.statusToVariant({ status: item.status }))
+            this.setRowMessage(index, item.message)
+            if (item.message) {
+              this.$store.dispatch('notification/status_' + item.status, { message: this.$i18n.t('Node') + ' ' + item.mac + ': ' + item.message })
+            }
+          })
+          this.$store.dispatch('notification/info', {
+            message: response.items.length + ' ' + this.$i18n.t('node bypass roles updated'),
+            success: response.items.filter(item => item.status === 'success').length,
+            skipped: response.items.filter(item => item.status === 'skipped').length,
+            failed: response.items.filter(item => item.status === 'failed').length
+          })
+        }).catch(() => {
+          macs.forEach((mac, i) => {
+            let index = this.tableValues.findIndex(node => node.mac === mac)
+            this.setRowVariant(index, 'danger')
+          })
+        })
       }
-    }
-  },
-  watch: {
-    checkedRows (a, b) {
-      this.checkedAll = (this.tableValues.length === a.length && a.length > 0)
-      let _this = this
-      let checkedRows = this.checkedRows
-      this.items.forEach(function (item, index, items) {
-        if (checkedRows.includes(item)) {
-          _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: item.mac, variant: 'info'})
-        } else {
-          _this.$store.commit('$_nodes/ITEM_VARIANT', {mac: item.mac, variant: ''})
-          _this.$store.commit('$_nodes/ITEM_MESSAGE', {mac: item.mac, message: ''})
-        }
-      })
     },
-    condition (a, b) {
-      if (a !== b) this.clearChecked()
-    },
-    requestPage (a, b) {
-      if (a !== b) this.clearChecked()
-    },
-    currentPage (a, b) {
-      if (a !== b) this.clearChecked()
-    },
-    pageSizeLimit (a, b) {
-      if (a !== b) this.clearChecked()
-    },
-    visibleColumns (a, b) {
-      if (a !== b) this.clearChecked()
+    applyBulkViolation (violation) {
+      const macs = this.selectValues.map(item => item.mac)
+      if (macs.length > 0) {
+        this.$store.dispatch(`${this.storeName}/applyViolationBulkNodes`, { items: macs, vid: violation.id }).then(response => {
+          response.items.forEach((item, _index, items) => {
+            let index = this.tableValues.findIndex(node => node.mac === item.mac)
+            this.setRowVariant(index, convert.statusToVariant({ status: item.status }))
+            this.setRowMessage(index, item.message)
+            if (item.message) {
+              this.$store.dispatch('notification/status_' + item.status, { message: this.$i18n.t('Node') + ' ' + item.mac + ': ' + item.message })
+            }
+          })
+          this.$store.dispatch('notification/info', {
+            message: response.items.length + ' ' + this.$i18n.t('node violations created'),
+            success: response.items.filter(item => item.status === 'success').length,
+            skipped: response.items.filter(item => item.status === 'skipped').length,
+            failed: response.items.filter(item => item.status === 'failed').length
+          })
+        }).catch(() => {
+          macs.forEach((mac, i) => {
+            let index = this.tableValues.findIndex(node => node.mac === mac)
+            this.setRowVariant(index, 'danger')
+          })
+        })
+      }
     }
   },
   created () {
     this.$store.dispatch('config/getRoles')
     this.$store.dispatch('config/getViolations')
-    this.pageSizeLimit = this.$store.state.$_nodes.searchPageSize
-    // Restore search parameters
-    this.condition = this.$store.state.$_nodes.searchQuery
-    if (!this.condition) {
-      this.initSearch()
-    }
-    // Restore visibleColumns, overwrite defaults
-    if (this.$store.state.$_nodes.visibleColumns) {
-      let visibleColumns = this.$store.state.$_nodes.visibleColumns
-      this.columns.forEach(function (column, index, columns) {
-        columns[index].visible = visibleColumns.includes(column.key)
-      })
-    }
-    this.$store.dispatch('$_nodes/setSearchFields', this.searchFields)
-    this.$store.dispatch('$_nodes/search', this.requestPage)
-  },
-  mounted () {
-    document.addEventListener('keydown', this.onKeydown)
-  },
-  beforeDestroy () {
-    document.removeEventListener('keydown', this.onKeydown)
   }
 }
 </script>

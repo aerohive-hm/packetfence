@@ -1784,14 +1784,6 @@ msgstr ""
 msgid "Creating"
 msgstr ""
 
-# html/pfappserver/root/node/create.tt
-msgid "Creating Nodes .."
-msgstr ""
-
-# html/pfappserver/root/user/create.tt
-msgid "Creating Users .."
-msgstr ""
-
 # html/pfappserver/root/user/view.tt
 msgid "Custom Fields"
 msgstr ""
@@ -1990,11 +1982,8 @@ msgid "Dashboard"
 msgstr ""
 
 # html/pfappserver/root/graph/dashboard.tt
-msgid "Database"
-msgstr ""
-
 # html/pfappserver/root/configurator/database.tt
-msgid "Database Configuration"
+msgid "Database"
 msgstr ""
 
 # html/pfappserver/root/configuration/system_config.tt
@@ -3320,7 +3309,7 @@ msgid "If using the HTTP transport, specify the password for the Palo Alto API"
 msgstr ""
 
 # html/pfappserver/root/configurator/fingerbank.tt
-msgid "If you do not configure a Fingerbank API key, you will not have access to any device profiling capabilities in PacketFence"
+msgid "If you do not configure a Fingerbank API key, you will not have access to any device profiling capabilities in PacketFence."
 msgstr ""
 
 # html/pfappserver/root/configurator/database.tt
@@ -3679,10 +3668,6 @@ msgstr ""
 
 # conf/documentation.conf (services.dhcpd_binary)
 msgid "Location of the dhcpd binary. Only necessary to change if you are not running the RPMed version."
-msgstr ""
-
-# conf/documentation.conf (services.etcd_binary)
-msgid "Location of the etcd binary."
 msgstr ""
 
 # conf/documentation.conf (services.fingerbank-collector_binary)
@@ -4849,10 +4834,6 @@ msgstr "Provisioning - Read"
 # pf::admin_roles (Actions)
 msgid "PROVISIONING_UPDATE"
 msgstr "Provisioning - Update"
-
-# html/pfappserver/root/configurator/configuration.tt
-msgid "PacketFence Configuration"
-msgstr ""
 
 # html/pfappserver/lib/pfappserver/Form/Config/Source/Eduroam.pm
 msgid "PacketFence Eduroam RADIUS virtual server authentication listening port"
@@ -6709,10 +6690,6 @@ msgstr ""
 
 # conf/documentation.conf (services.api-frontend)
 msgid "Should api-frontend be managed by PacketFence?"
-msgstr ""
-
-# conf/documentation.conf (services.etcd)
-msgid "Should etcd be managed by PacketFence?"
 msgstr ""
 
 # conf/documentation.conf (services.haproxy-db)
@@ -9256,7 +9233,7 @@ msgstr "Alerting"
 
 # conf/documentation.conf
 msgid "alerting.emailaddr"
-msgstr "Recipient"
+msgstr "Recipients"
 
 # conf/documentation.conf
 msgid "alerting.fromaddr"
@@ -9757,7 +9734,6 @@ msgstr ""
 # conf/documentation.conf (pfdhcp.mac2ip_lookup options)
 # conf/documentation.conf (provisioning.autoconfig options)
 # conf/documentation.conf (services.api-frontend options)
-# conf/documentation.conf (services.etcd options)
 # conf/documentation.conf (services.fingerbank-collector options)
 # conf/documentation.conf (services.haproxy-db options)
 # conf/documentation.conf (services.haproxy-portal options)
@@ -9888,7 +9864,6 @@ msgstr ""
 # conf/documentation.conf (pfdhcp.mac2ip_lookup options)
 # conf/documentation.conf (provisioning.autoconfig options)
 # conf/documentation.conf (services.api-frontend options)
-# conf/documentation.conf (services.etcd options)
 # conf/documentation.conf (services.fingerbank-collector options)
 # conf/documentation.conf (services.haproxy-db options)
 # conf/documentation.conf (services.haproxy-portal options)
@@ -10585,12 +10560,20 @@ msgid "pf_domain"
 msgstr "Domain"
 
 # pf::factory::detect::parser (Detect Parsers)
+msgid "pfdetect_type_nexpose"
+msgstr "Nexpose"
+
+# pf::factory::detect::parser (Detect Parsers)
 msgid "pfdetect_type_dhcp"
 msgstr "DHCP"
 
 # pf::factory::detect::parser (Detect Parsers)
 msgid "pfdetect_type_fortianalyser"
 msgstr "FortiAnalyzer"
+
+# pf::factory::detect::parser (Detect Parsers)
+msgid "pfdetect_type_nexpose"
+msgstr "Nexpose"
 
 # pf::factory::detect::parser (Detect Parsers)
 msgid "pfdetect_type_regex"
@@ -10930,6 +10913,10 @@ msgid "sAMAccountType"
 msgstr ""
 
 # pf::factory::scan (Scans Engine)
+msgid "scan_type_rapid7"
+msgstr "Rapid7"
+
+# pf::factory::scan (Scans Engine)
 msgid "scan_type_nessus"
 msgstr "Nessus"
 
@@ -10974,14 +10961,6 @@ msgstr "arp path"
 # conf/documentation.conf
 msgid "services.dhcpd_binary"
 msgstr "dhcpd path"
-
-# conf/documentation.conf
-msgid "services.etcd"
-msgstr "etcd"
-
-# conf/documentation.conf
-msgid "services.etcd_binary"
-msgstr "etcd path"
 
 # conf/documentation.conf
 msgid "services.fingerbank-collector"
@@ -11563,3 +11542,6 @@ msgstr "Sources"
 
 msgid "network.connection_type_change_detection"
 msgstr "Detect changes in connection type"
+
+msgid "Potd"
+msgstr "Password of the day"

@@ -37,6 +37,9 @@ use pf::constants;
 use pf::file_paths qw($var_dir $install_dir $systemd_unit_dir);
 use pf::log;
 use pf::util;
+use pf::util::console;
+
+use Term::ANSIColor;
 
 use File::Slurp qw(read_file);
 use Proc::ProcessTable;
@@ -224,27 +227,40 @@ sub status {
 
 
 sub print_status {
-    my ($self)        = @_;
-    my $name          = $self->name;
-    my @output        = `systemctl --all --no-pager`;
-    my $header        = shift @output;
-    my $service_regex = qr/ 
-        packetfence- 
-        $name 
-        \.service 
-        /ox;
-
-    my $rc;
-    for (@output) {
-        if (/$service_regex/) {
-            print;
-            my ( $unit, $load, $active, $sub, $desc ) = split;
-            $rc = $active eq "active" ? 1 : 0;
+    my ($self) = @_;
+    my @output = `systemctl --all --no-pager`;
+    my $header = shift @output;
+    my $name   = $self->name;
+    my $colors = pf::util::console::colors();
+    my $loop = $TRUE;
+    for my $output (@output) {
+        if ($output =~ /(packetfence-$name\.service)\s+loaded\s+active/) {
+            my $service = $1;
+            $service .= (" " x (50 - length($service)));
+            print "$service\t$colors->{success}started   ".$self->pid."$colors->{reset}\n";
+            $loop = $FALSE;
+        } elsif ($output =~ /(packetfence-$name\.service)\s+loaded.*/) {
+            my $service = $1;
+            if ($name =~ /(radiusd).*/) {
+                $name = $1;
+            }
+            my $manager = pf::services::get_service_manager($name);
+            my $isManaged = $manager->isManaged;
+            $service .= (" " x (50 - length($service)));
+            if ($isManaged && !$manager->optional) {
+                print "$service\t$colors->{error}stopped   ".$self->pid."$colors->{reset}\n";
+            } else {
+                print "$service\t$colors->{warning}stopped   ".$self->pid."$colors->{reset}\n";
+            }
+            $loop = $FALSE;
         }
     }
-    return $rc;
+    if ($loop) {
+       my $service = "packetfence-$name.service";
+       $service .= (" " x (50 - length($service)));
+       print "$service\t$colors->{warning}disabled  ".$self->pid."$colors->{reset}\n";
+    }
 }
-
 
 =head2 pid
 
@@ -509,4 +525,3 @@ USA.
 =cut
 
 1;
-

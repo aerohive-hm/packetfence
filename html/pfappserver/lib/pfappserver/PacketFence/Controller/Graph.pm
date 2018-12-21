@@ -30,6 +30,7 @@ use pfconfig::cached_array;
 use pf::cluster;
 use pf::nodecategory;
 use Sys::Hostname;
+use pf::config::cluster;
 DateTime::Locale->add_aliases({
     'i_default' => 'en',
 });
@@ -54,6 +55,8 @@ Readonly::Array our @GRAPHS =>
    $GRAPH_WIRED_CONNECTIONS,
    $GRAPH_WIRELESS_CONNECTIONS
   );
+
+tie our %NetworkConfig, 'pfconfig::cached_hash', "resource::network_config($host_id)";
 
 =head1 METHODS
 
@@ -487,12 +490,14 @@ sub dashboard :Local :AdminRole('REPORTS') {
     $c->stash(
         graphs         => \@graphs,
         hostname       => $pf::cluster::host_id,
-        cluster        => pf::cluster::members_ips($management_network->tag('int')),
+        cluster        => { map { $_->{host} => $_->{management_ip} } @config_cluster_servers },
         sources        => \@authentication_sources_monitored,
         roles          => \@categories,
         current_view   => 'HTML',
         tab            => $tab,
+        networks       => \%NetworkConfig,
         listen_ints    => \@listen_ints,
+        queue_stats    => $c->model('Pfqueue')->stats,
     );
 }
 

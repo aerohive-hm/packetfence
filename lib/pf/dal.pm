@@ -22,14 +22,13 @@ use pf::db;
 use pf::log;
 use pf::error qw(is_error is_success);
 use pf::SQL::Abstract;
+use pf::config::tenant;
 use pf::dal::iterator;
 use pf::constants qw($TRUE $FALSE $DEFAULT_TENANT_ID);
 
 use Class::XSAccessor {
     accessors => [qw(__from_table __old_data)],
 };
-
-our $CURRENT_TENANT = $DEFAULT_TENANT_ID;
 
 =head2 new
 
@@ -109,7 +108,7 @@ sub db_execute {
             $logger->error("Cannot connect to database retrying connection");
             next;
         }
-        $logger->trace(sub{"preparing statement query $sql with bind (" . join(", ", map { defined $_ ? $_ : "(undef)"} @bind) . ")"});
+        pf::log::logstacktrace(sub{"preparing statement query $sql with bind (" . join(", ", map { defined $_ ? $_ : "(undef)"} @bind) . ")"});
         my $sth = $dbh->prepare_cached($sql);
         unless ($sth && $sth->execute(@bind)) {
             my $err = $dbh->err;
@@ -333,14 +332,15 @@ sub update_items {
         @args,
     );
     return $status, undef if is_error($status);
-
+    my $rows = $sth->rows;
+    $sth->finish;
     my $info = $sth->{Database}{mysql_info};
-    if ($info =~ /^.*: (\d+).*: (\d+).*: (\d+)/) {
+    if ($info && $info =~ /^.*: (\d+).*: (\d+).*: (\d+)/) {
         my ($matched, $row, $warning) = ($1, $2, $3);
         return $STATUS::OK, $matched;
     }
 
-    return $STATUS::OK, $sth->rows;
+    return $STATUS::OK, $rows;
 }
 
 =head2 insert
@@ -904,7 +904,7 @@ sub set_tenant {
     }
 
     get_logger->debug("Setting current tenant ID to $tenant_id");
-    $CURRENT_TENANT = $tenant_id;
+    pf::config::tenant::set_tenant($tenant_id);
     return $TRUE;
 }
 
@@ -915,7 +915,7 @@ reset_tenant
 =cut
 
 sub reset_tenant {
-    $CURRENT_TENANT = $DEFAULT_TENANT_ID;
+    return pf::config::tenant::reset_tenant();
 }
 
 =head2 table
@@ -931,7 +931,7 @@ sub table {
 
 
 sub get_tenant {
-    return $CURRENT_TENANT;
+    return pf::config::tenant::get_tenant();
 }
 
 =head2 select

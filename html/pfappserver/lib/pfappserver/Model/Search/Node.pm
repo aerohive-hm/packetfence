@@ -300,8 +300,10 @@ sub make_order_by {
     if ($direction ne 'desc') {
         $direction = 'asc';
     }
+
     my $by = $params->{by} // 'mac';
-    return { "-$direction" => $by };
+    my @order_by = ({ "-$direction" => 'tenant_id' }, { "-$direction" => $by });
+    return \@order_by;
 }
 
 sub make_condition {
@@ -411,7 +413,8 @@ sub make_top_level_conditions {
     my ($self, $params) = @_;
     my @conditions = (
         'r2.radacctid' => undef,
-        'locationlog2.id' => undef
+        'locationlog2.id' => undef,
+        'node.tenant_id' => pf::dal::get_tenant(),
     );
     if ($params->{online_date} ) {
         push @conditions, $self->make_online_date($params->{online_date});

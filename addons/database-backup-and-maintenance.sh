@@ -82,6 +82,10 @@ if [ -f /var/lib/mysql/grastate.dat ]; then
     FIRST_SERVER=`mysql -u$REP_USER -p$REP_PWD -e 'show status like "wsrep_incoming_addresses";' | tail -1 | awk '{ print $2 }' | awk -F "," '{ print $1 }' | awk -F ":" '{ print $1 }'`
     if ! ip a | grep $FIRST_SERVER > /dev/null; then
         SHOULD_BACKUP=0
+        echo "Not the first server of the cluster: database backup canceled."
+        exit $BACKUPRC
+    else
+        echo -e "First server of the cluster : database backup will start.\n"
     fi
 fi
 
@@ -133,7 +137,7 @@ if [ $SHOULD_BACKUP -eq 1 ] && { [ -f /var/run/mysqld/mysqld.pid ] || [ -f /var/
         else
             find $BACKUP_DIRECTORY -name "$BACKUP_DB_FILENAME-*.sql.gz" -mtime +$NB_DAYS_TO_KEEP_DB -delete
             current_filename=$BACKUP_DIRECTORY/$BACKUP_DB_FILENAME-`date +%F_%Hh%M`.sql.gz
-            mysqldump --opt -h $DB_HOST -u $DB_USER -p$DB_PWD $DB_NAME --ignore-table=$DB_NAME.locationlog_archive --ignore-table=$DB_NAME.iplog_archive | gzip > ${current_filename}
+            mysqldump --opt --routines -h $DB_HOST -u $DB_USER -p$DB_PWD $DB_NAME --ignore-table=$DB_NAME.locationlog_archive --ignore-table=$DB_NAME.iplog_archive | gzip > ${current_filename}
             BACKUPRC=$?
             if (( $BACKUPRC > 0 )); then 
                 echo "mysqldump returned  error code: $?" >&2
@@ -169,4 +173,3 @@ if [ $ACTIVATE_REPLICATION == 1 ]; then
 fi
 
 exit $BACKUPRC
-

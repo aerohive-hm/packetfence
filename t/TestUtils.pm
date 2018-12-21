@@ -71,10 +71,6 @@ our @unit_failing_tests = qw(
     network-devices/wired.t
 );
 
-our @config_store_test = qw(
-    ConfigStore/Base.t ConfigStore/Group.t
-);
-
 =head2 get_compile_tests
 
 get_compile_tests
@@ -118,14 +114,14 @@ and return all the normal files under
 
 my %exclusions = map { $_ => 1 } qw(
    /usr/local/pf/bin/pfcmd
-   /usr/local/pf/bin/pfhttpd
+   /usr/local/pf/sbin/pfhttpd
    /usr/local/pf/sbin/pfdns
+   /usr/local/pf/sbin/pfdhcp
+   /usr/local/pf/sbin/pfipset
+   /usr/local/pf/sbin/pfstats
+   /usr/local/pf/sbin/pfdetect
    /usr/local/pf/bin/ntlm_auth_wrapper
    /usr/local/pf/addons/sourcefire/pfdetect.pl
-   /usr/local/pf/bin/pfdns
-   /usr/local/pf/bin/pfdhcp
-   /usr/local/pf/bin/pfipset
-   /usr/local/pf/bin/pfstats
 );
 
 sub get_all_perl_binaries {
@@ -242,6 +238,27 @@ sub get_all_unittests {
                 push(@list, "unittest/$1");
             }
         }}, "$Bin/unittest"
+    );
+    return @list;
+}
+
+=head2 get_all_serialized_unittests
+
+Return all the files /usr/local/pf/t/serialized_unittests
+
+=cut
+
+sub get_all_serialized_unittests {
+
+    my @list;
+
+    # find2perl /usr/local/pf/lib/pf/Switch -name "*.pm"
+    File::Find::find({
+        wanted => sub {
+            if ($File::Find::name =~ m#^\Q$Bin\E/serialized_unittests/(.*\.t)$# ) {
+                push(@list, "serialized_unittests/$1");
+            }
+        }}, "$Bin/serialized_unittests"
     );
     return @list;
 }

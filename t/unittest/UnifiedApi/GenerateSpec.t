@@ -137,6 +137,7 @@ is_deeply(
             type       => 'object',
             properties => {
                 items => {
+                    'description' => 'List',
                     type    => 'array',
                     'items' => {
                         '$ref' => "#/components/schemas/Domain"
@@ -306,7 +307,11 @@ cmp_deeply(
                 },
                 'status' => {
                     type => 'string',
-                    description => 'If profile is disabled it will not used',
+                    description => 'Enable profile',
+                },
+                'unreg_on_acct_stop' => {
+                    type => 'string',
+                    description => 'This activates automatic deregistation of devices for the profile if PacketFence receives a RADIUS accounting stop.',
                 },
             },
             required => [
@@ -321,6 +326,7 @@ cmp_deeply(
             type       => 'object',
             properties => {
                 items => {
+                    'description' => 'List',
                     type    => 'array',
                     'items' => {
                         '$ref' => "#/components/schemas/Profile"
@@ -499,6 +505,14 @@ cmp_deeply(
                     loglines => {
                         type => 'string',
                         description => 'Loglines',
+                    },
+                    lines => {
+                        type => 'array',
+                        items => {
+                            type => 'string',
+                            description => 'Line',
+                        },
+                        description => 'Lines',
                     },
                     rules => {
                         type => 'array',

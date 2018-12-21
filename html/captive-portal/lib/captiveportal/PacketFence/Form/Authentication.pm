@@ -46,7 +46,13 @@ has_field 'fields[password]' => (type => 'Password', label => 'Password');
 
 has_field 'fields[email]' => (type => "Email", label => "Email");
 
-has_field 'fields[telephone]' => (type => "Text", label => "Telephone", html5_type_attr => "tel", validate_method => \&check_telephone);
+has_field 'fields[telephone]' => (
+    type => "Text", 
+    label => "Telephone", 
+    html5_type_attr => "tel", 
+    validate_method => \&check_telephone, 
+    apply => [{transform => sub{ $_[0] =~ s/(-|\s|\(|\))//g; return $_[0] }}],
+);
 
 has_field 'fields[sponsor]' => (type => "Email", label => "Sponsor Email");
 
@@ -54,7 +60,7 @@ has_field 'fields[mobileprovider]' => (type => "Select", label => "Mobile provid
 
 has_field 'fields[aup]' => (type => 'AUP', id => 'aup', validate_method => \&check_aup);
 
-has_field 'fields[email_instructions]' => (type => 'Display', set_html => 'render_email_instructions');
+has_field 'fields[email_instructions]' => (type => 'Display', set_html => 'render_email_instructions', default => 1);
 
 has_field 'fields[birthday]' => (type => 'Date', label => 'Date Of Birth');
 

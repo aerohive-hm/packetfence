@@ -4,6 +4,7 @@
  */
 import Vue from 'vue'
 import Acl from 'vue-browser-acl'
+import router from '@/router'
 import apiCall from '@/utils/api'
 
 const STORAGE_TOKEN_KEY = 'user-token'
@@ -32,13 +33,13 @@ const api = {
     apiCall.defaults.headers.common['Authorization'] = `Bearer ${token}`
   },
   getTokenInfo: () => {
-    return apiCall({url: 'token_info', method: 'get'})
+    return apiCall.get('token_info')
   },
   getTenants: () => {
-    return apiCall({url: 'tenants', method: 'get'})
+    return apiCall.get('tenants')
   },
   getLanguage: (locale) => {
-    return apiCall({url: `translation/${locale}`, method: 'get'})
+    return apiCall.get(`translation/${locale}`)
   }
 }
 
@@ -58,7 +59,7 @@ const getters = {
 }
 
 const actions = {
-  load: ({state, dispatch}) => {
+  load: ({ state, dispatch }) => {
     if (state.token) {
       if (!state.username) {
         return dispatch('update', state.token)
@@ -68,7 +69,7 @@ const actions = {
       return Promise.reject(new Error('No token'))
     }
   },
-  update: ({commit, dispatch}, token) => {
+  update: ({ commit, dispatch }, token) => {
     localStorage.setItem(STORAGE_TOKEN_KEY, token)
     api.setToken(token)
     commit('TOKEN_UPDATED', token)
@@ -85,35 +86,37 @@ const actions = {
             }
           }
           if (!target) {
+            // eslint-disable-next-line
             console.warn(`No action found for ${role}`)
             action = 'access'
             target = role.toLowerCase()
           }
+          // eslint-disable-next-line
           console.debug('configure acl ' + action + ' => ' + target)
           acl.rule(action, target, () => true)
         }
-      }, { caseMode: false })
+      }, { caseMode: false, router: router })
       commit('ROLES_UPDATED', roles)
     })
   },
-  delete: ({commit, dispatch}) => {
+  delete: ({ commit, dispatch }) => {
     localStorage.removeItem(STORAGE_TOKEN_KEY)
     commit('TOKEN_DELETED')
     commit('USERNAME_DELETED')
     commit('ROLES_DELETED')
   },
-  getTokenInfo: ({commit, dispatch}) => {
+  getTokenInfo: ({ commit, dispatch }) => {
     return api.getTokenInfo().then(response => {
       commit('USERNAME_UPDATED', response.data.item.username)
       return response.data.item.admin_roles
     })
   },
-  getTenants: ({commit}) => {
+  getTenants: ({ commit }) => {
     return api.getTenants().then(response => {
       commit('TENANTS_UPDATED', response.data)
     })
   },
-  setLanguage: ({state, commit}, params) => {
+  setLanguage: ({ state, commit }, params) => {
     if (params.i18n.locale !== params.lang || state.languages.indexOf(params.lang) < 0) {
       if (state.languages.indexOf(params.lang) < 0) {
         return api.getLanguage(params.lang).then(response => {
@@ -151,8 +154,14 @@ const mutations = {
   TENANTS_UPDATED: (state, data) => {
     state.tenants = data.items
   },
+  API_OK: (state) => {
+    state.api = true
+  },
   API_ERROR: (state) => {
     state.api = false
+  },
+  CHARTS_OK: (state) => {
+    state.charts = true
   },
   CHARTS_ERROR: (state) => {
     state.charts = false

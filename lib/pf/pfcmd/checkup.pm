@@ -17,6 +17,7 @@ use Fcntl ':mode'; # symbolic file permissions
 use Try::Tiny;
 use Readonly;
 
+use pf::constants::filters;
 use pf::validation::profile_filters;
 use pf::constants;
 use pf::constants::config qw($TIME_MODIFIER_RE);
@@ -52,6 +53,7 @@ use NetAddr::IP;
 use pf::web::filter;
 use pfconfig::manager;
 use pfconfig::namespaces::config::Pf;
+use pfconfig::namespaces::resource::clusters_hostname_map;
 use pf::version;
 use File::Slurp;
 use pf::file_paths qw(
@@ -60,15 +62,20 @@ use pf::file_paths qw(
     $install_dir
     $network_config_file
     $bin_dir
+    $sbin_dir
     $log_dir
     @log_files
     $generated_conf_dir
+    $pfdetect_config_file
 );
 use Crypt::OpenSSL::X509;
 use Date::Parse;
 use pf::factory::condition::profile;
 use pf::condition_parser qw(parse_condition_string);
 use pf::cluster;
+use pf::config::builder::pfdetect;
+use pf::config::builder::scoped_filter_engines;
+use pf::IniFiles;
 
 use lib $conf_dir;
 
@@ -165,6 +172,8 @@ sub sanity_check {
     cluster();
     provisioning();
     scan();
+    pfdetect();
+    validate_access_filters();
 
     return @problems;
 }
@@ -176,7 +185,7 @@ sub service_exists {
         next if ($service eq 'pf');
         my $exe = ( $Config{'services'}{"${service}_binary"} || "$install_dir/sbin/$service" );
         if ($service =~ /^(pfipset|pfsso|httpd\.dispatcher|api-frontend)$/) {
-            $exe = "$bin_dir/pfhttpd";
+            $exe = "$sbin_dir/pfhttpd";
         } elsif ($service =~ /httpd\.(.*)/) {
             $exe = ( $Config{'services'}{"httpd_binary"} || "$install_dir/sbin/$service" );
         } elsif ($service =~ /redis_(.*)/) {
@@ -976,7 +985,7 @@ sub connection_profiles {
         allowed_devices|allow_android_devices|
         reuse_dot1x_credentials|provisioners|filter_match_style|sms_pin_retry_limit|
         sms_request_limit|login_attempt_limit|block_interval|dot1x_recompute_role_from_portal|scan|root_module|preregistration|autoregister|access_registration_when_registered|device_registration|
-        dpsk|default_psk_key|status)/x;
+        dpsk|default_psk_key|status|unreg_on_acct_stop)/x;
     my $validator = pf::validation::profile_filters->new;
 
     foreach my $connection_profile ( keys %Profiles_Config ) {
@@ -1026,21 +1035,24 @@ sub vlan_filter_rules {
     require pf::access_filter::vlan;
     my %ConfigVlanFilters = %pf::access_filter::vlan::ConfigVlanFilters;
     foreach my $rule  ( sort keys  %ConfigVlanFilters ) {
+        my $rule_data = $ConfigVlanFilters{$rule};
         if ($rule =~ /^[^:]+:(.*)$/) {
             my ($condition, $msg) = parse_condition_string($1);
             add_problem ( $WARN, "Cannot parse condition '$1' in $rule for vlan filter rule" . "\n" . $msg)
                 if !defined $condition;
             add_problem ( $WARN, "Missing scope attribute in $rule vlan filter rule")
-                if (!defined($ConfigVlanFilters{$rule}->{'scope'}));
+                if (!defined($rule_data->{'scope'}));
             add_problem ( $WARN, "Missing role attribute in $rule vlan filter rule")
-                if (!defined($ConfigVlanFilters{$rule}->{'role'}));
+                if (!defined($rule_data->{'role'}));
         } else {
             add_problem ( $WARN, "Missing filter attribute in $rule vlan filter rule")
-                if (!defined($ConfigVlanFilters{$rule}->{'filter'}));
-            add_problem ( $WARN, "Missing operator attribute in $rule vlan filter rule")
-                if (!defined($ConfigVlanFilters{$rule}->{'operator'}));
-            add_problem ( $WARN, "Missing value attribute in $rule vlan filter rule")
-                if (!defined($ConfigVlanFilters{$rule}->{'value'}) && $ConfigVlanFilters{$rule}->{'operator'} ne 'defined' && $ConfigVlanFilters{$rule}->{'operator'} ne 'not_defined');
+                if (!defined($rule_data->{'filter'}));
+            if (!defined($rule_data->{'operator'})) {
+                add_problem ( $WARN, "Missing operator attribute in $rule vlan filter rule");
+            } else {
+                add_problem ( $WARN, "Missing value attribute in $rule vlan filter rule")
+                    if (!defined($rule_data->{'value'}) && $rule_data->{'operator'} ne 'defined' && $rule_data->{'operator'} ne 'not_defined');
+            }
         }
     }
 }
@@ -1245,11 +1257,19 @@ sub cluster {
     my $int_cs = pf::ConfigStore::Interface->new;
     my @ints = @{$int_cs->readAll('name')};
     my @servers = @pf::cluster::cluster_servers;
+ 
+    my $hostname_map = pfconfig::namespaces::resource::clusters_hostname_map->new->build();
+    my $cluster_name = $hostname_map->{$pf::cluster::host_id};
 
-    my $cluster_config = pfconfig::namespaces::config::Cluster->new;
+    unless($cluster_name) {
+        add_problem($FATAL, "current host ($pf::cluster::host_id) isn't assigned to any cluster");
+        return;
+    }
+
+    my $cluster_config = pfconfig::namespaces::config::Cluster->new(undef, $cluster_name);
     $cluster_config->build();
 
-    unshift @servers, $cluster_config->{_CLUSTER};
+    unshift @servers, $cluster_config->{_CLUSTER}->{$cluster_name};
 
     unless(List::MoreUtils::any { $_->{host} eq $pf::cluster::host_id} @servers) {
         add_problem($FATAL, "current host ($pf::cluster::host_id) is missing from the cluster.conf file");
@@ -1289,6 +1309,50 @@ sub valid_fingerbank_device_id {
     else {
         return $TRUE;
     }
+}
+
+=head2 pfdetect
+
+pfdetect
+
+=cut
+
+sub pfdetect {
+    my $file = $pfdetect_config_file;
+    my $ini = pf::IniFiles->new(-file => $file, -allowempty => 1);
+    unless ($ini) {
+        my $error_msg = join("\n", @pf::IniFiles::errors, "");
+        add_problem($FATAL, "$file: Invalid config file");
+        return;
+    }
+
+    my $builder = pf::config::builder::pfdetect->new();
+    my ($errors, $data) = $builder->build($ini);
+    for my $err (@{ $errors // [] }) {
+        my $error_msg =  "$file: $err->{rule}) $err->{message}";
+        add_problem($WARN, $error_msg);
+    }
+}
+
+=head2 validate_access_filters
+
+Validate Access Filters
+
+=cut
+
+sub validate_access_filters {
+    my $builder = pf::config::builder::scoped_filter_engines->new();
+    while (my ($f, $cs) = each %pf::constants::filters::CONFIGSTORE_MAP) {
+        next if $f eq 'apache-filters';
+       my $ini = $cs->configIniFile();
+       my ($errors, undef) = $builder->build($ini);
+       if ($errors) {
+            foreach my $err (@$errors) {
+                add_problem($WARN, "$f: $err->{rule}) $err->{message}");
+            }
+       }
+    }
+    return ;
 }
 
 =back

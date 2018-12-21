@@ -28,15 +28,14 @@ const getters = {
 }
 
 const actions = {
-  allCharts: ({commit}, query) => {
+  allCharts: ({ commit }, query) => {
     api.charts().then(charts => {
       commit('ALL_CHARTS_SUCCESS', charts)
     }).catch(err => {
       commit('session/CHARTS_ERROR', err.response, { root: true })
     })
   },
-  addChart: ({state, commit}, definition) => {
-    console.debug('adding chart ' + definition.id)
+  addChart: ({ state, commit }, definition) => {
     let chart = {
       id: definition.id,
       name: definition.name,
@@ -47,7 +46,7 @@ const actions = {
     commit('CHARTS_UPDATED', chart)
     localStorage.setItem(STORAGE_CHARTS_KEY, JSON.stringify(state.charts))
   },
-  getServices: ({state, commit}) => {
+  getServices: ({ state, commit }) => {
     api.services().then(services => {
       commit('SERVICES_UPDATED', services)
       for (let [index, service] of state.services.entries()) {
@@ -68,6 +67,7 @@ const mutations = {
   },
   CHARTS_UPDATED: (state, chart) => {
     if (state.charts.filter(c => c.id === chart.id).length) {
+      // eslint-disable-next-line
       console.warn('chart ' + chart.id + ' already on dashboard')
     } else {
       state.charts.push(chart)

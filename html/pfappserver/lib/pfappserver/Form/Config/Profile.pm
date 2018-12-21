@@ -18,6 +18,7 @@ extends 'pfappserver::Base::Form';
 with 'pfappserver::Form::Config::ProfileCommon';
 
 use pf::config;
+use pf::condition_parser;
 use List::MoreUtils qw(uniq);
 
 =head1 FIELDS
@@ -63,6 +64,21 @@ has_field 'filter_match_style' =>
     element_class => ['input-mini'],
 );
 
+=head2 status
+
+The status of the profile if it is enabled or disabled
+
+=cut
+
+has_field 'status' =>
+  (
+   type => 'Toggle',
+   label => 'Enable profile',
+   checkbox_value => 'enabled',
+   unchecked_value => 'disabled',
+   default => 'enabled'
+  );
+
 sub options_filter_match_style {
     return  map { { value => $_, label => $_ } } qw(all any);
 }
@@ -97,12 +113,30 @@ sub update_fields {
 sub validate {
     my ($self) = @_;
     my $value = $self->value;
-    if (@{$value->{filter}} == 0 && !exists $value->{advanced_filter} ) {
+    my $advanced_filter = $value->{advanced_filter};
+    if (@{$value->{filter}} == 0 && !defined $advanced_filter) {
         $self->field('filter')->add_error("A filter or an advanced filter must be specified");
         $self->field('advanced_filter')->add_error("A filter or an advanced filter must be specified");
     }
-    return 1;
+
+    if (defined $advanced_filter) {
+        my ($conditions, $err) = pf::condition_parser::parse_condition_string($advanced_filter);
+        if ($err) {
+            $self->field('advanced_filter')->add_error("Advanced filter is invalid");
+        }
+    }
 }
+
+=head2 definition
+
+The main definition block
+
+=cut
+
+has_block 'definition' =>
+  (
+    render_list => [qw(id description status root_module preregistration autoregister reuse_dot1x_credentials dot1x_recompute_role_from_portal dpsk default_psk_key unreg_on_acct_stop)],
+  );
 
 
 =head1 COPYRIGHT

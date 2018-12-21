@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"regexp"
 
-	ipset "github.com/digineo/go-ipset"
+	ipset "github.com/inverse-inc/go-ipset"
 	"github.com/inverse-inc/packetfence/go/log"
 	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
 	"github.com/inverse-inc/packetfence/go/sharedutils"
@@ -171,10 +171,11 @@ func (IPSET *pfIPSET) detectType(ctx context.Context) error {
 
 	var keyConfNet pfconfigdriver.PfconfigKeys
 	keyConfNet.PfconfigNS = "config::Network"
+	keyConfNet.PfconfigHostnameOverlay = "yes"
 	pfconfigdriver.FetchDecodeSocket(ctx, &keyConfNet)
 
 	var keyConfCluster pfconfigdriver.NetInterface
-	keyConfCluster.PfconfigNS = "config::Pf(CLUSTER)"
+	keyConfCluster.PfconfigNS = "config::Pf(CLUSTER," + pfconfigdriver.FindClusterName(ctx) + ")"
 
 	for _, v := range interfaces.Element {
 

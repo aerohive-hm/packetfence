@@ -35,6 +35,7 @@ use pf::util;
 
 use Moose;
 
+tie our %NetworkConfig, 'pfconfig::cached_hash', "resource::network_config";
 
 has 'apiClient'    => (is => 'ro', default => sub { pf::client::getClient });
 has 'filterEngine' => (is => 'rw', default => sub { pf::access_filter::dhcp->new });
@@ -81,8 +82,12 @@ Returns an hash of arrays
 sub _get_local_dhcp_servers {
     # Look for local DHCP servers by IP if not already existent in local cache and fill it up
     unless ( @local_dhcp_servers_ip ) {
-        foreach my $network ( keys %ConfigNetworks ) {
-            push @local_dhcp_servers_ip, $ConfigNetworks{$network}{'gateway'} if ($ConfigNetworks{$network}{'dhcpd'} eq 'enabled');
+        foreach my $network ( keys %NetworkConfig ) {
+            if ($NetworkConfig{$network}{'dhcpd'} eq 'enabled') {
+                push @local_dhcp_servers_ip, $NetworkConfig{$network}{'gateway'};
+                push @local_dhcp_servers_ip, $NetworkConfig{$network}{'vip'} if ($NetworkConfig{$network}{'vip'});
+                push @local_dhcp_servers_ip, split(',',$NetworkConfig{$network}{'cluster_ips'}) if ($NetworkConfig{$network}{'cluster_ips'});
+            }
         }
     }
 
@@ -123,7 +128,7 @@ sub processIPTasks {
     $self->preProcessIPTasks(\%iptasks_arguments);
 
     # update last_seen of MAC address as some activity from it has been seen
-    pf::node::node_update_last_seen($iptasks_arguments{'ip'});
+    pf::node::node_update_last_seen($iptasks_arguments{'mac'});
 
     # Firewall SSO
     if (isenabled($pf::config::Config{advanced}{sso_on_dhcp})) {

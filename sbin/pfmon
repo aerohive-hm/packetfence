@@ -59,7 +59,6 @@ use fingerbank::Config;
 use fingerbank::DB;
 use pf::cluster;
 use Time::HiRes qw(time sleep);
-use pf::option82 qw(search_switch);
 use pf::CHI::Request;
 
 pf::SwitchFactory->preloadConfiguredModules();
@@ -289,7 +288,7 @@ sub _runtask {
         my $final_interval = $interval - $time_taken;
         $logger->trace("$task_id is sleeping for $final_interval ($interval from configuration - $time_taken)");
         # Only wait if the interval is positive
-        if ($final_interval > 1) {
+        if ($final_interval >= 1) {
             alarm $final_interval;
             pause;
             last unless $running;
@@ -338,12 +337,8 @@ sub tasks_count {
     if ($jitter > $count / 4) {
         $jitter = int($count / 4);
     }
-    if ($jitter > 0 ) {
-        # find a random number between -task_jitter to +task_jitter
-        $count += int(rand(2*$jitter + 1)) - $jitter;
-    }
 
-    return $count;
+    return add_jitter($count, $jitter);
 }
 
 =head2 is_parent_alive

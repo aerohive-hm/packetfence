@@ -27,7 +27,6 @@ use pf::config qw(
     @routed_isolation_nets
     @routed_registration_nets
     @inline_nets
-    %connection_type_to_str
     %connection_type
     $UNKNOWN
     $management_network
@@ -35,6 +34,7 @@ use pf::config qw(
     $HTTPS
     $HTTP
 );
+use pf::constants::config qw($DEFAULT_SMTP_PORT $DEFAULT_SMTP_PORT_SSL $DEFAULT_SMTP_PORT_TLS %ALERTING_PORTS);
 use IO::Socket::SSL qw(SSL_VERIFY_NONE);
 use pf::constants::config qw($TIME_MODIFIER_RE);
 use pf::constants::realm;
@@ -66,7 +66,6 @@ BEGIN {
     get_routed_registration_nets get_inline_nets
     get_internal_devs get_internal_devs_phy
     get_internal_macs get_internal_info
-    connection_type_to_str str_to_connection_type
     get_translatable_time trappable_mac
     portal_hosts
     filter_authentication_sources
@@ -144,12 +143,12 @@ sub ip2device {
 
 sub pfmailer {
     my (%data) = @_;
-    my @to = split( /\s*,\s*/, $Config{'alerting'}{'emailaddr'} );
+    my $to = $Config{'alerting'}{'emailaddr'};
     my $host_prefix = $cluster_enabled ? " ($host_id)" : '';
     my $date = POSIX::strftime( "%m/%d/%y %H:%M:%S", localtime );
     my $subject = $Config{'alerting'}{'subjectprefix'} . $host_prefix . " " . $data{'subject'} . " ($date)";
     my $msg = MIME::Lite->new(
-        To      => \@to,
+        To      => $to,
         Subject => $subject,
         Data    => $data{message} . "\n",
     );
@@ -290,59 +289,6 @@ sub get_internal_info {
     return;
 }
 
-=head2 connection_type_to_str
-
-In the database we store the connection type as a string but we use a constant binary value internally.
-This converts from the constant binary value to the string.
-
-return connection_type string (as defined in pf::config) or an empty string if connection type not found
-
-=cut
-
-sub connection_type_to_str {
-    my ($conn_type) = @_;
-    my $logger = get_logger();
-
-    # convert connection_type constant into a string for database
-    if (defined($conn_type) && $conn_type ne '' && defined($connection_type_to_str{$conn_type})) {
-
-        return $connection_type_to_str{$conn_type};
-    } else {
-        my ($package, undef, undef, $routine) = caller(1);
-        $logger->warn("unable to convert connection_type to string. called from $package $routine");
-        return '';
-    }
-}
-
-
-=head2 str_to_connection_type
-
-In the database we store the connection type as a string but we use a constant binary value internally.
-This parses the string from the database into the the constant binary value.
-
-return connection_type constant (as defined in pf::config) or undef if connection type not found
-
-=cut
-
-sub str_to_connection_type {
-    my ($conn_type_str) = @_;
-    my $logger = get_logger();
-
-    # convert database string into connection_type constant
-    if (defined($conn_type_str) && $conn_type_str ne '' && defined($connection_type{$conn_type_str})) {
-
-        return $connection_type{$conn_type_str};
-    } elsif (defined($conn_type_str) && $conn_type_str eq '') {
-
-        $logger->debug("got an empty connection_type, this happens if we discovered the node but it never connected");
-        return $UNKNOWN;
-
-    } else {
-        my ($package, undef, undef, $routine) = caller(1);
-        $logger->warn("unable to parse string into a connection_type constant. called from $package $routine");
-        return;
-    }
-}
 
 =head2 get_translatable_time
 
@@ -449,9 +395,10 @@ get the configuration for sending email
 =cut
 
 sub get_send_email_config {
-    my $config = $Config{alerting};
+    my ($config) = @_;
     my %args;
-    my $encryption = $config->{smtp_encryption};
+    my $encryption = $config->{smtp_encryption} // 'none';
+    $encryption = 'none' if !exists $ALERTING_PORTS{$encryption};
     if ($encryption eq 'ssl') {
         $args{SSL} = 1;
     } elsif ($encryption eq 'starttls') {
@@ -471,7 +418,7 @@ sub get_send_email_config {
     $args{Hostname} = $config->{smtpserver};
     $args{Hello} = $fqdn;
     $args{Timeout} = $config->{smtp_timeout};
-    $args{Port} = $config->{smtp_port};
+    $args{Port} = $config->{smtp_port} || $ALERTING_PORTS{$encryption};
     return \%args;
 }
 
@@ -483,14 +430,8 @@ Submit a mime lite object using the current alerting settings
 
 sub send_mime_lite {
     my ($mime, @args) = @_;
-    my $result = $FALSE;
-    eval {
-        $mime->send(
-            'sub',
-            \&send_using_smtp_callback,
-            @args
-        );
-        $result = $mime->last_send_successful();
+    my $result = eval {
+        do_send_mime_lite($mime, @args);
     };
     if ($@) {
         my $to = $mime->{_extracted_to};
@@ -498,10 +439,24 @@ sub send_mime_lite {
         $msg =~ s/\n//g;
         get_logger->error($msg);
     }
-    else {
-        $result = $result ? $TRUE : $FALSE;
-    }
-    return $result;
+
+    return $result ? $TRUE : $FALSE;
+}
+
+=head2 do_send_mime_lite
+
+do_send_mime_lite
+
+=cut
+
+sub do_send_mime_lite {
+    my ($mime, @args) = @_;
+    $mime->send(
+        'sub',
+        \&send_using_smtp_callback,
+        @args
+    );
+    return $mime->last_send_successful();
 }
 
 =head2 send_using_smtp_callback
@@ -512,8 +467,9 @@ Using the configuration of from pf.conf
 =cut
 
 sub send_using_smtp_callback {
-    my ( $self, %args ) = @_;
-    my $config = get_send_email_config();
+    my ($self, %args) = @_;
+    my $alerting_config = merge_with_alert_config(\%args);
+    my $config = get_send_email_config($alerting_config);
     %args = (%$config, %args);
 
     # We may need the "From:" and "To:" headers to pass to the
@@ -594,6 +550,25 @@ sub send_using_smtp_callback {
     $smtp->quit;
 
     return $self->{last_send_successful} = 1;
+}
+
+=head2 merge_with_alert_config
+
+merge_with_alert_config
+
+=cut
+
+sub merge_with_alert_config {
+    my ($config) = @_;
+    my %alerting_config = %{$Config{alerting}};
+    for my $k (keys %alerting_config ) {
+        next unless exists $config->{$k};
+        if (defined (my $val = delete $config->{$k})) {
+            $alerting_config{$k} = $val;
+        }
+    }
+
+    return \%alerting_config;
 }
 
 =head2 strip_username_if_needed

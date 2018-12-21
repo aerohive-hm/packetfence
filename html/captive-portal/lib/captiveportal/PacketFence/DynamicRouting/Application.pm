@@ -30,6 +30,7 @@ use pf::web ();
 use pf::api::queue;
 use pf::file_paths qw($install_dir);
 use pf::config qw(%Config);
+use pf::activation;
 
 has 'session' => (is => 'rw', required => 1);
 
@@ -38,6 +39,8 @@ has 'user_session' => (is => 'rw', required => 1);
 has 'root_module' => (is => 'rw', isa => "captiveportal::DynamicRouting::Module::Root");
 
 has 'root_module_id' => (is => 'rw');
+
+has 'sub_root_module_id' => (is => 'rw');
 
 has 'request' => (is => 'ro', required => 1);
 
@@ -281,6 +284,7 @@ sub process_destination_url {
     # Return connection profile's redirection URL if destination_url is not set or if redirection URL is forced
     if (!defined($url) || !$url || isenabled($self->profile->forceRedirectURL)) {
         $url = $self->profile->getRedirectURL;
+        goto SET_URL;
     }
 
     my $host;
@@ -289,24 +293,27 @@ sub process_destination_url {
     };
     if($@) {
         get_logger->info("Invalid destination_url $url. Replacing with profile defined one.");
-        $url = $self->profile->getRedirectURL;
+        $url = $self->session->{destination_url} || $self->profile->getRedirectURL;
+        goto SET_URL;
     }
-
 
     my @portal_hosts = portal_hosts();
     # if the destination URL points to the portal, we put the default URL of the connection profile
     if ( any { $_ eq $host } @portal_hosts) {
         get_logger->info("Replacing destination URL $url since it points to the captive portal");
-        $url = $self->profile->getRedirectURL;
+        $url = $self->session->{destination_url} || $self->profile->getRedirectURL;
+        goto SET_URL;
     }
 
     # if the destination URL points to a network detection URL, we put the default URL of the connection profile
     if ( any { $_ eq $url } @{$Config{captive_portal}{detection_mecanism_urls}}) {
         get_logger->info("Replacing destination URL $url since it is a network detection URL");
         $url = $self->profile->getRedirectURL;
+        goto SET_URL;
     }
 
 
+SET_URL:
     $url = decode_entities(uri_unescape($url));
     $self->session->{destination_url} = $url;
 
@@ -327,6 +334,8 @@ sub render {
 
     my $inner_content = $self->_render($template,$args);
     my $profile = $self->profile;
+    $args->{lang} = $self->session->{lang};
+    my %saved_fields = %{$self->session->{saved_fields}} if (defined ($self->session->{saved_fields}) );
 
     my $layout_args = {
         flash => $self->flash,
@@ -336,6 +345,8 @@ sub render {
         title => $self->title,
         logo => $profile->getLogo,
         profile => $profile,
+        lang => $self->session->{lang},
+        %saved_fields,
     };
 
     $args->{layout} //= $TRUE;
@@ -513,10 +524,13 @@ Reset the session except for attributes that are not related to the device state
 
 sub reset_session {
     my ($self) = @_;
-    my @ignore = qw(destination_url client_mac client_ip);
+    my @ignore = qw(lang destination_url client_mac client_ip);
     foreach my $key (keys %{$self->session}){
         next if(any { $key eq $_ } @ignore);
         delete $self->session->{$key};
+    }
+    if(pf::activation::activation_has_entry($self->session->{client_mac},'sms')){
+        pf::activation::invalidate_codes_for_mac($self->session->{client_mac}, "sms");
     }
 }
 

@@ -1,5 +1,17 @@
 @import "../../node_modules/bootstrap/scss/navbar";
 
+.navbar-toggler {
+    border-width: 0;
+}
+
 .navbar-brand img {
     height: $nav-link-height;
+}
+
+.navbar .navbar-nav > .nav-item,
+.pf-sidenav-group {
+    font-weight: 600;
+    font-size: $font-size-sm;
+    // font-size: ($font-size-base * .775);
+    text-transform: uppercase;
 }

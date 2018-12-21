@@ -246,10 +246,9 @@ sub generate_radiusd_acctconf {
 
 sub generate_radiusd_eduroamconf {
     my ($self) = @_;
-
+    my %tags;
     if ( @{pf::authentication::getAuthenticationSourcesByType('Eduroam')} ) {
         my @eduroam_authentication_source = @{pf::authentication::getAuthenticationSourcesByType('Eduroam')};
-        my %tags;
         $tags{'template'}    = "$conf_dir/radiusd/eduroam.conf";
         if ($cluster_enabled) {
             my $ip = defined($management_network->tag('vip')) ? $management_network->tag('vip') : $management_network->tag('ip');
@@ -325,11 +324,40 @@ EOT
         }
         parse_template( \%tags, "$conf_dir/radiusd/eduroam", "$install_dir/raddb/sites-available/eduroam" );
         symlink("$install_dir/raddb/sites-available/eduroam", "$install_dir/raddb/sites-enabled/eduroam");
+
+        %tags = ();
+        my $server1_address = $eduroam_authentication_source[0]{'server1_address'};
+        my $server2_address = $eduroam_authentication_source[0]{'server2_address'};
+        my $radius_secret = $eduroam_authentication_source[0]{'radius_secret'};
+        my $virtual_server = "packetfence";
+        if ($cluster_enabled) {
+            $virtual_server = "pf.cluster";
+        }
+            $tags{'config'} .= <<"EOT";
+client eduroam_tlrs_server_1 {
+        ipaddr = $server1_address
+        secret = $radius_secret
+        shortname = eduroam_tlrs1
+        virtual_server = $virtual_server
+}
+
+client eduroam_tlrs_server_2 {
+        ipaddr = $server2_address
+        secret = $radius_secret
+        shortname = eduroam_tlrs2
+        virtual_server = $virtual_server
+}
+
+EOT
     } else {
+        $tags{'config'} = "# Eduroam integration is not configured";
         unlink("$install_dir/raddb/sites-enabled/eduroam");
         unlink("$install_dir/raddb/sites-available/eduroam");
         unlink("$install_dir/raddb/eduroam.conf");
     }
+    # Ensure raddb/clients.eduroam.conf.inc exists. radiusd won't start otherwise.
+    $tags{'template'} = "$conf_dir/radiusd/clients.eduroam.conf.inc";
+    parse_template( \%tags, "$conf_dir/radiusd/clients.eduroam.conf.inc", "$install_dir/raddb/clients.eduroam.conf.inc" );
 }
 
 sub generate_radiusd_cliconf {
@@ -432,7 +460,9 @@ EOT
     if ( @{pf::authentication::getAuthenticationSourcesByType('Eduroam')} ) {
         my @eduroam_authentication_source = @{pf::authentication::getAuthenticationSourcesByType('Eduroam')};
         my $server1_address = $eduroam_authentication_source[0]{'server1_address'};   # using array index 0 since there can only be one 'eduroam' authentication source ('unique' attribute)
+        my $server1_port = $eduroam_authentication_source[0]{'server1_port'};   # using array index 0 since there can only be one 'eduroam' authentication source ('unique' attribute)
         my $server2_address = $eduroam_authentication_source[0]{'server2_address'};   # using array index 0 since there can only be one 'eduroam' authentication source ('unique' attribute)
+        my $server2_port = $eduroam_authentication_source[0]{'server2_port'};   # using array index 0 since there can only be one 'eduroam' authentication source ('unique' attribute)
         my $radius_secret = $eduroam_authentication_source[0]{'radius_secret'};   # using array index 0 since there can only be one 'eduroam' authentication source ('unique' attribute)
 
         $tags{'eduroam'} = <<"EOT";
@@ -449,13 +479,13 @@ home_server_pool eduroam_auth_pool {
 home_server eduroam_server1 {
     type = auth
     ipaddr = $server1_address
-    port = 1812
+    port = $server1_port
     secret = '$radius_secret'
 }
 home_server eduroam_server2 {
     type = auth
     ipaddr = $server2_address
-    port = 1812
+    port = $server2_port
     secret = '$radius_secret'
 }
 EOT

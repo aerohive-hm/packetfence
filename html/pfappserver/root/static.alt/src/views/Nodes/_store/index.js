@@ -4,75 +4,44 @@
 import Vue from 'vue'
 import api from '../_api'
 
-const STORAGE_SEARCH_LIMIT_KEY = 'nodes-search-limit'
-const STORAGE_VISIBLE_COLUMNS_KEY = 'nodes-visible-columns'
+const STORAGE_SAVED_SEARCH = 'nodes-saved-search'
 
 // Default values
 const state = {
-  items: [], // search results
   nodes: {}, // nodes details
+  nodeExists: {}, // node exists true|false
   message: '',
   nodeStatus: '',
-  searchStatus: '',
-  searchFields: [],
-  searchQuery: null,
-  searchSortBy: 'mac',
-  searchSortDesc: false,
-  searchMaxPageNumber: 1,
-  searchPageSize: localStorage.getItem(STORAGE_SEARCH_LIMIT_KEY) || 10,
-  visibleColumns: JSON.parse(localStorage.getItem(STORAGE_VISIBLE_COLUMNS_KEY)) || false
+  savedSearches: JSON.parse(localStorage.getItem(STORAGE_SAVED_SEARCH)) || []
 }
 
 const getters = {
-  isLoading: state => state.nodeStatus === 'loading',
-  isLoadingResults: state => state.searchStatus === 'loading'
+  isLoading: state => state.nodeStatus === 'loading'
 }
 
 const actions = {
-  setSearchFields: ({commit}, fields) => {
-    commit('SEARCH_FIELDS_UPDATED', fields)
+  addSavedSearch: ({ commit }, search) => {
+    let savedSearches = state.savedSearches
+    savedSearches = state.savedSearches.filter(searches => searches.name !== search.name)
+    savedSearches.push(search)
+    savedSearches.sort((a, b) => {
+      return a.name.localeCompare(b.name)
+    })
+    commit('SAVED_SEARCHES_UPDATED', savedSearches)
+    localStorage.setItem(STORAGE_SAVED_SEARCH, JSON.stringify(savedSearches))
   },
-  setSearchQuery: ({commit}, query) => {
-    commit('SEARCH_QUERY_UPDATED', query)
-    commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
+  deleteSavedSearch: ({ commit }, search) => {
+    let savedSearches = state.savedSearches.filter(searches => searches.name !== search.name)
+    commit('SAVED_SEARCHES_UPDATED', savedSearches)
+    localStorage.setItem(STORAGE_SAVED_SEARCH, JSON.stringify(savedSearches))
   },
-  setSearchPageSize: ({commit}, limit) => {
-    localStorage.setItem(STORAGE_SEARCH_LIMIT_KEY, limit)
-    commit('SEARCH_LIMIT_UPDATED', limit)
-    commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
-  },
-  setSearchSorting: ({commit}, params) => {
-    commit('SEARCH_SORT_BY_UPDATED', params.sortBy)
-    commit('SEARCH_SORT_DESC_UPDATED', params.sortDesc)
-    commit('SEARCH_MAX_PAGE_NUMBER_UPDATED', 1) // reset page count
-  },
-  setVisibleColumns: ({commit}, columns) => {
-    localStorage.setItem(STORAGE_VISIBLE_COLUMNS_KEY, JSON.stringify(columns))
-    commit('VISIBLE_COLUMNS_UPDATED', columns)
-  },
-  search: ({state, getters, commit, dispatch}, page) => {
-    let sort = [state.searchSortDesc ? `${state.searchSortBy} DESC` : state.searchSortBy]
-    let body = {
-      cursor: state.searchPageSize * (page - 1),
-      limit: state.searchPageSize,
-      fields: state.searchFields,
-      sort
+  exists: ({ commit }, mac) => {
+    if (state.nodeExists.hasOwnProperty(mac)) {
+      if (state.nodeExists[mac]) {
+        return Promise.resolve(true)
+      }
+      return Promise.reject(new Error('Unknown MAC'))
     }
-    let apiPromise = state.searchQuery ? api.search(Object.assign(body, {query: state.searchQuery})) : api.all(body)
-    if (state.searchStatus !== 'loading') {
-      return new Promise((resolve, reject) => {
-        commit('SEARCH_REQUEST')
-        apiPromise.then(response => {
-          commit('SEARCH_SUCCESS', response)
-          resolve(response)
-        }).catch(err => {
-          commit('SEARCH_ERROR', err.response)
-          reject(err)
-        })
-      })
-    }
-  },
-  exists: ({commit}, mac) => {
     let body = {
       fields: ['mac'],
       limit: 1,
@@ -84,21 +53,20 @@ const actions = {
       }
     }
     return new Promise((resolve, reject) => {
-      commit('SEARCH_REQUEST')
       api.search(body).then(response => {
-        commit('SEARCH_SUCCESS')
         if (response.items.length > 0) {
+          commit('NODE_EXISTS', mac)
           resolve(true)
         } else {
+          commit('NODE_NOT_EXISTS', mac)
           reject(new Error('Unknown MAC'))
         }
       }).catch(err => {
-        commit('SEARCH_ERROR', err.response)
         reject(err)
       })
     })
   },
-  getNode: ({state, commit}, mac) => {
+  getNode: ({ state, commit }, mac) => {
     let node = { fingerbank: {} } // ip4: { history: [] }, ip6: { history: [] } }
 
     if (state.nodes[mac]) {
@@ -108,8 +76,8 @@ const actions = {
     commit('NODE_REQUEST')
     return api.node(mac).then(item => {
       Object.assign(node, item)
-      if (node.category_id === null) {
-        node.category_id = 'unreg'
+      if (node.status === null) {
+        node.status = 'unreg'
       }
       commit('NODE_REPLACED', node)
 
@@ -177,10 +145,15 @@ const actions = {
         commit('NODE_UPDATED', { mac, prop: 'fingerbank', data: fingerbank })
       })
 
+      // Fetch dhcpoption82
+      api.dhcpoption82(mac).then(items => {
+        commit('NODE_UPDATED', { mac, prop: 'dhcpoption82', data: items })
+      })
+
       return node
     })
   },
-  createNode: ({commit}, data) => {
+  createNode: ({ commit }, data) => {
     commit('NODE_REQUEST')
     if (data.unreg_date && data.unreg_time) {
       data.unregdate = `${data.unreg_date} ${data.unreg_time}`
@@ -188,6 +161,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       api.createNode(data).then(response => {
         commit('NODE_REPLACED', data)
+        commit('NODE_EXISTS', data.mac)
         resolve(response)
       }).catch(err => {
         commit('NODE_ERROR', err.response)
@@ -195,7 +169,7 @@ const actions = {
       })
     })
   },
-  updateNode: ({commit}, data) => {
+  updateNode: ({ commit }, data) => {
     commit('NODE_REQUEST')
     return new Promise((resolve, reject) => {
       api.updateNode(data).then(response => {
@@ -207,11 +181,12 @@ const actions = {
       })
     })
   },
-  deleteNode: ({commit}, mac) => {
+  deleteNode: ({ commit }, data) => {
     commit('NODE_REQUEST')
     return new Promise((resolve, reject) => {
-      api.deleteNode(mac).then(response => {
-        commit('NODE_DESTROYED', mac)
+      api.deleteNode(data).then(response => {
+        commit('NODE_DESTROYED', data)
+        commit('NODE_NOT_EXISTS', data.mac)
         resolve(response)
       }).catch(err => {
         commit('NODE_ERROR', err.response)
@@ -219,11 +194,11 @@ const actions = {
       })
     })
   },
-  registerNode: ({commit}, mac) => {
+  registerNode: ({ commit }, data) => {
     commit('NODE_REQUEST')
     return new Promise((resolve, reject) => {
-      api.registerNode(mac).then(response => {
-        commit('NODE_REPLACED', mac)
+      api.registerNode(data).then(response => {
+        commit('NODE_REPLACED', data)
         resolve(response)
       }).catch(err => {
         commit('NODE_ERROR', err.response)
@@ -231,12 +206,13 @@ const actions = {
       })
     })
   },
-  registerBulkNodes: ({commit}, macs) => {
+  registerBulkNodes: ({ commit }, data) => {
     commit('ITEM_REQUEST')
     return new Promise((resolve, reject) => {
-      api.registerBulkNodes(macs).then(response => {
+      api.registerBulkNodes(data).then(response => {
         response.items.filter(item => item.status === 'success').forEach(function (item, index, items) {
-          commit('ITEM_UPDATED', { mac: item.mac, prop: 'status', data: 'reg' })
+          commit('NODE_UPDATED', { mac: item.mac, prop: 'status', data: 'reg' })
+          commit('$_nodes_searchable/ITEM_UPDATED', { mac: item.mac, prop: 'status', data: 'reg' }, { root: true })
         })
         resolve(response)
       }).catch(err => {
@@ -245,11 +221,11 @@ const actions = {
       })
     })
   },
-  deregisterNode: ({commit}, mac) => {
+  deregisterNode: ({ commit }, data) => {
     commit('NODE_REQUEST')
     return new Promise((resolve, reject) => {
-      api.deregisterNode(mac).then(response => {
-        commit('NODE_REPLACED', mac)
+      api.deregisterNode(data).then(response => {
+        commit('NODE_REPLACED', data)
         resolve(response)
       }).catch(err => {
         commit('NODE_ERROR', err.response)
@@ -257,12 +233,13 @@ const actions = {
       })
     })
   },
-  deregisterBulkNodes: ({commit}, macs) => {
+  deregisterBulkNodes: ({ commit }, data) => {
     commit('ITEM_REQUEST')
     return new Promise((resolve, reject) => {
-      api.deregisterBulkNodes(macs).then(response => {
+      api.deregisterBulkNodes(data).then(response => {
         response.items.filter(item => item.status === 'success').forEach(function (item, index, items) {
-          commit('ITEM_UPDATED', { mac: item.mac, prop: 'status', data: 'unreg' })
+          commit('NODE_UPDATED', { mac: item.mac, prop: 'status', data: 'unreg' })
+          commit('$_nodes_searchable/ITEM_UPDATED', { mac: item.mac, prop: 'status', data: 'unreg' }, { root: true })
         })
         resolve(response)
       }).catch(err => {
@@ -271,11 +248,11 @@ const actions = {
       })
     })
   },
-  clearViolationNode: ({commit}, mac) => {
+  clearViolationNode: ({ commit }, data) => {
     commit('NODE_REQUEST')
     return new Promise((resolve, reject) => {
-      api.clearViolationNode(mac).then(response => {
-        commit('NODE_REPLACED', mac)
+      api.clearViolationNode(data).then(response => {
+        commit('NODE_REPLACED', data)
         resolve(response)
       }).catch(err => {
         commit('NODE_ERROR', err.response)
@@ -283,9 +260,9 @@ const actions = {
       })
     })
   },
-  clearViolationBulkNodes: ({commit}, macs) => {
+  applyViolationBulkNodes: ({ commit }, data) => {
     return new Promise((resolve, reject) => {
-      api.clearViolationBulkNodes(macs).then(response => {
+      api.applyViolationBulkNodes(data).then(response => {
         resolve(response)
       }).catch(err => {
         commit('NODE_ERROR', err.response)
@@ -293,9 +270,9 @@ const actions = {
       })
     })
   },
-  reevaluateAccessBulkNodes: ({commit}, macs) => {
+  clearViolationBulkNodes: ({ commit }, data) => {
     return new Promise((resolve, reject) => {
-      api.reevaluateAccessBulkNodes(macs).then(response => {
+      api.clearViolationBulkNodes(data).then(response => {
         resolve(response)
       }).catch(err => {
         commit('NODE_ERROR', err.response)
@@ -303,9 +280,9 @@ const actions = {
       })
     })
   },
-  restartSwitchportBulkNodes: ({commit}, macs) => {
+  reevaluateAccessBulkNodes: ({ commit }, data) => {
     return new Promise((resolve, reject) => {
-      api.restartSwitchportBulkNodes(macs).then(response => {
+      api.reevaluateAccessBulkNodes(data).then(response => {
         resolve(response)
       }).catch(err => {
         commit('NODE_ERROR', err.response)
@@ -313,12 +290,33 @@ const actions = {
       })
     })
   },
-  roleNode: ({commit}, data) => {
+  restartSwitchportBulkNodes: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      api.restartSwitchportBulkNodes(data).then(response => {
+        resolve(response)
+      }).catch(err => {
+        commit('NODE_ERROR', err.response)
+        reject(err)
+      })
+    })
+  },
+  refreshFingerbankBulkNodes: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      api.refreshFingerbankBulkNodes(data).then(response => {
+        resolve(response)
+      }).catch(err => {
+        commit('NODE_ERROR', err.response)
+        reject(err)
+      })
+    })
+  },
+  roleNode: ({ commit }, data) => {
     commit('ITEM_REQUEST')
     return new Promise((resolve, reject) => {
       api.updateNode(data).then(response => {
         if (response.status === 'success') {
-          commit('ITEM_UPDATED', { mac: data.mac, prop: 'category_id', data: data.category_id })
+          commit('NODE_UPDATED', { mac: data.mac, prop: 'category_id', data: data.category_id })
+          commit('$_nodes_searchable/ITEM_UPDATED', { mac: data.mac, prop: 'category_id', data: data.category_id }, { root: true })
         }
         resolve(response)
       }).catch(err => {
@@ -327,12 +325,75 @@ const actions = {
       })
     })
   },
-  bypassRoleNode: ({commit}, data) => {
+  roleBulkNodes: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      api.roleBulkNodes(data).then(response => {
+        resolve(response)
+      }).catch(err => {
+        commit('NODE_ERROR', err.response)
+        reject(err)
+      })
+    })
+  },
+  bypassRoleNode: ({ commit }, data) => {
     commit('ITEM_REQUEST')
     return new Promise((resolve, reject) => {
       api.updateNode(data).then(response => {
         if (response.status === 'success') {
-          commit('ITEM_UPDATED', { mac: data.mac, prop: 'bypass_role_id', data: data.bypass_role_id })
+          commit('NODE_UPDATED', { mac: data.mac, prop: 'bypass_role_id', data: data.bypass_role_id })
+          commit('$_nodes_searchable/ITEM_UPDATED', { mac: data.mac, prop: 'bypass_role_id', data: data.bypass_role_id }, { root: true })
+        }
+        resolve(response)
+      }).catch(err => {
+        commit('ITEM_ERROR', err.response)
+        reject(err)
+      })
+    })
+  },
+  bypassRoleBulkNodes: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      api.bypassRoleBulkNodes(data).then(response => {
+        resolve(response)
+      }).catch(err => {
+        commit('NODE_ERROR', err.response)
+        reject(err)
+      })
+    })
+  },
+  reevaluateAccessNode: ({ commit }, data) => {
+    commit('ITEM_REQUEST')
+    return new Promise((resolve, reject) => {
+      api.reevaluateAccessNode(data).then(response => {
+        if (response.status === 'success') {
+          // noop
+        }
+        resolve(response)
+      }).catch(err => {
+        commit('ITEM_ERROR', err.response)
+        reject(err)
+      })
+    })
+  },
+  refreshFingerbankNode: ({ commit }, data) => {
+    commit('ITEM_REQUEST')
+    return new Promise((resolve, reject) => {
+      api.refreshFingerbankNode(data).then(response => {
+        if (response.status === 'success') {
+          // noop
+        }
+        resolve(response)
+      }).catch(err => {
+        commit('ITEM_ERROR', err.response)
+        reject(err)
+      })
+    })
+  },
+  restartSwitchportNode: ({ commit }, data) => {
+    commit('ITEM_REQUEST')
+    return new Promise((resolve, reject) => {
+      api.restartSwitchportNode(data).then(response => {
+        if (response.status === 'success') {
+          // noop
         }
         resolve(response)
       }).catch(err => {
@@ -344,46 +405,6 @@ const actions = {
 }
 
 const mutations = {
-  SEARCH_FIELDS_UPDATED: (state, fields) => {
-    state.searchFields = fields
-  },
-  SEARCH_QUERY_UPDATED: (state, query) => {
-    state.searchQuery = query
-  },
-  SEARCH_SORT_BY_UPDATED: (state, field) => {
-    state.searchSortBy = field
-  },
-  SEARCH_SORT_DESC_UPDATED: (state, desc) => {
-    state.searchSortDesc = desc
-  },
-  SEARCH_MAX_PAGE_NUMBER_UPDATED: (state, page) => {
-    state.searchMaxPageNumber = page
-  },
-  SEARCH_LIMIT_UPDATED: (state, limit) => {
-    state.searchPageSize = limit
-  },
-  SEARCH_REQUEST: (state) => {
-    state.searchStatus = 'loading'
-  },
-  SEARCH_SUCCESS: (state, response) => {
-    state.searchStatus = 'success'
-    if (response) {
-      state.items = response.items
-      let nextPage = Math.floor(response.nextCursor / state.searchPageSize) + 1
-      if (nextPage > state.searchMaxPageNumber) {
-        state.searchMaxPageNumber = nextPage
-      }
-    }
-  },
-  SEARCH_ERROR: (state, response) => {
-    state.searchStatus = 'error'
-    if (response && response.data) {
-      state.message = response.data.message
-    }
-  },
-  VISIBLE_COLUMNS_UPDATED: (state, columns) => {
-    state.visibleColumns = columns
-  },
   NODE_REQUEST: (state) => {
     state.nodeStatus = 'loading'
     state.message = ''
@@ -394,7 +415,9 @@ const mutations = {
   },
   NODE_UPDATED: (state, params) => {
     state.nodeStatus = 'success'
-    Vue.set(state.nodes[params.mac], params.prop, params.data)
+    if (params.mac in state.nodes) {
+      Vue.set(state.nodes[params.mac], params.prop, params.data)
+    }
   },
   NODE_DESTROYED: (state, mac) => {
     state.nodeStatus = 'success'
@@ -406,29 +429,14 @@ const mutations = {
       state.message = response.data.message
     }
   },
-  ITEM_VARIANT: (state, params) => {
-    let index = state.items.findIndex(item => item.mac === params.mac)
-    let variant = params.variant || ''
-    switch (params.status) {
-      case 'success':
-        variant = 'success'
-        break
-      case 'skipped':
-        variant = 'warning'
-        break
-      case 'failed':
-        variant = 'danger'
-        break
-    }
-    Vue.set(state.items[index], '_rowVariant', variant)
+  NODE_EXISTS: (state, mac) => {
+    Vue.set(state.nodeExists, mac, true)
   },
-  ITEM_MESSAGE: (state, params) => {
-    let index = state.items.findIndex(item => item.mac === params.mac)
-    Vue.set(state.items[index], '_message', params.message)
+  NODE_NOT_EXISTS: (state, mac) => {
+    Vue.set(state.nodeExists, mac, false)
   },
-  ITEM_UPDATED: (state, params) => {
-    let index = state.items.findIndex(item => item.mac === params.mac)
-    Vue.set(state.items[index], params.prop, params.data)
+  SAVED_SEARCHES_UPDATED: (state, searches) => {
+    state.savedSearches = searches
   }
 }
 

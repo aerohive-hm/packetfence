@@ -15,7 +15,7 @@ use warnings;
 #
 use lib '/usr/local/pf/lib';
 
-use Test::More tests => 6;
+use Test::More tests => 4;
 #This test will running last
 use Test::NoWarnings;
 use Test::MockObject::Extends;
@@ -49,9 +49,7 @@ my $config = {
     ],
 };
 
-my $parser = Test::MockObject::Extends->new(pf::detect::parser::regex->new($config));
-
-is($parser->parse("from: 1.2.3.4, to: 1.2.3"), undef, "Invalid line");
+my $parser = pf::detect::parser::regex->new($config);
 
 my $matches = $parser->matchLine("from: 1.2.3.4, to: 1.2.3.5");
 
@@ -61,7 +59,10 @@ is_deeply(
         {
             'success' => 1,
             rule => $config->{rules}[1],
-            actions => [['modify_node', ['1.2.3.4', '1.2.3.5']], ['violation_log', ['bob', 'bob']]],
+            actions => [
+                { api_method => 'modify_node', api_parameters => ['1.2.3.4', '1.2.3.5']},
+                { api_method => 'violation_log', api_parameters => ['bob', 'bob']}
+            ],
         }
     ],
     "Match one rule"
@@ -75,23 +76,22 @@ is_deeply(
         {
             'success' => 1,
             rule => $config->{rules}[0],
-            actions => [['modify_node', ['1.2.3.4', '1.2.3.5', 'aa:bb:cc:dd:ee:ff']], ['violation_log', ['bob', 'bob']]],
+            actions => [
+                { api_method => 'modify_node', api_parameters => ['1.2.3.4', '1.2.3.5', 'aa:bb:cc:dd:ee:ff']}, 
+                { api_method => 'violation_log', api_parameters => ['bob', 'bob']}
+            ],
         },
         {
             'success' => 1,
             rule => $config->{rules}[1],
-            actions => [['modify_node', ['1.2.3.4', '1.2.3.5']], ['violation_log', ['bob', 'bob']]],
+            actions => [
+                {api_method => 'modify_node', api_parameters =>['1.2.3.4', '1.2.3.5']},
+                {api_method => 'violation_log', api_parameters => ['bob', 'bob']}
+            ],
         }
     ],
     "Match two rules"
 );
-
-$parser->mock("sendActions", sub {});
-
-my $result = $parser->parse("from: 1.2.3.4, to: 1.2.3.5");
-
-is($result, "0", "Parsing is good");
-
 
 =head1 AUTHOR
 

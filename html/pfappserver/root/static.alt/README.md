@@ -3,7 +3,7 @@
 ## Introduction
 
 * [Vue.js official guide](https://vuejs.org/v2/guide/)
-* [Bootstrap + Vue](https://bootstrap-vue.js.org/) 
+* [Bootstrap + Vue](https://bootstrap-vue.js.org/)
 * [ECMAScript 2015 (ES6) syntax](https://babeljs.io/learn-es2015/)
 * [npm](https://www.npmjs.com/) -- package manager
 * [webpack](https://webpack.js.org/) -- task runner
@@ -36,10 +36,21 @@ Since this is a SPA (Single-Page Application), it is currently accessible from `
 * [Vuex](https://vuex.vuejs.org/) -- state management
 * [vue-router](https://router.vuejs.org/) -- official router
 * [vue-i18n](https://kazupon.github.io/vue-i18n/) -- internationalization
+* [messageformat](https://messageformat.github.io/messageformat/) -- internationalization formatting
 * [vue-browser-acl](https://github.com/mblarsen/vue-browser-acl) -- ACLs
 * [axios](https://github.com/axios/axios) -- http client
 * [vuelidate](https://monterail.github.io/vuelidate/) -- form validation
 * [vue-awesome](https://justineo.github.io/vue-awesome/demo/) -- font awesome component (svg)
+* [vue2vis](https://github.com/alexcode/vue2vis/) -- VueJS to Vis
+ * [vis](http://visjs.org/) -- Vis
+* [vue-timeago](https://github.com/egoist/vue-timeago) -- show relative time
+* [Plotly](https://plot.ly/javascript/reference/) -- svg charts
+* [date-fns](https://date-fns.org/v1.29.0/docs/) -- datetime utils
+* [vue-bootstrap-datetimepicker](http://eonasdan.github.io/bootstrap-datetimepicker/) -- datetime input form element
+* [papaparse](https://www.papaparse.com/) -- parse CSV
+* [uuid](https://www.npmjs.com/package/uuid) -- RFC4122 UUIDs
+* [vue-multiselect](https://vue-multiselect.js.org/) -- multi-select/chosen component
+* [vuedraggable](https://github.com/SortableJS/Vue.Draggable) -- draggable component
 
 ## Files Structure
 
@@ -64,7 +75,7 @@ Since this is a SPA (Single-Page Application), it is currently accessible from `
 │   └── ...
 ├── utils
 |   ├── api.js           # axios instance for unified API
-│   ├── charts.js        # axios instance for netdata API   
+│   ├── charts.js        # axios instance for netdata API
 │   └── ...
 └── styles               # imports and modifications of the official Bootstrap Sass
 │   └── ...

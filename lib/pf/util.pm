@@ -17,6 +17,7 @@ modules.
 use strict;
 use warnings;
 
+use Cwd;
 use File::Basename;
 use POSIX::2008;
 use Net::MAC::Vendor;
@@ -94,13 +95,21 @@ BEGIN {
         find_outgoing_interface
         strip_filename_from_exceptions
         expand_csv
+        add_jitter
+        connection_type_to_str
+        str_to_connection_type
+        validate_unregdate
     );
 }
 
 # TODO pf::util shouldn't rely on pf::config as this prevent pf::config from
 #      being able to use pf::util
 use pf::constants;
-use pf::constants::config;
+use pf::constants::config qw(
+    %connection_type
+    $UNKNOWN
+    %connection_type_to_str
+);
 use pf::constants::user;
 #use pf::config;
 use pf::log;
@@ -526,8 +535,6 @@ sub parse_template {
     while (<$template_fh>) {
         study $_;
         foreach my $tag ( keys %{$tags} ) {
-#            use Data::Dumper;
-#            print Dumper($tag, $tags->{$tag});
             $_ =~ s/%%$tag%%/$tags->{$tag}/ig;
         }
         push @parsed, $_;
@@ -815,6 +822,12 @@ sub pf_run {
     # Prefixing command using LANG=C to avoid system locale messing up with return
     $command = 'LANG=C ' . $command;
 
+    my $switch_back_wd;
+    if(defined($options{working_directory})) {
+        $switch_back_wd = getcwd();
+        chdir $options{working_directory};
+    }
+
     local $!;
     # Using perl trickery to figure out what the caller expects so I can return him just that
     # this is to perfectly emulate the backtick operator behavior
@@ -823,16 +836,19 @@ sub pf_run {
     if (not defined wantarray) {
         # void context
         `$command`;
+        chdir $switch_back_wd if(defined($switch_back_wd));
         return if ($? == 0);
 
     } elsif (wantarray) {
         # list context
         @result = `$command`;
+        chdir $switch_back_wd if(defined($switch_back_wd));
         return @result if ($? == 0);
 
     } else {
         # scalar context
         $result = `$command`;
+        chdir $switch_back_wd if(defined($switch_back_wd));
         return $result if ($? == 0);
     }
     # copying as soon as possible
@@ -864,6 +880,7 @@ sub pf_run {
         # user specified that this error code is ok
         if (grep { $_ == $exit_status } @{$options{'accepted_exit_status'}}) {
             # we accept the result
+            chdir $switch_back_wd if(defined($switch_back_wd));
             return if (not defined wantarray); # void context
             return @result if (wantarray); # list context
             return $result; # scalar context
@@ -873,6 +890,8 @@ sub pf_run {
             . "Child exited with non-zero value $exit_status"
         );
     }
+    
+    chdir $switch_back_wd if(defined($switch_back_wd));
     return;
 }
 
@@ -1322,6 +1341,27 @@ sub validate_date {
     return $valid;
 }
 
+=item validate_unregdate
+
+Check if a date is between 1970-01-01 and 2038-01-18 or 0000-MM-DD
+
+=cut
+
+sub validate_unregdate {
+    my ($date) = @_;
+    my $valid = $FALSE;
+    if ($date !~ /^0-(\d\d-\d\d)/) {
+        return validate_date($date);
+    }
+
+    if (eval { Time::Piece->strptime($1, "%m-%d") } ) {
+        $valid =  $TRUE;
+    }
+
+    return $valid;
+}
+
+
 =item clean_locale
 
 Clean the format of the locale stored
@@ -1418,10 +1458,75 @@ Strip out filename from exception messages
 sub strip_filename_from_exceptions {
     my ($exception) = @_;
     if (defined $exception) {
-        $exception =~ s/^(.*) at .*?$/$1/;
+        $exception =~ s/^(.*) at .* line \d+\.$/$1/s;
     }
     return $exception;
 }
+
+=head2 add_jitter($number, $jitter)
+
+Add a random number from (-$jitter to $jitter) to $number
+
+=cut
+
+sub add_jitter {
+    my ($number, $jitter) = @_;
+    return $number + int(rand(2 * $jitter + 1)) - $jitter;
+}
+
+=head2 str_to_connection_type
+
+In the database we store the connection type as a string but we use a constant binary value internally.
+This parses the string from the database into the the constant binary value.
+
+return connection_type constant (as defined in pf::config) or undef if connection type not found
+
+=cut
+
+sub str_to_connection_type {
+    my ($conn_type_str) = @_;
+    my $logger = get_logger();
+
+    # convert database string into connection_type constant
+    if (defined($conn_type_str) && $conn_type_str ne '' && defined($connection_type{$conn_type_str})) {
+
+        return $connection_type{$conn_type_str};
+    } elsif (defined($conn_type_str) && $conn_type_str eq '') {
+
+        $logger->debug("got an empty connection_type, this happens if we discovered the node but it never connected");
+        return $UNKNOWN;
+
+    } else {
+        my ($package, undef, undef, $routine) = caller(1);
+        $logger->warn("unable to parse string into a connection_type constant. called from $package $routine");
+        return;
+    }
+}
+
+=head2 connection_type_to_str
+
+In the database we store the connection type as a string but we use a constant binary value internally.
+This converts from the constant binary value to the string.
+
+return connection_type string (as defined in pf::config) or an empty string if connection type not found
+
+=cut
+
+sub connection_type_to_str {
+    my ($conn_type) = @_;
+    my $logger = get_logger();
+
+    # convert connection_type constant into a string for database
+    if (defined($conn_type) && $conn_type ne '' && defined($connection_type_to_str{$conn_type})) {
+
+        return $connection_type_to_str{$conn_type};
+    } else {
+        my ($package, undef, undef, $routine) = caller(1);
+        $logger->warn("unable to convert connection_type to string. called from $package $routine");
+        return '';
+    }
+}
+
 
 =back
 

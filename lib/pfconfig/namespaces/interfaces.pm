@@ -23,11 +23,14 @@ use pfconfig::objects::Net::Netmask;
 use Net::Interface;
 use Socket;
 use pf::util;
+use List::MoreUtils qw(uniq);
+use pf::config::cluster;
 
 use base 'pfconfig::namespaces::resource';
 
 sub init {
     my ($self, $host_id) = @_;
+    $host_id //= "";
     $self->{_interfaces} = {
         listen_ints             => [],
         dhcplistener_ints       => [],
@@ -52,10 +55,10 @@ sub init {
     if($host_id){
         @{$self->{child_resources}} = map { "$_($host_id)" } @{$self->{child_resources}}; 
     }
+
     $self->{config_resource} = pfconfig::namespaces::config::Pf->new( $self->{cache}, $host_id );
     #$self->{cluster_enabled} = pfconfig::namespaces::resource::cluster_enabled->new( $self->{cache} )->build();
-    require pf::cluster;
-    $self->{cluster_enabled} = $pf::cluster::cluster_enabled;
+    $self->{cluster_enabled} = $pf::config::cluster::cluster_enabled;
 }
 
 sub build {
@@ -66,7 +69,10 @@ sub build {
     $self->{config} = $config->build();
     my %Config = %{ $self->{config} };
 
-    foreach my $interface ( $config->GroupMembers("interface") ) {
+    foreach my $section ( @{$config->{ordered_sections}} ) {
+        next unless($section =~ /^interface /);
+        my $interface = $section;
+
         my $int_obj;
         my $int = $interface;
         $int =~ s/interface //;
@@ -120,7 +126,10 @@ sub build {
                 # adding management to dhcp listeners by default (if it's not already there)
                 push @{ $self->{_interfaces}->{dhcplistener_ints} }, $int
                     if ( not scalar grep( { $_ eq $int } @{ $self->{_interfaces}->{dhcplistener_ints} } ) );
-
+                if ($self->{cluster_enabled}) {
+                    push @{ $self->{_interfaces}->{ha_ints} }, $int_obj;
+                    @{ $self->{_interfaces}->{ha_ints} }= uniq @{ $self->{_interfaces}->{ha_ints} };
+                }
             }
             elsif ( $type eq 'monitor' ) {
                 $self->{_interfaces}->{monitor_int} = $int;
@@ -130,6 +139,7 @@ sub build {
             }
             elsif ( $type eq 'high-availability' ) {
                 push @{ $self->{_interfaces}->{ha_ints} }, $int_obj;
+                @{ $self->{_interfaces}->{ha_ints} }= uniq @{ $self->{_interfaces}->{ha_ints} };
             }
             elsif ( $type eq 'portal' ) {
                 $int_obj->tag( "vip", $self->_fetch_virtual_ip( $int, $interface ) );

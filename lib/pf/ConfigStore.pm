@@ -21,7 +21,7 @@ use pf::log;
 use List::MoreUtils qw(uniq);
 use pfconfig::manager;
 use pf::api::jsonrpcclient;
-use pf::cluster;
+use pf::config::cluster;
 use pf::constants;
 use pf::CHI;
 use pf::generate_filter qw(filter_with_offset_limit);
@@ -43,7 +43,7 @@ has cachedConfig =>
 
 has configFile => ( is => 'ro');
 
-has pfconfigNamespace => ( is => 'ro', default => sub {undef});
+has pfconfigNamespace => ( is => 'ro', default => undef);
 
 has default_section => ( is => 'ro');
 
@@ -70,33 +70,66 @@ sub validParam { 1; }
 
 =head2 _buildCachedConfig
 
-Build the pf::IniFiles object
+Build the cached pf::IniFiles object
 
 =cut
 
 sub _buildCachedConfig {
     my ($self) = @_;
-    my $chi             = $self->cache;
-    my $file_path       = $self->configFile;
-    my @args            = (-file => $file_path, -allowempty => 1);
-    my $default_section = $self->default_section;
-    push @args, -default => $default_section if defined $default_section;
-    my $importConfigFile = $self->importConfigFile;
-    if (defined $importConfigFile) {
-        push @args, -import => pf::IniFiles->new(-file => $importConfigFile, -allowempty => 1);
-    }
-    return $chi->compute(
-        $file_path,
+    return $self->cache->compute(
+        $self->configFile,
         {
             expire_if => sub { $self->expire_if(@_) }
         },
         sub {
-            my $config = pf::IniFiles->new(@args);
-            if ($config) {
-                $config->SetLastModTimestamp;
-            }
-            return $config;
-        });
+            return $self->configIniFile();
+        }
+    );
+}
+
+=head2 configIniFile
+
+Non cached pf::IniFiles object
+
+=cut
+
+sub configIniFile {
+    my ($self) = @_;
+    my %args = $self->configIniFilesArgs();
+    my $file_path = $args{'-file'};
+    my $file_exists = -e $file_path;
+    if (!$file_exists) {
+        delete $args{'-file'};
+    }
+
+    my $config = eval {pf::IniFiles->new(%args)};
+    if ($@) {
+        get_logger->error("Error opening $file_path : $@");
+        return undef;
+    }
+
+    if (!$file_exists) {
+        $config->SetFileName($file_path);
+    }
+
+    $config->SetLastModTimestamp;
+    return $config;
+}
+
+sub configIniFilesArgs {
+    my ($self) = @_;
+    my %args = (-file => $self->configFile, -allowempty => 1);
+    my $default_section = $self->default_section;
+    if (defined $default_section) {
+        $args{'-default'} = $default_section;
+    }
+
+    my $importConfigFile = $self->importConfigFile;
+    if (defined $importConfigFile && -e $importConfigFile) {
+        $args{'-import'} = pf::IniFiles->new(-file => $importConfigFile, -allowempty => 1);
+    }
+
+    return %args;
 }
 
 sub cache { pf::CHI->new(namespace => 'configfiles'); }
@@ -365,6 +398,22 @@ sub remove {
     return $self->cachedConfig->DeleteSection($self->_formatSectionName($id));
 }
 
+=head2 remove_always
+
+remove_always
+
+=cut
+
+sub remove_always {
+    my ($self, $id) = @_;
+    my $realSectionName = $self->_formatSectionName($id);
+    if (!$self->cachedConfig->SectionExists($realSectionName)) {
+        return $FALSE;
+    }
+
+    return $self->cachedConfig->DeleteSection($realSectionName);
+}
+
 
 =head2 canDelete
 
@@ -374,11 +423,18 @@ canDelete
 
 sub canDelete {
     my ($self, $id) = @_;
+    my $realSectionName = $self->_formatSectionName($id);
     my $default_section = $self->default_section;
-    return $TRUE
-        if !defined $default_section;
+    if ($default_section && $default_section eq $realSectionName) {
+        return $FALSE;
+    }
 
-    return $self->_formatSectionName($id) ne $default_section;
+    my $import = $self->cachedConfig->{imported};
+    if ($import && $import->SectionExists($realSectionName)) {
+        return $FALSE;
+    }
+
+    return $TRUE;
 }
 
 =head2 Copy
@@ -487,7 +543,7 @@ sub commit {
     }
 
     if($result){
-        if(pf::cluster::increment_config_version()) {
+        if(pf::config::cluster::increment_config_version()) {
             ($result,$error) = $self->commitPfconfig;
         }
         else {
@@ -598,6 +654,20 @@ sub filter_offset_limit {
     my ($self, $filter, $offset, $limit, $idKey) = @_;
     return unless defined $filter;
     return filter_with_offset_limit($filter, $offset, $limit, $self->readAll($idKey));
+}
+
+=head2 is_section_in_import
+
+Check if section is in the imported Config::IniFiles
+
+=cut
+
+sub is_section_in_import {
+    my ($self, $section) = @_;
+    my $ini = $self->cachedConfig;
+    my $imported = $ini->{imported};
+    return $FALSE unless $imported;
+    return $ini->SectionExists($section) ? $TRUE : $FALSE;
 }
 
 __PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};

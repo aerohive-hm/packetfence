@@ -263,6 +263,7 @@ accounting {
 		&control:PacketFence-RPC-Pass = ${rpc_pass}
 		&control:PacketFence-RPC-Proto = ${rpc_proto}
 	}
+	packetfence-set-tenant-id
 	#
 	#  Log traffic to an SQL database.
 	#
@@ -357,6 +358,7 @@ post-auth {
 	#  The "session-state" attributes are not available here.
 	#
 	Post-Auth-Type REJECT {
+		packetfence-set-tenant-id
 		update {
 			&request:User-Password := "******"
 		}

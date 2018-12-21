@@ -13,6 +13,7 @@ Model for a SAML source
 use pf::Authentication::constants;
 use pf::constants::authentication::messages;
 use pf::constants;
+use pf::config;
 use Template::AutoFilter;
 use File::Slurp qw(read_file write_file);
 use File::Temp qw(tempfile);
@@ -144,7 +145,6 @@ sub sso_url {
         $lassoLogin->request->NameIDPolicy->AllowCreate(1);
         $lassoLogin->request->ForceAuthn(0);
         $lassoLogin->request->IsPassive(0);
-        $lassoLogin->request->ProtocolBinding($pf::constants::saml::SAML2_METADATA_BINDING_ARTIFACT);
 
         $lassoLogin->build_authn_request_msg();
 

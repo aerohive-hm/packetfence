@@ -41,6 +41,7 @@ use pfconfig::util;
 use pfconfig::manager;
 use pf::api::jsonrpcclient;
 use pf::cluster;
+use pf::config::cluster;
 use fingerbank::DB;
 use File::Slurp;
 use pf::file_paths qw($captiveportal_profile_templates_path);
@@ -275,6 +276,7 @@ sub unreg_node_for_pid : Public:AllowedAsAction(pid, $pid) {
 
     foreach my $node_info ( @node_infos ) {
         pf::node::node_deregister($node_info->{'mac'});
+        pf::enforcement::reevaluate_access( $node_info->{'mac'}, 'manage_deregister' );
     }
 
     return $count;
@@ -330,7 +332,7 @@ sub ReAssignVlan : Public : Fork {
         return;
     }
 
-    my $switch = pf::SwitchFactory->instantiate( $postdata{'switch'} );
+    my $switch = pf::SwitchFactory->instantiate( $postdata{'switch'}, {locationlog => pf::locationlog::locationlog_view_open_mac($postdata{'mac'})} );
     unless ($switch) {
         $logger->error("switch $postdata{'switch'} not found for ReAssignVlan");
         return;
@@ -372,7 +374,7 @@ sub desAssociate : Public : Fork {
 
     my $logger = pf::log::get_logger();
 
-    my $switch = pf::SwitchFactory->instantiate($postdata{'switch'});
+    my $switch = pf::SwitchFactory->instantiate($postdata{'switch'}, {locationlog => pf::locationlog::locationlog_view_open_mac($postdata{'mac'})});
     unless ($switch) {
         $logger->error("switch $postdata{'switch'} not found for desAssociate");
         return;
@@ -656,7 +658,7 @@ sub notify_configfile_changed : Public {
     };
     pfconfig::util::fetch_decode_socket(encode_json($payload));
 
-    my $master_server = $ConfigCluster{$postdata{server}};
+    my $master_server = pf::cluster::find_server_by_hostname($postdata{server});
     die "Master server is not in configuration" unless ($master_server);
 
     my $apiclient = pf::api::jsonrpcclient->new(proto => 'https', host => $master_server->{management_ip});
@@ -746,7 +748,7 @@ sub expire_cluster : Public {
     expire($class, %postdata);
 
     my @failed;
-    foreach my $server (pf::cluster::enabled_servers()){
+    foreach my $server (pf::cluster::config_enabled_servers()){
         next if($pf::cluster::host_id eq $server->{host});
         my $apiclient = pf::api::jsonrpcclient->new(proto => 'https', host => $server->{management_ip});
         my %data = (
@@ -779,7 +781,7 @@ sub expire_cluster : Public {
         }
 
         eval {
-            $apiclient->call('set_config_version', version => pf::cluster::get_config_version());
+            $apiclient->call('set_config_version', version => pf::config::cluster::get_config_version());
         };
 
         if($@){
@@ -953,33 +955,29 @@ sub trigger_scan :Public :Fork :AllowedAsAction($ip, mac, $mac, net_type, TYPE) 
 
     return unless scalar keys %pf::config::ConfigScan;
     my $logger = pf::log::get_logger();
+    my $added;
     # post_registration (production vlan)
     # We sleep until (we hope) the device has had time issue an ACK.
     if (pf::util::is_prod_interface($postdata{'net_type'})) {
         my $profile = pf::Connection::ProfileFactory->instantiate($postdata{'mac'});
         my $scanner = $profile->findScan($postdata{'mac'});
         if (defined($scanner) && pf::util::isenabled($scanner->{'_post_registration'})) {
-            pf::violation::violation_add( $postdata{'mac'}, $pf::constants::scan::POST_SCAN_VID );
+            $added = pf::violation::violation_add( $postdata{'mac'}, $pf::constants::scan::POST_SCAN_VID );
         }
-        my $top_violation = pf::violation::violation_view_top($postdata{'mac'});
-        # get violation id
-        my $vid = $top_violation->{'vid'};
-        return if not defined $vid;
+        return if ($added == 0 || $added == -1);
         sleep $pf::config::Config{'fencing'}{'wait_for_redirect'};
-        pf::scan::run_scan($postdata{'ip'}, $postdata{'mac'}) if  ($vid eq $pf::constants::scan::POST_SCAN_VID);
+        pf::scan::run_scan($postdata{'ip'}, $postdata{'mac'}) if ($added ne $pf::constants::scan::POST_SCAN_VID);
     }
     else {
         my $profile = pf::Connection::ProfileFactory->instantiate($postdata{'mac'});
         my $scanner = $profile->findScan($postdata{'mac'});
         # pre_registration
         if (defined($scanner) && pf::util::isenabled($scanner->{'_pre_registration'})) {
-            pf::violation::violation_add( $postdata{'mac'}, $pf::constants::scan::PRE_SCAN_VID );
+            $added = pf::violation::violation_add( $postdata{'mac'}, $pf::constants::scan::PRE_SCAN_VID );
         }
-        my $top_violation = pf::violation::violation_view_top($postdata{'mac'});
-        my $vid = $top_violation->{'vid'};
-        return if not defined $vid;
+        return if ($added == 0 || $added == -1);
         sleep $pf::config::Config{'fencing'}{'wait_for_redirect'};
-        pf::scan::run_scan($postdata{'ip'}, $postdata{'mac'}) if  ($vid eq $pf::constants::scan::PRE_SCAN_VID || $vid eq $pf::constants::scan::SCAN_VID);
+        pf::scan::run_scan($postdata{'ip'}, $postdata{'mac'}) if  ($added ne $pf::constants::scan::PRE_SCAN_VID && $added ne $pf::constants::scan::SCAN_VID);
     }
     return;
 }
@@ -1374,6 +1372,7 @@ sub handle_accounting_metadata : Public {
         #
         $logger->info("Updating locationlog from accounting request");
         $client->notify("radius_update_locationlog", %RAD_REQUEST);
+
     }
 
     if ($RAD_REQUEST{'Acct-Status-Type'} != $ACCOUNTING::STOP){
@@ -1385,9 +1384,20 @@ sub handle_accounting_metadata : Public {
         else {
             pf::log::get_logger->debug("Not handling iplog update because we're not configured to do so on accounting packets.");
         }
+        
+        if(pf::util::isenabled($pf::config::Config{advanced}{scan_on_accounting}) && $RAD_REQUEST{"Framed-IP-Address"}) {
+            my $node = pf::node::node_attributes($mac);
+            if($node->{status} eq $pf::constants::node::STATUS_REGISTERED) {
+                $logger->debug("Will trigger scan engines for this device based on the data in the accounting packet");
+                $client->notify("trigger_scan", mac => $mac, ip => $RAD_REQUEST{"Framed-IP-Address"}, net_type => "management");
+            }
+        }
+        else {
+            pf::log::get_logger->debug("Not handling scan engines because we're not configured to do so on accounting packets or the IP address (Framed-IP-Address) is missing from the packet.");
+        }
     }
     if ($RAD_REQUEST{'Acct-Status-Type'} == $ACCOUNTING::STOP){
-        if (pf::util::isenabled($pf::config::Config{advanced}{unreg_on_accounting_stop})) {
+        if (pf::Connection::ProfileFactory->instantiate($mac)->unregOnAcctStop()) {
             $client->notify("deregister_node", mac => $mac);
         }
     }
@@ -1461,7 +1471,7 @@ Get the configuration version
 
 sub get_config_version :Public {
     my ($class) = @_;
-    return { version => pf::cluster::get_config_version() };
+    return { version => pf::config::cluster::get_config_version() };
 }
 
 =head2 set_config_version
@@ -1476,7 +1486,7 @@ sub set_config_version :Public {
     my @found = grep {exists $postdata{$_}} @require;
     return unless pf::util::validate_argv(\@require,\@found);
 
-    return pf::cluster::set_config_version($postdata{version});
+    return pf::config::cluster::set_config_version($postdata{version});
 }
 
 =head2 sync_config_as_master

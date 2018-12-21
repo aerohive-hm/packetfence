@@ -23,11 +23,13 @@ use base ('pf::Switch');
 
 use pf::config qw(
     $WIRELESS_MAC_AUTH
+    $WEBAUTH_WIRELESS
 );
 use pf::constants;
 use pf::node;
 use pf::util;
 use pf::violation;
+use pf::constants::role qw($REJECT_ROLE);
 
 
 sub description { 'CoovaChilli' }
@@ -64,6 +66,7 @@ sub parseExternalPortalRequest {
         redirect_url            => $req->param('userurl'),
         status_code             => $req->param('res'),
         synchronize_locationlog => $TRUE,
+        connection_type         => $WEBAUTH_WIRELESS,
     );
 
     return \%params;
@@ -129,16 +132,11 @@ sub returnRadiusAccessAccept {
     # Violation handling
     my $violation = pf::violation::violation_view_top($args->{'mac'});
 
-    if ( $node->{'status'} eq $pf::node::STATUS_UNREGISTERED || defined($violation) ) {
-        $logger->info("[$args->{'mac'}] is unregistered or in a violation. Refusing access");
-        my $radius_reply_ref = {
-            'Tunnel-Medium-Type' => $RADIUS::ETHERNET,
-            'Tunnel-Type' => $RADIUS::VLAN,
-            'Tunnel-Private-Group-ID' => -1,
-        };
-
-        ($radius_reply_ref, $status) = $filter->handleAnswerInRule($rule,$args,$radius_reply_ref);
-        return [$status, %$radius_reply_ref];
+    # if user is unregistered or is in violation then we reject him to show him the captive portal
+    if ( $node->{status} eq $pf::node::STATUS_UNREGISTERED || defined($violation) ){
+        $logger->info("[$args->{'mac'}] is unregistered. Refusing access to force the eCWP");
+        $args->{user_role} = $REJECT_ROLE;
+        $self->handleRadiusDeny();
     }
     else {
         ($radius_reply_ref, $status) = $filter->handleAnswerInRule($rule,$args,$radius_reply_ref);

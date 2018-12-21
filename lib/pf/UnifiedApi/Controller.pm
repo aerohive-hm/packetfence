@@ -43,7 +43,7 @@ sub log {
 sub render_error {
     my ($self, $code, $msg, $errors) = @_;
     $errors //= [];
-    my $data = {message => $msg, errors => $errors};
+    my $data = {message => $msg, errors => $errors, status => $code};
     $self->render(json => $data, status => $code);
     return 0;
 }
@@ -87,13 +87,21 @@ sub get_json {
 
 sub unknown_action {
     my ($self) = @_;
-    return $self->render_error(404, "Unknown path");
+    return $self->render_error(404, "Unknown path " . $self->req->url->path);
 }
 
 sub openapi_generator {
     my ($self) = @_;
     my $class = $self->openapi_generator_class;
     return $class ? $class->new : undef;
+}
+
+sub json_true {
+    return do { bless \(my $dummy = 1), "JSON::PP::Boolean" };
+}
+
+sub json_false {
+    return do { bless \(my $dummy = 0), "JSON::PP::Boolean" };
 }
 
 =head1 AUTHOR

@@ -16,93 +16,57 @@ var apiPrefix = "/api/v1"
 var configApiPrefix = apiPrefix + "/config"
 var configNamespaceRe = regexp.MustCompile("^" + regexp.QuoteMeta(configApiPrefix))
 
-var pathAdminRolesMap = map[string]string{
-	configApiPrefix + "/admin_role":  "ADMIN_ROLES",
-	configApiPrefix + "/admin_roles": "ADMIN_ROLES",
+type adminRoleMapping struct {
+	prefix string
+	role   string
+}
 
-	configApiPrefix + "/bases": "CONFIGURATION_MAIN",
-	configApiPrefix + "/base":  "CONFIGURATION_MAIN",
+var pathAdminRolesMap = []adminRoleMapping{
+	adminRoleMapping{prefix: apiPrefix + "/node/", role: "NODES"},
+	adminRoleMapping{prefix: apiPrefix + "/nodes", role: "NODES"},
+	adminRoleMapping{prefix: apiPrefix + "/user/", role: "USERS"},
+	adminRoleMapping{prefix: apiPrefix + "/users", role: "USERS"},
 
-	configApiPrefix + "/billing_tiers": "BILLING_TIER",
-	configApiPrefix + "/billing_tier":  "BILLING_TIER",
-
-	configApiPrefix + "/connection_profiles": "CONNECTION_PROFILES",
-	configApiPrefix + "/connection_profile":  "CONNECTION_PROFILES",
-
-	configApiPrefix + "/device_registrations": "DEVICE_REGISTRATION",
-	configApiPrefix + "/device_registration":  "DEVICE_REGISTRATION",
-
-	configApiPrefix + "/domains": "DOMAIN",
-	configApiPrefix + "/domain":  "DOMAIN",
-
-	configApiPrefix + "/firewalls": "FIREWALL_SSO",
-	configApiPrefix + "/firewall":  "FIREWALL_SSO",
-
-	configApiPrefix + "/floating_devices": "FLOATING_DEVICES",
-	configApiPrefix + "/floating_device":  "FLOATING_DEVICES",
-
-	configApiPrefix + "/admin_role":  "",
-	configApiPrefix + "/admin_roles": "",
-
-	configApiPrefix + "/base":  "",
-	configApiPrefix + "/bases": "",
-
-	configApiPrefix + "/billing_tier":  "",
-	configApiPrefix + "/billing_tiers": "",
-
-	configApiPrefix + "/connection_profile":  "",
-	configApiPrefix + "/connection_profiles": "",
-
-	configApiPrefix + "/device_registration":  "",
-	configApiPrefix + "/device_registrations": "",
-
-	configApiPrefix + "/domain":  "",
-	configApiPrefix + "/domains": "",
-
-	configApiPrefix + "/firewall":  "",
-	configApiPrefix + "/firewalls": "",
-
-	configApiPrefix + "/floating_device":  "",
-	configApiPrefix + "/floating_devices": "",
-
-	configApiPrefix + "/maintenance_task":  "PFMON",
-	configApiPrefix + "/maintenance_tasks": "PFMON",
-
-	configApiPrefix + "/pki_provider":  "PKI_PROVIDER",
-	configApiPrefix + "/pki_providers": "PKI_PROVIDER",
-
-	configApiPrefix + "/portal_module":  "PORTAL_MODULE",
-	configApiPrefix + "/portal_modules": "PORTAL_MODULE",
-
-	configApiPrefix + "/realm":  "REALM",
-	configApiPrefix + "/realms": "REALM",
-
-	configApiPrefix + "/role":  "USERS_ROLES",
-	configApiPrefix + "/roles": "USERS_ROLES",
-
-	configApiPrefix + "/scans": "SCAN",
-	configApiPrefix + "/scan":  "SCAN",
-
-	configApiPrefix + "/sources": "USERS_SOURCES",
-	configApiPrefix + "/source":  "USERS_SOURCES",
-
-	configApiPrefix + "/switches": "SWITCHES",
-	configApiPrefix + "/switch":   "SWITCHES",
-
-	configApiPrefix + "/switch_groups": "SWITCHES",
-	configApiPrefix + "/switch_group":  "SWITCHES",
-
-	configApiPrefix + "/syslog_parsers": "PFDETECT",
-	configApiPrefix + "/syslog_parser":  "PFDETECT",
-
-	configApiPrefix + "/traffic_shaping_policies": "TRAFFIC_SHAPING",
-	configApiPrefix + "/traffic_shaping_policy":   "TRAFFIC_SHAPING",
-
-	configApiPrefix + "/violations": "VIOLATIONS",
-	configApiPrefix + "/violation":  "VIOLATIONS",
-
-	apiPrefix + "/nodes": "NODES",
-	apiPrefix + "/users": "USERS",
+	adminRoleMapping{prefix: configApiPrefix + "/admin_role/", role: "ADMIN_ROLES"},
+	adminRoleMapping{prefix: configApiPrefix + "/admin_roles", role: "ADMIN_ROLES"},
+	adminRoleMapping{prefix: configApiPrefix + "/base/", role: "CONFIGURATION_MAIN"},
+	adminRoleMapping{prefix: configApiPrefix + "/bases", role: "CONFIGURATION_MAIN"},
+	adminRoleMapping{prefix: configApiPrefix + "/billing_tier/", role: "BILLING_TIER"},
+	adminRoleMapping{prefix: configApiPrefix + "/billing_tiers", role: "BILLING_TIER"},
+	adminRoleMapping{prefix: configApiPrefix + "/connection_profile/", role: "CONNECTION_PROFILES"},
+	adminRoleMapping{prefix: configApiPrefix + "/connection_profiles", role: "CONNECTION_PROFILES"},
+	adminRoleMapping{prefix: configApiPrefix + "/device_registration/", role: "DEVICE_REGISTRATION"},
+	adminRoleMapping{prefix: configApiPrefix + "/device_registrations", role: "DEVICE_REGISTRATION"},
+	adminRoleMapping{prefix: configApiPrefix + "/domain/", role: "DOMAIN"},
+	adminRoleMapping{prefix: configApiPrefix + "/domains", role: "DOMAIN"},
+	adminRoleMapping{prefix: configApiPrefix + "/firewall/", role: "FIREWALL_SSO"},
+	adminRoleMapping{prefix: configApiPrefix + "/firewalls", role: "FIREWALL_SSO"},
+	adminRoleMapping{prefix: configApiPrefix + "/floating_device/", role: "FLOATING_DEVICES"},
+	adminRoleMapping{prefix: configApiPrefix + "/floating_devices", role: "FLOATING_DEVICES"},
+	adminRoleMapping{prefix: configApiPrefix + "/maintenance_task/", role: "PFMON"},
+	adminRoleMapping{prefix: configApiPrefix + "/maintenance_tasks", role: "PFMON"},
+	adminRoleMapping{prefix: configApiPrefix + "/pki_provider/", role: "PKI_PROVIDER"},
+	adminRoleMapping{prefix: configApiPrefix + "/pki_providers", role: "PKI_PROVIDER"},
+	adminRoleMapping{prefix: configApiPrefix + "/portal_module/", role: "PORTAL_MODULE"},
+	adminRoleMapping{prefix: configApiPrefix + "/portal_modules", role: "PORTAL_MODULE"},
+	adminRoleMapping{prefix: configApiPrefix + "/realm/", role: "REALM"},
+	adminRoleMapping{prefix: configApiPrefix + "/realms", role: "REALM"},
+	adminRoleMapping{prefix: configApiPrefix + "/role/", role: "USERS_ROLES"},
+	adminRoleMapping{prefix: configApiPrefix + "/roles", role: "USERS_ROLES"},
+	adminRoleMapping{prefix: configApiPrefix + "/scan/", role: "SCAN"},
+	adminRoleMapping{prefix: configApiPrefix + "/scans", role: "SCAN"},
+	adminRoleMapping{prefix: configApiPrefix + "/source/", role: "USERS_SOURCES"},
+	adminRoleMapping{prefix: configApiPrefix + "/sources", role: "USERS_SOURCES"},
+	adminRoleMapping{prefix: configApiPrefix + "/switch/", role: "SWITCHES"},
+	adminRoleMapping{prefix: configApiPrefix + "/switches", role: "SWITCHES"},
+	adminRoleMapping{prefix: configApiPrefix + "/switch_group/", role: "SWITCHES"},
+	adminRoleMapping{prefix: configApiPrefix + "/switch_groups", role: "SWITCHES"},
+	adminRoleMapping{prefix: configApiPrefix + "/syslog_parser/", role: "PFDETECT"},
+	adminRoleMapping{prefix: configApiPrefix + "/syslog_parsers", role: "PFDETECT"},
+	adminRoleMapping{prefix: configApiPrefix + "/traffic_shaping_policies", role: "TRAFFIC_SHAPING"},
+	adminRoleMapping{prefix: configApiPrefix + "/traffic_shaping_policy/", role: "TRAFFIC_SHAPING"},
+	adminRoleMapping{prefix: configApiPrefix + "/violation/", role: "VIOLATIONS"},
+	adminRoleMapping{prefix: configApiPrefix + "/violations", role: "VIOLATIONS"},
 }
 
 var methodSuffixMap = map[string]string{
@@ -208,8 +172,18 @@ func (tam *TokenAuthorizationMiddleware) isAuthorizedTenantId(ctx context.Contex
 }
 
 func (tam *TokenAuthorizationMiddleware) isAuthorizedAdminRoles(ctx context.Context, method, path string, roles map[string]bool) (bool, error) {
-	baseAdminRole := pathAdminRolesMap[path]
 
+	var baseAdminRole string
+	for _, o := range pathAdminRolesMap {
+		base := o.prefix
+		role := o.role
+		if strings.HasPrefix(path, base) && role != "" {
+			baseAdminRole = role
+			break
+		}
+	}
+
+	// If its still empty, then we'll default to SYSTEM
 	if baseAdminRole == "" {
 		log.LoggerWContext(ctx).Debug(fmt.Sprintf("Can't find admin role for path %s, using SYSTEM", path))
 		baseAdminRole = "SYSTEM"
